@@ -1,8 +1,12 @@
 import { NextRequest } from 'next/server';
+import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 
 export async function GET(req: NextRequest) {
+  const { error: authError } = await requireAuthApi();
+  if (authError) return authError;
+
   try {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');

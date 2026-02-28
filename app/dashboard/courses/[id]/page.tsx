@@ -1,0 +1,248 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import styles from './course-detail.module.css';
+import type { CourseRecord, GeneratedCourseStructure } from '@/types';
+
+export default function CourseDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params.id as string;
+
+  const [course, setCourse] = useState<CourseRecord | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editContent, setEditContent] = useState<GeneratedCourseStructure | null>(null);
+
+  useEffect(() => {
+    async function fetchCourse() {
+      const res = await fetch(`/api/courses/${id}`);
+      const data = await res.json();
+      if (res.ok) {
+        setCourse(data);
+        setEditContent(data.generated_content);
+      } else {
+        setError('Curso no encontrado');
+      }
+      setLoading(false);
+    }
+    fetchCourse();
+  }, [id]);
+
+  async function handleSave() {
+    if (!editContent) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/courses/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ generated_content: editContent }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Error al guardar');
+      setCourse(data);
+      setEditMode(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function handlePublish() {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/publish-course', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseId: id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Error al publicar');
+      setCourse(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) return <p className={styles.loading}>Cargando...</p>;
+  if (error && !course) return <p className={styles.error}>{error}</p>;
+  if (!course) return null;
+
+  const content = editContent ?? course.generated_content;
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.topBar}>
+        <Link href="/dashboard/courses" className={styles.back}>
+          ← Volver
+        </Link>
+        <div className={styles.actions}>
+          {editMode ? (
+            <>
+              <button onClick={() => setEditMode(false)} className={styles.btnSecondary}>
+                Cancelar
+              </button>
+              <button onClick={handleSave} disabled={saving} className={styles.btnPrimary}>
+                {saving ? 'Guardando...' : 'Guardar'}
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => setEditMode(true)} className={styles.btnSecondary}>
+                Editar
+              </button>
+              {course.status !== 'published' && (
+                <button onClick={handlePublish} disabled={saving} className={styles.btnPrimary}>
+                  {saving ? 'Publicando...' : 'Publicar a WP + Hotmart'}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {error && <p className={styles.errorMsg}>{error}</p>}
+
+      <div className={styles.meta}>
+        <span className={styles.badge}>{course.status}</span>
+        <span className={styles.topic}>Tema: {course.topic}</span>
+        <span className={styles.date}>
+          {new Date(course.created_at).toLocaleString('es')}
+        </span>
+      </div>
+
+      {course.wp_course_id && (
+        <p className={styles.metaLine}>WordPress ID: {course.wp_course_id}</p>
+      )}
+      {course.hotmart_product_id && (
+        <p className={styles.metaLine}>Hotmart ID: {course.hotmart_product_id}</p>
+      )}
+      {course.error_log && (
+        <p className={styles.errorLog}>{course.error_log}</p>
+      )}
+
+      {!content ? (
+        <p className={styles.noContent}>Sin contenido generado.</p>
+      ) : editMode ? (
+        <div className={styles.editor}>
+          <div className={styles.field}>
+            <label>Título</label>
+            <input
+              value={editContent?.title ?? ''}
+              onChange={(e) =>
+                setEditContent((prev) =>
+                  prev ? { ...prev, title: e.target.value } : prev
+                )
+              }
+            />
+          </div>
+          <div className={styles.field}>
+            <label>Descripción breve</label>
+            <input
+              value={editContent?.short_description ?? ''}
+              onChange={(e) =>
+                setEditContent((prev) =>
+                  prev ? { ...prev, short_description: e.target.value } : prev
+                )
+              }
+            />
+          </div>
+          <div className={styles.field}>
+            <label>Descripción (HTML)</label>
+            <textarea
+              value={editContent?.description ?? ''}
+              onChange={(e) =>
+                setEditContent((prev) =>
+                  prev ? { ...prev, description: e.target.value } : prev
+                )
+              }
+              rows={8}
+            />
+          </div>
+          <div className={styles.topicsSection}>
+            <h3>Módulos y lecciones</h3>
+            {editContent?.topics?.map((topic, ti) => (
+              <div key={ti} className={styles.topicBlock}>
+                <input
+                  value={topic.title}
+                  onChange={(e) => {
+                    const next = [...(editContent?.topics ?? [])];
+                    next[ti] = { ...topic, title: e.target.value };
+                    setEditContent((prev) =>
+                      prev ? { ...prev, topics: next } : prev
+                    );
+                  }}
+                  className={styles.topicTitle}
+                />
+                {topic.lessons.map((lesson, li) => (
+                  <div key={li} className={styles.lessonBlock}>
+                    <input
+                      value={lesson.title}
+                      onChange={(e) => {
+                        const nextTopics = [...(editContent?.topics ?? [])];
+                        const nextLessons = [...topic.lessons];
+                        nextLessons[li] = { ...lesson, title: e.target.value };
+                        nextTopics[ti] = { ...topic, lessons: nextLessons };
+                        setEditContent((prev) =>
+                          prev ? { ...prev, topics: nextTopics } : prev
+                        );
+                      }}
+                      placeholder="Título lección"
+                      className={styles.lessonTitle}
+                    />
+                    <textarea
+                      value={lesson.content}
+                      onChange={(e) => {
+                        const nextTopics = [...(editContent?.topics ?? [])];
+                        const nextLessons = [...topic.lessons];
+                        nextLessons[li] = { ...lesson, content: e.target.value };
+                        nextTopics[ti] = { ...topic, lessons: nextLessons };
+                        setEditContent((prev) =>
+                          prev ? { ...prev, topics: nextTopics } : prev
+                        );
+                      }}
+                      placeholder="Contenido HTML"
+                      rows={4}
+                      className={styles.lessonContent}
+                    />
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className={styles.view}>
+          <h1>{content.title}</h1>
+          <p className={styles.shortDesc}>{content.short_description}</p>
+          <div
+            className={styles.description}
+            dangerouslySetInnerHTML={{ __html: content.description }}
+          />
+          {content.topics?.map((topic, i) => (
+            <div key={i} className={styles.topicView}>
+              <h2>{topic.title}</h2>
+              {topic.lessons.map((lesson, j) => (
+                <div key={j} className={styles.lessonView}>
+                  <h3>{lesson.title}</h3>
+                  <div
+                    dangerouslySetInnerHTML={{ __html: lesson.content }}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

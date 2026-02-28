@@ -1,8 +1,12 @@
 import { NextRequest } from 'next/server';
+import { requireAuthApi } from '@/lib/auth-api';
 import { publishCourse } from '@/services/courseOrchestrator';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 
 export async function POST(req: NextRequest) {
+  const { error: authError } = await requireAuthApi();
+  if (authError) return authError;
+
   try {
     const body = (await req.json()) as { courseId?: string };
     const courseId = body?.courseId;

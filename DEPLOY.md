@@ -30,13 +30,21 @@ O con Supabase CLI:
 supabase db push
 ```
 
-### 2. Variables de entorno en Vercel
+### 2. Configurar Auth en Supabase
+
+- **Authentication → URL Configuration**: Añadir Site URL y Redirect URLs:
+  - Site URL: `https://tu-app.vercel.app` (o `http://localhost:3000` en local)
+  - Redirect: `https://tu-app.vercel.app/auth/callback`
+- **Authentication → Providers**: Activar Email. Crear usuario admin desde el dashboard.
+
+### 3. Variables de entorno en Vercel
 
 En **Project Settings → Environment Variables** añadir:
 
 | Variable | Valor | Entornos |
 |----------|-------|----------|
 | `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase | All |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon/public key | All |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key (secret) | All |
 | `OPENAI_API_KEY` | API key de OpenAI | All |
 | `WORDPRESS_URL` | https://tudominio.com | All |
@@ -45,7 +53,7 @@ En **Project Settings → Environment Variables** añadir:
 | `HOTMART_CLIENT_ID` | Client ID de Hotmart | All |
 | `HOTMART_CLIENT_SECRET` | Client Secret de Hotmart | All |
 
-### 3. Deploy
+### 4. Deploy
 
 **IMPORTANTE – Configuración de Output Directory**
 
@@ -65,19 +73,19 @@ vercel --prod
 
 O conectar el repo desde el dashboard de Vercel (Import Git Repository).
 
-### 4. WordPress
+### 5. WordPress
 
 - Crear Application Password: Usuarios → Tu perfil → Application Passwords
 - Tutor LMS: El CPT `courses` se crea vía `/wp-json/wp/v2/courses` (REST estándar). Tutor LMS Free es solo lectura; para creación automática puede requerir Tutor Pro o verificar que el CPT exponga `edit` en `show_in_rest`.
 - Permalinks: Settings → Permalinks → Post name
 
-### 5. Hotmart
+### 6. Hotmart
 
 - Crear app en https://developers.hotmart.com
 - OAuth2 client_credentials
 - Si el endpoint de productos difiere, usar `HOTMART_PRODUCTS_URL`
 
-### 6. Verificación
+### 7. Verificación
 
 ```bash
 # Generar curso

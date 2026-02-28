@@ -1,0 +1,255 @@
+.page {
+  max-width: 800px;
+}
+
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.back {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.back:hover {
+  color: #fff;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btnPrimary,
+.btnSecondary {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.btnSecondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.loading,
+.error {
+  color: #94a3b8;
+  padding: 2rem 0;
+}
+
+.errorMsg,
+.errorLog {
+  color: #f87171;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: rgba(248, 113, 113, 0.1);
+  border-radius: 8px;
+}
+
+.meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.badge {
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  background: rgba(148, 163, 184, 0.2);
+  color: #94a3b8;
+}
+
+.topic {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.date {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.metaLine {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem;
+}
+
+.noContent {
+  color: #94a3b8;
+  padding: 2rem 0;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field label {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}
+
+.field input,
+.field textarea {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-size: 1rem;
+}
+
+.field textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.topicsSection {
+  margin-top: 1rem;
+}
+
+.topicsSection h3 {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.topicBlock {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.topicTitle {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.lessonBlock {
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+}
+
+.lessonTitle {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.lessonContent {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: monospace;
+  resize: vertical;
+}
+
+.view h1 {
+  font-size: 1.75rem;
+  color: #fff;
+  margin: 0 0 0.75rem;
+}
+
+.shortDesc {
+  color: #94a3b8;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.description {
+  margin-bottom: 2rem;
+  line-height: 1.7;
+}
+
+.description :global(p) {
+  margin-bottom: 0.75rem;
+}
+
+.description :global(ul),
+.description :global(ol) {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.topicView {
+  margin-bottom: 2rem;
+}
+
+.topicView h2 {
+  font-size: 1.25rem;
+  color: #fff;
+  margin: 0 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lessonView {
+  margin-left: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.lessonView h3 {
+  font-size: 1.1rem;
+  color: #e2e8f0;
+  margin: 0 0 0.5rem;
+}
+
+.lessonView > div {
+  line-height: 1.6;
+  color: #cbd5e1;
+}
