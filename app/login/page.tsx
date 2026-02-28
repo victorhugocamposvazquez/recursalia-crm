@@ -32,7 +32,7 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>Course SaaS Generator</h1>
+        <h1>Recursalia panel</h1>
         <p className="subtitle">Inicia sesión para continuar</p>
 
         <form onSubmit={handleSubmit} className="login-form">
