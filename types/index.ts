@@ -1,0 +1,53 @@
+// Input para generación de curso
+export interface CourseInputPayload {
+  topic: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  avatar: string;
+  focus: string;
+}
+
+// Estructura generada por OpenAI
+export interface GeneratedLesson {
+  title: string;
+  content: string;
+  duration_minutes: number;
+}
+
+export interface GeneratedTopic {
+  title: string;
+  lessons: GeneratedLesson[];
+}
+
+export interface GeneratedCourseStructure {
+  title: string;
+  description: string;
+  short_description: string;
+  topics: GeneratedTopic[];
+  total_duration_minutes: number;
+}
+
+// Entidad en Supabase
+export type CourseStatus = 'draft' | 'published' | 'error';
+
+export interface CourseRecord {
+  id: string;
+  topic: string;
+  input_payload: CourseInputPayload;
+  generated_content: GeneratedCourseStructure | null;
+  wp_course_id: string | null;
+  hotmart_product_id: string | null;
+  status: CourseStatus;
+  error_log: string | null;
+  created_at: string;
+}
+
+// Respuestas API
+export interface ApiError {
+  error: string;
+  details?: string;
+}
+
+export interface CourseListResponse {
+  courses: CourseRecord[];
+  total?: number;
+}
