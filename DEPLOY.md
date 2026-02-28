@@ -47,6 +47,14 @@ En **Project Settings → Environment Variables** añadir:
 
 ### 3. Deploy
 
+**IMPORTANTE – Configuración de Output Directory**
+
+En Vercel: **Settings → General → Build & Development Settings**
+
+- **Output Directory**: dejar **vacío** (Next.js no usa `public` como salida)
+- **Framework Preset**: Next.js (se auto-detecta)
+- **Build Command**: `next build` (por defecto)
+
 ```bash
 # Conectar repo a Vercel
 vercel link
