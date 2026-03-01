@@ -38,6 +38,18 @@ Asignar una categoría existente a un curso.
 }
 ```
 
+### POST /wp-json/recursalia/v1/course-set-product
+
+Asociar un producto WooCommerce a un curso Tutor LMS (meta `_tutor_course_product_id`).
+Necesario porque la API REST de WordPress puede no guardar este meta.
+
+```json
+{
+  "course_id": 18207,
+  "product_id": 456
+}
+```
+
 ### POST /wp-json/recursalia/v1/review-category
 
 Crear categoría de reseñas para Site Reviews.

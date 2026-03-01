@@ -1,7 +1,6 @@
 /**
  * Servicio para crear currículo (temarios) en Tutor LMS.
- * Usa la API REST de Tutor Pro (wp-json/tutor/v1/) cuando está disponible,
- * con fallback al endpoint del plugin Recursalia.
+ * Usa el endpoint del plugin Recursalia que crea topics y lessons con wp_insert_post.
  */
 
 import type { GeneratedCourseStructure } from '@/types';
@@ -28,65 +27,7 @@ export async function createCurriculum(
   const topics = content.topics ?? [];
   if (!topics.length) return;
 
-  // Intentar primero la API REST de Tutor Pro (tutor/v1)
-  const tutorApiOk = await tryTutorProApi(url, authHeader, courseId, topics);
-  if (tutorApiOk) return;
-
-  // Fallback: endpoint del plugin Recursalia
   await useRecursaliaPlugin(url, authHeader, courseId, content);
-}
-
-async function tryTutorProApi(
-  baseUrl: string,
-  authHeader: string,
-  courseId: number,
-  topics: { title: string; lessons: { title: string; content: string }[] }[]
-): Promise<boolean> {
-  try {
-    for (const topic of topics) {
-      const topicSummary = topic.lessons[0]?.title ?? topic.title;
-      const topicRes = await fetch(`${baseUrl}/wp-json/tutor/v1/topics`, {
-        method: 'POST',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          topic_course_id: courseId,
-          topic_title: topic.title,
-          topic_summary: topicSummary,
-          topic_author: TUTOR_AUTHOR_ID,
-        }),
-      });
-
-      if (!topicRes.ok) return false;
-
-      const topicData = (await topicRes.json()) as { ID?: number; id?: number };
-      const topicId = topicData.ID ?? topicData.id;
-      if (!topicId) return false;
-
-      for (const lesson of topic.lessons) {
-        const lessonRes = await fetch(`${baseUrl}/wp-json/tutor/v1/lessons`, {
-          method: 'POST',
-          headers: {
-            Authorization: authHeader,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            topic_id: topicId,
-            course_id: courseId,
-            lesson_title: lesson.title,
-            lesson_content: lesson.content ?? '',
-            lesson_author: TUTOR_AUTHOR_ID,
-          }),
-        });
-        if (!lessonRes.ok) return false;
-      }
-    }
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 async function useRecursaliaPlugin(
@@ -119,5 +60,12 @@ async function useRecursaliaPlugin(
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Course curriculum error ${res.status}: ${text}`);
+  }
+
+  const result = (await res.json()) as { created_topics?: number; created_lessons?: number };
+  if (topics.length > 0 && (result.created_topics ?? 0) === 0) {
+    throw new Error(
+      `Curriculum: no se crearon temas (se enviaron ${topics.length}). Verifica que Tutor LMS esté activo y los post types "topics"/"lesson" existan.`
+    );
   }
 }

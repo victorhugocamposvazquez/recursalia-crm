@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Recursalia Course API
  * Description: REST API para crear categorías y reseñas de Site Reviews desde el Course SaaS Generator.
- * Version: 1.2.0
+ * Version: 1.3.0
  * Author: Recursalia
  */
 
@@ -47,6 +47,16 @@ add_action('rest_api_init', function () {
     'args' => [
       'course_id' => ['required' => true, 'type' => 'integer'],
       'term_id' => ['required' => true, 'type' => 'integer'],
+    ],
+  ]);
+
+  register_rest_route('recursalia/v1', '/course-set-product', [
+    'methods' => 'POST',
+    'callback' => 'recursalia_set_course_product',
+    'permission_callback' => 'recursalia_check_auth',
+    'args' => [
+      'course_id' => ['required' => true, 'type' => 'integer'],
+      'product_id' => ['required' => true, 'type' => 'integer'],
     ],
   ]);
 
@@ -126,6 +136,20 @@ function recursalia_assign_course_category(WP_REST_Request $request) {
 
   update_post_meta($course_id, 'assigned_term_id', (string) $term_id);
   return ['assigned' => true];
+}
+
+function recursalia_set_course_product(WP_REST_Request $request) {
+  $course_id = (int) $request->get_param('course_id');
+  $product_id = (int) $request->get_param('product_id');
+
+  $post = get_post($course_id);
+  if (!$post || $post->post_type !== 'courses') {
+    return new WP_Error('course_not_found', 'Course not found', ['status' => 404]);
+  }
+
+  update_post_meta($course_id, '_tutor_course_product_id', (string) $product_id);
+
+  return ['ok' => true];
 }
 
 function recursalia_create_review_category(WP_REST_Request $request) {
@@ -217,9 +241,9 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
     return new WP_Error('invalid', 'topics array required', ['status' => 400]);
   }
 
-  // Tutor LMS: free usa topics/lesson, Pro puede usar tutor_topics/tutor_lesson
-  $topic_post_type = post_type_exists('tutor_topics') ? 'tutor_topics' : (post_type_exists('topics') ? 'topics' : 'topics');
-  $lesson_post_type = post_type_exists('tutor_lesson') ? 'tutor_lesson' : (post_type_exists('lesson') ? 'lesson' : 'lesson');
+  // Tutor LMS: "topics" y "lesson" (free) o "tutor_topics" y "tutor_lesson" (Pro)
+  $topic_post_type = post_type_exists('topics') ? 'topics' : (post_type_exists('tutor_topics') ? 'tutor_topics' : 'topics');
+  $lesson_post_type = post_type_exists('lesson') ? 'lesson' : (post_type_exists('tutor_lesson') ? 'tutor_lesson' : 'lesson');
 
   $created_topics = 0;
   $created_lessons = 0;

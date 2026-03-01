@@ -2,6 +2,7 @@ import type { WpCreateCoursePayload, WpCourseResponse } from '@/types/wordpress'
 import type { GeneratedCourseStructure } from '@/types';
 import { withRetry } from '@/utils/retry';
 import { createCurriculum } from './tutorLmsService';
+import { setCourseProduct } from './wordpressCourseMetaService';
 
 export interface WpMediaResponse {
   id: number;
@@ -99,7 +100,6 @@ export async function createCourse(
       ...(content.benefits?.length && {
         benefits: JSON.stringify(content.benefits),
       }),
-      ...(woocommerceProductId && { _tutor_course_product_id: String(woocommerceProductId) }),
     },
   };
 
@@ -124,6 +124,10 @@ export async function createCourse(
     },
     { maxRetries: 3, delayMs: 1500 }
   );
+
+  if (woocommerceProductId) {
+    await setCourseProduct(courseId, woocommerceProductId);
+  }
 
   if (content.topics?.length) {
     await createCurriculum(courseId, content);
