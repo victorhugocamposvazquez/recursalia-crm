@@ -76,7 +76,8 @@ O conectar el repo desde el dashboard de Vercel (Import Git Repository).
 ### 5. WordPress
 
 - Crear Application Password: Usuarios → Tu perfil → Application Passwords
-- Tutor LMS: El CPT `courses` se crea vía `/wp-json/wp/v2/courses` (REST estándar). Tutor LMS Free es solo lectura; para creación automática puede requerir Tutor Pro o verificar que el CPT exponga `edit` en `show_in_rest`.
+- Tutor LMS: El CPT `courses` se crea vía `/wp-json/wp/v2/courses`
+- **Plugin Recursalia Course API**: Copiar `wordpress-plugin/recursalia-course-api/` a `wp-content/plugins/` y activar. Requiere Site Reviews instalado.
 - Permalinks: Settings → Permalinks → Post name
 
 ### 6. Hotmart

@@ -2,11 +2,16 @@ import type { WpCreateCoursePayload, WpCourseResponse } from '@/types/wordpress'
 import type { GeneratedCourseStructure } from '@/types';
 import { withRetry } from '@/utils/retry';
 
-const WP_URL = process.env.WORDPRESS_URL!;
-const WP_USER = process.env.WORDPRESS_USER!;
-const WP_APP_PASSWORD = process.env.WORDPRESS_APP_PASSWORD!;
-
-const authHeader = `Basic ${Buffer.from(`${WP_USER}:${WP_APP_PASSWORD}`).toString('base64')}`;
+function getConfig() {
+  const url = process.env.WORDPRESS_URL;
+  const user = process.env.WORDPRESS_USER;
+  const appPassword = process.env.WORDPRESS_APP_PASSWORD;
+  if (!url || !user || !appPassword) throw new Error('WordPress env vars required');
+  return {
+    url,
+    authHeader: `Basic ${Buffer.from(`${user}:${appPassword}`).toString('base64')}`,
+  };
+}
 
 function buildCourseHtmlContent(content: GeneratedCourseStructure): string {
   const parts: string[] = [content.description];
@@ -22,8 +27,10 @@ function buildCourseHtmlContent(content: GeneratedCourseStructure): string {
 }
 
 export async function createCourse(
-  content: GeneratedCourseStructure
+  content: GeneratedCourseStructure,
+  hotmartUrl?: string
 ): Promise<number> {
+  const { url, authHeader } = getConfig();
   const htmlContent = buildCourseHtmlContent(content);
 
   const payload: WpCreateCoursePayload = {
@@ -35,12 +42,16 @@ export async function createCourse(
         course_title: content.title,
         course_description: content.short_description,
       }),
+      best_seller: content.badge === 'Best Seller' ? 'si' : 'no',
+      ventajas: content.benefits?.length ? 'si' : 'no',
+      salary_info: content.highlight ?? '',
+      hotmart_link: hotmartUrl ?? '',
     },
   };
 
   const result = await withRetry(
     async () => {
-      const res = await fetch(`${WP_URL}/wp-json/wp/v2/courses`, {
+      const res = await fetch(`${url}/wp-json/wp/v2/courses`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,

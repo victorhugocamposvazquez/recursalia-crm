@@ -1,14 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import styles from './course-detail.module.css';
 import type { CourseRecord, GeneratedCourseStructure } from '@/types';
 
 export default function CourseDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
 
   const [course, setCourse] = useState<CourseRecord | null>(null);
@@ -102,7 +101,7 @@ export default function CourseDetailPage() {
               </button>
               {course.status !== 'published' && (
                 <button onClick={handlePublish} disabled={saving} className={styles.btnPrimary}>
-                  {saving ? 'Publicando...' : 'Publicar a WP + Hotmart'}
+                  {saving ? 'Publicando...' : 'Publicar (WP + Hotmart + Reseñas)'}
                 </button>
               )}
             </>
@@ -154,6 +153,48 @@ export default function CourseDetailPage() {
                   prev ? { ...prev, short_description: e.target.value } : prev
                 )
               }
+            />
+          </div>
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label>Precio original ($)</label>
+              <input
+                type="number"
+                value={editContent?.price_original ?? ''}
+                onChange={(e) =>
+                  setEditContent((prev) =>
+                    prev
+                      ? { ...prev, price_original: parseFloat(e.target.value) || undefined }
+                      : prev
+                  )
+                }
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Precio venta ($)</label>
+              <input
+                type="number"
+                value={editContent?.price_sale ?? ''}
+                onChange={(e) =>
+                  setEditContent((prev) =>
+                    prev
+                      ? { ...prev, price_sale: parseFloat(e.target.value) || undefined }
+                      : prev
+                  )
+                }
+              />
+            </div>
+          </div>
+          <div className={styles.field}>
+            <label>Highlight / Salary info</label>
+            <input
+              value={editContent?.highlight ?? ''}
+              onChange={(e) =>
+                setEditContent((prev) =>
+                  prev ? { ...prev, highlight: e.target.value } : prev
+                )
+              }
+              placeholder="Ej: El salario medio es de 2700$"
             />
           </div>
           <div className={styles.field}>
@@ -224,6 +265,31 @@ export default function CourseDetailPage() {
         <div className={styles.view}>
           <h1>{content.title}</h1>
           <p className={styles.shortDesc}>{content.short_description}</p>
+          {(content.price_original ?? content.price_sale) && (
+            <p className={styles.prices}>
+              {content.price_original && (
+                <span className={styles.priceOriginal}>~~${content.price_original}~~</span>
+              )}{' '}
+              {content.price_sale && (
+                <span className={styles.priceSale}>${content.price_sale}</span>
+              )}
+            </p>
+          )}
+          {content.highlight && (
+            <p className={styles.highlight}>{content.highlight}</p>
+          )}
+          {content.benefits && content.benefits.length > 0 && (
+            <div className={styles.benefits}>
+              <h3>Ventajas</h3>
+              <ul>
+                {content.benefits.map((b, i) => (
+                  <li key={i}>
+                    <strong>{b.icon} {b.title}:</strong> {b.description}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div
             className={styles.description}
             dangerouslySetInnerHTML={{ __html: content.description }}

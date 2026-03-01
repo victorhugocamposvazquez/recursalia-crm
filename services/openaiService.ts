@@ -8,33 +8,53 @@ function getOpenAI(): OpenAI {
 }
 
 function buildPrompt(payload: CourseInputPayload): string {
-  return `Genera la estructura JSON completa de un curso online con estos datos:
+  return `Genera la estructura JSON completa de un curso online para recursalia.com con estos datos:
 - Tema: ${payload.topic}
 - Nivel: ${payload.level}
 - Avatar/Persona objetivo: ${payload.avatar}
 - Enfoque: ${payload.focus}
 
 Devuelve ÚNICAMENTE un JSON válido con esta estructura exacta (sin markdown ni texto adicional):
+
 {
   "title": "Título del curso",
-  "description": "Descripción larga HTML del curso (2-3 párrafos)",
-  "short_description": "Descripción breve de 1-2 oraciones",
+  "description": "Descripción larga HTML (2-3 párrafos) con emojis cuando convenga",
+  "short_description": "Tagline corta para conversión, 1-2 oraciones con emoji",
+  "benefits": [
+    {"icon": "€", "title": "Genera ingresos rápido", "description": "Frase corta del beneficio"},
+    {"icon": "💼", "title": "Accede a oportunidades", "description": "Frase corta"},
+    {"icon": "📈", "title": "Relación calidad/precio", "description": "Frase corta"},
+    {"icon": "🎓", "title": "Diploma certificado", "description": "Frase corta"}
+  ],
+  "highlight": "Frase impactante tipo: El salario medio de un profesional en [ámbito] es de X$",
+  "price_original": 180,
+  "price_sale": 75,
+  "badge": "Best Seller",
+  "access_level": "Todos los niveles",
+  "certificate": true,
+  "job_bank": true,
+  "language": "Español",
+  "author_name": "John Alex",
+  "author_bio": "Biografía corta del autor (1-2 oraciones)",
   "topics": [
     {
-      "title": "Nombre del módulo/tema",
+      "title": "🧘‍♀️ Módulo 1: [Nombre con emoji]",
       "lessons": [
-        {
-          "title": "Título de la lección",
-          "content": "Contenido HTML completo de la lección",
-          "duration_minutes": 15
-        }
+        {"title": "Título lección", "content": "Contenido HTML (2-4 párrafos con p, ul, li)", "duration_minutes": 15},
+        {"title": "Título lección", "content": "Contenido HTML", "duration_minutes": 15},
+        {"title": "Título lección", "content": "Contenido HTML", "duration_minutes": 15},
+        {"title": "Título lección", "content": "Contenido HTML", "duration_minutes": 15}
       ]
     }
   ],
-  "total_duration_minutes": 120
+  "total_duration_minutes": 360
 }
 
-Incluye al menos 3 temas con 2-4 lecciones cada uno. El contenido debe ser HTML semántico (p, h2, h3, ul, li, etc).`;
+REGLAS:
+- Exactamente 6 módulos, 4 lecciones por módulo (24 lecciones totales).
+- Cada módulo debe tener emoji en el título (ej: 🧘‍♀️ Módulo 1: Fundamentos).
+- benefits: exactamente 4 elementos con iconos variados.
+- Contenido HTML semántico (p, h3, ul, li). Sin markdown.`;
 }
 
 export async function generateCourseStructure(
@@ -46,7 +66,7 @@ export async function generateCourseStructure(
       {
         role: 'system',
         content:
-          'Eres un experto en crear estructuras de cursos online. Responde solo con JSON válido.',
+          'Eres un experto en crear cursos online para recursalia.com. Responde solo con JSON válido. Usa emojis en títulos y descripciones.',
       },
       { role: 'user', content: buildPrompt(payload) },
     ],

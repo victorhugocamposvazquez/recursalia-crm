@@ -208,7 +208,55 @@
 .shortDesc {
   color: #94a3b8;
   font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.prices {
+  margin-bottom: 1rem;
+}
+
+.priceOriginal {
+  color: #64748b;
+  text-decoration: line-through;
+}
+
+.priceSale {
+  color: #34d399;
+  font-weight: 600;
+}
+
+.highlight {
+  background: rgba(99, 102, 241, 0.15);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #a5b4fc;
   margin-bottom: 1.5rem;
+}
+
+.benefits {
+  margin-bottom: 1.5rem;
+}
+
+.benefits h3 {
+  font-size: 1rem;
+  color: #e2e8f0;
+  margin-bottom: 0.5rem;
+}
+
+.benefits ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #cbd5e1;
+}
+
+.benefits li {
+  margin-bottom: 0.35rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .description {

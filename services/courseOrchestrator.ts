@@ -1,8 +1,15 @@
 import { getSupabase } from '@/lib/supabase';
 import { generateCourseStructure } from './openaiService';
+import { generateReviews } from './openaiReviewsService';
 import { createCourse as createWpCourse } from './wordpressService';
 import { createProduct as createHotmartProduct } from './hotmartService';
+import {
+  createReviewCategory,
+  createReviews as createSiteReviews,
+} from './siteReviewsService';
 import type { CourseInputPayload, CourseRecord, CourseStatus } from '@/types';
+
+const REVIEWS_COUNT = parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
 
 export async function generateAndSaveCourse(
   payload: CourseInputPayload
@@ -68,22 +75,38 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
   let hotmartId: string | null = null;
   let errorLog: string | null = null;
 
-  try {
-    wpId = String(await createWpCourse(content));
-  } catch (err) {
-    errorLog = `WordPress: ${err instanceof Error ? err.message : String(err)}`;
-  }
+  const price = content.price_sale ?? content.price_original ?? 99.99;
 
   try {
     hotmartId = await createHotmartProduct(
       content.title,
       content.description,
-      99.99
+      price
     );
+  } catch (err) {
+    errorLog = `Hotmart: ${err instanceof Error ? err.message : String(err)}`;
+  }
+
+  const hotmartUrl = hotmartId ? `https://pay.hotmart.com/${hotmartId}` : undefined;
+
+  try {
+    wpId = String(await createWpCourse(content, hotmartUrl));
   } catch (err) {
     errorLog =
       (errorLog ?? '') +
-      ` | Hotmart: ${err instanceof Error ? err.message : String(err)}`;
+      ` | WordPress: ${err instanceof Error ? err.message : String(err)}`;
+  }
+
+  if (wpId && !errorLog) {
+    try {
+      const reviews = await generateReviews(content.title, REVIEWS_COUNT);
+      const category = await createReviewCategory(content.title);
+      await createSiteReviews(Number(wpId), category.slug, reviews);
+    } catch (err) {
+      errorLog =
+        (errorLog ?? '') +
+        ` | Site Reviews: ${err instanceof Error ? err.message : String(err)}`;
+    }
   }
 
   const status: CourseStatus =

@@ -1,0 +1,48 @@
+# Recursalia Course API - Plugin WordPress
+
+Plugin para integrar el Course SaaS Generator con Site Reviews.
+
+## Requisitos
+
+- WordPress con Tutor LMS
+- Plugin Site Reviews instalado y activo
+
+## Instalación
+
+1. Copiar la carpeta `recursalia-course-api` a `wp-content/plugins/`
+2. Activar el plugin en WordPress → Plugins
+
+## Endpoints
+
+### POST /wp-json/recursalia/v1/review-category
+
+Crear categoría de reseñas para Site Reviews.
+
+```json
+{
+  "name": "Curso de Yoga profesional",
+  "slug": "curso-de-yoga-profesional"
+}
+```
+
+### POST /wp-json/recursalia/v1/reviews
+
+Crear reseñas y asignarlas a un curso.
+
+```json
+{
+  "assigned_post_id": 18207,
+  "category_slug": "curso-de-yoga-profesional",
+  "reviews": [
+    {
+      "title": "Ideal para mejorar",
+      "content": "Comentario del alumno",
+      "rating": 5,
+      "author_name": "Juan Pérez",
+      "date": "2024-08-23"
+    }
+  ]
+}
+```
+
+Requiere Application Password para autenticación.
