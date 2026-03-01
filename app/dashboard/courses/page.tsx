@@ -10,6 +10,7 @@ export default function CoursesPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>('');
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchCourses() {
@@ -36,6 +37,25 @@ export default function CoursesPage() {
           : styles.badgeDraft;
     return <span className={`${styles.badge} ${cls}`}>{s}</span>;
   };
+
+  async function handleDelete(c: CourseRecord) {
+    const title = c.generated_content?.title ?? c.topic;
+    if (!confirm(`¿Borrar el curso "${title}"? Esta acción no se puede deshacer.`)) return;
+    setDeletingId(c.id);
+    try {
+      const res = await fetch(`/api/courses/${c.id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.details ?? data.error ?? 'Error al borrar');
+      }
+      setCourses((prev) => prev.filter((x) => x.id !== c.id));
+      setTotal((prev) => Math.max(0, prev - 1));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al borrar');
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   return (
     <div className={styles.page}>
@@ -75,7 +95,7 @@ export default function CoursesPage() {
                 <th>Título</th>
                 <th>Estado</th>
                 <th>Fecha</th>
-                <th></th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -87,10 +107,18 @@ export default function CoursesPage() {
                   <td className={styles.date}>
                     {new Date(c.created_at).toLocaleDateString('es')}
                   </td>
-                  <td>
+                  <td className={styles.actionsCell}>
                     <Link href={`/dashboard/courses/${c.id}`} className={styles.action}>
                       Ver / Editar
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(c)}
+                      disabled={deletingId === c.id}
+                      className={styles.deleteBtn}
+                    >
+                      {deletingId === c.id ? 'Borrando...' : 'Borrar'}
+                    </button>
                   </td>
                 </tr>
               ))}

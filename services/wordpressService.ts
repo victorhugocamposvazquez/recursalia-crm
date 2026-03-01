@@ -146,53 +146,29 @@ async function createTutorCurriculum(
 ): Promise<void> {
   const { url, authHeader } = getConfig();
 
-  for (const topic of content.topics) {
-    const topicRes = await fetch(`${url}/wp-json/tutor/v1/topics`, {
-      method: 'POST',
-      headers: {
-        Authorization: authHeader,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        topic_course_id: courseId,
-        topic_title: topic.title,
-        topic_summary: topic.lessons[0]?.title ?? '',
-        topic_author: TUTOR_AUTHOR_ID,
-      }),
-    });
+  const topics = content.topics.map((t) => ({
+    title: t.title,
+    lessons: t.lessons.map((l) => ({
+      title: l.title,
+      content: l.content,
+    })),
+  }));
 
-    if (!topicRes.ok) {
-      const text = await topicRes.text();
-      throw new Error(`Tutor Topic API error ${topicRes.status}: ${text}`);
-    }
+  const res = await fetch(`${url}/wp-json/recursalia/v1/course-curriculum`, {
+    method: 'POST',
+    headers: {
+      Authorization: authHeader,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      course_id: courseId,
+      topics,
+      author_id: TUTOR_AUTHOR_ID,
+    }),
+  });
 
-    const topicData = (await topicRes.json()) as { ID?: number; id?: number };
-    const topicId = topicData.ID ?? topicData.id;
-
-    if (!topicId) {
-      throw new Error('Tutor Topic API did not return topic ID');
-    }
-
-    for (const lesson of topic.lessons) {
-      const lessonRes = await fetch(`${url}/wp-json/tutor/v1/lessons`, {
-        method: 'POST',
-        headers: {
-          Authorization: authHeader,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          topic_id: topicId,
-          course_id: courseId,
-          lesson_title: lesson.title,
-          lesson_content: lesson.content,
-          lesson_author: TUTOR_AUTHOR_ID,
-        }),
-      });
-
-      if (!lessonRes.ok) {
-        const text = await lessonRes.text();
-        throw new Error(`Tutor Lesson API error ${lessonRes.status}: ${text}`);
-      }
-    }
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Course curriculum error ${res.status}: ${text}`);
   }
 }

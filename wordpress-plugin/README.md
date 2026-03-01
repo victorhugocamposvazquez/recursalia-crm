@@ -45,4 +45,28 @@ Crear reseñas y asignarlas a un curso.
 }
 ```
 
+### POST /wp-json/recursalia/v1/course-curriculum
+
+Crear el currículo de un curso (Topics y Lessons) en Tutor LMS Pro. Usa la API de Tutor internamente, evitando problemas de autenticación 403.
+
+```json
+{
+  "course_id": 18207,
+  "author_id": 1,
+  "topics": [
+    {
+      "title": "Módulo 1: Fundamentos",
+      "lessons": [
+        { "title": "Introducción", "content": "<p>Contenido HTML</p>" },
+        { "title": "Conceptos básicos", "content": "<p>...</p>" }
+      ]
+    }
+  ]
+}
+```
+
+**Requisitos:** Tutor LMS Pro, usuario con permisos para editar cursos.
+
+---
+
 Requiere Application Password para autenticación.

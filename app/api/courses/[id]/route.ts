@@ -71,3 +71,26 @@ export async function PATCH(
     return errorResponse('Update course failed', 500, msg);
   }
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { error: authError } = await requireAuthApi();
+  if (authError) return authError;
+
+  try {
+    const { id } = await params;
+
+    const { error } = await getSupabase()
+      .from('courses')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+    return jsonResponse({ deleted: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return errorResponse('Delete course failed', 500, msg);
+  }
+}

@@ -1,13 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './course-detail.module.css';
 import type { CourseRecord, GeneratedCourseStructure } from '@/types';
 
 export default function CourseDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
 
   const [course, setCourse] = useState<CourseRecord | null>(null);
@@ -72,6 +73,26 @@ export default function CourseDetailPage() {
     }
   }
 
+  async function handleDelete() {
+    if (!course) return;
+    const title = course.generated_content?.title ?? course.topic;
+    if (!confirm(`¿Borrar el curso "${title}"? Esta acción no se puede deshacer.`)) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/courses/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.details ?? data.error ?? 'Error al borrar');
+      }
+      router.push('/dashboard/courses');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loading) return <p className={styles.loading}>Cargando...</p>;
   if (error && !course) return <p className={styles.error}>{error}</p>;
   if (!course) return null;
@@ -104,6 +125,9 @@ export default function CourseDetailPage() {
                   {saving ? 'Publicando...' : 'Publicar (WP + Hotmart + Reseñas)'}
                 </button>
               )}
+              <button onClick={handleDelete} disabled={saving} className={styles.btnDanger}>
+                Borrar
+              </button>
             </>
           )}
         </div>
