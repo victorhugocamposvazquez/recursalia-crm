@@ -130,7 +130,7 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
       wp_course_id: wpId ?? course.wp_course_id,
       hotmart_product_id: hotmartId ?? course.hotmart_product_id,
       status,
-      error_log: errorLog ?? course.error_log,
+      error_log: errorLog ?? null,
     })
     .eq('id', courseId)
     .select()
