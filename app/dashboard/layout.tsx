@@ -26,6 +26,9 @@ export default async function DashboardLayout({
           <Link href="/dashboard/courses" className={styles.navLink}>
             Mis cursos
           </Link>
+          <Link href="/dashboard/reviews" className={styles.navLink}>
+            Generar reseñas
+          </Link>
         </nav>
         <div className={styles.user}>
           <span>{user.email}</span>
