@@ -1,6 +1,7 @@
 import type { WpCreateCoursePayload, WpCourseResponse } from '@/types/wordpress';
 import type { GeneratedCourseStructure } from '@/types';
 import { withRetry } from '@/utils/retry';
+import { createCurriculum } from './tutorLmsService';
 
 export interface WpMediaResponse {
   id: number;
@@ -51,7 +52,8 @@ export async function uploadMedia(
 export async function createCourse(
   content: GeneratedCourseStructure,
   hotmartUrl?: string,
-  featuredImageBuffer?: Buffer
+  featuredImageBuffer?: Buffer,
+  woocommerceProductId?: number
 ): Promise<number> {
   const { url, authHeader } = getConfig();
   const htmlContent = buildCourseHtmlContent(content);
@@ -86,7 +88,9 @@ export async function createCourse(
       best_seller: content.badge === 'Best Seller' ? 'si' : 'no',
       ventajas: content.benefits?.length ? 'si' : 'no',
       salary_info: content.highlight ?? '',
-      hotmart_link: hotmartUrl ?? '',
+      salary: content.highlight ?? '',
+      job_bank: content.highlight ? content.highlight : (content.job_bank ? 'si' : 'no'),
+      hotmart_link: typeof hotmartUrl === 'string' ? hotmartUrl : '',
       price_original: String(content.price_original ?? ''),
       price_sale: String(content.price_sale ?? ''),
       certificate: content.certificate ? 'si' : 'no',
@@ -96,6 +100,7 @@ export async function createCourse(
       ...(content.benefits?.length && {
         benefits: JSON.stringify(content.benefits),
       }),
+      ...(woocommerceProductId && { _tutor_course_product_id: String(woocommerceProductId) }),
     },
   };
 
@@ -121,45 +126,9 @@ export async function createCourse(
     { maxRetries: 3, delayMs: 1500 }
   );
 
-  await createTutorCurriculum(courseId, content);
+  if (content.topics?.length) {
+    await createCurriculum(courseId, content);
+  }
 
   return courseId;
-}
-
-const TUTOR_AUTHOR_ID = parseInt(
-  process.env.WORDPRESS_AUTHOR_ID ?? '1',
-  10
-);
-
-async function createTutorCurriculum(
-  courseId: number,
-  content: GeneratedCourseStructure
-): Promise<void> {
-  const { url, authHeader } = getConfig();
-
-  const topics = content.topics.map((t) => ({
-    title: t.title,
-    lessons: t.lessons.map((l) => ({
-      title: l.title,
-      content: l.content,
-    })),
-  }));
-
-  const res = await fetch(`${url}/wp-json/recursalia/v1/course-curriculum`, {
-    method: 'POST',
-    headers: {
-      Authorization: authHeader,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      course_id: courseId,
-      topics,
-      author_id: TUTOR_AUTHOR_ID,
-    }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Course curriculum error ${res.status}: ${text}`);
-  }
 }

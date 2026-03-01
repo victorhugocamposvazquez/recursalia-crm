@@ -3,11 +3,16 @@ import { generateCourseStructure } from './openaiService';
 import { generateReviews } from './openaiReviewsService';
 import { generateCourseFeaturedImage } from './geminiImageService';
 import { createCourse as createWpCourse } from './wordpressService';
+import { createProduct as createWooProduct } from './woocommerceService';
 import { createProduct as createHotmartProduct } from './hotmartService';
 import {
   createReviewCategory,
   createReviews as createSiteReviews,
 } from './siteReviewsService';
+import {
+  createCourseCategory,
+  assignCourseCategory,
+} from './courseCategoryService';
 import type { CourseInputPayload, CourseRecord, CourseStatus } from '@/types';
 
 const REVIEWS_COUNT = parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
@@ -99,9 +104,40 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
     }
   }
 
+  let woocommerceProductId: number | undefined;
+  if (
+    process.env.WOOCOMMERCE_CONSUMER_KEY &&
+    process.env.WOOCOMMERCE_CONSUMER_SECRET
+  ) {
+    try {
+      const regularPrice = content.price_original ?? content.price_sale ?? price;
+      const salePrice =
+        content.price_sale && content.price_sale < (content.price_original ?? Infinity)
+          ? content.price_sale
+          : undefined;
+
+      woocommerceProductId = await createWooProduct({
+        name: content.title,
+        description: content.description,
+        short_description: content.short_description,
+        regular_price: regularPrice,
+        sale_price: salePrice,
+      });
+    } catch (err) {
+      errorLog =
+        (errorLog ?? '') +
+        ` | WooCommerce: ${err instanceof Error ? err.message : String(err)}`;
+    }
+  }
+
   try {
     wpId = String(
-      await createWpCourse(content, hotmartUrl, featuredImageBuffer)
+      await createWpCourse(
+        content,
+        hotmartUrl,
+        featuredImageBuffer,
+        woocommerceProductId
+      )
     );
   } catch (err) {
     errorLog =
@@ -110,10 +146,19 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
   }
 
   if (wpId) {
+    const wpCourseId = Number(wpId);
+    try {
+      const courseCategory = await createCourseCategory(content.title);
+      await assignCourseCategory(wpCourseId, courseCategory.term_id);
+    } catch (err) {
+      errorLog =
+        (errorLog ?? '') +
+        ` | Course category: ${err instanceof Error ? err.message : String(err)}`;
+    }
     try {
       const reviews = await generateReviews(content.title, REVIEWS_COUNT);
-      const category = await createReviewCategory(content.title);
-      await createSiteReviews(Number(wpId), category.slug, reviews);
+      const reviewCategory = await createReviewCategory(content.title);
+      await createSiteReviews(wpCourseId, reviewCategory.slug, reviews);
     } catch (err) {
       errorLog =
         (errorLog ?? '') +

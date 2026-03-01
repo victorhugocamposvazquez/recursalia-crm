@@ -2,13 +2,23 @@
 /**
  * Plugin Name: Recursalia Course API
  * Description: REST API para crear categorías y reseñas de Site Reviews desde el Course SaaS Generator.
- * Version: 1.1.1
+ * Version: 1.2.0
  * Author: Recursalia
  */
 
 if (!defined('ABSPATH')) exit;
 
 add_action('rest_api_init', function () {
+  register_rest_route('recursalia/v1', '/course-category', [
+    'methods' => 'POST',
+    'callback' => 'recursalia_create_course_category',
+    'permission_callback' => 'recursalia_check_auth',
+    'args' => [
+      'name' => ['required' => true, 'type' => 'string'],
+      'slug' => ['required' => false, 'type' => 'string'],
+    ],
+  ]);
+
   register_rest_route('recursalia/v1', '/review-category', [
     'methods' => 'POST',
     'callback' => 'recursalia_create_review_category',
@@ -30,6 +40,16 @@ add_action('rest_api_init', function () {
     ],
   ]);
 
+  register_rest_route('recursalia/v1', '/course-assign-category', [
+    'methods' => 'POST',
+    'callback' => 'recursalia_assign_course_category',
+    'permission_callback' => 'recursalia_check_auth',
+    'args' => [
+      'course_id' => ['required' => true, 'type' => 'integer'],
+      'term_id' => ['required' => true, 'type' => 'integer'],
+    ],
+  ]);
+
   register_rest_route('recursalia/v1', '/course-curriculum', [
     'methods' => 'POST',
     'callback' => 'recursalia_create_course_curriculum',
@@ -44,6 +64,68 @@ add_action('rest_api_init', function () {
 
 function recursalia_check_auth(WP_REST_Request $request) {
   return current_user_can('edit_posts');
+}
+
+function recursalia_create_course_category(WP_REST_Request $request) {
+  $name = sanitize_text_field($request->get_param('name'));
+  $slug = $request->get_param('slug');
+
+  if (empty($name)) {
+    return new WP_Error('invalid', 'Name required', ['status' => 400]);
+  }
+
+  $taxonomy = 'course-category';
+  if (!taxonomy_exists($taxonomy)) {
+    return new WP_Error('taxonomy_missing', 'Tutor LMS course-category taxonomy not found. Is Tutor LMS active?', ['status' => 500]);
+  }
+
+  $slug = $slug ? sanitize_title($slug) : sanitize_title($name);
+  $term = wp_insert_term($name, $taxonomy, ['slug' => $slug]);
+
+  if (is_wp_error($term)) {
+    if ($term->get_error_code() === 'term_exists') {
+      $term_id = $term->get_error_data();
+      $term_obj = get_term($term_id, $taxonomy);
+      return [
+        'term_id' => (int) $term_id,
+        'slug' => $term_obj ? $term_obj->slug : $slug,
+      ];
+    }
+    return new WP_Error('insert_failed', $term->get_error_message(), ['status' => 500]);
+  }
+
+  return [
+    'term_id' => (int) $term['term_id'],
+    'slug' => $slug,
+  ];
+}
+
+function recursalia_assign_course_category(WP_REST_Request $request) {
+  $course_id = (int) $request->get_param('course_id');
+  $term_id = (int) $request->get_param('term_id');
+
+  $taxonomy = 'course-category';
+  if (!taxonomy_exists($taxonomy)) {
+    return new WP_Error('taxonomy_missing', 'course-category taxonomy not found', ['status' => 500]);
+  }
+
+  $term = get_term($term_id, $taxonomy);
+  if (!$term || is_wp_error($term)) {
+    return new WP_Error('term_not_found', 'Category term not found', ['status' => 404]);
+  }
+
+  $post = get_post($course_id);
+  if (!$post || $post->post_type !== 'courses') {
+    return new WP_Error('course_not_found', 'Course not found', ['status' => 404]);
+  }
+
+  $result = wp_set_object_terms($course_id, [$term_id], $taxonomy);
+  if (is_wp_error($result)) {
+    return new WP_Error('assign_failed', $result->get_error_message(), ['status' => 500]);
+  }
+
+  update_post_meta($course_id, 'assigned_term_id', (string) $term_id);
+  return ['assigned' => true];
 }
 
 function recursalia_create_review_category(WP_REST_Request $request) {
@@ -117,7 +199,11 @@ function recursalia_create_reviews(WP_REST_Request $request) {
     }
   }
 
-  wp_set_object_terms($post_id, [(int) $term->term_id], 'site-review-category');
+  // Asociar el curso a la categoría de Site Reviews si la taxonomía lo soporta
+  $tax_obj = get_taxonomy('site-review-category');
+  if ($tax_obj && isset($tax_obj->object_type) && in_array(get_post_type($post_id), (array) $tax_obj->object_type, true)) {
+    wp_set_object_terms($post_id, [(int) $term->term_id], 'site-review-category');
+  }
 
   return ['created' => $created];
 }
@@ -131,8 +217,9 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
     return new WP_Error('invalid', 'topics array required', ['status' => 400]);
   }
 
-  $topic_post_type = post_type_exists('topics') ? 'topics' : (post_type_exists('tutor_topics') ? 'tutor_topics' : 'topics');
-  $lesson_post_type = post_type_exists('tutor_lesson') ? 'tutor_lesson' : (post_type_exists('lesson') ? 'lesson' : 'tutor_lesson');
+  // Tutor LMS: free usa topics/lesson, Pro puede usar tutor_topics/tutor_lesson
+  $topic_post_type = post_type_exists('tutor_topics') ? 'tutor_topics' : (post_type_exists('topics') ? 'topics' : 'topics');
+  $lesson_post_type = post_type_exists('tutor_lesson') ? 'tutor_lesson' : (post_type_exists('lesson') ? 'lesson' : 'lesson');
 
   $created_topics = 0;
   $created_lessons = 0;

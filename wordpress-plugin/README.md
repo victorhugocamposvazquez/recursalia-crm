@@ -14,6 +14,30 @@ Plugin para integrar el Course SaaS Generator con Site Reviews.
 
 ## Endpoints
 
+### POST /wp-json/recursalia/v1/course-category
+
+Crear categoría de curso en Tutor LMS (taxonomía `course-category`).
+
+```json
+{
+  "name": "Diseño Web",
+  "slug": "diseno-web"
+}
+```
+
+Devuelve: `{ "term_id": 123, "slug": "diseno-web" }`
+
+### POST /wp-json/recursalia/v1/course-assign-category
+
+Asignar una categoría existente a un curso.
+
+```json
+{
+  "course_id": 18207,
+  "term_id": 123
+}
+```
+
 ### POST /wp-json/recursalia/v1/review-category
 
 Crear categoría de reseñas para Site Reviews.
