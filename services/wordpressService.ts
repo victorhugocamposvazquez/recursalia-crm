@@ -94,7 +94,6 @@ export async function createCourse(
       price_original: String(content.price_original ?? ''),
       price_sale: String(content.price_sale ?? ''),
       certificate: content.certificate ? 'si' : 'no',
-      job_bank: content.job_bank ? 'si' : 'no',
       author_name: content.author_name ?? '',
       access_level: content.access_level ?? '',
       ...(content.benefits?.length && {
