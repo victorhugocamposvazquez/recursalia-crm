@@ -19,16 +19,7 @@ function getConfig() {
 }
 
 function buildCourseHtmlContent(content: GeneratedCourseStructure): string {
-  const parts: string[] = [content.description];
-
-  for (const topic of content.topics) {
-    parts.push(`<h2>${topic.title}</h2>`);
-    for (const lesson of topic.lessons) {
-      parts.push(`<h3>${lesson.title}</h3>`, lesson.content);
-    }
-  }
-
-  return parts.join('\n');
+  return content.description ?? '';
 }
 
 export async function uploadMedia(
