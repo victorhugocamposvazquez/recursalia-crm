@@ -1,6 +1,7 @@
 import { getSupabase } from '@/lib/supabase';
 import { generateCourseStructure } from './openaiService';
 import { generateReviews } from './openaiReviewsService';
+import { generateCourseFeaturedImage } from './geminiImageService';
 import { createCourse as createWpCourse } from './wordpressService';
 import { createProduct as createHotmartProduct } from './hotmartService';
 import {
@@ -89,8 +90,19 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
 
   const hotmartUrl = hotmartId ? `https://pay.hotmart.com/${hotmartId}` : undefined;
 
+  let featuredImageBuffer: Buffer | undefined;
+  if (process.env.GOOGLE_GEMINI_API_KEY) {
+    try {
+      featuredImageBuffer = await generateCourseFeaturedImage(content);
+    } catch {
+      // Continue without featured image
+    }
+  }
+
   try {
-    wpId = String(await createWpCourse(content, hotmartUrl));
+    wpId = String(
+      await createWpCourse(content, hotmartUrl, featuredImageBuffer)
+    );
   } catch (err) {
     errorLog =
       (errorLog ?? '') +

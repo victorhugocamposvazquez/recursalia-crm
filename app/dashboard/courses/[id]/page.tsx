@@ -43,7 +43,7 @@ export default function CourseDetailPage() {
         body: JSON.stringify({ generated_content: editContent }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Error al guardar');
+      if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al guardar');
       setCourse(data);
       setEditMode(false);
     } catch (err) {
@@ -63,7 +63,7 @@ export default function CourseDetailPage() {
         body: JSON.stringify({ courseId: id }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Error al publicar');
+      if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al publicar');
       setCourse(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));

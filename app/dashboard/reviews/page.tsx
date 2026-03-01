@@ -48,7 +48,7 @@ export default function ReviewsPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Error al generar');
+      if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al generar');
       setReviews(data.reviews ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -74,7 +74,7 @@ export default function ReviewsPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Error al publicar');
+      if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al publicar');
       setError(null);
       alert(`Publicadas ${data.created} reseñas en Site Reviews`);
     } catch (err) {

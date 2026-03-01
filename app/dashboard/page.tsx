@@ -25,7 +25,10 @@ export default function DashboardPage() {
         body: JSON.stringify({ topic, level, avatar, focus }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? 'Error al generar');
+      if (!res.ok) {
+        const msg = data.details ?? data.error ?? 'Error al generar';
+        throw new Error(msg);
+      }
       setResult(data);
       setTopic('');
       setAvatar('');

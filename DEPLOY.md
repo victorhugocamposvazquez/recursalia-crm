@@ -52,6 +52,7 @@ En **Project Settings → Environment Variables** añadir:
 | `WORDPRESS_APP_PASSWORD` | Application Password | All |
 | `HOTMART_CLIENT_ID` | Client ID de Hotmart | All |
 | `HOTMART_CLIENT_SECRET` | Client Secret de Hotmart | All |
+| `GOOGLE_GEMINI_API_KEY` | API key de Google AI (imagen destacada) | All |
 
 ### 4. Deploy
 

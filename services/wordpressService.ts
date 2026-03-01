@@ -2,6 +2,11 @@ import type { WpCreateCoursePayload, WpCourseResponse } from '@/types/wordpress'
 import type { GeneratedCourseStructure } from '@/types';
 import { withRetry } from '@/utils/retry';
 
+export interface WpMediaResponse {
+  id: number;
+  source_url: string;
+}
+
 function getConfig() {
   const url = process.env.WORDPRESS_URL;
   const user = process.env.WORDPRESS_USER;
@@ -26,17 +31,62 @@ function buildCourseHtmlContent(content: GeneratedCourseStructure): string {
   return parts.join('\n');
 }
 
+export async function uploadMedia(
+  buffer: Buffer,
+  filename: string,
+  mimeType: string = 'image/png'
+): Promise<number> {
+  const { url, authHeader } = getConfig();
+
+  const res = await fetch(`${url}/wp-json/wp/v2/media`, {
+    method: 'POST',
+    headers: {
+      Authorization: authHeader,
+      'Content-Type': mimeType,
+      'Content-Disposition': `attachment; filename="${filename}"`,
+    },
+    body: new Uint8Array(buffer),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`WordPress media upload error ${res.status}: ${text}`);
+  }
+
+  const data = (await res.json()) as WpMediaResponse;
+  return data.id;
+}
+
 export async function createCourse(
   content: GeneratedCourseStructure,
-  hotmartUrl?: string
+  hotmartUrl?: string,
+  featuredImageBuffer?: Buffer
 ): Promise<number> {
   const { url, authHeader } = getConfig();
   const htmlContent = buildCourseHtmlContent(content);
+
+  let featuredMediaId: number | undefined;
+  if (featuredImageBuffer && featuredImageBuffer.length > 0) {
+    try {
+      featuredMediaId = await withRetry(
+        () =>
+          uploadMedia(
+            featuredImageBuffer,
+            `course-${Date.now()}.png`,
+            'image/png'
+          ),
+        { maxRetries: 2, delayMs: 1000 }
+      );
+    } catch {
+      // Continue without featured image
+    }
+  }
 
   const payload: WpCreateCoursePayload = {
     title: content.title,
     content: htmlContent,
     status: 'publish',
+    ...(featuredMediaId && { featured_media: featuredMediaId }),
     meta: {
       _tutor_course_settings: JSON.stringify({
         course_title: content.title,
