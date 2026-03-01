@@ -229,6 +229,10 @@ function recursalia_create_reviews(WP_REST_Request $request) {
     wp_set_object_terms($post_id, [(int) $term->term_id], 'site-review-category');
   }
 
+  // Guardar el term_id de Site Reviews en el curso para que el campo "Assigned Term ID" lo muestre
+  update_post_meta($post_id, 'assigned_term_id', (string) $term->term_id);
+  update_post_meta($post_id, 'site_review_term_id', (string) $term->term_id);
+
   return ['created' => $created];
 }
 
@@ -241,9 +245,9 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
     return new WP_Error('invalid', 'topics array required', ['status' => 400]);
   }
 
-  // Tutor LMS: "topics" y "lesson" (free) o "tutor_topics" y "tutor_lesson" (Pro)
-  $topic_post_type = post_type_exists('topics') ? 'topics' : (post_type_exists('tutor_topics') ? 'tutor_topics' : 'topics');
-  $lesson_post_type = post_type_exists('lesson') ? 'lesson' : (post_type_exists('tutor_lesson') ? 'tutor_lesson' : 'lesson');
+  // Tutor Pro usa tutor_topics y tutor_lesson
+  $topic_post_type = post_type_exists('tutor_topics') ? 'tutor_topics' : (post_type_exists('topics') ? 'topics' : 'tutor_topics');
+  $lesson_post_type = post_type_exists('tutor_lesson') ? 'tutor_lesson' : (post_type_exists('lesson') ? 'lesson' : 'tutor_lesson');
 
   $created_topics = 0;
   $created_lessons = 0;

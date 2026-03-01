@@ -65,7 +65,7 @@ async function useRecursaliaPlugin(
   const result = (await res.json()) as { created_topics?: number; created_lessons?: number };
   if (topics.length > 0 && (result.created_topics ?? 0) === 0) {
     throw new Error(
-      `Curriculum: no se crearon temas (se enviaron ${topics.length}). Verifica que Tutor LMS esté activo y los post types "topics"/"lesson" existan.`
+      `Curriculum: no se crearon temas (se enviaron ${topics.length}). En Tutor Pro verifica que los post types "tutor_topics"/"tutor_lesson" existan.`
     );
   }
 }
