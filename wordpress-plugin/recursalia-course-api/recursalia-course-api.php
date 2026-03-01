@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Recursalia Course API
  * Description: REST API para crear categorías y reseñas de Site Reviews desde el Course SaaS Generator.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Recursalia
  */
 
@@ -131,9 +131,12 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
     return new WP_Error('invalid', 'topics array required', ['status' => 400]);
   }
 
-  $server = rest_get_server();
+  $topic_post_type = post_type_exists('topics') ? 'topics' : (post_type_exists('tutor_topics') ? 'tutor_topics' : 'topics');
+  $lesson_post_type = post_type_exists('tutor_lesson') ? 'tutor_lesson' : (post_type_exists('lesson') ? 'lesson' : 'tutor_lesson');
+
   $created_topics = 0;
   $created_lessons = 0;
+  $topic_ids = [];
 
   foreach ($topics as $topic) {
     $topic_title = isset($topic['title']) ? sanitize_text_field($topic['title']) : '';
@@ -146,32 +149,23 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
       $topic_summary = sanitize_text_field($topic_lessons[0]['title']);
     }
 
-    $topic_req = new WP_REST_Request('POST', '/tutor/v1/topics');
-    $topic_req->set_header('Content-Type', 'application/json');
-    $topic_req->set_body_params([
-      'topic_course_id' => $course_id,
-      'topic_title' => $topic_title,
-      'topic_summary' => $topic_summary,
-      'topic_author' => $author_id,
+    $topic_id = wp_insert_post([
+      'post_type' => $topic_post_type,
+      'post_title' => $topic_title,
+      'post_content' => $topic_summary,
+      'post_status' => 'publish',
+      'post_author' => $author_id,
     ]);
 
-    $topic_res = $server->dispatch($topic_req);
-    $topic_status = $topic_res->get_status();
-
-    if ($topic_status < 200 || $topic_status >= 300) {
-      $topic_data = $topic_res->get_data();
-      $msg = is_array($topic_data) && isset($topic_data['message']) ? $topic_data['message'] : $topic_res->get_data();
-      return new WP_Error('tutor_topic_failed', 'Tutor Topic: ' . json_encode($msg), ['status' => $topic_status]);
+    if (is_wp_error($topic_id) || !$topic_id) {
+      return new WP_Error('tutor_topic_failed', 'Failed to create topic: ' . (is_wp_error($topic_id) ? $topic_id->get_error_message() : 'unknown'), ['status' => 500]);
     }
 
-    $topic_data = $topic_res->get_data();
-    $topic_id = is_array($topic_data) && isset($topic_data['ID']) ? (int) $topic_data['ID'] : (isset($topic_data['id']) ? (int) $topic_data['id'] : 0);
-
-    if (!$topic_id) {
-      return new WP_Error('tutor_topic_no_id', 'Tutor did not return topic ID', ['status' => 500]);
-    }
+    update_post_meta($topic_id, '_tutor_course_id', $course_id);
+    update_post_meta($topic_id, 'topic_course_id', $course_id);
 
     $created_topics++;
+    $topic_ids[] = $topic_id;
 
     foreach ($topic_lessons as $lesson) {
       $lesson_title = isset($lesson['title']) ? sanitize_text_field($lesson['title']) : '';
@@ -179,27 +173,32 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
 
       if (empty($lesson_title)) continue;
 
-      $lesson_req = new WP_REST_Request('POST', '/tutor/v1/lessons');
-      $lesson_req->set_header('Content-Type', 'application/json');
-      $lesson_req->set_body_params([
-        'topic_id' => $topic_id,
-        'course_id' => $course_id,
-        'lesson_title' => $lesson_title,
-        'lesson_content' => $lesson_content,
-        'lesson_author' => $author_id,
+      $lesson_id = wp_insert_post([
+        'post_type' => $lesson_post_type,
+        'post_title' => $lesson_title,
+        'post_content' => $lesson_content,
+        'post_status' => 'publish',
+        'post_author' => $author_id,
       ]);
 
-      $lesson_res = $server->dispatch($lesson_req);
-      $lesson_status = $lesson_res->get_status();
-
-      if ($lesson_status < 200 || $lesson_status >= 300) {
-        $lesson_data = $lesson_res->get_data();
-        $msg = is_array($lesson_data) && isset($lesson_data['message']) ? $lesson_data['message'] : $lesson_res->get_data();
-        return new WP_Error('tutor_lesson_failed', 'Tutor Lesson: ' . json_encode($msg), ['status' => $lesson_status]);
+      if (is_wp_error($lesson_id) || !$lesson_id) {
+        continue;
       }
+
+      update_post_meta($lesson_id, '_tutor_course_id', $course_id);
+      update_post_meta($lesson_id, '_tutor_topic_id', $topic_id);
+      update_post_meta($lesson_id, 'topic_id', $topic_id);
+      update_post_meta($lesson_id, 'course_id', $course_id);
 
       $created_lessons++;
     }
+  }
+
+  if (!empty($topic_ids)) {
+    $existing = get_post_meta($course_id, '_tutor_course_topics_ids', true);
+    $ids = is_array($existing) ? $existing : [];
+    $ids = array_unique(array_merge($ids, $topic_ids));
+    update_post_meta($course_id, '_tutor_course_topics_ids', $ids);
   }
 
   return [
