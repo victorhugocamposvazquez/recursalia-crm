@@ -35,7 +35,8 @@ add_action('rest_api_init', function () {
     'permission_callback' => 'recursalia_check_auth',
     'args' => [
       'assigned_post_id' => ['required' => true, 'type' => 'integer'],
-      'category_slug' => ['required' => true, 'type' => 'string'],
+      'category_slug' => ['required' => false, 'type' => 'string'],
+      'category_term_id' => ['required' => false, 'type' => 'integer'],
       'reviews' => ['required' => true, 'type' => 'array'],
     ],
   ]);
@@ -186,16 +187,23 @@ function recursalia_create_review_category(WP_REST_Request $request) {
 
 function recursalia_create_reviews(WP_REST_Request $request) {
   $post_id = (int) $request->get_param('assigned_post_id');
-  $category_slug = sanitize_text_field($request->get_param('category_slug'));
+  $category_slug = sanitize_text_field($request->get_param('category_slug') ?? '');
+  $category_term_id = (int) $request->get_param('category_term_id');
   $reviews = $request->get_param('reviews');
 
   if (!function_exists('glsr_create_review')) {
     return new WP_Error('plugin_missing', 'Site Reviews plugin not active', ['status' => 500]);
   }
 
-  $term = get_term_by('slug', $category_slug, 'site-review-category');
-  if (!$term) {
-    return new WP_Error('category_not_found', 'Review category not found', ['status' => 404]);
+  $term = null;
+  if ($category_term_id > 0) {
+    $term = get_term($category_term_id, 'site-review-category');
+  }
+  if (!$term && !empty($category_slug)) {
+    $term = get_term_by('slug', $category_slug, 'site-review-category');
+  }
+  if (!$term || is_wp_error($term)) {
+    return new WP_Error('category_not_found', 'Review category not found. Provide category_term_id or category_slug.', ['status' => 404]);
   }
 
   $created = 0;
@@ -214,12 +222,17 @@ function recursalia_create_reviews(WP_REST_Request $request) {
       'rating' => $rating,
       'name' => $author,
       'date' => $date,
+      'is_approved' => true,
       'assigned_posts' => [$post_id],
       'assigned_terms' => ['site-review-category' => [$term->term_id]],
     ]);
 
     if ($result && !is_wp_error($result)) {
-      $created++;
+      $review_id = is_object($result) ? ($result->ID ?? $result->id ?? 0) : (int) $result;
+      if ($review_id > 0) {
+        wp_set_object_terms($review_id, [(int) $term->term_id], 'site-review-category');
+        $created++;
+      }
     }
   }
 
@@ -264,12 +277,14 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
       $topic_summary = sanitize_text_field($topic_lessons[0]['title']);
     }
 
+    $topic_order = $created_topics + 1;
     $topic_id = wp_insert_post([
       'post_type' => $topic_post_type,
       'post_title' => $topic_title,
       'post_content' => $topic_summary,
       'post_status' => 'publish',
       'post_author' => $author_id,
+      'menu_order' => $topic_order,
     ]);
 
     if (is_wp_error($topic_id) || !$topic_id) {
@@ -282,7 +297,7 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
     $created_topics++;
     $topic_ids[] = $topic_id;
 
-    foreach ($topic_lessons as $lesson) {
+    foreach ($topic_lessons as $idx => $lesson) {
       $lesson_title = isset($lesson['title']) ? sanitize_text_field($lesson['title']) : '';
       $lesson_content = isset($lesson['content']) ? wp_kses_post($lesson['content']) : '';
 
@@ -294,6 +309,7 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
         'post_content' => $lesson_content,
         'post_status' => 'publish',
         'post_author' => $author_id,
+        'menu_order' => $idx + 1,
       ]);
 
       if (is_wp_error($lesson_id) || !$lesson_id) {
@@ -312,7 +328,7 @@ function recursalia_create_course_curriculum(WP_REST_Request $request) {
   if (!empty($topic_ids)) {
     $existing = get_post_meta($course_id, '_tutor_course_topics_ids', true);
     $ids = is_array($existing) ? $existing : [];
-    $ids = array_unique(array_merge($ids, $topic_ids));
+    $ids = array_values(array_unique(array_merge($ids, $topic_ids)));
     update_post_meta($course_id, '_tutor_course_topics_ids', $ids);
   }
 

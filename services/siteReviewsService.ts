@@ -53,23 +53,28 @@ export async function createReviewCategory(
 export async function createReviews(
   courseId: number,
   categorySlug: string,
-  reviews: GeneratedReview[]
+  reviews: GeneratedReview[],
+  categoryTermId?: number
 ): Promise<{ created: number }> {
   const { url, authHeader } = getConfig();
 
   const result = await withRetry(
     async () => {
+      const body: Record<string, unknown> = {
+        assigned_post_id: courseId,
+        category_slug: categorySlug,
+        reviews,
+      };
+      if (categoryTermId && categoryTermId > 0) {
+        body.category_term_id = categoryTermId;
+      }
       const res = await fetch(`${url}/wp-json/recursalia/v1/reviews`, {
         method: 'POST',
         headers: {
           Authorization: authHeader,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          assigned_post_id: courseId,
-          category_slug: categorySlug,
-          reviews,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {

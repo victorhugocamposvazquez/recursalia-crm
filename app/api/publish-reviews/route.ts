@@ -54,7 +54,8 @@ export async function POST(req: NextRequest) {
     const { created } = await createSiteReviews(
       wpId,
       category.slug,
-      reviews
+      reviews,
+      category.term_id
     );
 
     return jsonResponse({ created, total: reviews.length });

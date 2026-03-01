@@ -158,7 +158,12 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
     try {
       const reviews = await generateReviews(content.title, REVIEWS_COUNT);
       const reviewCategory = await createReviewCategory(content.title);
-      await createSiteReviews(wpCourseId, reviewCategory.slug, reviews);
+      await createSiteReviews(
+        wpCourseId,
+        reviewCategory.slug,
+        reviews,
+        reviewCategory.term_id
+      );
     } catch (err) {
       errorLog =
         (errorLog ?? '') +

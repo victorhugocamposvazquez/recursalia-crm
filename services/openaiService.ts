@@ -38,9 +38,9 @@ Devuelve ÚNICAMENTE un JSON válido con esta estructura exacta (sin markdown ni
   "author_bio": "Biografía corta del autor (1-2 oraciones)",
   "topics": [
     {
-      "title": "🧘‍♀️ Módulo 1: [Nombre con emoji]",
+      "title": "Módulo 1: [Nombre del módulo]",
       "lessons": [
-        {"title": "Título lección", "content": "Contenido HTML (2-4 párrafos con p, ul, li)", "duration_minutes": 15},
+        {"title": "Título lección descriptivo", "content": "Contenido HTML (2-4 párrafos con p, ul, li)", "duration_minutes": 15},
         {"title": "Título lección", "content": "Contenido HTML", "duration_minutes": 15},
         {"title": "Título lección", "content": "Contenido HTML", "duration_minutes": 15},
         {"title": "Título lección", "content": "Contenido HTML", "duration_minutes": 15}
@@ -52,7 +52,8 @@ Devuelve ÚNICAMENTE un JSON válido con esta estructura exacta (sin markdown ni
 
 REGLAS:
 - Exactamente 6 módulos, 4 lecciones por módulo (24 lecciones totales).
-- Cada módulo debe tener emoji en el título (ej: 🧘‍♀️ Módulo 1: Fundamentos).
+- Formato de módulos: "Módulo 1: [Nombre]", "Módulo 2: [Nombre]", etc. (sin emojis en títulos de módulo).
+- Lecciones con títulos descriptivos y concisos (ej: "Origen e historia del yoga", "Principales estilos: Hatha, Vinyasa").
 - benefits: exactamente 4 elementos con iconos variados.
 - Contenido HTML semántico (p, h3, ul, li). Sin markdown.`;
 }
