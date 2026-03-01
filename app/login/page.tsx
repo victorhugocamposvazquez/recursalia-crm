@@ -32,7 +32,7 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>Recursalia panel</h1>
+        <h1>RECURSALIA PANEL</h1>
         <p className="subtitle">Inicia sesión para continuar</p>
 
         <form onSubmit={handleSubmit} className="login-form">
