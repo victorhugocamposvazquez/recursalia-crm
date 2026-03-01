@@ -109,7 +109,7 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
       ` | WordPress: ${err instanceof Error ? err.message : String(err)}`;
   }
 
-  if (wpId && !errorLog) {
+  if (wpId) {
     try {
       const reviews = await generateReviews(content.title, REVIEWS_COUNT);
       const category = await createReviewCategory(content.title);
