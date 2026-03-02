@@ -12,6 +12,8 @@ const TOKEN_URL = 'https://api-sec-vlc.hotmart.com/security/oauth/token';
 const PRODUCTS_URL =
   process.env.HOTMART_PRODUCTS_URL ??
   'https://api-hot-connect.hotmart.com/product/rest/v2/products';
+// Si recibes 401 "Decode token error": verifica en el panel de Hotmart que la app
+// tenga permiso para "Crear producto" y que client_id/secret sean de Producción.
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 
@@ -88,7 +90,6 @@ export async function createProduct(
 
       if (!res.ok) {
         if (res.status === 401) {
-          // Fuerza refresco de token en el siguiente intento del retry.
           cachedToken = null;
         }
         throw new Error(

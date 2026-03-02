@@ -2,13 +2,14 @@
 /**
  * Plugin Name: Recursalia Course API
  * Description: REST API para crear categorías y reseñas de Site Reviews desde el Course SaaS Generator.
- * Version: 2.0.0
+ * Version: 2.1.0
  * Author: Recursalia
  */
 
 if (!defined('ABSPATH')) exit;
 
 add_action('init', 'recursalia_register_course_meta');
+add_filter('glsr_post_types', 'recursalia_allow_courses_for_reviews');
 
 function recursalia_register_course_meta() {
   $meta_fields = [
@@ -109,6 +110,46 @@ add_action('rest_api_init', function () {
 
 function recursalia_check_auth(WP_REST_Request $request) {
   return current_user_can('edit_posts');
+}
+
+function recursalia_allow_courses_for_reviews($post_types) {
+  if (!is_array($post_types)) {
+    $post_types = ['post', 'page'];
+  }
+  if (!in_array('courses', $post_types, true)) {
+    $post_types[] = 'courses';
+  }
+  return $post_types;
+}
+
+function recursalia_assign_review_to_post($review_id, $post_id) {
+  global $wpdb;
+  $table = $wpdb->prefix . 'glsr_assigned_posts';
+  if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) !== $table) {
+    return;
+  }
+  $cols = $wpdb->get_col('DESCRIBE ' . esc_sql($table), 0);
+  $review_id = (int) $review_id;
+  $post_id = (int) $post_id;
+  if (in_array('assignable_id', $cols, true) && in_array('assignable_type', $cols, true)) {
+    $wpdb->query($wpdb->prepare(
+      "INSERT IGNORE INTO `{$table}` (review_id, assignable_type, assignable_id) VALUES (%d, 'post', %d)",
+      $review_id,
+      $post_id
+    ));
+  } elseif (in_array('post_id', $cols, true)) {
+    $wpdb->query($wpdb->prepare(
+      "INSERT IGNORE INTO `{$table}` (review_id, post_id) VALUES (%d, %d)",
+      $review_id,
+      $post_id
+    ));
+  } else {
+    $wpdb->query($wpdb->prepare(
+      "INSERT IGNORE INTO `{$table}` (review_id, assignable_id) VALUES (%d, %d)",
+      $review_id,
+      $post_id
+    ));
+  }
 }
 
 function recursalia_create_course_category(WP_REST_Request $request) {
@@ -266,6 +307,9 @@ function recursalia_create_reviews(WP_REST_Request $request) {
       $review_id = is_object($result) ? ($result->ID ?? $result->id ?? 0) : (int) $result;
       if ($review_id > 0) {
         wp_set_object_terms($review_id, [(int) $term->term_id], 'site-review-category');
+        update_post_meta($review_id, '_glsr_assigned_posts', [$post_id]);
+        update_post_meta($review_id, 'assigned_posts', [$post_id]);
+        recursalia_assign_review_to_post($review_id, $post_id);
         $created++;
       }
     }
