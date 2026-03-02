@@ -240,8 +240,15 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
     }
   }
 
-  const status: CourseStatus =
-    wpId && hotmartId ? 'published' : errorLog ? 'error' : 'draft';
+  const status: CourseStatus = wpId ? 'published' : 'error';
+
+  if (wpId) {
+    await setProgress('Publicacion completada.');
+  }
+
+  const finalLog = errorLog
+    ? progressLines.join('\n') + '\n--- ERRORES ---\n' + errorLog
+    : progressLines.join('\n');
 
   const { data: updated, error: updateError } = await supabase
     .from('courses')
@@ -249,7 +256,7 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
       wp_course_id: wpId ?? course.wp_course_id,
       hotmart_product_id: hotmartId ?? course.hotmart_product_id,
       status,
-      error_log: status === 'published' ? null : errorLog ?? progressLines.join('\n'),
+      error_log: finalLog,
     })
     .eq('id', courseId)
     .select()

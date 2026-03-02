@@ -1,7 +1,7 @@
 /**
  * Servicio para crear currículo (temarios) en Tutor LMS.
- * Usa la API REST de Tutor Pro primero (para que aparezca en el Maquetador de cursos),
- * con fallback al plugin Recursalia.
+ * Usa el plugin Recursalia primero (que establece post_parent correctamente),
+ * con fallback a la API REST de Tutor Pro.
  */
 
 import type { GeneratedCourseStructure } from '@/types';
@@ -28,10 +28,67 @@ export async function createCurriculum(
   const topics = content.topics ?? [];
   if (!topics.length) return;
 
+  const pluginOk = await useRecursaliaPlugin(url, authHeader, courseId, content);
+  if (pluginOk) return;
+
   const tutorOk = await tryTutorProApi(url, authHeader, courseId, topics);
   if (tutorOk) return;
 
-  await useRecursaliaPlugin(url, authHeader, courseId, content);
+  throw new Error(
+    'Curriculum: ni el plugin Recursalia ni la API de Tutor Pro pudieron crear el temario.'
+  );
+}
+
+async function useRecursaliaPlugin(
+  baseUrl: string,
+  authHeader: string,
+  courseId: number,
+  content: GeneratedCourseStructure
+): Promise<boolean> {
+  try {
+    const topics = content.topics.map((t) => ({
+      title: t.title,
+      lessons: t.lessons.map((l) => ({
+        title: l.title,
+        content: l.content,
+      })),
+    }));
+
+    const res = await fetch(`${baseUrl}/wp-json/recursalia/v1/course-curriculum`, {
+      method: 'POST',
+      headers: {
+        Authorization: authHeader,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        course_id: courseId,
+        topics,
+        author_id: TUTOR_AUTHOR_ID,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(`Recursalia plugin curriculum error ${res.status}: ${text}`);
+      return false;
+    }
+
+    const result = (await res.json()) as {
+      created_topics?: number;
+      created_lessons?: number;
+      topic_ids?: number[];
+    };
+
+    if ((result.created_topics ?? 0) === 0 && topics.length > 0) {
+      console.error('Recursalia plugin: 0 topics creados');
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('Recursalia plugin curriculum exception:', err);
+    return false;
+  }
 }
 
 async function tryTutorProApi(
@@ -84,45 +141,5 @@ async function tryTutorProApi(
     return true;
   } catch {
     return false;
-  }
-}
-
-async function useRecursaliaPlugin(
-  baseUrl: string,
-  authHeader: string,
-  courseId: number,
-  content: GeneratedCourseStructure
-): Promise<void> {
-  const topics = content.topics.map((t) => ({
-    title: t.title,
-    lessons: t.lessons.map((l) => ({
-      title: l.title,
-      content: l.content,
-    })),
-  }));
-
-  const res = await fetch(`${baseUrl}/wp-json/recursalia/v1/course-curriculum`, {
-    method: 'POST',
-    headers: {
-      Authorization: authHeader,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      course_id: courseId,
-      topics,
-      author_id: TUTOR_AUTHOR_ID,
-    }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Course curriculum error ${res.status}: ${text}`);
-  }
-
-  const result = (await res.json()) as { created_topics?: number; created_lessons?: number };
-  if (topics.length > 0 && (result.created_topics ?? 0) === 0) {
-    throw new Error(
-      `Curriculum: no se crearon temas (se enviaron ${topics.length}). En Tutor Pro verifica que los post types "tutor_topics"/"tutor_lesson" existan.`
-    );
   }
 }

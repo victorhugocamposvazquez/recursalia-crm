@@ -47,16 +47,15 @@ async function getAccessToken(): Promise<string> {
 
   const data = (await res.json()) as HotmartTokenResponse;
   const rawToken = String(data.access_token ?? '').trim();
-  const normalizedToken = decodeURIComponent(rawToken);
-  if (!normalizedToken) {
+  if (!rawToken) {
     throw new Error('Hotmart OAuth token is empty');
   }
   cachedToken = {
-    token: normalizedToken,
+    token: rawToken,
     expiresAt: Date.now() + data.expires_in * 1000,
   };
 
-  return normalizedToken;
+  return rawToken;
 }
 
 export async function createProduct(
@@ -64,8 +63,6 @@ export async function createProduct(
   description: string,
   price: number
 ): Promise<string> {
-  const token = await getAccessToken();
-
   const payload: HotmartCreateProductPayload = {
     name,
     description,
@@ -75,6 +72,7 @@ export async function createProduct(
 
   const result = await withRetry(
     async () => {
+      const token = await getAccessToken();
       const res = await fetch(PRODUCTS_URL, {
         method: 'POST',
         headers: {
@@ -89,6 +87,10 @@ export async function createProduct(
       };
 
       if (!res.ok) {
+        if (res.status === 401) {
+          // Fuerza refresco de token en el siguiente intento del retry.
+          cachedToken = null;
+        }
         throw new Error(
           `Hotmart API error ${res.status}: ${JSON.stringify(data)}`
         );
