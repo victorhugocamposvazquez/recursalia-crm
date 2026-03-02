@@ -135,6 +135,97 @@
   margin: 0 0 0.5rem;
 }
 
+.hotmartSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.hotmartCard {
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+
+.hotmartCardTitle {
+  font-size: 1rem;
+  color: #e2e8f0;
+  margin: 0 0 0.5rem;
+}
+
+.hotmartNote {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0 0 1rem;
+}
+
+.hotmartRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.hotmartInput {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.copyRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.copyLabel {
+  flex: 0 0 120px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.copyValue {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #e2e8f0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copyBtn {
+  flex-shrink: 0;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.2);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  cursor: pointer;
+}
+
+.copyBtn:hover {
+  background: rgba(99, 102, 241, 0.3);
+}
+
+.hotmartLink {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #818cf8;
+  text-decoration: none;
+}
+
+.hotmartLink:hover {
+  text-decoration: underline;
+}
+
 .noContent {
   color: #94a3b8;
   padding: 2rem 0;

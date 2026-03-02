@@ -18,6 +18,8 @@ export default function CourseDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [editContent, setEditContent] = useState<GeneratedCourseStructure | null>(null);
+  const [hotmartLinkInput, setHotmartLinkInput] = useState('');
+  const [savingHotmart, setSavingHotmart] = useState(false);
   const publishPollRef = useRef<number | null>(null);
 
   const fetchCourse = useCallback(
@@ -26,6 +28,8 @@ export default function CourseDetailPage() {
       const data = await res.json();
       if (res.ok) {
         setCourse(data);
+        const link = data.hotmart_product_id;
+        setHotmartLinkInput(typeof link === 'string' && link.startsWith('http') ? link : '');
         if (syncEditContent) {
           setEditContent(data.generated_content);
         }
@@ -150,7 +154,7 @@ export default function CourseDetailPage() {
               </button>
               {course.status !== 'published' && (
                 <button onClick={handlePublish} disabled={saving} className={styles.btnPrimary}>
-                  {saving ? 'Publicando...' : 'Publicar (WP + Hotmart + Reseñas)'}
+                  {saving ? 'Publicando...' : 'Publicar (WordPress + WooCommerce + Reseñas)'}
                 </button>
               )}
               <button onClick={handleDelete} disabled={saving} className={styles.btnDanger}>
@@ -174,8 +178,103 @@ export default function CourseDetailPage() {
       {course.wp_course_id && (
         <p className={styles.metaLine}>WordPress ID: {course.wp_course_id}</p>
       )}
-      {course.hotmart_product_id && (
-        <p className={styles.metaLine}>Hotmart ID: {course.hotmart_product_id}</p>
+
+      {!editMode && course.wp_course_id && content && (
+        <section className={styles.hotmartSection}>
+          <div className={styles.hotmartCard}>
+            <h3 className={styles.hotmartCardTitle}>Enlace de pago Hotmart</h3>
+            <p className={styles.hotmartNote}>
+              Crea el producto en Hotmart y pega aquí el enlace de pago; se guardará en el curso de WordPress.
+            </p>
+            <div className={styles.hotmartRow}>
+              <input
+                type="url"
+                className={styles.hotmartInput}
+                placeholder="https://pay.hotmart.com/..."
+                value={hotmartLinkInput}
+                onChange={(e) => setHotmartLinkInput(e.target.value)}
+              />
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                disabled={savingHotmart || !hotmartLinkInput.trim()}
+                onClick={async () => {
+                  setSavingHotmart(true);
+                  setError(null);
+                  try {
+                    const res = await fetch(`/api/courses/${id}/hotmart-link`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ url: hotmartLinkInput.trim() }),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al guardar');
+                    setCourse(data);
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : String(err));
+                  } finally {
+                    setSavingHotmart(false);
+                  }
+                }}
+              >
+                {savingHotmart ? 'Guardando...' : 'Guardar en WordPress'}
+              </button>
+            </div>
+          </div>
+          <div className={styles.hotmartCard}>
+            <h3 className={styles.hotmartCardTitle}>Datos para copiar en Hotmart</h3>
+            <p className={styles.hotmartNote}>
+              Copia cada campo y pégalo al crear el producto en Hotmart para ir más rápido.
+            </p>
+            <div className={styles.copyRow}>
+              <span className={styles.copyLabel}>Título</span>
+              <span className={styles.copyValue}>{content.title}</span>
+              <button
+                type="button"
+                className={styles.copyBtn}
+                onClick={() => navigator.clipboard.writeText(content.title)}
+              >
+                Copiar
+              </button>
+            </div>
+            <div className={styles.copyRow}>
+              <span className={styles.copyLabel}>Descripción breve</span>
+              <span className={styles.copyValue}>{content.short_description || '—'}</span>
+              <button
+                type="button"
+                className={styles.copyBtn}
+                onClick={() => navigator.clipboard.writeText(content.short_description ?? '')}
+              >
+                Copiar
+              </button>
+            </div>
+            <div className={styles.copyRow}>
+              <span className={styles.copyLabel}>Precio ($)</span>
+              <span className={styles.copyValue}>
+                {content.price_sale ?? content.price_original ?? '—'}
+              </span>
+              <button
+                type="button"
+                className={styles.copyBtn}
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    String(content.price_sale ?? content.price_original ?? '')
+                  )
+                }
+              >
+                Copiar
+              </button>
+            </div>
+            <a
+              href="https://app.hotmart.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.hotmartLink}
+            >
+              Crear producto en Hotmart →
+            </a>
+          </div>
+        </section>
       )}
       {course.error_log && (
         <p className={isPublishing ? styles.progressLog : styles.errorLog}>

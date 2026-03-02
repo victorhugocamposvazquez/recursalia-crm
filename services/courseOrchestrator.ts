@@ -4,7 +4,6 @@ import { generateReviews } from './openaiReviewsService';
 import { generateCourseFeaturedImage } from './geminiImageService';
 import { createCourse as createWpCourse } from './wordpressService';
 import { createProduct as createWooProduct } from './woocommerceService';
-import { createProduct as createHotmartProduct } from './hotmartService';
 import {
   createReviewCategory,
   createReviews as createSiteReviews,
@@ -81,7 +80,6 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
   }
 
   let wpId: string | null = null;
-  let hotmartId: string | null = null;
   let errorLog: string | null = null;
   let retryProduct = false;
   let retryCurriculum = false;
@@ -101,21 +99,6 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
   await setProgress('Iniciando publicacion...');
 
   const price = content.price_sale ?? content.price_original ?? 99.99;
-
-  await setProgress('Creando producto en Hotmart...');
-  try {
-    hotmartId = await createHotmartProduct(
-      content.title,
-      content.description,
-      price
-    );
-    await setProgress(`Hotmart OK (id: ${hotmartId})`);
-  } catch (err) {
-    errorLog = `Hotmart: ${err instanceof Error ? err.message : String(err)}`;
-    await setProgress('Hotmart fallo. Se continua con WordPress.');
-  }
-
-  const hotmartUrl = hotmartId ? `https://pay.hotmart.com/${hotmartId}` : undefined;
 
   let featuredImageBuffer: Buffer | undefined;
   if (process.env.GOOGLE_GEMINI_API_KEY) {
@@ -162,7 +145,7 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
     wpId = String(
       await createWpCourse(
         content,
-        hotmartUrl,
+        undefined,
         featuredImageBuffer,
         woocommerceProductId
       )
@@ -254,7 +237,6 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
     .from('courses')
     .update({
       wp_course_id: wpId ?? course.wp_course_id,
-      hotmart_product_id: hotmartId ?? course.hotmart_product_id,
       status,
       error_log: finalLog,
     })
