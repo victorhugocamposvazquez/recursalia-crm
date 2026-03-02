@@ -13,6 +13,7 @@ import {
   createCourseCategory,
   assignCourseCategory,
 } from './courseCategoryService';
+import { PartialPublishError } from '@/utils/partialPublishError';
 import type { CourseInputPayload, CourseRecord, CourseStatus } from '@/types';
 
 const REVIEWS_COUNT = parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
@@ -140,9 +141,15 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
       )
     );
   } catch (err) {
-    errorLog =
-      (errorLog ?? '') +
-      ` | WordPress: ${err instanceof Error ? err.message : String(err)}`;
+    if (err instanceof PartialPublishError) {
+      wpId = String(err.courseId);
+      errorLog =
+        (errorLog ?? '') + ` | WordPress: ${err.message}`;
+    } else {
+      errorLog =
+        (errorLog ?? '') +
+        ` | WordPress: ${err instanceof Error ? err.message : String(err)}`;
+    }
   }
 
   if (wpId) {

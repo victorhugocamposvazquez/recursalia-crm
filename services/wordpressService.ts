@@ -1,6 +1,7 @@
 import type { WpCreateCoursePayload, WpCourseResponse } from '@/types/wordpress';
 import type { GeneratedCourseStructure } from '@/types';
 import { withRetry } from '@/utils/retry';
+import { PartialPublishError } from '@/utils/partialPublishError';
 import { createCurriculum } from './tutorLmsService';
 import { setCourseProduct } from './wordpressCourseMetaService';
 
@@ -125,12 +126,26 @@ export async function createCourse(
     { maxRetries: 3, delayMs: 1500 }
   );
 
+  const errors: string[] = [];
+
   if (woocommerceProductId) {
-    await setCourseProduct(courseId, woocommerceProductId);
+    try {
+      await setCourseProduct(courseId, woocommerceProductId);
+    } catch (err) {
+      errors.push(`Producto: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
 
   if (content.topics?.length) {
-    await createCurriculum(courseId, content);
+    try {
+      await createCurriculum(courseId, content);
+    } catch (err) {
+      errors.push(`Temario: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new PartialPublishError(errors.join(' | '), courseId);
   }
 
   return courseId;
