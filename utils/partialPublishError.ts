@@ -5,7 +5,9 @@
 export class PartialPublishError extends Error {
   constructor(
     message: string,
-    public readonly courseId: number
+    public readonly courseId: number,
+    public readonly productFailed: boolean = false,
+    public readonly curriculumFailed: boolean = false
   ) {
     super(message);
     this.name = 'PartialPublishError';

@@ -127,11 +127,14 @@ export async function createCourse(
   );
 
   const errors: string[] = [];
+  let productFailed = false;
+  let curriculumFailed = false;
 
   if (woocommerceProductId) {
     try {
       await setCourseProduct(courseId, woocommerceProductId);
     } catch (err) {
+      productFailed = true;
       errors.push(`Producto: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
@@ -140,12 +143,18 @@ export async function createCourse(
     try {
       await createCurriculum(courseId, content);
     } catch (err) {
+      curriculumFailed = true;
       errors.push(`Temario: ${err instanceof Error ? err.message : String(err)}`);
     }
   }
 
   if (errors.length > 0) {
-    throw new PartialPublishError(errors.join(' | '), courseId);
+    throw new PartialPublishError(
+      errors.join(' | '),
+      courseId,
+      productFailed,
+      curriculumFailed
+    );
   }
 
   return courseId;

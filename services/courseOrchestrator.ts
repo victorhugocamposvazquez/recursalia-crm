@@ -14,6 +14,8 @@ import {
   assignCourseCategory,
 } from './courseCategoryService';
 import { PartialPublishError } from '@/utils/partialPublishError';
+import { setCourseProduct } from './wordpressCourseMetaService';
+import { createCurriculum } from './tutorLmsService';
 import type { CourseInputPayload, CourseRecord, CourseStatus } from '@/types';
 
 const REVIEWS_COUNT = parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
@@ -81,6 +83,8 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
   let wpId: string | null = null;
   let hotmartId: string | null = null;
   let errorLog: string | null = null;
+  let retryProduct = false;
+  let retryCurriculum = false;
 
   const price = content.price_sale ?? content.price_original ?? 99.99;
 
@@ -143,6 +147,8 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
   } catch (err) {
     if (err instanceof PartialPublishError) {
       wpId = String(err.courseId);
+      retryProduct = err.productFailed;
+      retryCurriculum = err.curriculumFailed;
       errorLog =
         (errorLog ?? '') + ` | WordPress: ${err.message}`;
     } else {
@@ -154,6 +160,24 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
 
   if (wpId) {
     const wpCourseId = Number(wpId);
+    if (retryProduct && woocommerceProductId) {
+      try {
+        await setCourseProduct(wpCourseId, woocommerceProductId);
+      } catch (err) {
+        errorLog =
+          (errorLog ?? '') +
+          ` | Retry product: ${err instanceof Error ? err.message : String(err)}`;
+      }
+    }
+    if (retryCurriculum && content.topics?.length) {
+      try {
+        await createCurriculum(wpCourseId, content);
+      } catch (err) {
+        errorLog =
+          (errorLog ?? '') +
+          ` | Retry curriculum: ${err instanceof Error ? err.message : String(err)}`;
+      }
+    }
     try {
       const courseCategory = await createCourseCategory(content.title);
       await assignCourseCategory(wpCourseId, courseCategory.term_id);

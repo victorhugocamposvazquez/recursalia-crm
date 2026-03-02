@@ -11,29 +11,38 @@ const TOKEN_URL = 'https://api-sec-vlc.hotmart.com/security/oauth/token';
 // Alternativa: https://api-hot-connect.hotmart.com/product/rest/v2/products
 const PRODUCTS_URL =
   process.env.HOTMART_PRODUCTS_URL ??
-  'https://developers.hotmart.com/payments/api/v1/products';
+  'https://api-hot-connect.hotmart.com/product/rest/v2/products';
 
 let cachedToken: { token: string; expiresAt: number } | null = null;
 
 async function getAccessToken(): Promise<string> {
+  if (!HOTMART_CLIENT_ID || !HOTMART_CLIENT_SECRET) {
+    throw new Error('Hotmart env vars required: HOTMART_CLIENT_ID, HOTMART_CLIENT_SECRET');
+  }
+
   if (cachedToken && Date.now() < cachedToken.expiresAt - 60000) {
     return cachedToken.token;
   }
 
+  const basicAuth = Buffer.from(
+    `${HOTMART_CLIENT_ID}:${HOTMART_CLIENT_SECRET}`
+  ).toString('base64');
   const body = new URLSearchParams({
     grant_type: 'client_credentials',
-    client_id: HOTMART_CLIENT_ID,
-    client_secret: HOTMART_CLIENT_SECRET,
   });
 
   const res = await fetch(TOKEN_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {
+      Authorization: `Basic ${basicAuth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
     body: body.toString(),
   });
 
   if (!res.ok) {
-    throw new Error(`Hotmart OAuth failed: ${res.status}`);
+    const text = await res.text();
+    throw new Error(`Hotmart OAuth failed: ${res.status} - ${text}`);
   }
 
   const data = (await res.json()) as HotmartTokenResponse;
