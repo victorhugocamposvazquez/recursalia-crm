@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './course-detail.module.css';
@@ -14,24 +14,37 @@ export default function CourseDetailPage() {
   const [course, setCourse] = useState<CourseRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [editContent, setEditContent] = useState<GeneratedCourseStructure | null>(null);
+  const publishPollRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    async function fetchCourse() {
+  const fetchCourse = useCallback(
+    async (syncEditContent: boolean = false) => {
       const res = await fetch(`/api/courses/${id}`);
       const data = await res.json();
       if (res.ok) {
         setCourse(data);
-        setEditContent(data.generated_content);
+        if (syncEditContent) {
+          setEditContent(data.generated_content);
+        }
       } else {
         setError('Curso no encontrado');
       }
       setLoading(false);
-    }
-    fetchCourse();
-  }, [id]);
+    },
+    [id]
+  );
+
+  useEffect(() => {
+    fetchCourse(true);
+    return () => {
+      if (publishPollRef.current) {
+        window.clearInterval(publishPollRef.current);
+      }
+    };
+  }, [fetchCourse]);
 
   async function handleSave() {
     if (!editContent) return;
@@ -56,7 +69,16 @@ export default function CourseDetailPage() {
 
   async function handlePublish() {
     setSaving(true);
+    setIsPublishing(true);
     setError(null);
+    if (publishPollRef.current) {
+      window.clearInterval(publishPollRef.current);
+    }
+    publishPollRef.current = window.setInterval(() => {
+      fetchCourse(false).catch(() => {
+        // Ignore transient polling errors
+      });
+    }, 1200);
     try {
       const res = await fetch('/api/publish-course', {
         method: 'POST',
@@ -69,6 +91,12 @@ export default function CourseDetailPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
+      if (publishPollRef.current) {
+        window.clearInterval(publishPollRef.current);
+        publishPollRef.current = null;
+      }
+      await fetchCourse(false);
+      setIsPublishing(false);
       setSaving(false);
     }
   }
@@ -150,7 +178,12 @@ export default function CourseDetailPage() {
         <p className={styles.metaLine}>Hotmart ID: {course.hotmart_product_id}</p>
       )}
       {course.error_log && (
-        <p className={styles.errorLog}>{course.error_log}</p>
+        <p className={isPublishing ? styles.progressLog : styles.errorLog}>
+          {course.error_log}
+        </p>
+      )}
+      {isPublishing && !course.error_log && (
+        <p className={styles.metaLine}>Iniciando publicacion...</p>
       )}
 
       {!content ? (

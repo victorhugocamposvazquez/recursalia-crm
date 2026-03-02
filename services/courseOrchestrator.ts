@@ -85,17 +85,34 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
   let errorLog: string | null = null;
   let retryProduct = false;
   let retryCurriculum = false;
+  const progressLines: string[] = [];
+
+  const setProgress = async (message: string) => {
+    const line = `[${new Date().toLocaleTimeString('es-ES', {
+      hour12: false,
+    })}] ${message}`;
+    progressLines.push(line);
+    await supabase
+      .from('courses')
+      .update({ error_log: progressLines.join('\n') })
+      .eq('id', courseId);
+  };
+
+  await setProgress('Iniciando publicacion...');
 
   const price = content.price_sale ?? content.price_original ?? 99.99;
 
+  await setProgress('Creando producto en Hotmart...');
   try {
     hotmartId = await createHotmartProduct(
       content.title,
       content.description,
       price
     );
+    await setProgress(`Hotmart OK (id: ${hotmartId})`);
   } catch (err) {
     errorLog = `Hotmart: ${err instanceof Error ? err.message : String(err)}`;
+    await setProgress('Hotmart fallo. Se continua con WordPress.');
   }
 
   const hotmartUrl = hotmartId ? `https://pay.hotmart.com/${hotmartId}` : undefined;
@@ -114,6 +131,7 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
     process.env.WOOCOMMERCE_CONSUMER_KEY &&
     process.env.WOOCOMMERCE_CONSUMER_SECRET
   ) {
+    await setProgress('Creando producto en WooCommerce...');
     try {
       const regularPrice = content.price_original ?? content.price_sale ?? price;
       const salePrice =
@@ -128,13 +146,18 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
         regular_price: regularPrice,
         sale_price: salePrice,
       });
+      await setProgress(`WooCommerce OK (id: ${woocommerceProductId})`);
     } catch (err) {
       errorLog =
         (errorLog ?? '') +
         ` | WooCommerce: ${err instanceof Error ? err.message : String(err)}`;
+      await setProgress('WooCommerce fallo. Se creara el curso igualmente.');
     }
+  } else {
+    await setProgress('WooCommerce omitido (faltan credenciales).');
   }
 
+  await setProgress('Publicando curso en WordPress...');
   try {
     wpId = String(
       await createWpCourse(
@@ -144,6 +167,7 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
         woocommerceProductId
       )
     );
+    await setProgress(`WordPress OK (id: ${wpId})`);
   } catch (err) {
     if (err instanceof PartialPublishError) {
       wpId = String(err.courseId);
@@ -151,41 +175,53 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
       retryCurriculum = err.curriculumFailed;
       errorLog =
         (errorLog ?? '') + ` | WordPress: ${err.message}`;
+      await setProgress(`WordPress parcial (id: ${wpId}). Reintentando tareas...`);
     } else {
       errorLog =
         (errorLog ?? '') +
         ` | WordPress: ${err instanceof Error ? err.message : String(err)}`;
+      await setProgress('WordPress fallo. No se pueden continuar categorias/resenas.');
     }
   }
 
   if (wpId) {
     const wpCourseId = Number(wpId);
     if (retryProduct && woocommerceProductId) {
+      await setProgress('Reintentando asociar producto al curso...');
       try {
         await setCourseProduct(wpCourseId, woocommerceProductId);
+        await setProgress('Asociacion de producto OK.');
       } catch (err) {
         errorLog =
           (errorLog ?? '') +
           ` | Retry product: ${err instanceof Error ? err.message : String(err)}`;
+        await setProgress('Reintento de producto fallo.');
       }
     }
     if (retryCurriculum && content.topics?.length) {
+      await setProgress('Reintentando crear temario...');
       try {
         await createCurriculum(wpCourseId, content);
+        await setProgress('Temario OK.');
       } catch (err) {
         errorLog =
           (errorLog ?? '') +
           ` | Retry curriculum: ${err instanceof Error ? err.message : String(err)}`;
+        await setProgress('Reintento de temario fallo.');
       }
     }
+    await setProgress('Creando y asignando categoria del curso...');
     try {
       const courseCategory = await createCourseCategory(content.title);
       await assignCourseCategory(wpCourseId, courseCategory.term_id);
+      await setProgress(`Categoria de curso OK (term_id: ${courseCategory.term_id}).`);
     } catch (err) {
       errorLog =
         (errorLog ?? '') +
         ` | Course category: ${err instanceof Error ? err.message : String(err)}`;
+      await setProgress('Categoria de curso fallo.');
     }
+    await setProgress('Generando y publicando resenas...');
     try {
       const reviews = await generateReviews(content.title, REVIEWS_COUNT);
       const reviewCategory = await createReviewCategory(content.title);
@@ -195,10 +231,12 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
         reviews,
         reviewCategory.term_id
       );
+      await setProgress(`Resenas OK (categoria term_id: ${reviewCategory.term_id}).`);
     } catch (err) {
       errorLog =
         (errorLog ?? '') +
         ` | Site Reviews: ${err instanceof Error ? err.message : String(err)}`;
+      await setProgress('Resenas/Site Reviews fallo.');
     }
   }
 
@@ -211,7 +249,7 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
       wp_course_id: wpId ?? course.wp_course_id,
       hotmart_product_id: hotmartId ?? course.hotmart_product_id,
       status,
-      error_log: errorLog ?? null,
+      error_log: status === 'published' ? null : errorLog ?? progressLines.join('\n'),
     })
     .eq('id', courseId)
     .select()
