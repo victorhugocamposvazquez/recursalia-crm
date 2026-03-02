@@ -46,12 +46,17 @@ async function getAccessToken(): Promise<string> {
   }
 
   const data = (await res.json()) as HotmartTokenResponse;
+  const rawToken = String(data.access_token ?? '').trim();
+  const normalizedToken = decodeURIComponent(rawToken);
+  if (!normalizedToken) {
+    throw new Error('Hotmart OAuth token is empty');
+  }
   cachedToken = {
-    token: data.access_token,
+    token: normalizedToken,
     expiresAt: Date.now() + data.expires_in * 1000,
   };
 
-  return data.access_token;
+  return normalizedToken;
 }
 
 export async function createProduct(
