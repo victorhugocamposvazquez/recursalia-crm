@@ -3,36 +3,26 @@ import path from 'path';
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
+import { expandCourseForEbook } from '@/services/openaiEbookService';
 import { generateCoursePdf } from '@/utils/generateCoursePdf';
+import type { GeneratedCourseStructure } from '@/types';
 
 function loadLogos() {
-  const logosDir = path.join(process.cwd(), 'public', 'logos');
+  const dir = path.join(process.cwd(), 'public', 'logos');
   let recursalia: Uint8Array | undefined;
   let hotmart: Uint8Array | undefined;
-  let recursaliaIsPng = true;
-  let hotmartIsPng = true;
-  try {
-    if (existsSync(path.join(logosDir, 'recursalia.png'))) {
-      recursalia = new Uint8Array(readFileSync(path.join(logosDir, 'recursalia.png')));
-    } else if (existsSync(path.join(logosDir, 'recursalia.jpg'))) {
-      recursalia = new Uint8Array(readFileSync(path.join(logosDir, 'recursalia.jpg')));
-      recursaliaIsPng = false;
-    }
-  } catch {
-    // ignorar
+
+  for (const name of ['recursalia.png', 'recursalia.jpg', 'recursalia.jpeg']) {
+    const p = path.join(dir, name);
+    if (existsSync(p)) { recursalia = new Uint8Array(readFileSync(p)); break; }
   }
-  try {
-    if (existsSync(path.join(logosDir, 'hotmart.png'))) {
-      hotmart = new Uint8Array(readFileSync(path.join(logosDir, 'hotmart.png')));
-    } else if (existsSync(path.join(logosDir, 'hotmart.jpg'))) {
-      hotmart = new Uint8Array(readFileSync(path.join(logosDir, 'hotmart.jpg')));
-      hotmartIsPng = false;
-    }
-  } catch {
-    // ignorar
+  for (const name of ['hotmart.png', 'hotmart.jpg', 'hotmart.jpeg']) {
+    const p = path.join(dir, name);
+    if (existsSync(p)) { hotmart = new Uint8Array(readFileSync(p)); break; }
   }
+
   if (!recursalia && !hotmart) return undefined;
-  return { recursalia, hotmart, recursaliaIsPng, hotmartIsPng };
+  return { recursalia, hotmart };
 }
 
 export async function GET(
@@ -54,10 +44,17 @@ export async function GET(
       return new Response('Curso no encontrado o sin contenido', { status: 404 });
     }
 
+    const raw = course.generated_content as GeneratedCourseStructure;
+
+    const expanded = await expandCourseForEbook(raw);
+
     const logos = loadLogos();
-    const pdfBytes = await generateCoursePdf(course.generated_content, logos);
-    const title = (course.generated_content as { title?: string }).title ?? 'curso';
-    const safeName = title.replace(/[^a-z0-9áéíóúñ\s-]/gi, '').replace(/\s+/g, '-').slice(0, 60) || 'curso';
+    const pdfBytes = await generateCoursePdf(expanded, logos);
+
+    const safeName = (raw.title ?? 'curso')
+      .replace(/[^a-z0-9áéíóúñ\s-]/gi, '')
+      .replace(/\s+/g, '-')
+      .slice(0, 60) || 'curso';
 
     return new Response(Buffer.from(pdfBytes), {
       status: 200,
@@ -68,6 +65,7 @@ export async function GET(
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    console.error('PDF generation error:', msg);
     return new Response(`Error al generar PDF: ${msg}`, { status: 500 });
   }
 }

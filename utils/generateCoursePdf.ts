@@ -1,382 +1,288 @@
-/**
- * Genera un PDF con portada, índice, contenido completo y contraportada.
- * Incluye marcas Recursalia y Hotmart. Pensado para ebook en Hotmart.
- */
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import type { ExpandedCourseContent } from '@/services/openaiEbookService';
 
-import { PDFDocument, StandardFonts, rgb, RGB } from 'pdf-lib';
-import type { GeneratedCourseStructure } from '@/types';
+const W = 595;
+const H = 842;
+const M = 56;
+const BW = W - 2 * M;
 
-const PAGE_WIDTH = 595;
-const PAGE_HEIGHT = 842;
-const MARGIN = 50;
-const BODY_WIDTH = PAGE_WIDTH - 2 * MARGIN;
+const COL_PRIMARY = rgb(0.12, 0.13, 0.32);
+const COL_ACCENT = rgb(0.24, 0.30, 0.62);
+const COL_BODY = rgb(0.18, 0.18, 0.22);
+const COL_MUTED = rgb(0.45, 0.45, 0.50);
+const COL_RULE = rgb(0.80, 0.80, 0.84);
+const COL_BG = rgb(0.95, 0.95, 0.97);
+const COL_TOPIC_BG = rgb(0.90, 0.91, 0.96);
 
-// Colores
-const PRIMARY: RGB = rgb(0.2, 0.2, 0.45);
-const ACCENT: RGB = rgb(0.35, 0.35, 0.7);
-const TEXT: RGB = rgb(0.15, 0.15, 0.2);
-const TEXT_LIGHT: RGB = rgb(0.4, 0.4, 0.45);
-
-function stripNonWinAnsi(text: string): string {
+function safe(text: string): string {
   // eslint-disable-next-line no-control-regex
-  return text.replace(/[^\x00-\x7F\xA0-\xFF\n]/g, '');
+  return text.replace(/[^\x00-\x7F\xA0-\xFF\n]/g, '').trim();
 }
 
-function stripHtml(html: string): string {
-  return stripNonWinAnsi(
-    html
-      .replace(/<\s*br\s*\/?>/gi, '\n')
-      .replace(/<\/p>/gi, '\n')
-      .replace(/<\/div>/gi, '\n')
-      .replace(/<\/li>/gi, '\n')
-      .replace(/<[^>]*>/g, '')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/\n{3,}/g, '\n\n')
-      .trim()
-  );
-}
-
-function wrapLines(
+function wrap(
   text: string,
-  maxWidth: number,
-  font: { widthOfTextAtSize: (t: string, size: number) => number },
-  fontSize: number
+  maxW: number,
+  font: { widthOfTextAtSize: (t: string, s: number) => number },
+  size: number
 ): string[] {
-  const lines: string[] = [];
-  const words = text.split(/\s+/);
-  let current = '';
-  for (const word of words) {
-    const next = current ? `${current} ${word}` : word;
-    if (font.widthOfTextAtSize(next, fontSize) <= maxWidth) {
-      current = next;
+  const out: string[] = [];
+  for (const word of text.split(/\s+/)) {
+    const cur = out[out.length - 1];
+    const next = cur ? `${cur} ${word}` : word;
+    if (!cur || font.widthOfTextAtSize(next, size) <= maxW) {
+      out[out.length > 0 ? out.length - 1 : 0] = next;
     } else {
-      if (current) lines.push(current);
-      current = word;
+      out.push(word);
     }
   }
-  if (current) lines.push(current);
-  return lines;
+  return out;
 }
 
-interface TocEntry {
-  type: 'topic' | 'lesson';
-  title: string;
-  page: number; // 0-based index antes de insertar TOC
-}
+interface TocItem { type: 'topic' | 'lesson'; title: string; pg: number }
 
-export interface CoursePdfLogos {
-  recursalia?: Uint8Array; // PNG o JPG
+export interface PdfLogos {
+  recursalia?: Uint8Array;
   hotmart?: Uint8Array;
-  recursaliaIsPng?: boolean;
-  hotmartIsPng?: boolean;
 }
 
-const LOGO_MAX_HEIGHT = 36;
-const LOGO_MAX_WIDTH = 140;
+async function embedLogo(doc: PDFDocument, bytes: Uint8Array, maxW: number, maxH: number) {
+  const isJpeg = bytes[0] === 0xFF && bytes[1] === 0xD8;
+  const img = isJpeg ? await doc.embedJpg(bytes) : await doc.embedPng(bytes);
+  const s = Math.min(maxW / img.width, maxH / img.height, 1);
+  return { img, w: img.width * s, h: img.height * s };
+}
 
 export async function generateCoursePdf(
-  content: GeneratedCourseStructure,
-  logos?: CoursePdfLogos
+  content: ExpandedCourseContent,
+  logos?: PdfLogos
 ): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
-  const font = await doc.embedFont(StandardFonts.Helvetica);
-  const fontBold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const fontOblique = await doc.embedFont(StandardFonts.HelveticaOblique);
+  const fReg = await doc.embedFont(StandardFonts.Helvetica);
+  const fBold = await doc.embedFont(StandardFonts.HelveticaBold);
+  const fIt = await doc.embedFont(StandardFonts.HelveticaOblique);
 
-  let embedRecursalia: { width: number; height: number; embed: Awaited<ReturnType<PDFDocument['embedPng']>> } | null = null;
-  let embedHotmart: { width: number; height: number; embed: Awaited<ReturnType<PDFDocument['embedPng']>> } | null = null;
-  if (logos?.recursalia?.length) {
-    try {
-      const embed = logos.recursaliaIsPng !== false
-        ? await doc.embedPng(logos.recursalia)
-        : await doc.embedJpg(logos.recursalia);
-      const scale = Math.min(LOGO_MAX_WIDTH / embed.width, LOGO_MAX_HEIGHT / embed.height, 1);
-      embedRecursalia = { width: embed.width * scale, height: embed.height * scale, embed };
-    } catch {
-      // Si falla (formato no válido), se usa solo texto
+  const recLogo = logos?.recursalia?.length ? await embedLogo(doc, logos.recursalia, 180, 50) : null;
+  const hotLogo = logos?.hotmart?.length ? await embedLogo(doc, logos.hotmart, 140, 40) : null;
+
+  const toc: TocItem[] = [];
+  const title = safe(content.title);
+  const shortDesc = safe(content.short_description ?? '');
+  const year = new Date().getFullYear();
+
+  // ─── helpers ───
+  let pg = doc.addPage([W, H]);
+  let y = H - M;
+
+  function newPg() { pg = doc.addPage([W, H]); y = H - M; }
+  function need(n: number) { if (y - n < M + 30) newPg(); }
+
+  function drawWrapped(text: string, font: typeof fReg, size: number, color: typeof COL_BODY, indent = 0, lh?: number) {
+    const lineH = lh ?? size + 3;
+    const lines = wrap(safe(text), BW - indent, font, size);
+    need(lines.length * lineH);
+    for (const ln of lines) {
+      pg.drawText(ln, { x: M + indent, y, size, font, color });
+      y -= lineH;
     }
   }
-  if (logos?.hotmart?.length) {
-    try {
-      const embed = logos.hotmartIsPng !== false
-        ? await doc.embedPng(logos.hotmart)
-        : await doc.embedJpg(logos.hotmart);
-      const scale = Math.min(LOGO_MAX_WIDTH / embed.width, LOGO_MAX_HEIGHT / embed.height, 1);
-      embedHotmart = { width: embed.width * scale, height: embed.height * scale, embed };
-    } catch {
-      // Si falla, se usa solo texto
+
+  function drawParagraphs(text: string) {
+    const paras = safe(text).split(/\n\n+/);
+    for (const p of paras) {
+      if (!p.trim()) continue;
+      drawWrapped(p.trim(), fReg, 10, COL_BODY, 0, 14);
+      y -= 6;
     }
   }
 
-  const tocEntries: TocEntry[] = [];
+  function pageFooter(pageNum?: number) {
+    const num = pageNum ?? doc.getPageCount();
+    pg.drawLine({ start: { x: M, y: M - 14 }, end: { x: W - M, y: M - 14 }, thickness: 0.5, color: COL_RULE });
+    pg.drawText(String(num), { x: W / 2 - 4, y: M - 26, size: 8, font: fReg, color: COL_MUTED });
+  }
 
-  const safeTitle = stripNonWinAnsi(content.title);
-  const safeShortDesc = stripNonWinAnsi(content.short_description ?? '');
+  // ━━━━━━━━━━━━━━ PORTADA ━━━━━━━━━━━━━━
+  pg.drawRectangle({ x: 0, y: 0, width: W, height: H, color: COL_BG });
+  pg.drawRectangle({ x: 0, y: H - 8, width: W, height: 8, color: COL_ACCENT });
+  pg.drawRectangle({ x: 0, y: 0, width: W, height: 6, color: COL_ACCENT });
 
-  // —— PORTADA ——
-  const coverPage = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-  const coverY = PAGE_HEIGHT - 100;
-  coverPage.drawRectangle({
-    x: 0,
-    y: 0,
-    width: PAGE_WIDTH,
-    height: PAGE_HEIGHT,
-    color: rgb(0.96, 0.96, 0.98),
+  if (recLogo) {
+    pg.drawImage(recLogo.img, { x: M, y: H - 60 - recLogo.h, width: recLogo.w, height: recLogo.h });
+  }
+
+  y = H - 200;
+  const titleLines = wrap(title, W - 2 * M, fBold, 28);
+  for (const ln of titleLines) {
+    pg.drawText(ln, { x: M, y, size: 28, font: fBold, color: COL_PRIMARY });
+    y -= 34;
+  }
+  y -= 4;
+  pg.drawLine({ start: { x: M, y }, end: { x: M + 120, y }, thickness: 3, color: COL_ACCENT });
+  y -= 28;
+
+  if (shortDesc) {
+    const subLines = wrap(shortDesc, W - 2 * M, fReg, 13);
+    for (const ln of subLines.slice(0, 3)) {
+      pg.drawText(ln, { x: M, y, size: 13, font: fReg, color: COL_MUTED });
+      y -= 18;
+    }
+  }
+
+  if (content.author_name) {
+    y -= 30;
+    pg.drawText(safe(content.author_name), { x: M, y, size: 12, font: fIt, color: COL_ACCENT });
+  }
+
+  if (hotLogo) {
+    pg.drawImage(hotLogo.img, { x: W - M - hotLogo.w, y: 30, width: hotLogo.w, height: hotLogo.h });
+  }
+  pg.drawText(`${year} Recursalia. Todos los derechos reservados.`, {
+    x: M,
+    y: 32,
+    size: 7,
+    font: fReg,
+    color: COL_MUTED,
   });
-  const coverTitleLines = wrapLines(safeTitle, PAGE_WIDTH - 80, fontBold, 26);
-  let cy = coverY;
-  for (const line of coverTitleLines) {
-    coverPage.drawText(line, {
-      x: MARGIN + 20,
-      y: cy,
-      size: 26,
-      font: fontBold,
-      color: PRIMARY,
-    });
-    cy -= 32;
-  }
-  cy -= 8;
-  coverPage.drawLine({
-    start: { x: MARGIN + 20, y: cy },
-    end: { x: MARGIN + 180, y: cy },
-    thickness: 2,
-    color: ACCENT,
-  });
-  cy -= 24;
-  if (safeShortDesc) {
-    const subLines = wrapLines(safeShortDesc, PAGE_WIDTH - 80, font, 12);
-    for (const line of subLines.slice(0, 4)) {
-      coverPage.drawText(line, { x: MARGIN + 20, y: cy, size: 12, font, color: TEXT_LIGHT });
-      cy -= 16;
-    }
-  }
-  cy -= 50;
-  if (embedRecursalia) {
-    coverPage.drawImage(embedRecursalia.embed, {
-      x: MARGIN + 20,
-      y: cy - embedRecursalia.height,
-      width: embedRecursalia.width,
-      height: embedRecursalia.height,
-    });
-    cy -= embedRecursalia.height + 12;
-  } else {
-    coverPage.drawText('Recursalia', {
-      x: MARGIN + 20,
-      y: cy,
-      size: 14,
-      font: fontBold,
-      color: ACCENT,
-    });
-    cy -= 22;
-  }
-  if (embedHotmart) {
-    coverPage.drawImage(embedHotmart.embed, {
-      x: MARGIN + 20,
-      y: cy - embedHotmart.height,
-      width: embedHotmart.width,
-      height: embedHotmart.height,
-    });
-    cy -= embedHotmart.height + 8;
-  } else {
-    coverPage.drawText('Hotmart', {
-      x: MARGIN + 20,
-      y: cy,
-      size: 12,
-      font: fontOblique,
-      color: TEXT_LIGHT,
-    });
-    cy -= 20;
+
+  // ━━━━━━━━━━━━━━ PÁGINA LEGAL / COPYRIGHT ━━━━━━━━━━━━━━
+  newPg();
+  pg.drawRectangle({ x: 0, y: 0, width: W, height: H, color: COL_BG });
+  y = H - 120;
+  pg.drawText(title, { x: M, y, size: 14, font: fBold, color: COL_PRIMARY });
+  y -= 30;
+  const legalLines = [
+    `${year} Recursalia. Todos los derechos reservados.`,
+    '',
+    'Queda prohibida la reproduccion total o parcial de este libro,',
+    'su incorporacion a un sistema informatico, su transmision en',
+    'cualquier forma o por cualquier medio, sea este electronico,',
+    'mecanico, por fotocopia, por grabacion u otros metodos, sin',
+    'el permiso previo y por escrito del editor.',
+    '',
+    'Publicado y distribuido a traves de Hotmart.',
+    '',
+    'Creado con la plataforma Recursalia.',
+    'recursalia.com',
+  ];
+  for (const ln of legalLines) {
+    pg.drawText(ln, { x: M, y, size: 9, font: fReg, color: COL_MUTED });
+    y -= 14;
   }
 
-  // —— CONTENIDO (y recoger TOC) ——
-  let page = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-  let y = PAGE_HEIGHT - MARGIN;
-  const LINE_HEIGHT = 14;
-  const BODY_SIZE = 10;
-  const TOPIC_SIZE = 16;
-  const LESSON_SIZE = 12;
+  // ━━━━━━━━━━━━━━ CONTENIDO (recoger TOC) ━━━━━━━━━━━━━━
 
-  function newPage(): void {
-    page = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-    y = PAGE_HEIGHT - MARGIN;
-  }
+  // Introducción
+  newPg();
+  pg.drawText('Introduccion', { x: M, y, size: 20, font: fBold, color: COL_PRIMARY });
+  y -= 30;
+  pg.drawLine({ start: { x: M, y: y + 6 }, end: { x: W - M, y: y + 6 }, thickness: 0.5, color: COL_RULE });
+  y -= 16;
+  if (content.description) drawParagraphs(content.description);
+  pageFooter();
 
-  function ensureSpace(needed: number): void {
-    if (y - needed < MARGIN + 40) {
-      newPage();
-    }
-  }
-
-  function drawParagraph(text: string): void {
-    const plain = stripHtml(text);
-    if (!plain) return;
-    const paragraphs = plain.split(/\n\n+/);
-    for (const para of paragraphs) {
-      const lines = wrapLines(para.trim(), BODY_WIDTH, font, BODY_SIZE);
-      ensureSpace(lines.length * LINE_HEIGHT);
-      for (const line of lines) {
-        page.drawText(line, { x: MARGIN, y, size: BODY_SIZE, font, color: TEXT });
-        y -= LINE_HEIGHT;
-      }
-      y -= 8;
-    }
-    y -= 8;
-  }
-
-  ensureSpace(80);
-  page.drawText(safeTitle, {
-    x: MARGIN,
-    y,
-    size: TOPIC_SIZE,
-    font: fontBold,
-    color: PRIMARY,
-  });
-  y -= TOPIC_SIZE + 12;
-  if (content.short_description) {
-    drawParagraph(content.short_description);
-  }
-  if (content.description) {
-    drawParagraph(content.description);
-  }
-  y -= 24;
-
+  // Módulos y lecciones
   for (const topic of content.topics ?? []) {
-    ensureSpace(TOPIC_SIZE + 30);
-    const pageIndex = doc.getPageCount() - 1;
-    const safeTopicTitle = stripNonWinAnsi(topic.title);
-    tocEntries.push({ type: 'topic', title: safeTopicTitle, page: pageIndex });
+    newPg();
+    const safeTopic = safe(topic.title);
+    toc.push({ type: 'topic', title: safeTopic, pg: doc.getPageCount() - 1 });
 
-    page.drawRectangle({
-      x: MARGIN,
-      y: y - 4,
-      width: BODY_WIDTH,
-      height: TOPIC_SIZE + 14,
-      color: rgb(0.92, 0.92, 0.96),
-    });
-    page.drawText(safeTopicTitle, {
-      x: MARGIN + 8,
-      y: y + 2,
-      size: TOPIC_SIZE,
-      font: fontBold,
-      color: PRIMARY,
-    });
-    y -= TOPIC_SIZE + 24;
+    pg.drawRectangle({ x: 0, y: H - 130, width: W, height: 130, color: COL_TOPIC_BG });
+    pg.drawRectangle({ x: 0, y: H - 134, width: W, height: 4, color: COL_ACCENT });
+    y = H - 80;
+    const topicLines = wrap(safeTopic, W - 2 * M, fBold, 20);
+    for (const ln of topicLines) {
+      pg.drawText(ln, { x: M, y, size: 20, font: fBold, color: COL_PRIMARY });
+      y -= 26;
+    }
+    y = H - 160;
 
     for (const lesson of topic.lessons) {
-      ensureSpace(LESSON_SIZE + 25);
-      const safeLessonTitle = stripNonWinAnsi(lesson.title);
-      const lessonPageIndex = doc.getPageCount() - 1;
-      tocEntries.push({ type: 'lesson', title: safeLessonTitle, page: lessonPageIndex });
+      const safeLesson = safe(lesson.title);
+      toc.push({ type: 'lesson', title: safeLesson, pg: doc.getPageCount() - 1 });
 
-      page.drawText(safeLessonTitle, {
-        x: MARGIN,
-        y,
-        size: LESSON_SIZE,
-        font: fontBold,
-        color: ACCENT,
-      });
-      y -= LESSON_SIZE + 8;
-      if (lesson.content) {
-        drawParagraph(lesson.content);
-      }
+      need(60);
+      y -= 12;
+      pg.drawLine({ start: { x: M, y: y + 20 }, end: { x: W - M, y: y + 20 }, thickness: 0.5, color: COL_RULE });
+      y -= 4;
+      drawWrapped(safeLesson, fBold, 13, COL_ACCENT);
       y -= 8;
+
+      if (lesson.content) {
+        drawParagraphs(lesson.content);
+      }
+      y -= 14;
     }
-    y -= 20;
+    pageFooter();
   }
 
-  // —— INSERTAR PÁGINA DE ÍNDICE tras la portada ——
-  const tocPage = doc.insertPage(1, [PAGE_WIDTH, PAGE_HEIGHT]);
-  let tocY = PAGE_HEIGHT - 70;
-  tocPage.drawText('Índice', {
-    x: MARGIN,
-    y: tocY,
-    size: 22,
-    font: fontBold,
-    color: PRIMARY,
-  });
-  tocY -= 36;
-  tocPage.drawLine({
-    start: { x: MARGIN, y: tocY },
-    end: { x: PAGE_WIDTH - MARGIN, y: tocY },
-    thickness: 1,
-    color: rgb(0.85, 0.85, 0.9),
-  });
-  tocY -= 24;
+  // ━━━━━━━━━━━━━━ ÍNDICE (se inserta tras la página legal) ━━━━━━━━━━━━━━
+  const tocPg = doc.insertPage(2, [W, H]);
+  let ty = H - 80;
+  tocPg.drawText('Indice', { x: M, y: ty, size: 22, font: fBold, color: COL_PRIMARY });
+  ty -= 12;
+  tocPg.drawLine({ start: { x: M, y: ty }, end: { x: W - M, y: ty }, thickness: 1, color: COL_RULE });
+  ty -= 24;
 
-  for (const entry of tocEntries) {
-    if (tocY < MARGIN + 30) break;
-    const humanPage = entry.page + 2;
-    const isTopic = entry.type === 'topic';
-    tocPage.drawText(entry.title, {
-      x: MARGIN + (isTopic ? 0 : 16),
-      y: tocY,
-      size: isTopic ? 12 : 10,
-      font: isTopic ? fontBold : font,
-      color: isTopic ? PRIMARY : TEXT,
+  for (const item of toc) {
+    if (ty < M + 20) break;
+    const isTopic = item.type === 'topic';
+    const label = item.title.length > 60 ? item.title.slice(0, 57) + '...' : item.title;
+    tocPg.drawText(label, {
+      x: M + (isTopic ? 0 : 18),
+      y: ty,
+      size: isTopic ? 11 : 9.5,
+      font: isTopic ? fBold : fReg,
+      color: isTopic ? COL_PRIMARY : COL_BODY,
     });
-    tocPage.drawText(String(humanPage), {
-      x: PAGE_WIDTH - MARGIN - 24,
-      y: tocY,
-      size: 10,
-      font,
-      color: TEXT_LIGHT,
+    const humanPg = item.pg + 2;
+    tocPg.drawText(String(humanPg), {
+      x: W - M - 20,
+      y: ty,
+      size: 9,
+      font: fReg,
+      color: COL_MUTED,
     });
-    tocY -= isTopic ? 18 : 14;
+    if (!isTopic) {
+      const dotY = ty + 3;
+      tocPg.drawLine({
+        start: { x: M + 18 + fReg.widthOfTextAtSize(label, 9.5) + 6, y: dotY },
+        end: { x: W - M - 28, y: dotY },
+        thickness: 0.3,
+        color: COL_RULE,
+      });
+    }
+    ty -= isTopic ? 22 : 15;
+  }
+  tocPg.drawLine({ start: { x: M, y: M - 14 }, end: { x: W - M, y: M - 14 }, thickness: 0.5, color: COL_RULE });
+
+  // ━━━━━━━━━━━━━━ CONTRAPORTADA ━━━━━━━━━━━━━━
+  const back = doc.addPage([W, H]);
+  back.drawRectangle({ x: 0, y: 0, width: W, height: H, color: COL_BG });
+  back.drawRectangle({ x: 0, y: H - 8, width: W, height: 8, color: COL_ACCENT });
+  back.drawRectangle({ x: 0, y: 0, width: W, height: 6, color: COL_ACCENT });
+
+  let bY = H / 2 + 50;
+  if (recLogo) {
+    const bw = Math.min(recLogo.w * 2.2, 240);
+    const bh = (recLogo.h / recLogo.w) * bw;
+    back.drawImage(recLogo.img, { x: W / 2 - bw / 2, y: bY - bh, width: bw, height: bh });
+    bY -= bh + 30;
+  }
+  if (hotLogo) {
+    const bw = Math.min(hotLogo.w * 1.8, 180);
+    const bh = (hotLogo.h / hotLogo.w) * bw;
+    back.drawImage(hotLogo.img, { x: W / 2 - bw / 2, y: bY - bh, width: bw, height: bh });
+    bY -= bh + 30;
   }
 
-  // —— CONTRAPORTADA (última página) ——
-  const backPage = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
-  backPage.drawRectangle({
-    x: 0,
-    y: 0,
-    width: PAGE_WIDTH,
-    height: PAGE_HEIGHT,
-    color: rgb(0.96, 0.96, 0.98),
+  const cr = `${year} Recursalia. Todos los derechos reservados.`;
+  back.drawText(cr, {
+    x: W / 2 - fReg.widthOfTextAtSize(cr, 8) / 2,
+    y: 40,
+    size: 8,
+    font: fReg,
+    color: COL_MUTED,
   });
-  let by = PAGE_HEIGHT / 2 + 50;
-  if (embedRecursalia) {
-    const bw = Math.min(embedRecursalia.width * 1.2, 160);
-    const bh = (embedRecursalia.height / embedRecursalia.width) * bw;
-    backPage.drawImage(embedRecursalia.embed, {
-      x: PAGE_WIDTH / 2 - bw / 2,
-      y: by - bh,
-      width: bw,
-      height: bh,
-    });
-    by -= bh + 24;
-  } else {
-    backPage.drawText('Recursalia', {
-      x: PAGE_WIDTH / 2 - 80,
-      y: by,
-      size: 18,
-      font: fontBold,
-      color: ACCENT,
-    });
-    by -= 28;
-  }
-  if (embedHotmart) {
-    const bw = Math.min(embedHotmart.width * 1.2, 120);
-    const bh = (embedHotmart.height / embedHotmart.width) * bw;
-    backPage.drawImage(embedHotmart.embed, {
-      x: PAGE_WIDTH / 2 - bw / 2,
-      y: by - bh,
-      width: bw,
-      height: bh,
-    });
-    by -= bh + 20;
-  } else {
-    backPage.drawText('Hotmart', {
-      x: PAGE_WIDTH / 2 - 45,
-      y: by,
-      size: 14,
-      font: fontOblique,
-      color: TEXT_LIGHT,
-    });
-  }
 
   return doc.save();
 }
