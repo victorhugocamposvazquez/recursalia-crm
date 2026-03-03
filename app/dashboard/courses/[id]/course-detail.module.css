@@ -216,19 +216,73 @@
 
 .pdfDownloadBtn {
   display: inline-block;
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1.25rem;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   font-weight: 500;
   color: #fff;
   background: linear-gradient(135deg, #6366f1, #8b5cf6);
   border-radius: 8px;
+  border: none;
+  cursor: pointer;
   text-decoration: none;
   transition: opacity 0.2s;
 }
 
 .pdfDownloadBtn:hover {
   opacity: 0.9;
+}
+
+.pdfProgressWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pdfProgressBar {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pdfProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa);
+  border-radius: 8px;
+  transition: width 0.4s ease;
+  min-width: 2%;
+}
+
+.pdfProgressInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pdfProgressLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  flex-shrink: 0;
+}
+
+.pdfProgressLesson {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pdfError {
+  color: #f87171;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(248, 113, 113, 0.1);
+  border-radius: 6px;
 }
 
 .hotmartLink {

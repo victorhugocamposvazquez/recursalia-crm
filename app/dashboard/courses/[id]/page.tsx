@@ -20,7 +20,13 @@ export default function CourseDetailPage() {
   const [editContent, setEditContent] = useState<GeneratedCourseStructure | null>(null);
   const [hotmartLinkInput, setHotmartLinkInput] = useState('');
   const [savingHotmart, setSavingHotmart] = useState(false);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState(0);
+  const [pdfTotal, setPdfTotal] = useState(0);
+  const [pdfLesson, setPdfLesson] = useState('');
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const publishPollRef = useRef<number | null>(null);
+  const pdfAbortRef = useRef<AbortController | null>(null);
 
   const fetchCourse = useCallback(
     async (syncEditContent: boolean = false) => {
@@ -125,6 +131,80 @@ export default function CourseDetailPage() {
     }
   }
 
+  async function handleGeneratePdf() {
+    setPdfGenerating(true);
+    setPdfProgress(0);
+    setPdfTotal(0);
+    setPdfLesson('Iniciando...');
+    setPdfError(null);
+
+    const abort = new AbortController();
+    pdfAbortRef.current = abort;
+
+    try {
+      const res = await fetch(`/api/courses/${id}/course-pdf?stream=1`, {
+        signal: abort.signal,
+      });
+      if (!res.ok || !res.body) {
+        throw new Error(`Error ${res.status}`);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const parts = buffer.split('\n\n');
+        buffer = parts.pop() ?? '';
+
+        for (const part of parts) {
+          const line = part.replace(/^data:\s*/, '').trim();
+          if (!line) continue;
+          try {
+            const ev = JSON.parse(line);
+            if (ev.type === 'start') {
+              setPdfTotal(ev.total);
+            } else if (ev.type === 'progress') {
+              setPdfProgress(ev.current);
+              setPdfTotal(ev.total);
+              setPdfLesson(ev.lesson);
+            } else if (ev.type === 'done') {
+              setPdfLesson('Descargando...');
+              const bin = atob(ev.pdf);
+              const bytes = new Uint8Array(bin.length);
+              for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+              const blob = new Blob([bytes], { type: 'application/pdf' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = ev.filename || 'curso.pdf';
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+            } else if (ev.type === 'error') {
+              throw new Error(ev.message);
+            }
+          } catch (parseErr) {
+            if (parseErr instanceof SyntaxError) continue;
+            throw parseErr;
+          }
+        }
+      }
+    } catch (err) {
+      if ((err as Error).name !== 'AbortError') {
+        setPdfError(err instanceof Error ? err.message : String(err));
+      }
+    } finally {
+      setPdfGenerating(false);
+      pdfAbortRef.current = null;
+    }
+  }
+
   if (loading) return <p className={styles.loading}>Cargando...</p>;
   if (error && !course) return <p className={styles.error}>{error}</p>;
   if (!course) return null;
@@ -224,15 +304,40 @@ export default function CourseDetailPage() {
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>PDF del curso (ebook)</h3>
             <p className={styles.hotmartNote}>
-              Descarga el PDF con todo el contenido del curso y súbelo en Hotmart en &quot;Contenido del producto&quot; (arrastrar o seleccionar archivo).
+              Genera el ebook completo con contenido extenso para cada lección y súbelo en Hotmart en &quot;Contenido del producto&quot;.
             </p>
-            <a
-              href={`/api/courses/${id}/course-pdf`}
-              download
-              className={styles.pdfDownloadBtn}
-            >
-              Descargar PDF del curso
-            </a>
+            {pdfGenerating ? (
+              <div className={styles.pdfProgressWrap}>
+                <div className={styles.pdfProgressBar}>
+                  <div
+                    className={styles.pdfProgressFill}
+                    style={{ width: pdfTotal ? `${(pdfProgress / pdfTotal) * 100}%` : '0%' }}
+                  />
+                </div>
+                <div className={styles.pdfProgressInfo}>
+                  <span className={styles.pdfProgressLabel}>
+                    {pdfProgress}/{pdfTotal} lecciones
+                  </span>
+                  <span className={styles.pdfProgressLesson}>{pdfLesson}</span>
+                </div>
+                <button
+                  type="button"
+                  className={styles.btnSecondary}
+                  onClick={() => pdfAbortRef.current?.abort()}
+                >
+                  Cancelar
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className={styles.pdfDownloadBtn}
+                onClick={handleGeneratePdf}
+              >
+                Generar y descargar PDF
+              </button>
+            )}
+            {pdfError && <p className={styles.pdfError}>{pdfError}</p>}
           </div>
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Datos para copiar en Hotmart</h3>

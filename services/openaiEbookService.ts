@@ -68,15 +68,26 @@ INSTRUCCIONES:
   return response.choices[0]?.message?.content?.trim() ?? '';
 }
 
+export type ProgressCallback = (current: number, total: number, lessonTitle: string) => void;
+
+export function countLessons(content: GeneratedCourseStructure): number {
+  return (content.topics ?? []).reduce((sum, t) => sum + t.lessons.length, 0);
+}
+
 export async function expandCourseForEbook(
-  content: GeneratedCourseStructure
+  content: GeneratedCourseStructure,
+  onProgress?: ProgressCallback
 ): Promise<ExpandedCourseContent> {
   const openai = getOpenAI();
   const expandedTopics: ExpandedTopic[] = [];
+  const total = countLessons(content);
+  let current = 0;
 
   for (const topic of content.topics ?? []) {
     const expandedLessons: ExpandedLesson[] = [];
     for (const lesson of topic.lessons) {
+      current++;
+      onProgress?.(current, total, lesson.title);
       const brief = lesson.content
         ? lesson.content.replace(/<[^>]*>/g, '').slice(0, 500)
         : lesson.title;
