@@ -17,20 +17,27 @@ const ACCENT: RGB = rgb(0.35, 0.35, 0.7);
 const TEXT: RGB = rgb(0.15, 0.15, 0.2);
 const TEXT_LIGHT: RGB = rgb(0.4, 0.4, 0.45);
 
+function stripNonWinAnsi(text: string): string {
+  // eslint-disable-next-line no-control-regex
+  return text.replace(/[^\x00-\x7F\xA0-\xFF\n]/g, '');
+}
+
 function stripHtml(html: string): string {
-  return html
-    .replace(/<\s*br\s*\/?>/gi, '\n')
-    .replace(/<\/p>/gi, '\n')
-    .replace(/<\/div>/gi, '\n')
-    .replace(/<\/li>/gi, '\n')
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
+  return stripNonWinAnsi(
+    html
+      .replace(/<\s*br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<\/div>/gi, '\n')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+  );
 }
 
 function wrapLines(
@@ -107,6 +114,9 @@ export async function generateCoursePdf(
 
   const tocEntries: TocEntry[] = [];
 
+  const safeTitle = stripNonWinAnsi(content.title);
+  const safeShortDesc = stripNonWinAnsi(content.short_description ?? '');
+
   // —— PORTADA ——
   const coverPage = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
   const coverY = PAGE_HEIGHT - 100;
@@ -117,7 +127,7 @@ export async function generateCoursePdf(
     height: PAGE_HEIGHT,
     color: rgb(0.96, 0.96, 0.98),
   });
-  const coverTitleLines = wrapLines(content.title, PAGE_WIDTH - 80, fontBold, 26);
+  const coverTitleLines = wrapLines(safeTitle, PAGE_WIDTH - 80, fontBold, 26);
   let cy = coverY;
   for (const line of coverTitleLines) {
     coverPage.drawText(line, {
@@ -137,8 +147,8 @@ export async function generateCoursePdf(
     color: ACCENT,
   });
   cy -= 24;
-  if (content.short_description) {
-    const subLines = wrapLines(content.short_description, PAGE_WIDTH - 80, font, 12);
+  if (safeShortDesc) {
+    const subLines = wrapLines(safeShortDesc, PAGE_WIDTH - 80, font, 12);
     for (const line of subLines.slice(0, 4)) {
       coverPage.drawText(line, { x: MARGIN + 20, y: cy, size: 12, font, color: TEXT_LIGHT });
       cy -= 16;
@@ -217,9 +227,8 @@ export async function generateCoursePdf(
     y -= 8;
   }
 
-  // Introducción: descripción completa del curso (todo el contenido generado)
   ensureSpace(80);
-  page.drawText(content.title, {
+  page.drawText(safeTitle, {
     x: MARGIN,
     y,
     size: TOPIC_SIZE,
@@ -238,7 +247,8 @@ export async function generateCoursePdf(
   for (const topic of content.topics ?? []) {
     ensureSpace(TOPIC_SIZE + 30);
     const pageIndex = doc.getPageCount() - 1;
-    tocEntries.push({ type: 'topic', title: topic.title, page: pageIndex });
+    const safeTopicTitle = stripNonWinAnsi(topic.title);
+    tocEntries.push({ type: 'topic', title: safeTopicTitle, page: pageIndex });
 
     page.drawRectangle({
       x: MARGIN,
@@ -247,7 +257,7 @@ export async function generateCoursePdf(
       height: TOPIC_SIZE + 14,
       color: rgb(0.92, 0.92, 0.96),
     });
-    page.drawText(topic.title, {
+    page.drawText(safeTopicTitle, {
       x: MARGIN + 8,
       y: y + 2,
       size: TOPIC_SIZE,
@@ -258,10 +268,11 @@ export async function generateCoursePdf(
 
     for (const lesson of topic.lessons) {
       ensureSpace(LESSON_SIZE + 25);
+      const safeLessonTitle = stripNonWinAnsi(lesson.title);
       const lessonPageIndex = doc.getPageCount() - 1;
-      tocEntries.push({ type: 'lesson', title: lesson.title, page: lessonPageIndex });
+      tocEntries.push({ type: 'lesson', title: safeLessonTitle, page: lessonPageIndex });
 
-      page.drawText(lesson.title, {
+      page.drawText(safeLessonTitle, {
         x: MARGIN,
         y,
         size: LESSON_SIZE,
