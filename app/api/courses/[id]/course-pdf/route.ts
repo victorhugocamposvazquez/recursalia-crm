@@ -7,6 +7,8 @@ import { expandCourseForEbook, countLessons } from '@/services/openaiEbookServic
 import { generateCoursePdf } from '@/utils/generateCoursePdf';
 import type { GeneratedCourseStructure } from '@/types';
 
+const CHUNK_SIZE = 256 * 1024; // 256 KB de base64 por evento
+
 function loadLogos() {
   const dir = path.join(process.cwd(), 'public', 'logos');
   let recursalia: Uint8Array | undefined;
@@ -96,7 +98,14 @@ export async function GET(
           .slice(0, 60) || 'curso';
 
         const base64 = Buffer.from(pdfBytes).toString('base64');
-        send({ type: 'done', pdf: base64, filename: `${safeName}.pdf` });
+        const totalChunks = Math.ceil(base64.length / CHUNK_SIZE);
+
+        for (let i = 0; i < totalChunks; i++) {
+          const chunk = base64.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
+          send({ type: 'pdf_chunk', index: i, data: chunk });
+        }
+
+        send({ type: 'done', filename: `${safeName}.pdf`, chunks: totalChunks });
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         send({ type: 'error', message: msg });

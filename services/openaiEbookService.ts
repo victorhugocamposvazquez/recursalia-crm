@@ -1,10 +1,12 @@
 /**
  * Genera contenido extenso para cada lección del curso (solo para el PDF/ebook).
- * Hace una llamada a OpenAI por cada lección pidiendo ~1500 palabras.
+ * Paraleliza las llamadas a OpenAI con concurrencia limitada.
  */
 
 import OpenAI from 'openai';
 import type { GeneratedCourseStructure } from '@/types';
+
+const CONCURRENCY = 3;
 
 function getOpenAI(): OpenAI {
   const key = process.env.OPENAI_API_KEY;
@@ -74,34 +76,78 @@ export function countLessons(content: GeneratedCourseStructure): number {
   return (content.topics ?? []).reduce((sum, t) => sum + t.lessons.length, 0);
 }
 
+interface LessonJob {
+  topicIdx: number;
+  lessonIdx: number;
+  topicTitle: string;
+  lessonTitle: string;
+  brief: string;
+}
+
 export async function expandCourseForEbook(
   content: GeneratedCourseStructure,
   onProgress?: ProgressCallback
 ): Promise<ExpandedCourseContent> {
   const openai = getOpenAI();
-  const expandedTopics: ExpandedTopic[] = [];
   const total = countLessons(content);
-  let current = 0;
 
-  for (const topic of content.topics ?? []) {
-    const expandedLessons: ExpandedLesson[] = [];
-    for (const lesson of topic.lessons) {
-      current++;
-      onProgress?.(current, total, lesson.title);
-      const brief = lesson.content
-        ? lesson.content.replace(/<[^>]*>/g, '').slice(0, 500)
-        : lesson.title;
-      const fullContent = await expandLesson(
-        openai,
-        content.title,
-        topic.title,
-        lesson.title,
-        brief
-      );
-      expandedLessons.push({ title: lesson.title, content: fullContent });
+  const jobs: LessonJob[] = [];
+  for (let ti = 0; ti < (content.topics ?? []).length; ti++) {
+    const topic = content.topics![ti];
+    for (let li = 0; li < topic.lessons.length; li++) {
+      const lesson = topic.lessons[li];
+      jobs.push({
+        topicIdx: ti,
+        lessonIdx: li,
+        topicTitle: topic.title,
+        lessonTitle: lesson.title,
+        brief: lesson.content
+          ? lesson.content.replace(/<[^>]*>/g, '').slice(0, 500)
+          : lesson.title,
+      });
     }
-    expandedTopics.push({ title: topic.title, lessons: expandedLessons });
   }
+
+  const results: Map<string, string> = new Map();
+  let completed = 0;
+
+  async function runJob(job: LessonJob) {
+    const text = await expandLesson(
+      openai,
+      content.title,
+      job.topicTitle,
+      job.lessonTitle,
+      job.brief
+    );
+    results.set(`${job.topicIdx}-${job.lessonIdx}`, text);
+    completed++;
+    onProgress?.(completed, total, job.lessonTitle);
+  }
+
+  // Pool de concurrencia
+  const pending = [...jobs];
+  const active: Promise<void>[] = [];
+
+  while (pending.length > 0 || active.length > 0) {
+    while (active.length < CONCURRENCY && pending.length > 0) {
+      const job = pending.shift()!;
+      const p = runJob(job).then(() => {
+        active.splice(active.indexOf(p), 1);
+      });
+      active.push(p);
+    }
+    if (active.length > 0) {
+      await Promise.race(active);
+    }
+  }
+
+  const expandedTopics: ExpandedTopic[] = (content.topics ?? []).map((topic, ti) => ({
+    title: topic.title,
+    lessons: topic.lessons.map((lesson, li) => ({
+      title: lesson.title,
+      content: results.get(`${ti}-${li}`) ?? '',
+    })),
+  }));
 
   return {
     title: content.title,

@@ -152,6 +152,7 @@ export default function CourseDetailPage() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+      const pdfChunks: string[] = [];
 
       while (true) {
         const { done, value } = await reader.read();
@@ -172,9 +173,13 @@ export default function CourseDetailPage() {
               setPdfProgress(ev.current);
               setPdfTotal(ev.total);
               setPdfLesson(ev.lesson);
+            } else if (ev.type === 'pdf_chunk') {
+              pdfChunks[ev.index] = ev.data;
+              setPdfLesson('Recibiendo PDF...');
             } else if (ev.type === 'done') {
               setPdfLesson('Descargando...');
-              const bin = atob(ev.pdf);
+              const b64 = pdfChunks.join('');
+              const bin = atob(b64);
               const bytes = new Uint8Array(bin.length);
               for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
               const blob = new Blob([bytes], { type: 'application/pdf' });
@@ -185,7 +190,7 @@ export default function CourseDetailPage() {
               document.body.appendChild(a);
               a.click();
               a.remove();
-              URL.revokeObjectURL(url);
+              setTimeout(() => URL.revokeObjectURL(url), 120_000);
             } else if (ev.type === 'error') {
               throw new Error(ev.message);
             }
