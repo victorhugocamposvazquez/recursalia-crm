@@ -6,7 +6,7 @@
 import OpenAI from 'openai';
 import type { GeneratedCourseStructure } from '@/types';
 
-const CONCURRENCY = 3;
+const CONCURRENCY = 6;
 
 function getOpenAI(): OpenAI {
   const key = process.env.OPENAI_API_KEY;
@@ -55,16 +55,15 @@ Contexto breve de la leccion:
 ${lessonBrief}
 
 INSTRUCCIONES:
-- Escribe entre 1200 y 1800 palabras.
-- Estructura: introduccion, desarrollo con subtemas, ejemplos practicos, y un resumen con puntos clave al final.
+- Escribe entre 800 y 1200 palabras.
+- Estructura: introduccion breve, desarrollo con ejemplos, y "Puntos clave" al final (4-5 ideas numeradas).
 - Tono profesional pero accesible.
-- Sin emojis, sin markdown (ni #, ni **, ni -, ni *). Solo texto plano con parrafos separados por lineas en blanco.
-- Incluye ejemplos reales o casos practicos donde corresponda.
-- Al final del capitulo, anade un apartado "Puntos clave" con 4-6 ideas principales en forma de lista numerada (1. 2. 3...).`,
+- Sin emojis, sin markdown. Solo texto plano con parrafos separados por lineas en blanco.
+- Incluye algun ejemplo practico o caso real.`,
       },
     ],
     temperature: 0.7,
-    max_tokens: 3000,
+    max_tokens: 2000,
   });
 
   return response.choices[0]?.message?.content?.trim() ?? '';
