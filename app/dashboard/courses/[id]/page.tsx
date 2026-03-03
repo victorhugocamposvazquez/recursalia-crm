@@ -342,55 +342,67 @@ export default function CourseDetailPage() {
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Datos para copiar en Hotmart</h3>
             <p className={styles.hotmartNote}>
-              Copia cada campo y pégalo al crear el producto en Hotmart para ir más rápido.
+              Copia todos los datos de una vez y pégalos al crear el producto en Hotmart.
+              La descripción usa el texto largo ({(() => {
+                const plain = (content.description ?? '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').trim();
+                return plain.length;
+              })()} caracteres, mínimo 200).
             </p>
-            <div className={styles.copyRow}>
-              <span className={styles.copyLabel}>Título</span>
-              <span className={styles.copyValue}>{content.title}</span>
+            <div className={styles.copyAllPreview}>
+              <div className={styles.copyRow}>
+                <span className={styles.copyLabel}>Nombre</span>
+                <span className={styles.copyValue}>{content.title}</span>
+              </div>
+              <div className={styles.copyRow}>
+                <span className={styles.copyLabel}>Descripción</span>
+                <span className={styles.copyValue}>
+                  {(() => {
+                    const plain = (content.description ?? '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+                    return plain.length > 120 ? plain.slice(0, 120) + '...' : plain;
+                  })()}
+                </span>
+              </div>
+              <div className={styles.copyRow}>
+                <span className={styles.copyLabel}>Precio ($)</span>
+                <span className={styles.copyValue}>
+                  {content.price_sale ?? content.price_original ?? '—'}
+                </span>
+              </div>
+            </div>
+            <div className={styles.copyAllActions}>
               <button
                 type="button"
-                className={styles.copyBtn}
-                onClick={() => navigator.clipboard.writeText(content.title)}
+                className={styles.copyAllBtn}
+                onClick={() => {
+                  const desc = (content.description ?? '')
+                    .replace(/<\s*br\s*\/?>/gi, '\n')
+                    .replace(/<\/p>/gi, '\n')
+                    .replace(/<\/div>/gi, '\n')
+                    .replace(/<\/li>/gi, '\n')
+                    .replace(/<[^>]*>/g, '')
+                    .replace(/&nbsp;/g, ' ')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"')
+                    .replace(/\n{3,}/g, '\n\n')
+                    .trim();
+                  const price = content.price_sale ?? content.price_original ?? '';
+                  const text = `Nombre del producto:\n${content.title}\n\nDescripción:\n${desc}\n\nPrecio:\n${price}`;
+                  navigator.clipboard.writeText(text);
+                }}
               >
-                Copiar
+                Copiar todo al portapapeles
               </button>
-            </div>
-            <div className={styles.copyRow}>
-              <span className={styles.copyLabel}>Descripción breve</span>
-              <span className={styles.copyValue}>{content.short_description || '—'}</span>
-              <button
-                type="button"
-                className={styles.copyBtn}
-                onClick={() => navigator.clipboard.writeText(content.short_description ?? '')}
+              <a
+                href="https://app.hotmart.com/products/add/4/info"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.hotmartLink}
               >
-                Copiar
-              </button>
+                Crear ebook en Hotmart →
+              </a>
             </div>
-            <div className={styles.copyRow}>
-              <span className={styles.copyLabel}>Precio ($)</span>
-              <span className={styles.copyValue}>
-                {content.price_sale ?? content.price_original ?? '—'}
-              </span>
-              <button
-                type="button"
-                className={styles.copyBtn}
-                onClick={() =>
-                  navigator.clipboard.writeText(
-                    String(content.price_sale ?? content.price_original ?? '')
-                  )
-                }
-              >
-                Copiar
-              </button>
-            </div>
-            <a
-              href="https://app.hotmart.com/products/add/4/info"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.hotmartLink}
-            >
-              Crear ebook en Hotmart (información básica) →
-            </a>
           </div>
         </section>
       )}

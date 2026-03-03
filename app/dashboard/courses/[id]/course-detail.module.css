@@ -214,6 +214,35 @@
   background: rgba(99, 102, 241, 0.3);
 }
 
+.copyAllPreview {
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.copyAllActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.copyAllBtn {
+  padding: 0.55rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.copyAllBtn:hover {
+  opacity: 0.9;
+}
+
 .pdfDownloadBtn {
   display: inline-block;
   padding: 0.55rem 1.25rem;
