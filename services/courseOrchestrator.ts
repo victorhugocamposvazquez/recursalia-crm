@@ -17,7 +17,13 @@ import { setCourseProduct } from './wordpressCourseMetaService';
 import { createCurriculum } from './tutorLmsService';
 import type { CourseInputPayload, CourseRecord, CourseStatus } from '@/types';
 
-const REVIEWS_COUNT = parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
+export interface ReviewsConfig {
+  reviewsCount?: number;
+  reviewsAvgRating?: 'high' | 'mixed';
+  reviewsPrompt?: string;
+}
+
+const DEFAULT_REVIEWS_COUNT = parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
 
 export async function generateAndSaveCourse(
   payload: CourseInputPayload
@@ -58,7 +64,7 @@ export async function generateAndSaveCourse(
   }
 }
 
-export async function publishCourse(courseId: string): Promise<CourseRecord> {
+export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig): Promise<CourseRecord> {
   const supabase = getSupabase();
   const { data: course, error: fetchError } = await supabase
     .from('courses')
@@ -204,9 +210,19 @@ export async function publishCourse(courseId: string): Promise<CourseRecord> {
         ` | Course category: ${err instanceof Error ? err.message : String(err)}`;
       await setProgress('Categoria de curso fallo.');
     }
-    await setProgress('Generando y publicando resenas...');
+    const revCount = reviewsCfg?.reviewsCount ?? DEFAULT_REVIEWS_COUNT;
+    const revRating = reviewsCfg?.reviewsAvgRating ?? 'high';
+    let revPrompt = reviewsCfg?.reviewsPrompt;
+    if (revRating === 'high') {
+      revPrompt = (revPrompt ? revPrompt + '\n' : '') +
+        'Valoraciones altas: la gran mayoria (80%) deben ser 5 estrellas, el resto 4 estrellas. Alguna de 3 estrellas aislada para credibilidad.';
+    } else {
+      revPrompt = (revPrompt ? revPrompt + '\n' : '') +
+        'Valoraciones mixtas: 40% de 5 estrellas, 30% de 4, 20% de 3 y 10% de 2. Variedad para credibilidad.';
+    }
+    await setProgress(`Generando ${revCount} resenas (valoracion: ${revRating})...`);
     try {
-      const reviews = await generateReviews(content.title, REVIEWS_COUNT);
+      const reviews = await generateReviews(content.title, revCount, revPrompt);
       const reviewCategory = await createReviewCategory(content.title);
       await createSiteReviews(
         wpCourseId,

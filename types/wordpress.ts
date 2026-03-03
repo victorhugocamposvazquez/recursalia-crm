@@ -1,6 +1,7 @@
 export interface WpCreateCoursePayload {
   title: string;
   content: string;
+  excerpt?: string;
   status?: 'draft' | 'publish';
   featured_media?: number;
   meta?: Record<string, unknown>;

@@ -8,14 +8,23 @@ export async function POST(req: NextRequest) {
   if (authError) return authError;
 
   try {
-    const body = (await req.json()) as { courseId?: string };
+    const body = (await req.json()) as {
+      courseId?: string;
+      reviewsCount?: number;
+      reviewsAvgRating?: 'high' | 'mixed';
+      reviewsPrompt?: string;
+    };
     const courseId = body?.courseId;
 
     if (!courseId?.trim()) {
       return errorResponse('courseId is required', 400);
     }
 
-    const course = await publishCourse(courseId.trim());
+    const course = await publishCourse(courseId.trim(), {
+      reviewsCount: body.reviewsCount,
+      reviewsAvgRating: body.reviewsAvgRating,
+      reviewsPrompt: body.reviewsPrompt,
+    });
     return jsonResponse(course);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

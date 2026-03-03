@@ -25,6 +25,10 @@ export default function CourseDetailPage() {
   const [pdfTotal, setPdfTotal] = useState(0);
   const [pdfLesson, setPdfLesson] = useState('');
   const [pdfError, setPdfError] = useState<string | null>(null);
+  const [reviewsCount, setReviewsCount] = useState(50);
+  const [reviewsAvgRating, setReviewsAvgRating] = useState<'high' | 'mixed'>('high');
+  const [reviewsPrompt, setReviewsPrompt] = useState('');
+  const [showReviewsConfig, setShowReviewsConfig] = useState(false);
   const publishPollRef = useRef<number | null>(null);
   const pdfAbortRef = useRef<AbortController | null>(null);
 
@@ -93,7 +97,12 @@ export default function CourseDetailPage() {
       const res = await fetch('/api/publish-course', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ courseId: id }),
+        body: JSON.stringify({
+          courseId: id,
+          reviewsCount,
+          reviewsAvgRating,
+          reviewsPrompt: reviewsPrompt.trim() || undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al publicar');
@@ -238,9 +247,17 @@ export default function CourseDetailPage() {
                 Editar
               </button>
               {course.status !== 'published' && (
-                <button onClick={handlePublish} disabled={saving} className={styles.btnPrimary}>
-                  {saving ? 'Publicando...' : 'Publicar (WordPress + WooCommerce + Reseñas)'}
-                </button>
+                <>
+                  <button
+                    onClick={() => setShowReviewsConfig((v) => !v)}
+                    className={styles.btnSecondary}
+                  >
+                    Config reseñas
+                  </button>
+                  <button onClick={handlePublish} disabled={saving} className={styles.btnPrimary}>
+                    {saving ? 'Publicando...' : 'Publicar'}
+                  </button>
+                </>
               )}
               <button onClick={handleDelete} disabled={saving} className={styles.btnDanger}>
                 Borrar
@@ -249,6 +266,44 @@ export default function CourseDetailPage() {
           )}
         </div>
       </div>
+
+      {showReviewsConfig && course.status !== 'published' && (
+        <div className={styles.reviewsConfig}>
+          <h4 className={styles.reviewsConfigTitle}>Configuración de reseñas</h4>
+          <div className={styles.reviewsConfigGrid}>
+            <div className={styles.field}>
+              <label>Cantidad de reseñas</label>
+              <input
+                type="number"
+                min={5}
+                max={200}
+                value={reviewsCount}
+                onChange={(e) => setReviewsCount(Math.max(5, Math.min(200, parseInt(e.target.value) || 50)))}
+              />
+            </div>
+            <div className={styles.field}>
+              <label>Valoración media</label>
+              <select
+                value={reviewsAvgRating}
+                onChange={(e) => setReviewsAvgRating(e.target.value as 'high' | 'mixed')}
+                className={styles.selectInput}
+              >
+                <option value="high">Alta (4-5 estrellas, mayoría 5)</option>
+                <option value="mixed">Mixta (3-5 estrellas, más variedad)</option>
+              </select>
+            </div>
+          </div>
+          <div className={styles.field}>
+            <label>Instrucciones adicionales (opcional)</label>
+            <textarea
+              value={reviewsPrompt}
+              onChange={(e) => setReviewsPrompt(e.target.value)}
+              rows={3}
+              placeholder="Ej: Enfoca las reseñas en la calidad del material práctico y en la atención del profesor. Incluye algunas reseñas que mencionen la relación calidad-precio."
+            />
+          </div>
+        </div>
+      )}
 
       {error && <p className={styles.errorMsg}>{error}</p>}
 
@@ -347,37 +402,30 @@ export default function CourseDetailPage() {
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Datos para copiar en Hotmart</h3>
             <p className={styles.hotmartNote}>
-              Copia todos los datos de una vez y pégalos al crear el producto en Hotmart.
-              La descripción usa el texto largo ({(() => {
-                const plain = (content.description ?? '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').trim();
-                return plain.length;
-              })()} caracteres, mínimo 200).
+              Copia cada campo y pégalo en el formulario de Hotmart.
             </p>
-            <div className={styles.copyAllPreview}>
-              <div className={styles.copyRow}>
-                <span className={styles.copyLabel}>Nombre</span>
-                <span className={styles.copyValue}>{content.title}</span>
-              </div>
-              <div className={styles.copyRow}>
-                <span className={styles.copyLabel}>Descripción</span>
-                <span className={styles.copyValue}>
-                  {(() => {
-                    const plain = (content.description ?? '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
-                    return plain.length > 120 ? plain.slice(0, 120) + '...' : plain;
-                  })()}
-                </span>
-              </div>
-              <div className={styles.copyRow}>
-                <span className={styles.copyLabel}>Precio ($)</span>
-                <span className={styles.copyValue}>
-                  {content.price_sale ?? content.price_original ?? '—'}
-                </span>
-              </div>
-            </div>
-            <div className={styles.copyAllActions}>
+            <div className={styles.copyRow}>
+              <span className={styles.copyLabel}>Nombre</span>
+              <span className={styles.copyValue}>{content.title}</span>
               <button
                 type="button"
-                className={styles.copyAllBtn}
+                className={styles.copyBtn}
+                onClick={() => navigator.clipboard.writeText(content.title)}
+              >
+                Copiar
+              </button>
+            </div>
+            <div className={styles.copyRow}>
+              <span className={styles.copyLabel}>Descripción</span>
+              <span className={styles.copyValue}>
+                {(() => {
+                  const plain = (content.description ?? '').replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+                  return plain.length > 80 ? plain.slice(0, 80) + '...' : plain;
+                })()}
+              </span>
+              <button
+                type="button"
+                className={styles.copyBtn}
                 onClick={() => {
                   const desc = (content.description ?? '')
                     .replace(/<\s*br\s*\/?>/gi, '\n')
@@ -392,22 +440,37 @@ export default function CourseDetailPage() {
                     .replace(/&quot;/g, '"')
                     .replace(/\n{3,}/g, '\n\n')
                     .trim();
-                  const price = content.price_sale ?? content.price_original ?? '';
-                  const text = `Nombre del producto:\n${content.title}\n\nDescripción:\n${desc}\n\nPrecio:\n${price}`;
-                  navigator.clipboard.writeText(text);
+                  navigator.clipboard.writeText(desc);
                 }}
               >
-                Copiar todo al portapapeles
+                Copiar
               </button>
-              <a
-                href="https://app.hotmart.com/products/add/4/info"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.hotmartLink}
-              >
-                Crear ebook en Hotmart →
-              </a>
             </div>
+            <div className={styles.copyRow}>
+              <span className={styles.copyLabel}>Precio ($)</span>
+              <span className={styles.copyValue}>
+                {content.price_sale ?? content.price_original ?? '—'}
+              </span>
+              <button
+                type="button"
+                className={styles.copyBtn}
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    String(content.price_sale ?? content.price_original ?? '')
+                  )
+                }
+              >
+                Copiar
+              </button>
+            </div>
+            <a
+              href="https://app.hotmart.com/products/add/4/info"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.hotmartLink}
+            >
+              Crear ebook en Hotmart →
+            </a>
           </div>
         </section>
       )}

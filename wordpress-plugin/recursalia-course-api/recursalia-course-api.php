@@ -315,8 +315,13 @@ function recursalia_create_reviews(WP_REST_Request $request) {
     }
   }
 
-  update_post_meta($post_id, 'assigned_term_id', (string) $term->term_id);
   update_post_meta($post_id, 'site_review_term_id', (string) $term->term_id);
+
+  // Solo establecer assigned_term_id si aún no tiene valor (no sobrescribir el de course-category)
+  $existing = get_post_meta($post_id, 'assigned_term_id', true);
+  if (empty($existing)) {
+    update_post_meta($post_id, 'assigned_term_id', (string) $term->term_id);
+  }
 
   return ['created' => $created, 'term_id' => (int) $term->term_id];
 }

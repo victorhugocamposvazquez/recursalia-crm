@@ -77,15 +77,19 @@ export async function createCourse(
     }
   }
 
+  // eslint-disable-next-line no-control-regex
+  const safeTitle = content.title.replace(/[^\x00-\x7F\xA0-\xFF]/g, '').trim();
+
   const payload: WpCreateCoursePayload = {
-    title: content.title,
+    title: safeTitle,
     content: htmlContent,
+    excerpt: content.short_description ?? '',
     status: 'publish',
     ...(featuredMediaId && { featured_media: featuredMediaId }),
     meta: {
       _tutor_course_settings: JSON.stringify({
-        course_title: content.title,
-        course_description: content.short_description,
+        course_title: safeTitle,
+        course_description: content.short_description ?? '',
       }),
       best_seller: content.badge === 'Best Seller' ? 'si' : 'no',
       ventajas: content.benefits?.length ? 'si' : 'no',

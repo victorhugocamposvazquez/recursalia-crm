@@ -10,12 +10,13 @@ function getOpenAI(): OpenAI {
 const BATCH_SIZE = 25;
 
 const DEFAULT_PROMPT = `REGLAS:
-- title: Corto, destacando un beneficio (max 60 chars).
-- content: 1-2 oraciones auténticas, variadas.
-- rating: Mayoría 4-5, algunas 3 para credibilidad.
-- author_name: Nombres españoles/latinoamericanos realistas.
-- date: Fechas variadas en los últimos 6 meses (formato YYYY-MM-DD).
-- Variedad en títulos y contenidos.`;
+- title: Corto y natural, como lo escribiria un alumno normal (max 60 chars). Ejemplos: "Muy util", "Me ha encantado", "Justo lo que buscaba", "Mejor de lo que esperaba".
+- content: 1-3 oraciones en tono coloquial, como si lo escribiera alguien real despues de hacer el curso. Usa lenguaje informal, cercano, con expresiones naturales. Algunos pueden tener faltas leves o frases cortas. Evita un tono corporativo o demasiado perfecto.
+- rating: Mayoria 4-5, algunas 3 para credibilidad.
+- author_name: Nombres espanoles y latinoamericanos realistas y variados (hombres y mujeres).
+- date: Fechas variadas en los ultimos 6 meses (formato YYYY-MM-DD).
+- Variedad: no repitas estructuras, algunos cortos ("Genial, muy recomendable"), otros mas detallados. Mezcla opiniones sobre el contenido, el profesor, la relacion calidad-precio, lo practico, etc.
+- Sin emojis.`;
 
 function buildReviewsPrompt(
   courseTitle: string,
@@ -57,7 +58,7 @@ export async function generateReviews(
         {
           role: 'system',
           content:
-            'Eres un generador de reseñas auténticas para cursos online. Responde solo con JSON array válido.',
+            'Genera resenas de alumnos reales para cursos online. Las resenas deben sonar naturales y coloquiales, como las que dejaria una persona normal en internet. Nada de tono profesional ni corporativo. Responde solo con JSON array valido. Sin emojis.',
         },
         { role: 'user', content: prompt },
       ],
