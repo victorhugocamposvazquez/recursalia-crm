@@ -214,6 +214,23 @@
   background: rgba(99, 102, 241, 0.3);
 }
 
+.pdfDownloadBtn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.pdfDownloadBtn:hover {
+  opacity: 0.9;
+}
+
 .hotmartLink {
   display: inline-block;
   margin-top: 0.75rem;

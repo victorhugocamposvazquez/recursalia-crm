@@ -222,6 +222,19 @@ export default function CourseDetailPage() {
             </div>
           </div>
           <div className={styles.hotmartCard}>
+            <h3 className={styles.hotmartCardTitle}>PDF del curso (ebook)</h3>
+            <p className={styles.hotmartNote}>
+              Descarga el PDF con todo el contenido del curso y súbelo en Hotmart en &quot;Contenido del producto&quot; (arrastrar o seleccionar archivo).
+            </p>
+            <a
+              href={`/api/courses/${id}/course-pdf`}
+              download
+              className={styles.pdfDownloadBtn}
+            >
+              Descargar PDF del curso
+            </a>
+          </div>
+          <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Datos para copiar en Hotmart</h3>
             <p className={styles.hotmartNote}>
               Copia cada campo y pégalo al crear el producto en Hotmart para ir más rápido.
@@ -266,12 +279,12 @@ export default function CourseDetailPage() {
               </button>
             </div>
             <a
-              href="https://app.hotmart.com"
+              href="https://app.hotmart.com/products/add/4/info"
               target="_blank"
               rel="noopener noreferrer"
               className={styles.hotmartLink}
             >
-              Crear producto en Hotmart →
+              Crear ebook en Hotmart (información básica) →
             </a>
           </div>
         </section>
