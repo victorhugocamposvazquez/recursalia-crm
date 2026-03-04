@@ -29,6 +29,10 @@ export default function CourseDetailPage() {
   const [reviewsAvgRating, setReviewsAvgRating] = useState<'high' | 'mixed'>('high');
   const [reviewsPrompt, setReviewsPrompt] = useState('');
   const [showReviewsConfig, setShowReviewsConfig] = useState(false);
+  const [socialPosting, setSocialPosting] = useState<'facebook' | 'instagram' | null>(null);
+  const [socialMessage, setSocialMessage] = useState('');
+  const [socialResult, setSocialResult] = useState<string | null>(null);
+  const [socialError, setSocialError] = useState<string | null>(null);
   const publishPollRef = useRef<number | null>(null);
   const pdfAbortRef = useRef<AbortController | null>(null);
 
@@ -471,6 +475,59 @@ export default function CourseDetailPage() {
             >
               Crear ebook en Hotmart →
             </a>
+          </div>
+
+          <div className={styles.hotmartCard}>
+            <h3 className={styles.hotmartCardTitle}>Publicar en redes sociales</h3>
+            <p className={styles.hotmartNote}>
+              Publica en Facebook e Instagram de Recursalia a la vez. Se genera una imagen profesional con IA automaticamente.
+            </p>
+            <div className={styles.field}>
+              <label>Texto del post (editable)</label>
+              <textarea
+                value={socialMessage || `${content.title}\n\n${content.short_description}\n\n#recursalia #cursosonline #formacion #educacion`}
+                onChange={(e) => setSocialMessage(e.target.value)}
+                rows={4}
+                className={styles.socialTextarea}
+              />
+            </div>
+            <button
+              type="button"
+              className={styles.socialBtnPublish}
+              disabled={socialPosting !== null}
+              onClick={async () => {
+                setSocialPosting('facebook');
+                setSocialResult(null);
+                setSocialError(null);
+                try {
+                  const res = await fetch(`/api/courses/${id}/social-post`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      message: socialMessage || undefined,
+                    }),
+                  });
+                  const data = await res.json();
+                  if (!res.ok) throw new Error(data.details ?? data.error);
+                  const published = (data.published as string[]) ?? [];
+                  const errs = (data.errors as string[]) ?? [];
+                  if (published.length > 0) {
+                    setSocialResult(`Publicado en ${published.join(' e ')}`);
+                  }
+                  if (errs.length > 0) {
+                    setSocialError(errs.join(' | '));
+                  }
+                } catch (err) {
+                  setSocialError(err instanceof Error ? err.message : String(err));
+                } finally {
+                  setSocialPosting(null);
+                }
+              }}
+            >
+              {socialPosting ? 'Publicando...' : 'Publicar en Facebook e Instagram'}
+            </button>
+            {socialResult && <p className={styles.socialSuccess}>{socialResult}</p>}
+            {socialError && <p className={styles.pdfError}>{socialError}</p>}
           </div>
         </section>
       )}
