@@ -89,6 +89,21 @@ export async function postToInstagram(
 
   const { id: containerId } = (await containerRes.json()) as { id: string };
 
+  const maxAttempts = 10;
+  for (let i = 0; i < maxAttempts; i++) {
+    const statusRes = await fetch(
+      `${GRAPH_URL}/${containerId}?fields=status_code&access_token=${token}`
+    );
+    if (statusRes.ok) {
+      const statusData = (await statusRes.json()) as { status_code?: string };
+      if (statusData.status_code === 'FINISHED') break;
+      if (statusData.status_code === 'ERROR') {
+        throw new Error('Instagram: error procesando la imagen');
+      }
+    }
+    await new Promise((r) => setTimeout(r, 3000));
+  }
+
   const publishRes = await fetch(`${GRAPH_URL}/${igId}/media_publish`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
