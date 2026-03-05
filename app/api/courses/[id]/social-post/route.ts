@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
-import { postToBoth, buildCoursePostMessage } from '@/services/metaSocialService';
+import { postToBoth, buildFacebookMessage, buildInstagramCaption } from '@/services/metaSocialService';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 import type { GeneratedCourseStructure } from '@/types';
 
@@ -90,11 +90,17 @@ export async function POST(
     console.log('[social-post] courseUrl:', courseUrl ?? '(none)');
     console.log('[social-post] imageUrl:', imageUrl ?? '(none)');
 
-    const message =
-      body.message?.trim() ||
-      buildCoursePostMessage(content.title, content.short_description, courseUrl);
+    const wpUrl = process.env.WORDPRESS_URL;
 
-    const result = await postToBoth({ message, link: courseUrl, imageUrl });
+    const facebookMessage =
+      body.message?.trim() ||
+      buildFacebookMessage(content.title, content.short_description, courseUrl);
+
+    const instagramCaption =
+      body.message?.trim() ||
+      buildInstagramCaption(content.title, content.short_description, wpUrl);
+
+    const result = await postToBoth({ facebookMessage, instagramCaption, link: courseUrl, imageUrl });
 
     const published: string[] = [];
     if (result.facebook) published.push('Facebook');

@@ -130,8 +130,15 @@ export async function postToInstagram(
  * Publica en Facebook e Instagram simultáneamente.
  * Si una falla, devuelve el resultado parcial + error.
  */
+export interface PostBothInput {
+  facebookMessage: string;
+  instagramCaption: string;
+  link?: string;
+  imageUrl?: string;
+}
+
 export async function postToBoth(
-  input: SocialPostInput
+  input: PostBothInput
 ): Promise<{ facebook?: SocialPostResult; instagram?: SocialPostResult; errors: string[] }> {
   const { pageId, igId } = getConfig();
   const errors: string[] = [];
@@ -142,7 +149,7 @@ export async function postToBoth(
 
   if (pageId) {
     promises.push(
-      postToFacebook(input)
+      postToFacebook({ message: input.facebookMessage, link: input.link, imageUrl: input.imageUrl })
         .then((r) => { facebook = r; })
         .catch((e) => { errors.push(`Facebook: ${e instanceof Error ? e.message : String(e)}`); })
     );
@@ -150,7 +157,7 @@ export async function postToBoth(
 
   if (igId && input.imageUrl) {
     promises.push(
-      postToInstagram(input)
+      postToInstagram({ message: input.instagramCaption, imageUrl: input.imageUrl })
         .then((r) => { instagram = r; })
         .catch((e) => { errors.push(`Instagram: ${e instanceof Error ? e.message : String(e)}`); })
     );
@@ -163,7 +170,7 @@ export async function postToBoth(
   return { facebook, instagram, errors };
 }
 
-export function buildCoursePostMessage(
+export function buildFacebookMessage(
   title: string,
   shortDescription: string,
   courseUrl?: string
@@ -175,6 +182,24 @@ export function buildCoursePostMessage(
   if (courseUrl) {
     lines.push('');
     lines.push(courseUrl);
+  }
+  lines.push('');
+  lines.push('#recursalia #cursosonline #formacion #educacion');
+  return lines.join('\n');
+}
+
+export function buildInstagramCaption(
+  title: string,
+  shortDescription: string,
+  siteUrl?: string
+): string {
+  const lines: string[] = [];
+  lines.push(title);
+  lines.push('');
+  if (shortDescription) lines.push(shortDescription);
+  if (siteUrl) {
+    lines.push('');
+    lines.push(`Disponible en ${siteUrl.replace(/^https?:\/\//, '')}`);
   }
   lines.push('');
   lines.push('#recursalia #cursosonline #formacion #educacion');
