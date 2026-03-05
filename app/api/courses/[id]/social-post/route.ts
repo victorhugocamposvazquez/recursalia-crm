@@ -5,49 +5,54 @@ import { postToBoth, buildCoursePostMessage } from '@/services/metaSocialService
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 import type { GeneratedCourseStructure } from '@/types';
 
-async function getFeaturedImageUrl(wpCourseId: string): Promise<string | undefined> {
+async function getWpCourseData(wpCourseId: string): Promise<{ imageUrl?: string; permalink?: string }> {
   const wpUrl = process.env.WORDPRESS_URL;
   const user = process.env.WORDPRESS_USER;
   const pass = process.env.WORDPRESS_APP_PASSWORD;
   if (!wpUrl || !user || !pass) {
     console.warn('[social-post] WP credentials missing:', { wpUrl: !!wpUrl, user: !!user, pass: !!pass });
-    return undefined;
+    return {};
   }
 
+  const authHeader = `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`;
+  const result: { imageUrl?: string; permalink?: string } = {};
+
   try {
-    const courseEndpoint = `${wpUrl}/wp-json/wp/v2/courses/${wpCourseId}?_fields=featured_media`;
-    console.log('[social-post] Fetching featured_media from:', courseEndpoint);
+    const courseEndpoint = `${wpUrl}/wp-json/wp/v2/courses/${wpCourseId}?_fields=featured_media,link`;
+    console.log('[social-post] Fetching WP course:', courseEndpoint);
 
     const res = await fetch(courseEndpoint, {
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`,
-      },
+      headers: { Authorization: authHeader },
     });
     if (!res.ok) {
       console.warn('[social-post] WP course fetch failed:', res.status, await res.text());
-      return undefined;
+      return {};
     }
-    const data = (await res.json()) as { featured_media?: number };
-    console.log('[social-post] featured_media:', data.featured_media);
-    if (!data.featured_media) return undefined;
+    const data = (await res.json()) as { featured_media?: number; link?: string };
+    console.log('[social-post] WP course data:', { featured_media: data.featured_media, link: data.link });
 
-    const mediaEndpoint = `${wpUrl}/wp-json/wp/v2/media/${data.featured_media}?_fields=source_url`;
-    const mediaRes = await fetch(mediaEndpoint, {
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`,
-      },
-    });
-    if (!mediaRes.ok) {
-      console.warn('[social-post] WP media fetch failed:', mediaRes.status, await mediaRes.text());
-      return undefined;
+    if (data.link) {
+      result.permalink = data.link;
     }
-    const mediaData = (await mediaRes.json()) as { source_url?: string };
-    console.log('[social-post] source_url:', mediaData.source_url);
-    return mediaData.source_url;
+
+    if (data.featured_media) {
+      const mediaEndpoint = `${wpUrl}/wp-json/wp/v2/media/${data.featured_media}?_fields=source_url`;
+      const mediaRes = await fetch(mediaEndpoint, {
+        headers: { Authorization: authHeader },
+      });
+      if (!mediaRes.ok) {
+        console.warn('[social-post] WP media fetch failed:', mediaRes.status, await mediaRes.text());
+      } else {
+        const mediaData = (await mediaRes.json()) as { source_url?: string };
+        console.log('[social-post] source_url:', mediaData.source_url);
+        result.imageUrl = mediaData.source_url;
+      }
+    }
   } catch (err) {
-    console.error('[social-post] getFeaturedImageUrl error:', err);
-    return undefined;
+    console.error('[social-post] getWpCourseData error:', err);
   }
+
+  return result;
 }
 
 export async function POST(
@@ -72,25 +77,22 @@ export async function POST(
     }
 
     const content = course.generated_content as GeneratedCourseStructure;
-    const wpUrl = process.env.WORDPRESS_URL;
-    const slug = content.title
-      .toLowerCase()
-      .replace(/[^a-z0-9áéíóúñ\s-]/gi, '')
-      .replace(/\s+/g, '-')
-      .slice(0, 80);
-    const courseUrl = wpUrl ? `${wpUrl}/recourses/${slug}/` : undefined;
+
+    let courseUrl: string | undefined;
+    let imageUrl: string | undefined;
+
+    console.log('[social-post] wp_course_id:', course.wp_course_id);
+    if (course.wp_course_id) {
+      const wpData = await getWpCourseData(String(course.wp_course_id));
+      courseUrl = wpData.permalink;
+      imageUrl = wpData.imageUrl;
+    }
+    console.log('[social-post] courseUrl:', courseUrl ?? '(none)');
+    console.log('[social-post] imageUrl:', imageUrl ?? '(none)');
 
     const message =
       body.message?.trim() ||
       buildCoursePostMessage(content.title, content.short_description, courseUrl);
-
-    let imageUrl: string | undefined;
-    console.log('[social-post] wp_course_id:', course.wp_course_id);
-    if (course.wp_course_id) {
-      imageUrl = await getFeaturedImageUrl(String(course.wp_course_id));
-    }
-    console.log('[social-post] imageUrl resolved:', imageUrl ?? '(none)');
-    console.log('[social-post] courseUrl:', courseUrl ?? '(none)');
 
     const result = await postToBoth({ message, link: courseUrl, imageUrl });
 
