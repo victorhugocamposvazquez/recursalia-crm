@@ -43,14 +43,6 @@ export default async function DashboardLayout({
             Generar reseñas
           </Link>
         </nav>
-        <div className={styles.user}>
-          <span>{user.email}</span>
-          <form action="/api/auth/logout" method="post">
-            <button type="submit" className={styles.logoutBtn}>
-              Salir
-            </button>
-          </form>
-        </div>
       </aside>
       <main className={styles.main}>{children}</main>
       <Footer userEmail={user.email ?? ''} />

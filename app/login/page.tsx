@@ -86,10 +86,13 @@ export default function LoginPage() {
           display: flex;
           justify-content: center;
           margin-bottom: 1rem;
+          background: none;
         }
         .logo {
           max-width: 200px;
           height: auto;
+          background: none;
+          display: block;
         }
         .subtitle {
           color: #94a3b8;

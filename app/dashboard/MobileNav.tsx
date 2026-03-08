@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './layout.module.css';
@@ -10,7 +11,27 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ userEmail }: MobileNavProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const res = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      if (res.ok || res.redirected) {
+        router.push('/login');
+        router.refresh();
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+      router.push('/login');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <>
@@ -73,11 +94,14 @@ export function MobileNav({ userEmail }: MobileNavProps) {
         </nav>
         <div className={styles.user}>
           <span>{userEmail}</span>
-          <form action="/api/auth/logout" method="post">
-            <button type="submit" className={styles.logoutBtn}>
-              Salir
-            </button>
-          </form>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className={styles.logoutBtn}
+          >
+            {isLoggingOut ? 'Cerrando...' : 'Salir'}
+          </button>
         </div>
       </aside>
     </>

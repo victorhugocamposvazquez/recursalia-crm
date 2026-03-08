@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styles from './layout.module.css';
 
@@ -10,8 +10,10 @@ interface FooterProps {
 
 export function Footer({ userEmail }: FooterProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const isGeneratePage = pathname === '/dashboard';
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     // Escuchar eventos de carga desde la página
@@ -32,6 +34,24 @@ export function Footer({ userEmail }: FooterProps) {
     }
   };
 
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      const res = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      if (res.ok || res.redirected) {
+        router.push('/login');
+        router.refresh();
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+      router.push('/login');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <footer className={styles.footer}>
       <div className={styles.footerContent}>
@@ -49,11 +69,14 @@ export function Footer({ userEmail }: FooterProps) {
               {isGenerating ? 'Generando...' : 'Generar curso'}
             </button>
           )}
-          <form action="/api/auth/logout" method="post" className={styles.footerLogoutForm}>
-            <button type="submit" className={styles.footerLogoutBtn}>
-              Cerrar sesión
-            </button>
-          </form>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className={styles.footerLogoutBtn}
+          >
+            {isLoggingOut ? 'Cerrando...' : 'Cerrar sesión'}
+          </button>
         </div>
       </div>
     </footer>

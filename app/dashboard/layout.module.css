@@ -254,13 +254,7 @@
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(12px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-  z-index: 50;
-}
-
-@media (min-width: 768px) {
-  .footer {
-    left: 260px;
-  }
+  z-index: 200;
 }
 
 .footerContent {
