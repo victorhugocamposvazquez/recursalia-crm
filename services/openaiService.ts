@@ -12,12 +12,17 @@ function buildPrompt(payload: CourseInputPayload): string {
   const lessonsPerTopic = payload.lessonsPerTopic ?? 4;
   const totalLessons = topicsCount * lessonsPerTopic;
 
+  const priceOriginal = payload.price ?? 120;
+  const discountPct = payload.discountPercent ?? 0;
+  const priceSale = discountPct > 0 ? Math.round(priceOriginal * (1 - discountPct / 100)) : priceOriginal;
+
   return `Genera la estructura JSON completa de un curso online para recursalia.com con estos datos:
 - Tema: ${payload.topic}
 - Nivel: ${payload.level}
 - Avatar/Persona objetivo: ${payload.avatar}
 - Enfoque: ${payload.focus}
 - Estructura: ${topicsCount} modulos con ${lessonsPerTopic} lecciones cada uno (${totalLessons} lecciones totales)
+- Precio original: ${priceOriginal}$${discountPct > 0 ? ` | Precio con descuento: ${priceSale}$ (-${discountPct}%)` : ' (sin descuento)'}
 
 Devuelve UNICAMENTE un JSON valido con esta estructura exacta (sin markdown ni texto adicional):
 
@@ -32,8 +37,8 @@ Devuelve UNICAMENTE un JSON valido con esta estructura exacta (sin markdown ni t
     {"icon": "🎓", "title": "Diploma certificado", "description": "Frase corta"}
   ],
   "highlight": "El salario medio de un profesional en ${payload.topic} es de X$",
-  "price_original": 180,
-  "price_sale": 75,
+  "price_original": ${priceOriginal},
+  "price_sale": ${priceSale},
   "badge": "Best Seller",
   "access_level": "Todos los niveles",
   "certificate": true,
@@ -63,7 +68,7 @@ REGLAS OBLIGATORIAS:
 8. Titulos de modulos: "Modulo 1: [Nombre]", "Modulo 2: [Nombre]", etc. Sin emojis.
 9. Titulos de lecciones: descriptivos y concisos, sin emojis.
 10. Contenido de lecciones: HTML semantico (p, h3, ul, li). 2-4 parrafos. Sin markdown.
-11. Precios: price_original entre 120-250, price_sale entre 45-99. Numeros enteros.
+11. Precios: price_original DEBE ser exactamente ${priceOriginal}. price_sale DEBE ser exactamente ${priceSale}. No cambies estos valores.
 12. "certificate": siempre true.
 13. "job_bank": siempre true.`;
 }
@@ -101,6 +106,13 @@ export async function generateCourseStructure(
   if (!parsed.badge) parsed.badge = 'Best Seller';
   if (!parsed.certificate) parsed.certificate = true;
   if (!parsed.job_bank) parsed.job_bank = true;
+
+  const userPrice = payload.price ?? 120;
+  const userDiscount = payload.discountPercent ?? 0;
+  parsed.price_original = userPrice;
+  parsed.price_sale = userDiscount > 0
+    ? Math.round(userPrice * (1 - userDiscount / 100))
+    : userPrice;
 
   if (!parsed.short_description || parsed.short_description.length < 50) {
     parsed.short_description = parsed.description

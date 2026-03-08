@@ -34,6 +34,14 @@ export async function POST(req: NextRequest) {
         typeof body.lessonsPerTopic === 'number'
           ? Math.max(1, Math.min(10, body.lessonsPerTopic))
           : 4,
+      price:
+        typeof body.price === 'number'
+          ? Math.max(1, Math.round(body.price))
+          : 120,
+      discountPercent:
+        typeof body.discountPercent === 'number'
+          ? Math.max(0, Math.min(80, body.discountPercent))
+          : 0,
     };
 
     const course = await generateAndSaveCourse(payload);

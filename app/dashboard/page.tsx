@@ -14,6 +14,9 @@ export default function DashboardPage() {
   const [productType, setProductType] = useState<ProductType>('course');
   const [topicsCount, setTopicsCount] = useState(6);
   const [lessonsPerTopic, setLessonsPerTopic] = useState(4);
+  const [price, setPrice] = useState(120);
+  const [hasDiscount, setHasDiscount] = useState(true);
+  const [discountPercent, setDiscountPercent] = useState(50);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; status: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +31,11 @@ export default function DashboardPage() {
       const res = await fetch('/api/generate-course', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, level, avatar, focus, reviewsCount, bestSeller, productType, topicsCount, lessonsPerTopic }),
+        body: JSON.stringify({
+          topic, level, avatar, focus, reviewsCount, bestSeller, productType,
+          topicsCount, lessonsPerTopic, price,
+          discountPercent: hasDiscount ? discountPercent : 0,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -158,6 +165,61 @@ export default function DashboardPage() {
             <p className={styles.reviewsHint}>
               Total: {topicsCount * lessonsPerTopic} lecciones
             </p>
+          </div>
+        </div>
+
+        <div className={styles.reviewsSection}>
+          <h4 className={styles.reviewsSectionTitle}>Precio</h4>
+          <div className={styles.priceRow}>
+            <div className={styles.field}>
+              <label htmlFor="price">Precio original ($)</label>
+              <input
+                id="price"
+                type="number"
+                min={1}
+                step={1}
+                value={price}
+                onChange={(e) => setPrice(Math.max(1, parseInt(e.target.value) || 1))}
+              />
+            </div>
+            <label className={styles.toggleLabel}>
+              <input
+                type="checkbox"
+                checked={hasDiscount}
+                onChange={(e) => setHasDiscount(e.target.checked)}
+              />
+              Descuento
+            </label>
+            {hasDiscount && (
+              <div className={styles.field}>
+                <label htmlFor="discountPercent">%</label>
+                <select
+                  id="discountPercent"
+                  value={discountPercent}
+                  onChange={(e) => setDiscountPercent(parseInt(e.target.value))}
+                >
+                  {[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].map((p) => (
+                    <option key={p} value={p}>{p}%</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+          <div className={styles.priceCalc}>
+            {hasDiscount ? (
+              <>
+                <span className={styles.priceOriginal}>${price}</span>
+                <span className={styles.priceArrow}>&rarr;</span>
+                <span className={styles.priceFinal}>
+                  ${Math.round(price * (1 - discountPercent / 100))}
+                </span>
+                <span className={styles.priceSaving}>
+                  (-{discountPercent}% = ahorras ${Math.round(price * discountPercent / 100)})
+                </span>
+              </>
+            ) : (
+              <span className={styles.priceFinal}>${price}</span>
+            )}
           </div>
         </div>
 

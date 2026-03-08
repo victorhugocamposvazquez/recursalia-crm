@@ -11,6 +11,8 @@ export interface CourseInputPayload {
   productType?: ProductType;
   topicsCount?: number;
   lessonsPerTopic?: number;
+  price?: number;
+  discountPercent?: number;
 }
 
 // Estructura generada por OpenAI

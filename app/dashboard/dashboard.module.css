@@ -103,6 +103,56 @@
   cursor: pointer;
 }
 
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.priceRow .field {
+  flex: 0 0 auto;
+}
+
+.priceRow .field input[type="number"] {
+  max-width: 110px;
+}
+
+.priceRow .field select {
+  max-width: 100px;
+}
+
+.priceCalc {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+}
+
+.priceOriginal {
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-size: 0.95rem;
+}
+
+.priceArrow {
+  color: #64748b;
+}
+
+.priceFinal {
+  color: #34d399;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.priceSaving {
+  color: #6366f1;
+  font-size: 0.85rem;
+}
+
 .reviewsSection {
   padding: 1rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
