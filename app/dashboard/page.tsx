@@ -28,6 +28,7 @@ export default function DashboardPage() {
     setLoading(true);
     setResult(null);
     setError(null);
+    window.dispatchEvent(new CustomEvent('course-generating', { detail: true }));
 
     try {
       const res = await fetch('/api/generate-course', {
@@ -52,6 +53,7 @@ export default function DashboardPage() {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
+      window.dispatchEvent(new CustomEvent('course-generating', { detail: false }));
     }
   }
 
@@ -62,7 +64,7 @@ export default function DashboardPage() {
         Define las directrices y la IA generará la estructura completa.
       </p>
 
-      <form onSubmit={handleGenerate} className={styles.form}>
+      <form onSubmit={handleGenerate} className={styles.form} data-course-form>
         {/* ── Tema ── */}
         <div className={styles.card}>
           <div className={styles.grid2}>
@@ -247,8 +249,8 @@ export default function DashboardPage() {
           </p>
         )}
 
-        <button type="submit" disabled={loading} className={styles.submitBtn}>
-          {loading ? 'Generando...' : 'Generar curso'}
+        <button type="submit" disabled={loading} className={styles.submitBtn} style={{ display: 'none' }}>
+          Generar curso
         </button>
       </form>
     </div>

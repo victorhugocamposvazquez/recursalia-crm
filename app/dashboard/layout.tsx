@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { MobileNav } from './MobileNav';
+import { Footer } from './Footer';
 import styles from './layout.module.css';
 
 export default async function DashboardLayout({
@@ -52,6 +53,7 @@ export default async function DashboardLayout({
         </div>
       </aside>
       <main className={styles.main}>{children}</main>
+      <Footer userEmail={user.email ?? ''} />
     </div>
   );
 }
