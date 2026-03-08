@@ -77,6 +77,36 @@ export interface CourseRecord {
   created_at: string;
 }
 
+// SEO Blog Posts
+export type SeoPostType =
+  | 'tutorial'
+  | 'listicle'
+  | 'career'
+  | 'comparison'
+  | 'ultimate_guide'
+  | 'review'
+  | 'intro'
+  | 'certification'
+  | 'geo';
+
+export interface GeneratedSeoPost {
+  title: string;
+  slug: string;
+  meta_description: string;
+  content: string;
+  post_type: SeoPostType;
+  tags: string[];
+}
+
+export interface SeoPostRecord {
+  wp_post_id: number;
+  title: string;
+  slug: string;
+  post_type: SeoPostType;
+  status: 'draft' | 'publish';
+  course_wp_id: number;
+}
+
 // Respuestas API
 export interface ApiError {
   error: string;

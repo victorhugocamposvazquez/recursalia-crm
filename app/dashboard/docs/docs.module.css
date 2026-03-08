@@ -1,0 +1,271 @@
+.page {
+  max-width: 820px;
+}
+
+.header {
+  margin-bottom: 2.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Feature cards */
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.featureCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.featureCard:hover {
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.featureHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.featureIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.iconPurple {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+}
+
+.iconGreen {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.iconBlue {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+.iconOrange {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.iconPink {
+  background: rgba(244, 114, 182, 0.15);
+  color: #f472b6;
+}
+
+.iconRed {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.iconTeal {
+  background: rgba(45, 212, 191, 0.15);
+  color: #2dd4bf;
+}
+
+.iconIndigo {
+  background: rgba(129, 140, 248, 0.15);
+  color: #818cf8;
+}
+
+.featureInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.featureName {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.2rem;
+}
+
+.featureShort {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.chevron {
+  color: #64748b;
+  font-size: 1.1rem;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.chevronOpen {
+  composes: chevron;
+  transform: rotate(90deg);
+}
+
+/* Expanded content */
+.featureBody {
+  padding: 0 1.5rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.featureDesc {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.7;
+  margin: 1rem 0 0;
+}
+
+.featureDesc strong {
+  color: #e2e8f0;
+}
+
+.detailList {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.detailBullet {
+  color: #6366f1;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.techBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.techBadge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  background: rgba(99, 102, 241, 0.12);
+  color: #a5b4fc;
+  white-space: nowrap;
+}
+
+/* Architecture section */
+.archSection {
+  margin-top: 2.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.archTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 1rem;
+}
+
+.archGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+.archItem {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 0.85rem;
+  text-align: center;
+}
+
+.archLabel {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.3rem;
+}
+
+.archValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+/* Footer credits */
+.credits {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  background: rgba(99, 102, 241, 0.06);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.creditsText {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin: 0 0 0.25rem;
+  line-height: 1.6;
+}
+
+.creditsAuthor {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.creditsAuthor span {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.version {
+  font-size: 0.8rem;
+  color: #475569;
+  margin: 0.5rem 0 0;
+}

@@ -91,6 +91,12 @@ export function MobileNav({ userEmail }: MobileNavProps) {
           <Link href="/dashboard/reviews" className={styles.navLink} onClick={() => setIsOpen(false)}>
             Generar reseñas
           </Link>
+          <Link href="/dashboard/seo-posts" className={styles.navLink} onClick={() => setIsOpen(false)}>
+            Posts SEO
+          </Link>
+          <Link href="/dashboard/docs" className={styles.navLink} onClick={() => setIsOpen(false)}>
+            Documentacion
+          </Link>
         </nav>
         <div className={styles.user}>
           <span>{userEmail}</span>
