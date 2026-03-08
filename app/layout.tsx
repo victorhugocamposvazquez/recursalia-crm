@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Course SaaS Generator',
+  title: 'Recursalia - Cursos & Recursos',
 };
 
 export default function RootLayout({

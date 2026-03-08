@@ -32,7 +32,9 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1>RECURSALIA PANEL</h1>
+        <div className="logo-container">
+          <img src="/logos/recursalia-logo.png" alt="Recursalia" className="logo" />
+        </div>
         <p className="subtitle">Inicia sesión para continuar</p>
 
         <form onSubmit={handleSubmit} className="login-form">
@@ -80,11 +82,14 @@ export default function LoginPage() {
           max-width: 400px;
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        h1 {
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: #fff;
-          margin: 0 0 0.25rem;
+        .logo-container {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 1rem;
+        }
+        .logo {
+          max-width: 200px;
+          height: auto;
         }
         .subtitle {
           color: #94a3b8;

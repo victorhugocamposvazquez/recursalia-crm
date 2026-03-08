@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './layout.module.css';
 
 interface MobileNavProps {
@@ -24,7 +25,14 @@ export function MobileNav({ userEmail }: MobileNavProps) {
           <span />
           <span />
         </button>
-        <span className={styles.mobileBrand}>Course Generator</span>
+        <Image
+          src="/logos/recursalia-logo.png"
+          alt="Recursalia"
+          width={140}
+          height={40}
+          priority
+          className={styles.mobileBrandLogo}
+        />
       </header>
 
       <div
@@ -35,7 +43,14 @@ export function MobileNav({ userEmail }: MobileNavProps) {
 
       <aside className={`${styles.mobilePanel} ${isOpen ? styles.panelOpen : ''}`}>
         <div className={styles.mobilePanelHeader}>
-          <span className={styles.mobileBrand}>Course Generator</span>
+          <Image
+            src="/logos/recursalia-logo.png"
+            alt="Recursalia"
+            width={140}
+            height={40}
+            priority
+            className={styles.mobileBrandLogo}
+          />
           <button
             type="button"
             className={styles.closeBtn}
