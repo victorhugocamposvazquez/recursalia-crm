@@ -21,6 +21,8 @@ export default function DashboardPage() {
   const [result, setResult] = useState<{ id: string; status: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const salePrice = Math.round(price * (1 - discountPercent / 100));
+
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -57,61 +59,67 @@ export default function DashboardPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Generar nuevo curso</h1>
       <p className={styles.subtitle}>
-        Define las directrices del curso. La IA generará la estructura completa.
+        Define las directrices y la IA generará la estructura completa.
       </p>
 
       <form onSubmit={handleGenerate} className={styles.form}>
-        <div className={styles.row}>
+        {/* ── Tema ── */}
+        <div className={styles.card}>
+          <div className={styles.grid2}>
+            <div className={styles.field}>
+              <label htmlFor="topic">Tema del curso *</label>
+              <input
+                id="topic"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="Ej: React Hooks desde cero"
+                required
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="level">Nivel</label>
+              <select
+                id="level"
+                value={level}
+                onChange={(e) => setLevel(e.target.value as typeof level)}
+              >
+                <option value="beginner">Principiante</option>
+                <option value="intermediate">Intermedio</option>
+                <option value="advanced">Avanzado</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Audiencia ── */}
+        <div className={styles.card}>
           <div className={styles.field}>
-            <label htmlFor="topic">Tema del curso *</label>
+            <label htmlFor="avatar">Avatar / Persona objetivo</label>
             <input
-              id="topic"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej: React Hooks desde cero"
-              required
+              id="avatar"
+              value={avatar}
+              onChange={(e) => setAvatar(e.target.value)}
+              placeholder="Ej: Desarrollador junior que quiere aprender frontend"
             />
           </div>
-          <div className={styles.field}>
-            <label htmlFor="level">Nivel</label>
-            <select
-              id="level"
-              value={level}
-              onChange={(e) => setLevel(e.target.value as typeof level)}
-            >
-              <option value="beginner">Principiante</option>
-              <option value="intermediate">Intermedio</option>
-              <option value="advanced">Avanzado</option>
-            </select>
+          <div className={styles.field} style={{ marginTop: '0.75rem' }}>
+            <label htmlFor="focus">Enfoque</label>
+            <textarea
+              id="focus"
+              value={focus}
+              onChange={(e) => setFocus(e.target.value)}
+              placeholder="Ej: Enfoque práctico con proyectos reales, sin teoría innecesaria"
+              rows={3}
+            />
           </div>
         </div>
 
-        <div className={styles.field}>
-          <label htmlFor="avatar">Avatar / Persona objetivo</label>
-          <input
-            id="avatar"
-            value={avatar}
-            onChange={(e) => setAvatar(e.target.value)}
-            placeholder="Ej: Desarrollador junior que quiere aprender frontend"
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label htmlFor="focus">Enfoque</label>
-          <textarea
-            id="focus"
-            value={focus}
-            onChange={(e) => setFocus(e.target.value)}
-            placeholder="Ej: Enfoque práctico con proyectos reales, sin teoría innecesaria"
-            rows={3}
-          />
-        </div>
-
-        <div className={styles.optionsSection}>
-          <h4 className={styles.reviewsSectionTitle}>Opciones</h4>
-          <div className={styles.optionsRow}>
+        {/* ── Estructura ── */}
+        <div className={styles.card}>
+          <h4 className={styles.cardTitle}>Estructura</h4>
+          <div className={styles.grid4}>
             <div className={styles.field}>
-              <label htmlFor="productType">Tipo de producto</label>
+              <label htmlFor="productType">Tipo</label>
               <select
                 id="productType"
                 value={productType}
@@ -121,21 +129,6 @@ export default function DashboardPage() {
                 <option value="guide">Guía / Manual</option>
               </select>
             </div>
-            <label className={styles.toggleLabel}>
-              <input
-                type="checkbox"
-                checked={bestSeller}
-                onChange={(e) => setBestSeller(e.target.checked)}
-              />
-              Best Seller
-            </label>
-          </div>
-          <p className={styles.reviewsHint}>
-            {productType === 'course'
-              ? 'Curso: se mostrarán las ventajas del curso'
-              : 'Guía / Manual: se mostrarán los beneficios del producto'}
-          </p>
-          <div className={styles.optionsRow}>
             <div className={styles.field}>
               <label htmlFor="topicsCount">Módulos</label>
               <input
@@ -150,7 +143,7 @@ export default function DashboardPage() {
               />
             </div>
             <div className={styles.field}>
-              <label htmlFor="lessonsPerTopic">Lecciones / módulo</label>
+              <label htmlFor="lessonsPerTopic">Lecciones / mod.</label>
               <input
                 id="lessonsPerTopic"
                 type="number"
@@ -162,17 +155,42 @@ export default function DashboardPage() {
                 }
               />
             </div>
-            <p className={styles.reviewsHint}>
-              Total: {topicsCount * lessonsPerTopic} lecciones
-            </p>
+            <div className={styles.field}>
+              <label htmlFor="reviewsCount">Reseñas</label>
+              <input
+                id="reviewsCount"
+                type="number"
+                min={5}
+                max={200}
+                value={reviewsCount}
+                onChange={(e) =>
+                  setReviewsCount(Math.max(5, Math.min(200, parseInt(e.target.value) || 50)))
+                }
+              />
+            </div>
           </div>
+          <p className={styles.hint}>
+            {topicsCount * lessonsPerTopic} lecciones &middot; {reviewsCount} reseñas
+            {productType === 'course'
+              ? ' &middot; Se mostrarán ventajas'
+              : ' &middot; Se mostrarán beneficios'}
+          </p>
+          <label className={styles.toggle} style={{ marginTop: '0.75rem' }}>
+            <input
+              type="checkbox"
+              checked={bestSeller}
+              onChange={(e) => setBestSeller(e.target.checked)}
+            />
+            Marcar como Best Seller
+          </label>
         </div>
 
-        <div className={styles.reviewsSection}>
-          <h4 className={styles.reviewsSectionTitle}>Precio</h4>
-          <div className={styles.priceRow}>
+        {/* ── Precio ── */}
+        <div className={styles.card}>
+          <h4 className={styles.cardTitle}>Precio</h4>
+          <div className={styles.priceGrid}>
             <div className={styles.field}>
-              <label htmlFor="price">Precio original ($)</label>
+              <label htmlFor="price">Original ($)</label>
               <input
                 id="price"
                 type="number"
@@ -182,7 +200,7 @@ export default function DashboardPage() {
                 onChange={(e) => setPrice(Math.max(1, parseInt(e.target.value) || 1))}
               />
             </div>
-            <label className={styles.toggleLabel}>
+            <label className={styles.toggle}>
               <input
                 type="checkbox"
                 checked={hasDiscount}
@@ -192,7 +210,7 @@ export default function DashboardPage() {
             </label>
             {hasDiscount && (
               <div className={styles.field}>
-                <label htmlFor="discountPercent">%</label>
+                <label htmlFor="discountPercent">Porcentaje</label>
                 <select
                   id="discountPercent"
                   value={discountPercent}
@@ -208,13 +226,11 @@ export default function DashboardPage() {
           <div className={styles.priceCalc}>
             {hasDiscount ? (
               <>
-                <span className={styles.priceOriginal}>${price}</span>
+                <span className={styles.priceOld}>${price}</span>
                 <span className={styles.priceArrow}>&rarr;</span>
-                <span className={styles.priceFinal}>
-                  ${Math.round(price * (1 - discountPercent / 100))}
-                </span>
+                <span className={styles.priceFinal}>${salePrice}</span>
                 <span className={styles.priceSaving}>
-                  (-{discountPercent}% = ahorras ${Math.round(price * discountPercent / 100)})
+                  ahorras ${price - salePrice} ({discountPercent}%)
                 </span>
               </>
             ) : (
@@ -223,30 +239,11 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className={styles.reviewsSection}>
-          <h4 className={styles.reviewsSectionTitle}>Reseñas</h4>
-          <div className={styles.reviewsRow}>
-            <div className={styles.field}>
-              <label htmlFor="reviewsCount">Número de reseñas</label>
-              <input
-                id="reviewsCount"
-                type="number"
-                min={5}
-                max={200}
-                value={reviewsCount}
-                onChange={(e) =>
-                  setReviewsCount(Math.max(5, Math.min(200, parseInt(e.target.value) || 50)))
-                }
-              />
-            </div>
-            <p className={styles.reviewsHint}>Se generarán al publicar el curso en WordPress (5-200)</p>
-          </div>
-        </div>
-
+        {/* ── Feedback ── */}
         {error && <p className={styles.error}>{error}</p>}
         {result && (
           <p className={styles.success}>
-            Curso creado. <a href={`/dashboard/courses/${result.id}`}>Ver curso →</a>
+            Curso generado correctamente. <a href={`/dashboard/courses/${result.id}`}>Ver curso &rarr;</a>
           </p>
         )}
 
