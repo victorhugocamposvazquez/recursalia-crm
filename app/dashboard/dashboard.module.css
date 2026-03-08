@@ -82,6 +82,10 @@
   flex: 0 1 200px;
 }
 
+.optionsRow .field input[type="number"] {
+  max-width: 100px;
+}
+
 .toggleLabel {
   display: flex;
   align-items: center;

@@ -12,6 +12,8 @@ export default function DashboardPage() {
   const [reviewsCount, setReviewsCount] = useState(50);
   const [bestSeller, setBestSeller] = useState(true);
   const [productType, setProductType] = useState<ProductType>('course');
+  const [topicsCount, setTopicsCount] = useState(6);
+  const [lessonsPerTopic, setLessonsPerTopic] = useState(4);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; status: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export default function DashboardPage() {
       const res = await fetch('/api/generate-course', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, level, avatar, focus, reviewsCount, bestSeller, productType }),
+        body: JSON.stringify({ topic, level, avatar, focus, reviewsCount, bestSeller, productType, topicsCount, lessonsPerTopic }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -126,6 +128,37 @@ export default function DashboardPage() {
               ? 'Curso: se mostrarán las ventajas del curso'
               : 'Guía / Manual: se mostrarán los beneficios del producto'}
           </p>
+          <div className={styles.optionsRow}>
+            <div className={styles.field}>
+              <label htmlFor="topicsCount">Módulos</label>
+              <input
+                id="topicsCount"
+                type="number"
+                min={2}
+                max={15}
+                value={topicsCount}
+                onChange={(e) =>
+                  setTopicsCount(Math.max(2, Math.min(15, parseInt(e.target.value) || 6)))
+                }
+              />
+            </div>
+            <div className={styles.field}>
+              <label htmlFor="lessonsPerTopic">Lecciones / módulo</label>
+              <input
+                id="lessonsPerTopic"
+                type="number"
+                min={1}
+                max={10}
+                value={lessonsPerTopic}
+                onChange={(e) =>
+                  setLessonsPerTopic(Math.max(1, Math.min(10, parseInt(e.target.value) || 4)))
+                }
+              />
+            </div>
+            <p className={styles.reviewsHint}>
+              Total: {topicsCount * lessonsPerTopic} lecciones
+            </p>
+          </div>
         </div>
 
         <div className={styles.reviewsSection}>

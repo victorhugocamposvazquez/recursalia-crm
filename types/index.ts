@@ -9,6 +9,8 @@ export interface CourseInputPayload {
   reviewsCount?: number;
   bestSeller?: boolean;
   productType?: ProductType;
+  topicsCount?: number;
+  lessonsPerTopic?: number;
 }
 
 // Estructura generada por OpenAI

@@ -8,11 +8,16 @@ function getOpenAI(): OpenAI {
 }
 
 function buildPrompt(payload: CourseInputPayload): string {
+  const topicsCount = payload.topicsCount ?? 6;
+  const lessonsPerTopic = payload.lessonsPerTopic ?? 4;
+  const totalLessons = topicsCount * lessonsPerTopic;
+
   return `Genera la estructura JSON completa de un curso online para recursalia.com con estos datos:
 - Tema: ${payload.topic}
 - Nivel: ${payload.level}
 - Avatar/Persona objetivo: ${payload.avatar}
 - Enfoque: ${payload.focus}
+- Estructura: ${topicsCount} modulos con ${lessonsPerTopic} lecciones cada uno (${totalLessons} lecciones totales)
 
 Devuelve UNICAMENTE un JSON valido con esta estructura exacta (sin markdown ni texto adicional):
 
@@ -54,7 +59,7 @@ REGLAS OBLIGATORIAS:
 4. "badge" SIEMPRE debe ser "Best Seller".
 5. "benefits" SIEMPRE exactamente 4 elementos con iconos variados.
 6. "short_description" debe tener MINIMO 120 caracteres. Es clave para la venta.
-7. Exactamente 6 modulos, 4 lecciones por modulo (24 lecciones totales).
+7. Exactamente ${topicsCount} modulos, ${lessonsPerTopic} lecciones por modulo (${totalLessons} lecciones totales).
 8. Titulos de modulos: "Modulo 1: [Nombre]", "Modulo 2: [Nombre]", etc. Sin emojis.
 9. Titulos de lecciones: descriptivos y concisos, sin emojis.
 10. Contenido de lecciones: HTML semantico (p, h3, ul, li). 2-4 parrafos. Sin markdown.
