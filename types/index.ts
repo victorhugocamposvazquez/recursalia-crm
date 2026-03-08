@@ -4,6 +4,7 @@ export interface CourseInputPayload {
   level: 'beginner' | 'intermediate' | 'advanced';
   avatar: string;
   focus: string;
+  reviewsCount?: number;
 }
 
 // Estructura generada por OpenAI

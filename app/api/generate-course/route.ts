@@ -20,6 +20,10 @@ export async function POST(req: NextRequest) {
       level: body.level ?? 'intermediate',
       avatar: body.avatar ?? '',
       focus: body.focus ?? '',
+      reviewsCount:
+        typeof body.reviewsCount === 'number'
+          ? Math.max(5, Math.min(200, body.reviewsCount))
+          : undefined,
     };
 
     const course = await generateAndSaveCourse(payload);

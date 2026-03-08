@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { MobileNav } from './MobileNav';
 import styles from './layout.module.css';
 
 export default async function DashboardLayout({
@@ -17,6 +18,7 @@ export default async function DashboardLayout({
 
   return (
     <div className={styles.layout}>
+      <MobileNav userEmail={user.email ?? ''} />
       <aside className={styles.sidebar}>
         <div className={styles.brand}>Course Generator</div>
         <nav className={styles.nav}>

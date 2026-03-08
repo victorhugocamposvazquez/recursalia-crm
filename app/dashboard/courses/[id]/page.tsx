@@ -44,6 +44,10 @@ export default function CourseDetailPage() {
         setCourse(data);
         const link = data.hotmart_product_id;
         setHotmartLinkInput(typeof link === 'string' && link.startsWith('http') ? link : '');
+        const count = data.input_payload?.reviewsCount;
+        if (typeof count === 'number' && count >= 5 && count <= 200) {
+          setReviewsCount(count);
+        }
         if (syncEditContent) {
           setEditContent(data.generated_content);
         }

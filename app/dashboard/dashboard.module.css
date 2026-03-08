@@ -66,6 +66,34 @@
   min-height: 80px;
 }
 
+.reviewsSection {
+  padding: 1rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.reviewsSectionTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin: 0 0 1rem;
+}
+
+.reviewsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reviewsRow .field {
+  max-width: 120px;
+}
+
+.reviewsHint {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
 .error {
   color: #f87171;
   font-size: 0.9rem;

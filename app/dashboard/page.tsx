@@ -8,6 +8,7 @@ export default function DashboardPage() {
   const [level, setLevel] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
   const [avatar, setAvatar] = useState('');
   const [focus, setFocus] = useState('');
+  const [reviewsCount, setReviewsCount] = useState(50);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; status: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export default function DashboardPage() {
       const res = await fetch('/api/generate-course', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, level, avatar, focus }),
+        body: JSON.stringify({ topic, level, avatar, focus, reviewsCount }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -92,6 +93,26 @@ export default function DashboardPage() {
             placeholder="Ej: Enfoque práctico con proyectos reales, sin teoría innecesaria"
             rows={3}
           />
+        </div>
+
+        <div className={styles.reviewsSection}>
+          <h4 className={styles.reviewsSectionTitle}>Reseñas</h4>
+          <div className={styles.reviewsRow}>
+            <div className={styles.field}>
+              <label htmlFor="reviewsCount">Número de reseñas</label>
+              <input
+                id="reviewsCount"
+                type="number"
+                min={5}
+                max={200}
+                value={reviewsCount}
+                onChange={(e) =>
+                  setReviewsCount(Math.max(5, Math.min(200, parseInt(e.target.value) || 50)))
+                }
+              />
+            </div>
+            <p className={styles.reviewsHint}>Se generarán al publicar el curso en WordPress (5-200)</p>
+          </div>
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
