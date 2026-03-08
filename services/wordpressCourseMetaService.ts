@@ -42,7 +42,6 @@ export async function setCourseProduct(
 
 /**
  * Actualiza el enlace de pago de Hotmart del curso en WordPress.
- * Hotmart no tiene API para crear productos; el usuario crea el producto a mano y pega aquí el enlace.
  */
 export async function setCourseHotmartLink(
   wpCourseId: number,
@@ -55,10 +54,33 @@ export async function setCourseHotmartLink(
       Authorization: authHeader,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ meta: { hotmart_link: hotmartUrl.trim() } }),
+    body: JSON.stringify({ meta: { tlcf_hotmart_link: hotmartUrl.trim() } }),
   });
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`Update Hotmart link error ${res.status}: ${text}`);
+  }
+}
+
+/**
+ * Asocia el term_id de la categoría de reseñas al curso (tlcf_assigned_term_id).
+ * Así el plugin del tema sabe qué reseñas mostrar en el curso.
+ */
+export async function setCourseAssignedTerm(
+  wpCourseId: number,
+  termId: number
+): Promise<void> {
+  const { url, authHeader } = getConfig();
+  const res = await fetch(`${url}/wp-json/wp/v2/courses/${wpCourseId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: authHeader,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ meta: { tlcf_assigned_term_id: termId } }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Set assigned term error ${res.status}: ${text}`);
   }
 }

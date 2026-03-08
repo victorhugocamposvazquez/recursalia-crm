@@ -1,5 +1,5 @@
 import type { WpCreateCoursePayload, WpCourseResponse } from '@/types/wordpress';
-import type { GeneratedCourseStructure } from '@/types';
+import type { GeneratedCourseStructure, CourseInputPayload } from '@/types';
 import { withRetry } from '@/utils/retry';
 import { PartialPublishError } from '@/utils/partialPublishError';
 import { createCurriculum } from './tutorLmsService';
@@ -55,7 +55,8 @@ export async function createCourse(
   content: GeneratedCourseStructure,
   hotmartUrl?: string,
   featuredImageBuffer?: Buffer,
-  woocommerceProductId?: number
+  woocommerceProductId?: number,
+  inputPayload?: CourseInputPayload
 ): Promise<number> {
   const { url, authHeader } = getConfig();
   const htmlContent = buildCourseHtmlContent(content);
@@ -80,6 +81,9 @@ export async function createCourse(
   // eslint-disable-next-line no-control-regex
   const safeTitle = content.title.replace(/[^\x00-\x7F\xA0-\xFF]/g, '').trim();
 
+  const isCourse = (inputPayload?.productType ?? 'course') === 'course';
+  const isBestSeller = inputPayload?.bestSeller !== false;
+
   const payload: WpCreateCoursePayload = {
     title: safeTitle,
     content: htmlContent,
@@ -87,24 +91,12 @@ export async function createCourse(
     status: 'publish',
     ...(featuredMediaId && { featured_media: featuredMediaId }),
     meta: {
-      _tutor_course_settings: JSON.stringify({
-        course_title: safeTitle,
-        course_description: content.short_description ?? '',
-      }),
-      best_seller: content.badge === 'Best Seller' ? 'si' : 'no',
-      ventajas: content.ventajas ?? (content.benefits?.length ? 'si' : 'no'),
-      salary_info: content.highlight ?? '',
-      salary: content.highlight ?? '',
-      job_bank: content.highlight ? content.highlight : (content.job_bank ? 'si' : 'no'),
-      hotmart_link: typeof hotmartUrl === 'string' ? hotmartUrl : '',
-      price_original: String(content.price_original ?? ''),
-      price_sale: String(content.price_sale ?? ''),
-      certificate: content.certificate ? 'si' : 'no',
-      author_name: content.author_name ?? '',
-      access_level: content.access_level ?? '',
-      ...(content.benefits?.length && {
-        benefits: JSON.stringify(content.benefits),
-      }),
+      tlcf_short_description: content.short_description ?? '',
+      tlcf_best_seller: isBestSeller ? 'si' : 'no',
+      tlcf_ventajas_curso: isCourse ? 'si' : 'no',
+      tlcf_guide_benefits: isCourse ? 'no' : 'si',
+      tlcf_salary_info: content.highlight ?? '',
+      tlcf_hotmart_link: typeof hotmartUrl === 'string' ? hotmartUrl : '',
     },
   };
 

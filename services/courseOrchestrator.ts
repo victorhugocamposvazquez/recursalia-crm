@@ -13,7 +13,7 @@ import {
   assignCourseCategory,
 } from './courseCategoryService';
 import { PartialPublishError } from '@/utils/partialPublishError';
-import { setCourseProduct } from './wordpressCourseMetaService';
+import { setCourseProduct, setCourseAssignedTerm } from './wordpressCourseMetaService';
 import { createCurriculum } from './tutorLmsService';
 import type { CourseInputPayload, CourseRecord, CourseStatus } from '@/types';
 
@@ -152,14 +152,6 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
   }
 
   const inputPayload = course.input_payload as CourseInputPayload | undefined;
-  const isCourse = (inputPayload?.productType ?? 'course') === 'course';
-  content.badge = inputPayload?.bestSeller !== false ? 'Best Seller' : '';
-  if (isCourse) {
-    content.ventajas = 'si';
-  } else {
-    content.ventajas = 'no';
-    content.benefits = [];
-  }
 
   await setProgress('Publicando curso en WordPress...');
   try {
@@ -168,7 +160,8 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
         content,
         undefined,
         featuredImageBuffer,
-        woocommerceProductId
+        woocommerceProductId,
+        inputPayload
       )
     );
     await setProgress(`WordPress OK (id: ${wpId})`);
@@ -245,7 +238,8 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
         reviews,
         reviewCategory.term_id
       );
-      await setProgress(`Resenas OK (categoria term_id: ${reviewCategory.term_id}).`);
+      await setCourseAssignedTerm(wpCourseId, reviewCategory.term_id);
+      await setProgress(`Resenas OK + assigned_term_id: ${reviewCategory.term_id}.`);
     } catch (err) {
       errorLog =
         (errorLog ?? '') +
