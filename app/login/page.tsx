@@ -33,7 +33,7 @@ export default function LoginPage() {
     <div className="login-page">
       <div className="login-card">
         <div className="logo-container">
-          <img src="/logos/recursalia-logo.png" alt="Recursalia" className="logo" />
+          <img src="/logos/logo-blanco.png" alt="Recursalia" className="logo" />
         </div>
         <p className="subtitle">Inicia sesión para continuar</p>
 
@@ -86,13 +86,10 @@ export default function LoginPage() {
           display: flex;
           justify-content: center;
           margin-bottom: 1rem;
-          background: none;
         }
         .logo {
           max-width: 200px;
           height: auto;
-          background: none;
-          display: block;
         }
         .subtitle {
           color: #94a3b8;
