@@ -1,10 +1,14 @@
 // Input para generación de curso
+export type ProductType = 'course' | 'guide';
+
 export interface CourseInputPayload {
   topic: string;
   level: 'beginner' | 'intermediate' | 'advanced';
   avatar: string;
   focus: string;
   reviewsCount?: number;
+  bestSeller?: boolean;
+  productType?: ProductType;
 }
 
 // Estructura generada por OpenAI
@@ -37,6 +41,7 @@ export interface GeneratedCourseStructure {
   price_original?: number;
   price_sale?: number;
   badge?: string;
+  ventajas?: 'si' | 'no';
   access_level?: string;
   certificate?: boolean;
   job_bank?: boolean;

@@ -108,11 +108,16 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
 
   let featuredImageBuffer: Buffer | undefined;
   if (process.env.GOOGLE_GEMINI_API_KEY) {
+    await setProgress('Generando imagen destacada con Gemini...');
     try {
       featuredImageBuffer = await generateCourseFeaturedImage(content);
-    } catch {
-      // Continue without featured image
+      await setProgress(`Imagen generada (${featuredImageBuffer.length} bytes).`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      await setProgress(`Imagen fallo: ${msg}`);
     }
+  } else {
+    await setProgress('Imagen omitida (GOOGLE_GEMINI_API_KEY no configurada).');
   }
 
   let woocommerceProductId: number | undefined;
@@ -144,6 +149,16 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
     }
   } else {
     await setProgress('WooCommerce omitido (faltan credenciales).');
+  }
+
+  const inputPayload = course.input_payload as CourseInputPayload | undefined;
+  const isCourse = (inputPayload?.productType ?? 'course') === 'course';
+  content.badge = inputPayload?.bestSeller !== false ? 'Best Seller' : '';
+  if (isCourse) {
+    content.ventajas = 'si';
+  } else {
+    content.ventajas = 'no';
+    content.benefits = [];
   }
 
   await setProgress('Publicando curso en WordPress...');

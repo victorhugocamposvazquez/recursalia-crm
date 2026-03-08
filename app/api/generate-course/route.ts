@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
         typeof body.reviewsCount === 'number'
           ? Math.max(5, Math.min(200, body.reviewsCount))
           : undefined,
+      bestSeller: body.bestSeller !== false,
+      productType: body.productType === 'guide' ? 'guide' : 'course',
     };
 
     const course = await generateAndSaveCourse(payload);

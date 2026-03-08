@@ -92,7 +92,7 @@ export async function createCourse(
         course_description: content.short_description ?? '',
       }),
       best_seller: content.badge === 'Best Seller' ? 'si' : 'no',
-      ventajas: content.benefits?.length ? 'si' : 'no',
+      ventajas: content.ventajas ?? (content.benefits?.length ? 'si' : 'no'),
       salary_info: content.highlight ?? '',
       salary: content.highlight ?? '',
       job_bank: content.highlight ? content.highlight : (content.job_bank ? 'si' : 'no'),

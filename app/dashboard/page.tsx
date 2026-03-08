@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { ProductType } from '@/types';
 import styles from './dashboard.module.css';
 
 export default function DashboardPage() {
@@ -9,6 +10,8 @@ export default function DashboardPage() {
   const [avatar, setAvatar] = useState('');
   const [focus, setFocus] = useState('');
   const [reviewsCount, setReviewsCount] = useState(50);
+  const [bestSeller, setBestSeller] = useState(true);
+  const [productType, setProductType] = useState<ProductType>('course');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; status: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +26,7 @@ export default function DashboardPage() {
       const res = await fetch('/api/generate-course', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ topic, level, avatar, focus, reviewsCount }),
+        body: JSON.stringify({ topic, level, avatar, focus, reviewsCount, bestSeller, productType }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -93,6 +96,36 @@ export default function DashboardPage() {
             placeholder="Ej: Enfoque práctico con proyectos reales, sin teoría innecesaria"
             rows={3}
           />
+        </div>
+
+        <div className={styles.optionsSection}>
+          <h4 className={styles.reviewsSectionTitle}>Opciones</h4>
+          <div className={styles.optionsRow}>
+            <div className={styles.field}>
+              <label htmlFor="productType">Tipo de producto</label>
+              <select
+                id="productType"
+                value={productType}
+                onChange={(e) => setProductType(e.target.value as ProductType)}
+              >
+                <option value="course">Curso</option>
+                <option value="guide">Guía / Manual</option>
+              </select>
+            </div>
+            <label className={styles.toggleLabel}>
+              <input
+                type="checkbox"
+                checked={bestSeller}
+                onChange={(e) => setBestSeller(e.target.checked)}
+              />
+              Best Seller
+            </label>
+          </div>
+          <p className={styles.reviewsHint}>
+            {productType === 'course'
+              ? 'Curso: se mostrarán las ventajas del curso'
+              : 'Guía / Manual: se mostrarán los beneficios del producto'}
+          </p>
         </div>
 
         <div className={styles.reviewsSection}>

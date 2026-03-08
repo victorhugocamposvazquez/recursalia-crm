@@ -66,6 +66,39 @@
   min-height: 80px;
 }
 
+.optionsSection {
+  padding: 1rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.optionsRow {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.optionsRow .field {
+  flex: 0 1 200px;
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggleLabel input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #6366f1;
+  cursor: pointer;
+}
+
 .reviewsSection {
   padding: 1rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
