@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { CourseTabs } from '@/components/marketing/CourseTabs';
 import { CourseReviewList, type ReviewRow } from '@/components/marketing/CourseReviewList';
+import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
 import styles from './courseLanding.module.css';
 
@@ -111,6 +112,7 @@ export default async function CursoLandingPage({
       : null;
 
   const hotmartUrl = course.hotmart_product_id?.trim() || null;
+  const displayPrice = formatMoney(sale ?? original);
 
   const infoTab = (
     <div className={styles.prose}>
@@ -134,7 +136,11 @@ export default async function CursoLandingPage({
       {(content.author_name || content.author_bio) && (
         <>
           <h4>Autor</h4>
-          {content.author_name && <p><strong>{content.author_name}</strong></p>}
+          {content.author_name && (
+            <p>
+              <strong>{content.author_name}</strong>
+            </p>
+          )}
           {content.author_bio && <p>{content.author_bio}</p>}
         </>
       )}
@@ -146,7 +152,8 @@ export default async function CursoLandingPage({
       {(content.topics ?? []).map((topic, ti) => (
         <div key={ti} className={styles.module}>
           <h4>
-            Módulo {ti + 1}. {topic.title}
+            <span className={styles.moduleNum}>{ti + 1}</span>
+            <span>{topic.title}</span>
           </h4>
           {(topic.lessons ?? []).map((lesson, li) => (
             <div key={li} className={styles.lesson}>
@@ -160,74 +167,103 @@ export default async function CursoLandingPage({
 
   return (
     <div className={styles.layout}>
-      <div>
-        <div className={styles.heroImg}>
-          {course.featured_image_url ? (
-            <Image
-              src={course.featured_image_url}
-              alt=""
-              fill
-              priority
-              sizes="(max-width: 900px) 100vw, 70vw"
-              style={{ objectFit: 'cover' }}
-            />
-          ) : null}
-        </div>
+      <article className={styles.main}>
+        <nav className={styles.breadcrumb} aria-label="Migas de pan">
+          <Link href="/">Inicio</Link>
+          <span className={styles.sep}>/</span>
+          <Link href="/cursos">Cursos</Link>
+          <span className={styles.sep}>/</span>
+          <span className={styles.current}>{title}</span>
+        </nav>
 
-        {bestSeller && <span className={styles.badge}>Bestseller</span>}
-        <h1 className={styles.title}>{title}</h1>
-        <div className={styles.rating}>
-          {avg != null ? (
-            <>
-              <strong>{avg.toFixed(1)}</strong> ({reviews.length} opiniones)
-            </>
-          ) : (
-            <>Sin valoraciones</>
-          )}
+        <div className={styles.heroCard}>
+          <div className={styles.heroImg}>
+            {course.featured_image_url ? (
+              <Image
+                src={course.featured_image_url}
+                alt=""
+                fill
+                priority
+                sizes="(max-width: 960px) 100vw, 65vw"
+                style={{ objectFit: 'cover' }}
+              />
+            ) : null}
+          </div>
+          <div className={styles.heroBody}>
+            {bestSeller && <span className={styles.badge}>Bestseller</span>}
+            <h1 className={styles.title}>{title}</h1>
+            <a
+              href="#opiniones"
+              className={styles.ratingJump}
+              aria-label="Ir a la sección de opiniones de alumnos"
+            >
+              {avg != null ? (
+                <>
+                  <span className={styles.heroScore}>
+                    {avg.toFixed(1).replace('.', ',')}
+                  </span>
+                  <StarRatingDisplay value={avg} ariaHidden />
+                  <span className={styles.reviewCount}>({reviews.length})</span>
+                </>
+              ) : (
+                <span className={styles.ratingMuted}>
+                  Sin valoraciones aún — ver sección de opiniones
+                </span>
+              )}
+            </a>
+            <div className={styles.priceRow}>
+              {showStrike && (
+                <span className={styles.original}>{formatMoney(original)}</span>
+              )}
+              <span className={styles.sale}>{displayPrice}</span>
+            </div>
+            <p className={styles.lead}>{content.short_description}</p>
+          </div>
         </div>
-
-        <div className={styles.priceRow}>
-          {showStrike && (
-            <span className={styles.original}>{formatMoney(original)}</span>
-          )}
-          <span className={styles.sale}>{formatMoney(sale ?? original)}</span>
-        </div>
-
-        <p className={styles.lead}>{content.short_description}</p>
 
         {content.benefits && content.benefits.length > 0 && (
-          <ul className={styles.benefits}>
-            {content.benefits.map((b, i) => (
-              <li key={i}>
-                <span className={styles.bIcon}>{b.icon || '✓'}</span>
-                <div>
-                  <h3>{b.title}</h3>
-                  <p>{b.description}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <>
+            <p className={styles.sectionLabel}>Por qué este curso</p>
+            <ul className={styles.benefits}>
+              {content.benefits.map((b, i) => (
+                <li key={i}>
+                  <span className={styles.bIcon}>{b.icon || '✓'}</span>
+                  <div>
+                    <h3>{b.title}</h3>
+                    <p>{b.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
 
         {content.highlight && (
           <div className={styles.highlight}>{content.highlight}</div>
         )}
 
-        <CourseTabs info={infoTab} program={programTab} />
+        <div className={styles.tabsSection}>
+          <p className={styles.sectionLabel}>Contenido</p>
+          <CourseTabs info={infoTab} program={programTab} />
+        </div>
 
-        <section className={styles.reviews} id="opiniones">
-          <h2>Opiniones</h2>
-          <CourseReviewList reviews={reviews} />
+        <section
+          className={styles.reviews}
+          id="opiniones"
+          aria-labelledby="reviews-heading"
+        >
+          <p className={styles.sectionLabel}>Alumnos</p>
+          <CourseReviewList reviews={reviews} average={avg} />
         </section>
-      </div>
+      </article>
 
-      <aside className={styles.sidebar}>
-        <h3>{title}</h3>
+      <aside className={styles.sidebar} aria-label="Comprar curso">
+        <h2 className={styles.sidebarTitle}>{title}</h2>
         <div className={styles.priceRow}>
           {showStrike && (
             <span className={styles.original}>{formatMoney(original)}</span>
           )}
-          <span className={styles.sale}>{formatMoney(sale ?? original)}</span>
+          <span className={styles.sale}>{displayPrice}</span>
         </div>
         {hotmartUrl ? (
           <a
@@ -239,10 +275,14 @@ export default async function CursoLandingPage({
             Comprar ahora
           </a>
         ) : (
-          <p className={styles.trust}>Enlace Hotmart pendiente en el panel.</p>
+          <div className={styles.buyDisabled}>Enlace de compra pendiente</div>
         )}
+        <div className={styles.secondaryLinks}>
+          <Link href="#opiniones">Ver opiniones</Link>
+          <Link href="/cursos">Más cursos</Link>
+        </div>
         <p className={styles.trust}>
-          Pago seguro con Hotmart · Garantía de devolución
+          Pago seguro con Hotmart · Acceso al contenido tras la compra
         </p>
         <ul className={styles.metaList}>
           <li>
@@ -262,10 +302,24 @@ export default async function CursoLandingPage({
             <span>{content.language ?? 'Español'}</span>
           </li>
         </ul>
-        <p style={{ marginTop: '1rem', fontSize: '0.85rem' }}>
+        <div className={styles.backLink}>
           <Link href="/cursos">← Volver al catálogo</Link>
-        </p>
+        </div>
       </aside>
+
+      {hotmartUrl && (
+        <div className={styles.mobileCta}>
+          <div className={styles.mobileCtaInner}>
+            <div className={styles.mobilePrice}>
+              {showStrike && <span>{formatMoney(original)}</span>}
+              <strong>{displayPrice}</strong>
+            </div>
+            <a className={styles.mobileBuy} href={hotmartUrl}>
+              Comprar
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
