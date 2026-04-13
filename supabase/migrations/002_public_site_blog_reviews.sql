@@ -90,3 +90,6 @@ CREATE POLICY "Anon read published posts"
   USING (status = 'published');
 
 -- Service role (backoffice API) sigue sin restricciones por defecto al usar service key
+
+-- Refrescar caché de PostgREST (evita "Could not find column ... in the schema cache")
+NOTIFY pgrst, 'reload schema';

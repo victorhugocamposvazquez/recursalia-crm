@@ -29,7 +29,11 @@ SUPABASE_SERVICE_ROLE_KEY=placeholder
 
 La migración **002** añade: `public_slug`, reseñas en `course_reviews`, blog `blog_posts`, bucket público `course_media`, y **RLS** para que el anon key solo lea cursos publicados y posts publicados. El panel sigue usando la **service role** (sin restricción RLS).
 
-Si al publicar ves **«Slug check failed»**, **«Failed to clear reviews»** o **«relation course_reviews does not exist»**, la **002 no está aplicada** en ese proyecto Supabase: ejecútala en el SQL Editor o con `supabase db push`.
+Si al publicar ves **«Could not find the 'featured_image_url' column»**, **«Slug check failed: column courses.public_slug does not exist»**, **«Failed to clear reviews»** o **«relation course_reviews does not exist»**, la migración **002 no está aplicada** en ese proyecto (o PostgREST tiene caché vieja).
+
+**Qué hacer:** en Supabase → **SQL** → pega y ejecuta el archivo `supabase/migrations/002_public_site_blog_reviews.sql` completo (es idempotente: `IF NOT EXISTS`, etc.). Al final del script se ejecuta `NOTIFY pgrst, 'reload schema'` para refrescar la caché. Si tras aplicar el SQL el error de “schema cache” continúa unos minutos, en **Project Settings → API** a veces ayuda esperar o revisar la [guía oficial de refresh](https://supabase.com/docs/guides/troubleshooting/postgrest-not-recognizing-new-columns-or-functions-bd75f5).
+
+**Gemini (imagen destacada):** si ves **429 / quota / `gemini-2.5-flash-preview-image`**, los modelos de imagen suelen exigir **plan de pago** en Google AI Studio o tienen cuota 0 en free tier. Opciones: activar facturación en el proyecto de Google Cloud vinculado, o **quitar `GOOGLE_GEMINI_API_KEY`** en Vercel para omitir la imagen (la publicación sigue). No definas `GEMINI_IMAGE_MODEL` con sufijo `-preview-` salvo que sepas que tu proyecto tiene cuota para ese modelo; el código usa por defecto `gemini-2.5-flash-image`.
 
 Para **solo Next + Supabase** (sin WordPress), en Vercel define `WORDPRESS_PUBLISH_ENABLED=false` y no hace falta `WORDPRESS_*` para publicar cursos en la web.
 
