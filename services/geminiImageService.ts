@@ -24,8 +24,7 @@ export async function generateCourseFeaturedImage(
   const prompt = buildImagePrompt(content);
 
   const modelId =
-    process.env.GEMINI_IMAGE_MODEL ??
-    'gemini-2.0-flash-preview-image-generation';
+    process.env.GEMINI_IMAGE_MODEL ?? 'gemini-2.5-flash-image';
 
   const response = await ai.models.generateContent({
     model: modelId,

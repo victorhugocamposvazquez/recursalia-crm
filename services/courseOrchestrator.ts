@@ -317,7 +317,12 @@ export async function publishCourse(
     await setProgress('Slug publico fallo.');
   }
 
-  const supabaseReady = Boolean(publicSlug && reviewsSaved);
+  // Solo sitio Next: basta slug; reseñas opcionales (maquetación / menos dependencia OpenAI).
+  // Con WordPress activo: slug + reseñas en Supabase + curso creado en WP.
+  const supabaseReady = wordpressEnabled
+    ? Boolean(publicSlug && reviewsSaved)
+    : Boolean(publicSlug);
+
   const status: CourseStatus =
     !supabaseReady
       ? 'error'
