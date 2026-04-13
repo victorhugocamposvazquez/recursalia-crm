@@ -3,28 +3,15 @@ import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 import { generateSeoPosts } from '@/services/openaiSeoPostService';
-import { createWpPost } from '@/services/wordpressPostService';
+import { insertBlogPostDraft } from '@/services/blogPostService';
 import type { GeneratedCourseStructure, SeoPostRecord } from '@/types';
 
-async function getWpCoursePermalink(wpCourseId: string): Promise<string> {
-  const wpUrl = process.env.WORDPRESS_URL;
-  const user = process.env.WORDPRESS_USER;
-  const pass = process.env.WORDPRESS_APP_PASSWORD;
-  if (!wpUrl || !user || !pass) return `${wpUrl ?? 'https://recursalia.com'}/courses/`;
-
-  const authHeader = `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`;
-
-  try {
-    const res = await fetch(
-      `${wpUrl}/wp-json/wp/v2/courses/${wpCourseId}?_fields=link`,
-      { headers: { Authorization: authHeader } },
-    );
-    if (!res.ok) return `${wpUrl}/courses/`;
-    const data = (await res.json()) as { link?: string };
-    return data.link ?? `${wpUrl}/courses/`;
-  } catch {
-    return `${wpUrl}/courses/`;
+function publicCourseUrl(publicSlug: string | null | undefined): string {
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? '').replace(/\/$/, '');
+  if (base && publicSlug) {
+    return `${base}/cursos/${publicSlug}`;
   }
+  return `https://recursalia.com/cursos/${publicSlug ?? ''}`;
 }
 
 export async function POST(
@@ -39,20 +26,23 @@ export async function POST(
 
     const { data: course, error: fetchError } = await getSupabase()
       .from('courses')
-      .select('topic, generated_content, wp_course_id')
+      .select('topic, generated_content, public_slug, status')
       .eq('id', id)
       .single();
 
-    if (fetchError || !course?.generated_content || !course.wp_course_id) {
+    if (fetchError || !course?.generated_content) {
+      return errorResponse('Curso no encontrado o sin contenido', 404);
+    }
+
+    if (!course.public_slug || course.status !== 'published') {
       return errorResponse(
-        'Curso no encontrado, sin contenido o sin wp_course_id',
-        404,
+        'Publica el curso en el sitio (slug público) antes de generar artículos SEO',
+        400,
       );
     }
 
     const content = course.generated_content as GeneratedCourseStructure;
-    const wpCourseId = Number(course.wp_course_id);
-    const courseUrl = await getWpCoursePermalink(String(wpCourseId));
+    const courseUrl = publicCourseUrl(course.public_slug);
 
     console.log(`[seo-posts] Generating 17 posts for course "${content.title}"`);
 
@@ -65,19 +55,19 @@ export async function POST(
       },
     );
 
-    console.log(`[seo-posts] Generated ${posts.length} posts, publishing as drafts...`);
+    console.log(`[seo-posts] Generated ${posts.length} posts, saving drafts to Supabase...`);
 
     const records: SeoPostRecord[] = [];
     const errors: string[] = [];
 
     for (const post of posts) {
       try {
-        const record = await createWpPost(post, wpCourseId, 'draft');
+        const record = await insertBlogPostDraft(post, id);
         records.push(record);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         errors.push(`"${post.title}": ${msg}`);
-        console.error(`[seo-posts] Failed to publish "${post.title}":`, msg);
+        console.error(`[seo-posts] Failed to save "${post.title}":`, msg);
       }
     }
 
@@ -95,7 +85,7 @@ export async function POST(
 
     return jsonResponse({
       generated: posts.length,
-      published_drafts: records.length,
+      saved_drafts: records.length,
       records,
       errors: errors.length > 0 ? errors : undefined,
     });

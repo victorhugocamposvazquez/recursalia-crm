@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { requireAuthApi } from '@/lib/auth-api';
 import { publishCourse } from '@/services/courseOrchestrator';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
@@ -25,6 +26,13 @@ export async function POST(req: NextRequest) {
       reviewsAvgRating: body.reviewsAvgRating,
       reviewsPrompt: body.reviewsPrompt,
     });
+
+    if (course.status === 'published' && course.public_slug) {
+      revalidatePath('/');
+      revalidatePath('/cursos');
+      revalidatePath(`/cursos/${course.public_slug}`);
+    }
+
     return jsonResponse(course);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

@@ -7,7 +7,7 @@ import type { CourseRecord, SeoPostRecord } from '@/types';
 
 interface GenerateResult {
   generated: number;
-  published_drafts: number;
+  saved_drafts: number;
   records: SeoPostRecord[];
   errors?: string[];
 }
@@ -222,7 +222,7 @@ export default function SeoPostsPage() {
       {result && (
         <div className={styles.section}>
           <h2 className={styles.logTitle}>
-            Resultado: {result.published_drafts} posts creados como borrador
+            Resultado: {result.saved_drafts} posts guardados como borrador en Supabase
           </h2>
           <ul className={styles.logList}>
             {result.records.map((r) => (

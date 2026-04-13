@@ -15,6 +15,11 @@ import {
 import { PartialPublishError } from '@/utils/partialPublishError';
 import { setCourseProduct, setCourseAssignedTerm } from './wordpressCourseMetaService';
 import { createCurriculum } from './tutorLmsService';
+import { uploadCourseCoverImage } from './courseMediaService';
+import {
+  resolveUniquePublicSlug,
+  replaceCourseReviews,
+} from './coursePublicService';
 import type { CourseInputPayload, CourseRecord, CourseStatus } from '@/types';
 
 export interface ReviewsConfig {
@@ -24,6 +29,13 @@ export interface ReviewsConfig {
 }
 
 const DEFAULT_REVIEWS_COUNT = parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
+
+function wordpressPublishEnabled(): boolean {
+  return (
+    Boolean(process.env.WORDPRESS_URL?.trim()) &&
+    process.env.WORDPRESS_PUBLISH_ENABLED !== 'false'
+  );
+}
 
 export async function generateAndSaveCourse(
   payload: CourseInputPayload
@@ -64,7 +76,10 @@ export async function generateAndSaveCourse(
   }
 }
 
-export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig): Promise<CourseRecord> {
+export async function publishCourse(
+  courseId: string,
+  reviewsCfg?: ReviewsConfig
+): Promise<CourseRecord> {
   const supabase = getSupabase();
   const { data: course, error: fetchError } = await supabase
     .from('courses')
@@ -84,6 +99,8 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
   if (course.status === 'published') {
     return course as CourseRecord;
   }
+
+  const wordpressEnabled = wordpressPublishEnabled();
 
   let wpId: string | null = null;
   let errorLog: string | null = null;
@@ -120,8 +137,26 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
     await setProgress('Imagen omitida (GOOGLE_GEMINI_API_KEY no configurada).');
   }
 
+  let featuredImageUrl: string | null = null;
+  if (featuredImageBuffer && featuredImageBuffer.length > 0) {
+    await setProgress('Subiendo portada a Supabase Storage...');
+    try {
+      featuredImageUrl = await uploadCourseCoverImage(
+        courseId,
+        featuredImageBuffer,
+        'image/png'
+      );
+      await setProgress('Portada en Storage OK.');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      errorLog = (errorLog ?? '') + ` | Storage portada: ${msg}`;
+      await setProgress(`Storage portada fallo: ${msg}`);
+    }
+  }
+
   let woocommerceProductId: number | undefined;
   if (
+    wordpressEnabled &&
     process.env.WOOCOMMERCE_CONSUMER_KEY &&
     process.env.WOOCOMMERCE_CONSUMER_SECRET
   ) {
@@ -147,38 +182,43 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
         ` | WooCommerce: ${err instanceof Error ? err.message : String(err)}`;
       await setProgress('WooCommerce fallo. Se creara el curso igualmente.');
     }
+  } else if (!wordpressEnabled) {
+    await setProgress('WooCommerce omitido (publicacion sin WordPress).');
   } else {
     await setProgress('WooCommerce omitido (faltan credenciales).');
   }
 
   const inputPayload = course.input_payload as CourseInputPayload | undefined;
 
-  await setProgress('Publicando curso en WordPress...');
-  try {
-    wpId = String(
-      await createWpCourse(
-        content,
-        undefined,
-        featuredImageBuffer,
-        woocommerceProductId,
-        inputPayload
-      )
-    );
-    await setProgress(`WordPress OK (id: ${wpId})`);
-  } catch (err) {
-    if (err instanceof PartialPublishError) {
-      wpId = String(err.courseId);
-      retryProduct = err.productFailed;
-      retryCurriculum = err.curriculumFailed;
-      errorLog =
-        (errorLog ?? '') + ` | WordPress: ${err.message}`;
-      await setProgress(`WordPress parcial (id: ${wpId}). Reintentando tareas...`);
-    } else {
-      errorLog =
-        (errorLog ?? '') +
-        ` | WordPress: ${err instanceof Error ? err.message : String(err)}`;
-      await setProgress('WordPress fallo. No se pueden continuar categorias/resenas.');
+  if (wordpressEnabled) {
+    await setProgress('Publicando curso en WordPress...');
+    try {
+      wpId = String(
+        await createWpCourse(
+          content,
+          undefined,
+          featuredImageBuffer,
+          woocommerceProductId,
+          inputPayload
+        )
+      );
+      await setProgress(`WordPress OK (id: ${wpId})`);
+    } catch (err) {
+      if (err instanceof PartialPublishError) {
+        wpId = String(err.courseId);
+        retryProduct = err.productFailed;
+        retryCurriculum = err.curriculumFailed;
+        errorLog = (errorLog ?? '') + ` | WordPress: ${err.message}`;
+        await setProgress(`WordPress parcial (id: ${wpId}). Reintentando tareas...`);
+      } else {
+        errorLog =
+          (errorLog ?? '') +
+          ` | WordPress: ${err instanceof Error ? err.message : String(err)}`;
+        await setProgress('WordPress fallo. Categorias WP omitidas.');
+      }
     }
+  } else {
+    await setProgress('WordPress omitido (sin URL o WORDPRESS_PUBLISH_ENABLED=false).');
   }
 
   if (wpId) {
@@ -218,39 +258,74 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
         ` | Course category: ${err instanceof Error ? err.message : String(err)}`;
       await setProgress('Categoria de curso fallo.');
     }
-    const revCount = reviewsCfg?.reviewsCount ?? DEFAULT_REVIEWS_COUNT;
-    const revRating = reviewsCfg?.reviewsAvgRating ?? 'high';
-    let revPrompt = reviewsCfg?.reviewsPrompt;
-    if (revRating === 'high') {
-      revPrompt = (revPrompt ? revPrompt + '\n' : '') +
-        'Valoraciones altas: la gran mayoria (80%) deben ser 5 estrellas, el resto 4 estrellas. Alguna de 3 estrellas aislada para credibilidad.';
-    } else {
-      revPrompt = (revPrompt ? revPrompt + '\n' : '') +
-        'Valoraciones mixtas: 40% de 5 estrellas, 30% de 4, 20% de 3 y 10% de 2. Variedad para credibilidad.';
-    }
-    await setProgress(`Generando ${revCount} resenas (valoracion: ${revRating})...`);
-    try {
-      const reviews = await generateReviews(content.title, revCount, revPrompt);
-      const reviewCategory = await createReviewCategory(content.title);
-      await createSiteReviews(
-        wpCourseId,
-        reviewCategory.slug,
-        reviews,
-        reviewCategory.term_id
-      );
-      await setCourseAssignedTerm(wpCourseId, reviewCategory.term_id);
-      await setProgress(`Resenas OK + assigned_term_id: ${reviewCategory.term_id}.`);
-    } catch (err) {
-      errorLog =
-        (errorLog ?? '') +
-        ` | Site Reviews: ${err instanceof Error ? err.message : String(err)}`;
-      await setProgress('Resenas/Site Reviews fallo.');
-    }
   }
 
-  const status: CourseStatus = wpId ? 'published' : 'error';
+  const revCount = reviewsCfg?.reviewsCount ?? DEFAULT_REVIEWS_COUNT;
+  const revRating = reviewsCfg?.reviewsAvgRating ?? 'high';
+  let revPrompt = reviewsCfg?.reviewsPrompt;
+  if (revRating === 'high') {
+    revPrompt =
+      (revPrompt ? revPrompt + '\n' : '') +
+      'Valoraciones altas: la gran mayoria (80%) deben ser 5 estrellas, el resto 4 estrellas. Alguna de 3 estrellas aislada para credibilidad.';
+  } else {
+    revPrompt =
+      (revPrompt ? revPrompt + '\n' : '') +
+      'Valoraciones mixtas: 40% de 5 estrellas, 30% de 4, 20% de 3 y 10% de 2. Variedad para credibilidad.';
+  }
 
-  if (wpId) {
+  let reviewsSaved = false;
+  await setProgress(`Generando ${revCount} resenas (valoracion: ${revRating})...`);
+  try {
+    const reviews = await generateReviews(content.title, revCount, revPrompt);
+    await replaceCourseReviews(courseId, reviews);
+    reviewsSaved = true;
+    await setProgress('Resenas guardadas en Supabase.');
+
+    if (wpId && wordpressEnabled) {
+      try {
+        const reviewCategory = await createReviewCategory(content.title);
+        await createSiteReviews(
+          Number(wpId),
+          reviewCategory.slug,
+          reviews,
+          reviewCategory.term_id
+        );
+        await setCourseAssignedTerm(Number(wpId), reviewCategory.term_id);
+        await setProgress(`Resenas Site Reviews WP OK (term_id: ${reviewCategory.term_id}).`);
+      } catch (err) {
+        errorLog =
+          (errorLog ?? '') +
+          ` | Site Reviews WP: ${err instanceof Error ? err.message : String(err)}`;
+        await setProgress('Resenas Site Reviews WP fallo.');
+      }
+    }
+  } catch (err) {
+    errorLog =
+      (errorLog ?? '') +
+      ` | Resenas Supabase: ${err instanceof Error ? err.message : String(err)}`;
+    await setProgress('Generacion o guardado de resenas fallo.');
+  }
+
+  let publicSlug: string | null = null;
+  try {
+    publicSlug = await resolveUniquePublicSlug(content.title, courseId);
+    await setProgress(`Slug publico: ${publicSlug}`);
+  } catch (err) {
+    errorLog =
+      (errorLog ?? '') +
+      ` | Slug: ${err instanceof Error ? err.message : String(err)}`;
+    await setProgress('Slug publico fallo.');
+  }
+
+  const supabaseReady = Boolean(publicSlug && reviewsSaved);
+  const status: CourseStatus =
+    !supabaseReady
+      ? 'error'
+      : wordpressEnabled && !wpId
+        ? 'error'
+        : 'published';
+
+  if (status === 'published') {
     await setProgress('Publicacion completada.');
   }
 
@@ -258,10 +333,18 @@ export async function publishCourse(courseId: string, reviewsCfg?: ReviewsConfig
     ? progressLines.join('\n') + '\n--- ERRORES ---\n' + errorLog
     : progressLines.join('\n');
 
+  const metaDesc = (content.short_description || content.description || '').slice(0, 320);
+
   const { data: updated, error: updateError } = await supabase
     .from('courses')
     .update({
       wp_course_id: wpId ?? course.wp_course_id,
+      public_slug: publicSlug,
+      published_title: content.title,
+      published_at: status === 'published' ? new Date().toISOString() : null,
+      meta_title: content.title,
+      meta_description: metaDesc || null,
+      featured_image_url: featuredImageUrl,
       status,
       error_log: finalLog,
     })

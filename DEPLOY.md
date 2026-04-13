@@ -6,6 +6,7 @@ Crear `.env.local` con valores placeholder para que `npm run build` funcione sin
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://placeholder.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder
 SUPABASE_SERVICE_ROLE_KEY=placeholder
 ```
 
@@ -21,9 +22,16 @@ SUPABASE_SERVICE_ROLE_KEY=placeholder
 ### 1. Supabase
 
 ```bash
-# En Supabase SQL Editor, ejecutar:
+# En Supabase SQL Editor, ejecutar en orden:
 # supabase/migrations/001_create_courses_table.sql
+# supabase/migrations/002_public_site_blog_reviews.sql
 ```
+
+La migración **002** añade: `public_slug`, reseñas en `course_reviews`, blog `blog_posts`, bucket público `course_media`, y **RLS** para que el anon key solo lea cursos publicados y posts publicados. El panel sigue usando la **service role** (sin restricción RLS).
+
+Para **solo Next + Supabase** (sin WordPress), en Vercel define `WORDPRESS_PUBLISH_ENABLED=false` y no hace falta `WORDPRESS_*` para publicar cursos en la web.
+
+Variable recomendada: `NEXT_PUBLIC_SITE_URL` (origen canónico, p. ej. `https://tu-dominio.com`) para enlaces en artículos SEO.
 
 O con Supabase CLI:
 ```bash

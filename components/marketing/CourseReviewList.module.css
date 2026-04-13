@@ -1,0 +1,41 @@
+.reviewMeta {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.reviewCard {
+  padding: 1.15rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.reviewCard h4 {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.reviewCard p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.55;
+}
+
+.loadMore {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.loadMore:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+}

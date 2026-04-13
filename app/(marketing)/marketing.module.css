@@ -1,0 +1,136 @@
+.marketing {
+  --m-navy: #0b1f42;
+  --m-blue: #2563eb;
+  --m-indigo: #6366f1;
+  --m-slate: #64748b;
+  --m-bg: #f1f5f9;
+  --m-card: #ffffff;
+  --m-text: #0f172a;
+  min-height: 100vh;
+  background: var(--m-bg);
+  color: var(--m-text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.5;
+}
+
+.inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.hero {
+  text-align: center;
+  padding: 3.5rem 1.25rem 4.5rem;
+  background: radial-gradient(
+    ellipse 90% 70% at 50% -10%,
+    #1e3a5f 0%,
+    #0f172a 45%,
+    #020617 100%
+  );
+  color: #f8fafc;
+}
+
+.hero h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.85rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.accent {
+  color: #a5b4fc;
+}
+
+.sub {
+  margin: 0 auto 2rem;
+  max-width: 36rem;
+  font-size: 1.05rem;
+  color: #cbd5e1;
+}
+
+.searchLabel {
+  display: block;
+  margin-bottom: 0.65rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.footerNote {
+  margin-top: 1.75rem;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.footerNote a {
+  color: #c7d2fe;
+  text-decoration: underline;
+}
+
+.section {
+  padding: 3rem 0;
+}
+
+.section h2 {
+  margin: 0 0 1.25rem;
+  font-size: 1.5rem;
+  color: var(--m-navy);
+}
+
+.grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.card {
+  background: var(--m-card);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
+  border: 1px solid #e2e8f0;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgb(15 23 42 / 10%);
+}
+
+.card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.cardImage {
+  aspect-ratio: 16 / 9;
+  background: #e2e8f0;
+  position: relative;
+}
+
+.cardBody {
+  padding: 1rem 1.15rem 1.25rem;
+}
+
+.cardBody h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.cardBody p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--m-slate);
+}
+
+.empty {
+  color: var(--m-slate);
+  font-size: 0.95rem;
+}

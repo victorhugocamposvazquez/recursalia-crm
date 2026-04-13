@@ -24,20 +24,28 @@ export async function POST(
 
     const { data: course, error: fetchError } = await getSupabase()
       .from('courses')
-      .select('wp_course_id')
+      .select('wp_course_id, public_slug')
       .eq('id', id)
       .single();
 
-    if (fetchError || !course?.wp_course_id) {
-      return errorResponse('Course not found or not yet published in WordPress', 404);
+    if (fetchError || !course) {
+      return errorResponse('Course not found', 404);
     }
 
-    const wpCourseId = Number(course.wp_course_id);
-    if (!Number.isFinite(wpCourseId)) {
-      return errorResponse('Invalid WordPress course id', 400);
+    if (!course.wp_course_id && !course.public_slug) {
+      return errorResponse(
+        'Publica el curso primero (sitio web o WordPress) para asociar el enlace Hotmart',
+        400
+      );
     }
 
-    await setCourseHotmartLink(wpCourseId, url);
+    if (course.wp_course_id) {
+      const wpCourseId = Number(course.wp_course_id);
+      if (!Number.isFinite(wpCourseId)) {
+        return errorResponse('Invalid WordPress course id', 400);
+      }
+      await setCourseHotmartLink(wpCourseId, url);
+    }
 
     const { data: updated, error: updateError } = await getSupabase()
       .from('courses')

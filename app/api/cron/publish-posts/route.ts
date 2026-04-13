@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
-import { getDraftPosts, publishDraftPost } from '@/services/wordpressPostService';
+import { publishDraftBlogPosts } from '@/services/blogPostService';
 
 const POSTS_PER_RUN = 3;
 
@@ -13,34 +14,23 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const drafts = await getDraftPosts(POSTS_PER_RUN);
+    const published = await publishDraftBlogPosts(POSTS_PER_RUN);
 
-    if (drafts.length === 0) {
-      console.log('[cron] No draft posts to publish');
+    if (published.length === 0) {
+      console.log('[cron] No draft blog posts to publish');
       return jsonResponse({ published: 0, message: 'No drafts pending' });
     }
 
-    console.log(`[cron] Publishing ${drafts.length} draft posts...`);
+    console.log(`[cron] Publishing ${published.length} blog posts...`);
 
-    const published: { id: number; slug: string }[] = [];
-    const errors: string[] = [];
-
-    for (const draft of drafts) {
-      try {
-        await publishDraftPost(draft.id);
-        published.push({ id: draft.id, slug: draft.slug });
-        console.log(`[cron] Published: ${draft.slug} (ID ${draft.id})`);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        errors.push(`Post ${draft.id}: ${msg}`);
-        console.error(`[cron] Failed to publish ${draft.id}:`, msg);
-      }
+    revalidatePath('/blog');
+    for (const p of published) {
+      revalidatePath(`/blog/${p.slug}`);
     }
 
     return jsonResponse({
       published: published.length,
       posts: published,
-      errors: errors.length > 0 ? errors : undefined,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

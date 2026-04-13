@@ -1,0 +1,63 @@
+.wrap {
+  margin-top: 1.5rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1.25rem;
+}
+
+.tabs button {
+  border: none;
+  background: transparent;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  margin-bottom: -2px;
+  border-bottom: 2px solid transparent;
+}
+
+.tabs button:hover {
+  color: #2563eb;
+}
+
+.active {
+  color: #2563eb !important;
+  border-bottom-color: #2563eb !important;
+}
+
+.panel {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #334155;
+}
+
+.panel h4 {
+  margin: 1rem 0 0.5rem;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.panel ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.module {
+  margin-bottom: 1.5rem;
+}
+
+.module h4 {
+  margin-bottom: 0.65rem;
+  color: #0b1f42;
+}
+
+.lesson {
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+}

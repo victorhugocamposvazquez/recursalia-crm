@@ -326,13 +326,22 @@ export default function CourseDetailPage() {
       {course.wp_course_id && (
         <p className={styles.metaLine}>WordPress ID: {course.wp_course_id}</p>
       )}
+      {course.public_slug && (
+        <p className={styles.metaLine}>
+          Web pública:{' '}
+          <a href={`/cursos/${course.public_slug}`} target="_blank" rel="noopener noreferrer">
+            /cursos/{course.public_slug}
+          </a>
+        </p>
+      )}
 
-      {!editMode && course.wp_course_id && content && (
+      {!editMode && content && (course.wp_course_id || course.public_slug) && (
         <section className={styles.hotmartSection}>
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Enlace de pago Hotmart</h3>
             <p className={styles.hotmartNote}>
-              Crea el producto en Hotmart y pega aquí el enlace de pago; se guardará en el curso de WordPress.
+              Crea el producto en Hotmart y pega aquí el enlace de pago; se sincroniza con Supabase
+              {course.wp_course_id ? ' y con WordPress' : ''}.
             </p>
             <div className={styles.hotmartRow}>
               <input
@@ -365,7 +374,7 @@ export default function CourseDetailPage() {
                   }
                 }}
               >
-                {savingHotmart ? 'Guardando...' : 'Guardar en WordPress'}
+                {savingHotmart ? 'Guardando...' : course.wp_course_id ? 'Guardar en WordPress' : 'Guardar enlace'}
               </button>
             </div>
           </div>

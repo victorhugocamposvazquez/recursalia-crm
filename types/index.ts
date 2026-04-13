@@ -75,6 +75,15 @@ export interface CourseRecord {
   status: CourseStatus;
   error_log: string | null;
   created_at: string;
+  /** Slug para URL pública /cursos/[slug] */
+  public_slug?: string | null;
+  published_at?: string | null;
+  published_title?: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  featured_image_url?: string | null;
+  seo_posts_count?: number | null;
+  seo_posts_generated_at?: string | null;
 }
 
 // SEO Blog Posts
@@ -99,12 +108,13 @@ export interface GeneratedSeoPost {
 }
 
 export interface SeoPostRecord {
-  wp_post_id: number;
+  id?: string;
+  wp_post_id?: number;
   title: string;
   slug: string;
   post_type: SeoPostType;
-  status: 'draft' | 'publish';
-  course_wp_id: number;
+  status: 'draft' | 'publish' | 'published';
+  course_wp_id?: number;
 }
 
 // Respuestas API
