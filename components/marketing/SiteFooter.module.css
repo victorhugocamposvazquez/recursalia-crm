@@ -1,45 +1,49 @@
 .footer {
   margin-top: auto;
-  background: #0b1f42;
-  color: #cbd5e1;
-  padding: 2.5rem 1.25rem;
-  font-size: 0.9rem;
+  background: linear-gradient(180deg, var(--ch-navy-soft, #1a365d) 0%, var(--ch-navy, #0c1a2e) 100%);
+  color: #c5d4e8;
+  padding: 3rem 1.5rem 2rem;
+  font-size: 0.92rem;
 }
 
 .inner {
-  max-width: 1120px;
+  max-width: 1140px;
   margin: 0 auto;
   display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .footer strong {
-  color: #f8fafc;
+  color: #ffffff;
   display: block;
-  margin-bottom: 0.65rem;
-  font-size: 0.8rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  opacity: 0.95;
 }
 
 .footer a {
-  color: #cbd5e1;
+  color: #b8cce6;
   text-decoration: none;
   display: block;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
 }
 
 .footer a:hover {
-  color: #fff;
+  color: #ffffff;
 }
 
 .copy {
-  max-width: 1120px;
-  margin: 2rem auto 0;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgb(255 255 255 / 12%);
-  font-size: 0.8rem;
-  color: #94a3b8;
+  max-width: 1140px;
+  margin: 2.5rem auto 0;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+  font-size: 0.82rem;
+  color: rgb(255 255 255 / 45%);
   text-align: center;
 }

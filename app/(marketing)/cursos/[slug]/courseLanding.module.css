@@ -17,10 +17,12 @@
 .heroImg {
   position: relative;
   aspect-ratio: 16 / 9;
-  border-radius: 12px;
+  border-radius: var(--ch-radius, 12px);
   overflow: hidden;
-  background: #e2e8f0;
+  background: linear-gradient(145deg, var(--ch-blue-light, #e8f1fc), #dbeafe);
   margin-bottom: 1.25rem;
+  border: 1px solid var(--ch-border, #e1e8f0);
+  box-shadow: var(--ch-shadow, 0 4px 24px rgb(12 26 46 / 6%));
 }
 
 .badge {
@@ -39,18 +41,20 @@
 .title {
   margin: 0 0 0.5rem;
   font-size: clamp(1.5rem, 3vw, 2rem);
-  color: #0b1f42;
+  color: var(--ch-navy, #0c1a2e);
   line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .rating {
   font-size: 0.95rem;
-  color: #64748b;
+  color: var(--ch-text-muted, #5c6b7a);
   margin-bottom: 1rem;
 }
 
 .rating strong {
-  color: #0f172a;
+  color: var(--ch-navy, #0c1a2e);
 }
 
 .priceRow {
@@ -70,7 +74,7 @@
 .sale {
   font-size: 1.75rem;
   font-weight: 800;
-  color: #2563eb;
+  color: var(--ch-blue, #2066d6);
 }
 
 .currency {
@@ -80,10 +84,10 @@
 }
 
 .lead {
-  font-size: 1.05rem;
-  color: #475569;
+  font-size: 1.08rem;
+  color: var(--ch-text-muted, #5c6b7a);
   margin: 0 0 1.5rem;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .benefits {
@@ -98,10 +102,11 @@
   display: flex;
   gap: 0.85rem;
   align-items: flex-start;
-  padding: 1rem;
-  background: #f8fafc;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  padding: 1.1rem;
+  background: var(--ch-surface, #fff);
+  border-radius: var(--ch-radius-sm, 8px);
+  border: 1px solid var(--ch-border, #e1e8f0);
+  box-shadow: var(--ch-shadow, 0 2px 12px rgb(12 26 46 / 4%));
 }
 
 .bIcon {
@@ -112,56 +117,64 @@
 .benefits h3 {
   margin: 0 0 0.25rem;
   font-size: 1rem;
-  color: #0f172a;
+  color: var(--ch-navy, #0c1a2e);
+  font-weight: 600;
 }
 
 .benefits p {
   margin: 0;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--ch-text-muted, #5c6b7a);
 }
 
 .highlight {
-  padding: 1rem 1.15rem;
-  background: linear-gradient(135deg, #eff6ff, #eef2ff);
-  border-radius: 10px;
-  border: 1px solid #bfdbfe;
+  padding: 1.1rem 1.2rem;
+  background: linear-gradient(135deg, var(--ch-blue-light, #e8f1fc), #f0f6ff);
+  border-radius: var(--ch-radius-sm, 8px);
+  border: 1px solid rgb(32 102 214 / 22%);
   font-size: 0.95rem;
-  color: #1e3a8a;
+  color: var(--ch-navy-soft, #1a365d);
   margin-bottom: 1.5rem;
+  font-weight: 500;
 }
 
 .sidebar {
   position: sticky;
   top: 5.5rem;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: 0 4px 20px rgb(15 23 42 / 6%);
+  background: var(--ch-surface, #fff);
+  border: 1px solid var(--ch-border, #e1e8f0);
+  border-radius: var(--ch-radius, 12px);
+  padding: 1.35rem;
+  box-shadow: var(--ch-shadow, 0 4px 24px rgb(12 26 46 / 6%));
 }
 
 .sidebar h3 {
   margin: 0 0 0.75rem;
   font-size: 1rem;
-  color: #0f172a;
+  color: var(--ch-navy, #0c1a2e);
+  font-weight: 700;
 }
 
 .buy {
   display: block;
   width: 100%;
   text-align: center;
-  padding: 0.85rem 1rem;
-  background: #2563eb;
+  padding: 0.9rem 1rem;
+  background: var(--ch-blue, #2066d6);
   color: #fff !important;
   font-weight: 700;
-  border-radius: 10px;
+  border-radius: var(--ch-radius-sm, 8px);
   text-decoration: none;
   margin-bottom: 0.75rem;
+  box-shadow: 0 4px 16px rgb(32 102 214 / 28%);
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .buy:hover {
-  background: #1d4ed8;
+  background: var(--ch-blue-hover, #1854b5);
+  box-shadow: 0 6px 20px rgb(32 102 214 / 35%);
 }
 
 .trust {
@@ -194,8 +207,10 @@
 
 .reviews h2 {
   margin: 0 0 1rem;
-  font-size: 1.25rem;
-  color: #0b1f42;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ch-navy, #0c1a2e);
+  letter-spacing: -0.02em;
 }
 
 .reviewCard {
@@ -236,8 +251,9 @@
 }
 
 .loadMore:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #2066d6);
+  background: var(--ch-blue-light, #e8f1fc);
 }
 
 .prose {

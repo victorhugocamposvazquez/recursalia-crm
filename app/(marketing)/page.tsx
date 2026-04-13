@@ -8,11 +8,12 @@ export default function MarketingHomePage() {
       <section className={styles.hero}>
         <div className={styles.inner}>
           <h1>
-            La formación online que impulsa tu carrera{' '}
-            <span className={styles.accent}>en español</span>
+            La formación online que impulsa{' '}
+            <span className={styles.accent}>tu carrera profesional</span>
           </h1>
           <p className={styles.sub}>
-            Cursos prácticos con temario claro, reseñas reales y acceso seguro por Hotmart.
+            Cursos prácticos, temarios claros y acceso seguro. Aprende con la misma claridad visual
+            que esperas de una plataforma profesional.
           </p>
           <label className={styles.searchLabel} htmlFor="home-course-search">
             ¿Qué quieres aprender?
@@ -20,10 +21,15 @@ export default function MarketingHomePage() {
           <div id="home-course-search">
             <HomeHeroSearch />
           </div>
+          <ul className={styles.trustRow} aria-label="Ventajas">
+            <li>Contenido orientado al empleo</li>
+            <li>Pago seguro con Hotmart</li>
+            <li>Estudia a tu ritmo</li>
+          </ul>
           <p className={styles.footerNote}>
-            <Link href="/cursos">Ver todos los cursos</Link>
+            <Link href="/cursos">Explorar catálogo</Link>
             {' · '}
-            <Link href="/login">Accede al panel de formación</Link>
+            <Link href="/login">Acceder al panel</Link>
           </p>
         </div>
       </section>

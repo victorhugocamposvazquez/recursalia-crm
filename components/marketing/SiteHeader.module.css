@@ -2,15 +2,17 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgb(255 255 255 / 92%);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid #e2e8f0;
+  background: rgb(255 255 255 / 88%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ch-border, #e1e8f0);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 80%) inset;
 }
 
 .bar {
-  max-width: 1120px;
+  max-width: 1140px;
   margin: 0 auto;
-  padding: 0.85rem 1.25rem;
+  padding: 0.9rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -18,46 +20,59 @@
 }
 
 .logo {
-  font-weight: 700;
-  font-size: 1.15rem;
-  color: #0b1f42;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--ch-navy, #0c1a2e);
   text-decoration: none;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .logo span {
-  color: #2563eb;
+  color: var(--ch-blue, #2066d6);
+  font-weight: 800;
 }
 
 .nav {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 0.25rem;
 }
 
-.nav a {
-  color: #334155;
+.nav a:not(.cta) {
+  color: var(--ch-text-muted, #5c6b7a);
   text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.94rem;
+  font-weight: 600;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--ch-radius-sm, 8px);
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
-.nav a:hover {
-  color: #2563eb;
+.nav a:not(.cta):hover {
+  color: var(--ch-blue, #2066d6);
+  background: var(--ch-blue-light, #e8f1fc);
 }
 
 .cta {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 1rem;
-  background: #2563eb;
+  padding: 0.55rem 1.15rem;
+  margin-left: 0.35rem;
+  background: var(--ch-blue, #2066d6);
   color: #fff !important;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: var(--ch-radius-sm, 8px);
+  font-weight: 700;
   font-size: 0.9rem;
+  box-shadow: 0 2px 12px rgb(32 102 214 / 28%);
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .cta:hover {
-  background: #1d4ed8;
+  background: var(--ch-blue-hover, #1854b5) !important;
   color: #fff !important;
+  box-shadow: 0 4px 16px rgb(32 102 214 / 35%);
 }

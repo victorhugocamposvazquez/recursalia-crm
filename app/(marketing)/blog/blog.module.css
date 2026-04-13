@@ -1,0 +1,73 @@
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  margin-bottom: 1.35rem;
+  padding-bottom: 1.35rem;
+  border-bottom: 1px solid var(--ch-border, #e1e8f0);
+}
+
+.link {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--ch-navy, #0c1a2e);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  transition: color 0.15s ease;
+}
+
+.link:hover {
+  color: var(--ch-blue, #2066d6);
+}
+
+.desc {
+  margin: 0.4rem 0 0;
+  font-size: 0.92rem;
+  color: var(--ch-text-muted, #5c6b7a);
+  line-height: 1.5;
+}
+
+.breadcrumb {
+  font-size: 0.88rem;
+  color: var(--ch-text-muted, #5c6b7a);
+  margin-bottom: 0.65rem;
+}
+
+.breadcrumb a {
+  color: var(--ch-blue, #2066d6);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.title {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+  color: var(--ch-navy, #0c1a2e);
+  line-height: 1.18;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.prose {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--ch-text-muted, #5c6b7a);
+}
+
+.prose :global(h2),
+.prose :global(h3) {
+  color: var(--ch-navy, #0c1a2e);
+  margin-top: 1.75rem;
+}
+
+.prose :global(a) {
+  color: var(--ch-blue, #2066d6);
+  font-weight: 600;
+}

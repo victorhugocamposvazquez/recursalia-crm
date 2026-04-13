@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import styles from '../marketing.module.css';
+import blogStyles from './blog.module.css';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 
 export const revalidate = 120;
@@ -31,31 +32,14 @@ export default async function BlogIndexPage() {
             los publicará.
           </p>
         ) : (
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+          <ul className={blogStyles.list}>
             {posts.map((p) => (
-              <li
-                key={p.slug}
-                style={{
-                  marginBottom: '1.25rem',
-                  paddingBottom: '1.25rem',
-                  borderBottom: '1px solid #e2e8f0',
-                }}
-              >
-                <Link
-                  href={`/blog/${p.slug}`}
-                  style={{
-                    fontSize: '1.15rem',
-                    fontWeight: 600,
-                    color: '#0b1f42',
-                    textDecoration: 'none',
-                  }}
-                >
+              <li key={p.slug} className={blogStyles.item}>
+                <Link href={`/blog/${p.slug}`} className={blogStyles.link}>
                   {p.title}
                 </Link>
                 {p.meta_description && (
-                  <p style={{ margin: '0.35rem 0 0', fontSize: '0.9rem', color: '#64748b' }}>
-                    {p.meta_description}
-                  </p>
+                  <p className={blogStyles.desc}>{p.meta_description}</p>
                 )}
               </li>
             ))}

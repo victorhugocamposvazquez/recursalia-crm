@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import styles from '../../marketing.module.css';
+import blogStyles from '../blog.module.css';
 
 export const revalidate = 120;
 
@@ -53,7 +54,7 @@ export default async function BlogPostPage({
     return (
       <article className={styles.section}>
         <div className={styles.inner} style={{ maxWidth: '720px' }}>
-          <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
+          <p className={blogStyles.breadcrumb}>
             <Link href="/blog">← Blog</Link>
             {post.published_at && (
               <>
@@ -66,23 +67,9 @@ export default async function BlogPostPage({
               </>
             )}
           </p>
-          <h1
-            style={{
-              margin: '0 0 1.5rem',
-              fontSize: 'clamp(1.5rem, 3vw, 2.25rem)',
-              color: '#0b1f42',
-              lineHeight: 1.2,
-            }}
-          >
-            {post.title}
-          </h1>
+          <h1 className={blogStyles.title}>{post.title}</h1>
           <div
-            className="blog-prose"
-            style={{
-              fontSize: '1.05rem',
-              lineHeight: 1.75,
-              color: '#334155',
-            }}
+            className={blogStyles.prose}
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </div>

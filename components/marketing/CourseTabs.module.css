@@ -4,42 +4,49 @@
 
 .tabs {
   display: flex;
-  gap: 0.5rem;
-  border-bottom: 2px solid #e2e8f0;
-  margin-bottom: 1.25rem;
+  gap: 0.35rem;
+  border-bottom: 2px solid var(--ch-border, #e1e8f0);
+  margin-bottom: 1.35rem;
 }
 
 .tabs button {
   border: none;
   background: transparent;
-  padding: 0.65rem 1rem;
+  padding: 0.7rem 1.1rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #64748b;
+  color: var(--ch-text-muted, #5c6b7a);
   cursor: pointer;
   margin-bottom: -2px;
   border-bottom: 2px solid transparent;
+  border-radius: var(--ch-radius-sm, 8px) var(--ch-radius-sm, 8px) 0 0;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .tabs button:hover {
-  color: #2563eb;
+  color: var(--ch-blue, #2066d6);
+  background: var(--ch-blue-light, #e8f1fc);
 }
 
 .active {
-  color: #2563eb !important;
-  border-bottom-color: #2563eb !important;
+  color: var(--ch-blue, #2066d6) !important;
+  border-bottom-color: var(--ch-blue, #2066d6) !important;
+  background: transparent !important;
 }
 
 .panel {
-  font-size: 0.95rem;
+  font-size: 0.96rem;
   line-height: 1.65;
-  color: #334155;
+  color: var(--ch-text-muted, #5c6b7a);
 }
 
 .panel h4 {
   margin: 1rem 0 0.5rem;
-  font-size: 1rem;
-  color: #0f172a;
+  font-size: 1.02rem;
+  color: var(--ch-navy, #0c1a2e);
+  font-weight: 600;
 }
 
 .panel ul {
@@ -53,11 +60,12 @@
 
 .module h4 {
   margin-bottom: 0.65rem;
-  color: #0b1f42;
+  color: var(--ch-navy, #0c1a2e);
+  font-weight: 700;
 }
 
 .lesson {
-  padding: 0.35rem 0;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 0.9rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--ch-border, #e1e8f0);
+  font-size: 0.92rem;
 }
