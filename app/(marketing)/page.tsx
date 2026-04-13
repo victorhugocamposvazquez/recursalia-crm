@@ -25,6 +25,97 @@ const SAAS_FEATURES = [
   },
 ];
 
+const SOLUTION_PILLS = [
+  'Gestión de Personas',
+  'Gestión de Reclutamiento',
+  'Gestión de Capacitación',
+  'Gestión de Desempeño',
+  'Gestión de Clima',
+];
+
+const SOLUTION_BLOCKS = [
+  {
+    title: 'Centraliza la información clave de tu organización',
+    body: 'Gestiona documentos, políticas, organigramas y tareas en una sola experiencia clara para RRHH y operaciones.',
+    points: ['Onboarding y offboarding guiado', 'Políticas y permisos por roles', 'Firma y trazabilidad documental'],
+  },
+  {
+    title: 'Optimiza tu proceso de reclutamiento',
+    body: 'Desde la vacante hasta la contratación, automatiza seguimiento, comunicación y evaluación de candidatos.',
+    points: ['Pipeline visual de selección', 'Scorecards por perfil', 'Automatizaciones de comunicación'],
+  },
+  {
+    title: 'Capacita y acelera la evolución del equipo',
+    body: 'Publica rutas de aprendizaje, módulos y academias internas con seguimiento de progreso en tiempo real.',
+    points: ['LMS/LXP en una sola vista', 'Evaluaciones automáticas', 'Aprendizaje social colaborativo'],
+  },
+  {
+    title: 'Alinea desempeño con objetivos de negocio',
+    body: 'Gestiona metas, feedback, competencias y planes de desarrollo sin cambiar de plataforma.',
+    points: ['OKRs y metas por área', 'Feedback continuo', 'Planes individuales de desarrollo'],
+  },
+  {
+    title: 'Mide clima y compromiso con datos accionables',
+    body: 'Monitorea eNPS, pulsos y reconocimiento para tomar decisiones de cultura con mayor rapidez.',
+    points: ['Encuestas y pulsos automatizados', 'Insights por equipo', 'Seguimiento histórico'],
+  },
+];
+
+const ANALYTICS_ITEMS = [
+  {
+    title: 'Análisis de sentimiento en comentarios',
+    body: 'Extrae patrones de feedback abierto para priorizar mejoras en cultura, formación y operaciones.',
+  },
+  {
+    title: 'Reportes por usuario, equipo o área',
+    body: 'Consulta información accionable por nivel organizacional sin depender de procesos manuales.',
+  },
+  {
+    title: 'Seguimiento continuo de aprendizaje y performance',
+    body: 'Visualiza avances de rutas, objetivos y actividad en paneles claros para líderes y RRHH.',
+  },
+];
+
+const IMPLEMENTATION_STEPS = [
+  {
+    title: 'Implementación guiada desde el inicio',
+    body: 'Te acompañamos en la configuración inicial para que el equipo use la plataforma con confianza desde el día uno.',
+  },
+  {
+    title: 'Estrategia para acelerar resultados',
+    body: 'Revisamos periódicamente métricas de adopción y te proponemos mejoras concretas de uso.',
+  },
+  {
+    title: 'Atención personalizada y adaptativa',
+    body: 'Alineamos el producto a tus procesos reales y resolvemos necesidades específicas por operación.',
+  },
+  {
+    title: 'Soporte técnico ágil',
+    body: 'Respondemos rápido para mantener continuidad y evitar fricción en los flujos críticos del negocio.',
+  },
+];
+
+const RESOURCE_CARDS = [
+  {
+    type: 'Blog destacado',
+    title: 'Cómo construir una cultura de aprendizaje continuo',
+    body: 'Buenas prácticas para transformar la formación interna en resultados de negocio medibles.',
+    cta: 'Leer artículo',
+  },
+  {
+    type: 'Guía descargable',
+    title: 'Reporte de tendencias en formación corporativa',
+    body: 'Insights y marcos de trabajo para definir una estrategia de capacitación moderna.',
+    cta: 'Descargar guía',
+  },
+  {
+    type: 'Podcast',
+    title: 'Operaciones y people: cómo alinear equipos de alto rendimiento',
+    body: 'Conversaciones con líderes sobre escalabilidad, cultura y adopción tecnológica.',
+    cta: 'Escuchar episodio',
+  },
+];
+
 export default async function MarketingHomePage() {
   let courses: CourseCardItem[] = [];
 
@@ -67,10 +158,10 @@ export default async function MarketingHomePage() {
             </ul>
             <div className={homeStyles.ctaRow}>
               <Link href="/cursos" className={homeStyles.btnPrimary}>
-                Ver cursos y guías
+                Solicitar una demo
               </Link>
               <Link href="/blog" className={homeStyles.btnGhost}>
-                Blog y recursos
+                Ver recursos
               </Link>
             </div>
             <div className={homeStyles.searchBlock}>
@@ -80,7 +171,7 @@ export default async function MarketingHomePage() {
             <p className={homeStyles.heroFooterLinks}>
               <Link href="/cursos">Catálogo completo</Link>
               {' · '}
-              <Link href="/login">Acceder al panel</Link>
+              <Link href="/login">Ingresar</Link>
             </p>
           </div>
           <div>
@@ -89,23 +180,23 @@ export default async function MarketingHomePage() {
         </div>
         <div className={homeStyles.heroMetrics}>
           <article className={homeStyles.metricCard}>
+            <span className={homeStyles.metricValue}>+1.200</span>
+            <span className={homeStyles.metricLabel}>Empresas en LATAM</span>
+          </article>
+          <article className={homeStyles.metricCard}>
             <span className={homeStyles.metricValue}>4.9/5</span>
-            <span className={homeStyles.metricLabel}>Satisfacción media</span>
+            <span className={homeStyles.metricLabel}>Valoración promedio</span>
           </article>
           <article className={homeStyles.metricCard}>
-            <span className={homeStyles.metricValue}>75%</span>
+            <span className={homeStyles.metricValue}>+75%</span>
             <span className={homeStyles.metricLabel}>Actividad semanal</span>
-          </article>
-          <article className={homeStyles.metricCard}>
-            <span className={homeStyles.metricValue}>+50</span>
-            <span className={homeStyles.metricLabel}>Recursos activos</span>
           </article>
         </div>
       </section>
 
       <section className={homeStyles.trustStrip} aria-label="Equipos que confían en Recursalia">
         <div className={homeStyles.panel}>
-          <p className={homeStyles.trustLabel}>Equipos que ya trabajan con una experiencia premium</p>
+          <p className={homeStyles.trustLabel}>Equipos líderes que ya confían en Recursalia</p>
           <div className={homeStyles.trustLogos}>
             {TRUSTED_TEAMS.map((brand) => (
               <span key={brand} className={homeStyles.trustLogo}>
@@ -116,7 +207,53 @@ export default async function MarketingHomePage() {
         </div>
       </section>
 
+      <section className={homeStyles.sectionShell}>
+        <div className={homeStyles.panel}>
+          <div className={homeStyles.sectionHeadCenter}>
+            <p className={homeStyles.kicker}>Soluciones</p>
+            <h2 className={homeStyles.sectionTitle}>Activa el potencial de tu organización</h2>
+            <div className={homeStyles.solutionPills}>
+              {SOLUTION_PILLS.map((pill) => (
+                <span key={pill} className={homeStyles.solutionPill}>
+                  {pill}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className={homeStyles.solutionGrid}>
+            {SOLUTION_BLOCKS.map((block) => (
+              <article key={block.title} className={homeStyles.solutionCard}>
+                <h3>{block.title}</h3>
+                <p>{block.body}</p>
+                <ul>
+                  {block.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className={homeStyles.sectionShellMuted}>
+        <div className={homeStyles.panel}>
+          <div className={homeStyles.sectionHeadCenter}>
+            <p className={homeStyles.kicker}>People Analytics</p>
+            <h2 className={homeStyles.sectionTitle}>Toma decisiones con inteligencia, no con intuición</h2>
+          </div>
+          <div className={homeStyles.analyticsGrid}>
+            {ANALYTICS_ITEMS.map((item) => (
+              <article key={item.title} className={homeStyles.analyticsCard}>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={homeStyles.sectionShell}>
         <div className={homeStyles.panel}>
           <div className={homeStyles.cardShell}>
             <p className={homeStyles.kicker}>Cursos destacados</p>
@@ -131,7 +268,7 @@ export default async function MarketingHomePage() {
         </div>
       </section>
 
-      <section className={homeStyles.sectionShell}>
+      <section className={homeStyles.sectionShellMuted}>
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>Categorías</p>
@@ -211,6 +348,43 @@ export default async function MarketingHomePage() {
                 <div className={homeStyles.statSub}>En constante actualización</div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={homeStyles.sectionShellMuted}>
+        <div className={homeStyles.panel}>
+          <div className={homeStyles.sectionHeadCenter}>
+            <p className={homeStyles.kicker}>Acompañamiento</p>
+            <h2 className={homeStyles.sectionTitle}>Un equipo dedicado para alcanzar tus objetivos</h2>
+          </div>
+          <ol className={homeStyles.stepsGrid}>
+            {IMPLEMENTATION_STEPS.map((step, index) => (
+              <li key={step.title} className={homeStyles.stepCard}>
+                <span className={homeStyles.stepNum}>{index + 1}</span>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className={homeStyles.sectionShell}>
+        <div className={homeStyles.panel}>
+          <div className={homeStyles.sectionHeadCenter}>
+            <p className={homeStyles.kicker}>Recursos</p>
+            <h2 className={homeStyles.sectionTitle}>Contenido útil para tu día a día</h2>
+          </div>
+          <div className={homeStyles.resourceGrid}>
+            {RESOURCE_CARDS.map((resource) => (
+              <article key={resource.title} className={homeStyles.resourceCard}>
+                <p className={homeStyles.resourceType}>{resource.type}</p>
+                <h3>{resource.title}</h3>
+                <p>{resource.body}</p>
+                <Link href="/blog">{resource.cta} →</Link>
+              </article>
+            ))}
           </div>
         </div>
       </section>
