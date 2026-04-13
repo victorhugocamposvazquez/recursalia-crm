@@ -2,6 +2,21 @@ import { getSupabase } from '@/lib/supabase';
 import { slugifyTitle } from '@/utils/slugify';
 import type { GeneratedReview } from '@/types';
 
+function normalizeReviewDate(raw: string): string {
+  const trimmed = raw.trim();
+  const iso = /^(\d{4})-(\d{2})-(\d{2})/.exec(trimmed);
+  if (iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+  const d = new Date(trimmed);
+  if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+  return new Date().toISOString().slice(0, 10);
+}
+
+function clampRating(r: number): number {
+  const n = Math.round(Number(r));
+  if (!Number.isFinite(n)) return 5;
+  return Math.min(5, Math.max(1, n));
+}
+
 export async function resolveUniquePublicSlug(
   baseTitle: string,
   excludeCourseId?: string
@@ -52,11 +67,11 @@ export async function replaceCourseReviews(
 
   const rows = reviews.map((r) => ({
     course_id: courseId,
-    title: r.title,
-    content: r.content,
-    rating: r.rating,
-    author_name: r.author_name,
-    review_date: r.date,
+    title: String(r.title).slice(0, 500),
+    content: String(r.content ?? '').slice(0, 8000),
+    rating: clampRating(r.rating),
+    author_name: String(r.author_name).slice(0, 200),
+    review_date: normalizeReviewDate(r.date),
   }));
 
   const { error: insErr } = await supabase.from('course_reviews').insert(rows);

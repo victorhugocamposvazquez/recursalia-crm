@@ -300,10 +300,11 @@ export async function publishCourse(
       }
     }
   } catch (err) {
-    errorLog =
-      (errorLog ?? '') +
-      ` | Resenas Supabase: ${err instanceof Error ? err.message : String(err)}`;
-    await setProgress('Generacion o guardado de resenas fallo.');
+    const msg = err instanceof Error ? err.message : String(err);
+    errorLog = (errorLog ?? '') + ` | Resenas Supabase: ${msg}`;
+    await setProgress(
+      `Generacion o guardado de resenas fallo: ${msg.slice(0, 280)}`
+    );
   }
 
   let publicSlug: string | null = null;
@@ -311,10 +312,9 @@ export async function publishCourse(
     publicSlug = await resolveUniquePublicSlug(content.title, courseId);
     await setProgress(`Slug publico: ${publicSlug}`);
   } catch (err) {
-    errorLog =
-      (errorLog ?? '') +
-      ` | Slug: ${err instanceof Error ? err.message : String(err)}`;
-    await setProgress('Slug publico fallo.');
+    const msg = err instanceof Error ? err.message : String(err);
+    errorLog = (errorLog ?? '') + ` | Slug: ${msg}`;
+    await setProgress(`Slug publico fallo: ${msg.slice(0, 280)}`);
   }
 
   // Solo sitio Next: basta slug; reseñas opcionales (maquetación / menos dependencia OpenAI).

@@ -29,6 +29,8 @@ SUPABASE_SERVICE_ROLE_KEY=placeholder
 
 La migración **002** añade: `public_slug`, reseñas en `course_reviews`, blog `blog_posts`, bucket público `course_media`, y **RLS** para que el anon key solo lea cursos publicados y posts publicados. El panel sigue usando la **service role** (sin restricción RLS).
 
+Si al publicar ves **«Slug check failed»**, **«Failed to clear reviews»** o **«relation course_reviews does not exist»**, la **002 no está aplicada** en ese proyecto Supabase: ejecútala en el SQL Editor o con `supabase db push`.
+
 Para **solo Next + Supabase** (sin WordPress), en Vercel define `WORDPRESS_PUBLISH_ENABLED=false` y no hace falta `WORDPRESS_*` para publicar cursos en la web.
 
 Variable recomendada: `NEXT_PUBLIC_SITE_URL` (origen canónico, p. ej. `https://tu-dominio.com`) para enlaces en artículos SEO.

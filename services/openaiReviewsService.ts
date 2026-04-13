@@ -23,10 +23,10 @@ function buildReviewsPrompt(
   count: number,
   customPrompt?: string
 ): string {
-  const base = `Genera ${count} reseñas de estudiantes para el curso "${courseTitle}".
+  const base = `Genera exactamente ${count} reseñas de estudiantes para el curso "${courseTitle}".
 
-Devuelve ÚNICAMENTE un JSON array (sin markdown):
-[
+Devuelve ÚNICAMENTE un objeto JSON (sin markdown) con esta forma exacta:
+{"reviews":[
   {
     "title": "Ideal para mejorar en...",
     "content": "Comentario de 1-2 oraciones sobre el curso",
@@ -34,8 +34,9 @@ Devuelve ÚNICAMENTE un JSON array (sin markdown):
     "author_name": "Nombre Apellido",
     "date": "2024-08-23"
   }
-]
-`;
+]}
+
+Cada "date" debe ser string YYYY-MM-DD (fecha en los últimos 6 meses). "rating" entero 1-5.`;
   return customPrompt?.trim()
     ? `${base}\n\nINSTRUCCIONES ADICIONALES:\n${customPrompt}`
     : `${base}\n\n${DEFAULT_PROMPT}`;
@@ -58,11 +59,13 @@ export async function generateReviews(
         {
           role: 'system',
           content:
-            'Genera resenas de alumnos reales para cursos online. Las resenas deben sonar naturales y coloquiales, como las que dejaria una persona normal en internet. Nada de tono profesional ni corporativo. Responde solo con JSON array valido. Sin emojis.',
+            'Genera resenas de alumnos reales para cursos online. Tono natural y coloquial. Responde solo con un objeto JSON valido (propiedad "reviews": array). Sin markdown ni texto fuera del JSON. Sin emojis.',
         },
         { role: 'user', content: prompt },
       ],
       temperature: 0.8,
+      response_format: { type: 'json_object' },
+      max_tokens: 8000,
     });
 
     const raw = response.choices[0]?.message?.content?.trim();
@@ -70,16 +73,26 @@ export async function generateReviews(
 
     const cleaned = raw.replace(/^```json\s*|\s*```$/g, '').trim();
     try {
-      const batch = JSON.parse(cleaned) as GeneratedReview[];
-      if (Array.isArray(batch)) {
-        const valid = batch.filter(
-          (r) =>
+      const parsed = JSON.parse(cleaned) as {
+        reviews?: GeneratedReview[];
+      };
+      const batch = Array.isArray(parsed?.reviews)
+        ? parsed.reviews
+        : Array.isArray(parsed)
+          ? (parsed as unknown as GeneratedReview[])
+          : null;
+      if (batch) {
+        const valid = batch.filter((r) => {
+          const rating = Number(r.rating);
+          return (
             r.title &&
-            r.rating >= 1 &&
-            r.rating <= 5 &&
+            Number.isFinite(rating) &&
+            rating >= 1 &&
+            rating <= 5 &&
             r.author_name &&
             r.date
-        );
+          );
+        });
         allReviews.push(...valid);
       }
     } catch {
