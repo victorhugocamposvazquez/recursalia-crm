@@ -144,17 +144,17 @@ export default async function MarketingHomePage() {
           <div className={homeStyles.heroLeft}>
             <span className={homeStyles.badge}>Plataforma de aprendizaje interno</span>
             <h1 className={homeStyles.heroTitle}>
-              Una experiencia de formación
+              El software de HR que acompaña
               <br />
-              centrada en tus <span className={homeStyles.heroAccent}>equipos</span>
+              todo el journey del <span className={homeStyles.heroAccent}>talento</span>
             </h1>
             <p className={homeStyles.heroLead}>
-              Crea y publica <mark className={homeStyles.mark}>cursos, guías y manuales</mark> con
-              una interfaz clara, ordenada y lista para escalar en cada área de la empresa.
+              Desde el <mark className={homeStyles.mark}>reclutamiento hasta el crecimiento</mark>,
+              una plataforma inteligente que conecta tus procesos de HR en una sola experiencia.
             </p>
             <ul className={homeStyles.bullets}>
-              <li>Onboarding, formación y documentación en un único flujo.</li>
-              <li>Contenido segmentado por rol, equipo o necesidad.</li>
+              <li>Simple, modular y potenciada por AI.</li>
+              <li>Pensada para las personas, creada para el negocio.</li>
             </ul>
             <div className={homeStyles.ctaRow}>
               <Link href="/cursos" className={homeStyles.btnPrimary}>
@@ -311,13 +311,23 @@ export default async function MarketingHomePage() {
             <p className={homeStyles.kicker}>Casos reales</p>
             <h2 className={homeStyles.sectionTitle}>Equipos que ya aprenden con Recursalia</h2>
           </div>
-          <div className={homeStyles.testimonialGrid}>
-            {HOME_TESTIMONIALS.map((t) => (
-              <article key={t.name} className={homeStyles.testimonialCard}>
-                <p className={homeStyles.testimonialQuote}>“{t.quote}”</p>
-                <div className={homeStyles.testimonialAuthor}>{t.name}</div>
-                <div className={homeStyles.testimonialRole}>{t.role}</div>
-              </article>
+          <div className={homeStyles.caseShowcase}>
+            <div className={homeStyles.caseMedia}>
+              <div className={homeStyles.caseMediaBadge}>Caso cliente</div>
+            </div>
+            <article className={homeStyles.caseBody}>
+              <p className={homeStyles.caseTag}>Gestión de Capacitación</p>
+              <p className={homeStyles.caseQuote}>“{HOME_TESTIMONIALS[0]?.quote}”</p>
+              <h3 className={homeStyles.caseAuthor}>{HOME_TESTIMONIALS[0]?.name}</h3>
+              <p className={homeStyles.caseRole}>{HOME_TESTIMONIALS[0]?.role}</p>
+              <Link href="/blog" className={homeStyles.caseLink}>
+                Leer la historia →
+              </Link>
+            </article>
+          </div>
+          <div className={homeStyles.caseBrands}>
+            {TRUSTED_TEAMS.slice(0, 4).map((brand) => (
+              <span key={brand}>{brand}</span>
             ))}
           </div>
         </div>
@@ -358,15 +368,21 @@ export default async function MarketingHomePage() {
             <p className={homeStyles.kicker}>Acompañamiento</p>
             <h2 className={homeStyles.sectionTitle}>Un equipo dedicado para alcanzar tus objetivos</h2>
           </div>
-          <ol className={homeStyles.stepsGrid}>
-            {IMPLEMENTATION_STEPS.map((step, index) => (
-              <li key={step.title} className={homeStyles.stepCard}>
-                <span className={homeStyles.stepNum}>{index + 1}</span>
-                <h3>{step.title}</h3>
-                <p>{step.body}</p>
-              </li>
-            ))}
-          </ol>
+          <div className={homeStyles.supportLayout}>
+            <div className={homeStyles.supportVisual} aria-hidden>
+              <div className={homeStyles.supportFloatTop} />
+              <div className={homeStyles.supportFloatBottom} />
+            </div>
+            <ol className={homeStyles.stepsGrid}>
+              {IMPLEMENTATION_STEPS.map((step, index) => (
+                <li key={step.title} className={homeStyles.stepCard}>
+                  <span className={homeStyles.stepNum}>{index + 1}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </div>
       </section>
 

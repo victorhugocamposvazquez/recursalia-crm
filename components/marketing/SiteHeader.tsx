@@ -9,13 +9,17 @@ export function SiteHeader() {
           Recur<span>salia</span>
         </Link>
         <nav className={styles.nav}>
-          <Link href="/cursos">Cursos</Link>
-          <Link href="/blog">Blog</Link>
+          <Link href="/cursos">Soluciones</Link>
+          <Link href="/blog">Recursos</Link>
+          <Link href="/cursos">Nosotros</Link>
+          <Link href="/cursos">Nuestros Clientes</Link>
+          <Link href="/cursos">Recursalia AI</Link>
+          <Link href="/cursos">Referidos</Link>
           <Link href="/login" className={styles.ghost}>
             Ingresar
           </Link>
           <Link href="/cursos" className={styles.cta}>
-            Ver cursos
+            Agenda un demo
           </Link>
         </nav>
       </div>

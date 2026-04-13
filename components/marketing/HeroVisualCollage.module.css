@@ -1,15 +1,15 @@
 /* Collage decorativo tipo mockups flotantes (referencia Crehana hero derecha) */
 .root {
   position: relative;
-  min-height: 320px;
+  min-height: 360px;
   width: 100%;
-  max-width: 480px;
+  max-width: 540px;
   margin: 0 auto;
 }
 
 @media (min-width: 960px) {
   .root {
-    min-height: 420px;
+    min-height: 470px;
     margin: 0;
   }
 }
@@ -17,43 +17,40 @@
 .card {
   position: absolute;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgb(17 24 39 / 8%);
-  border: 1px solid rgb(5 150 105 / 10%);
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgb(40 25 133 / 10%);
+  border: 1px solid rgb(109 85 255 / 14%);
   overflow: hidden;
 }
 
 .card1 {
-  left: 0;
-  top: 8%;
-  width: 58%;
-  padding: 0.85rem;
+  left: 30%;
+  top: 2%;
+  width: 42%;
+  padding: 0.9rem;
   z-index: 3;
-  transform: rotate(-2deg);
 }
 
 .card2 {
   right: 0;
-  top: 0;
-  width: 52%;
+  top: 25%;
+  width: 36%;
   padding: 0.75rem;
   z-index: 2;
-  transform: rotate(3deg);
 }
 
 .card3 {
   left: 12%;
-  bottom: 5%;
-  width: 78%;
+  bottom: 2%;
+  width: 72%;
   padding: 0.9rem;
   z-index: 4;
-  transform: rotate(-0.5deg);
 }
 
 .cardTitle {
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--ch-blue, #059669);
+  color: #4f2dff;
   margin: 0 0 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -68,7 +65,7 @@
 .fakeCell {
   aspect-ratio: 1;
   border-radius: 6px;
-  background: linear-gradient(135deg, #fde68a, #a7f3d0, #6ee7b7);
+  background: linear-gradient(135deg, #d6ccff, #b4a3ff, #ece8ff);
   opacity: 0.85;
 }
 
@@ -77,16 +74,16 @@
   height: 68px;
   border-radius: 50%;
   margin: 0.25rem auto 0.5rem;
-  border: 7px solid #d1fae5;
-  border-top-color: var(--ch-blue, #059669);
-  border-right-color: var(--ch-blue, #059669);
+  border: 7px solid #e8e2ff;
+  border-top-color: #5b43f4;
+  border-right-color: #5b43f4;
   transform: rotate(-35deg);
 }
 
 .bar {
   height: 6px;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--ch-blue, #059669), #34d399);
+  background: linear-gradient(90deg, #6d55ff, #4f2dff);
   margin-top: 0.35rem;
 }
 
@@ -108,5 +105,5 @@
   flex: 1;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
-  background: linear-gradient(145deg, #a7f3d0, #ecfdf5);
+  background: linear-gradient(145deg, #d8d0ff, #f3f0ff);
 }

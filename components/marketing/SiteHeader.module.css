@@ -2,16 +2,14 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgb(255 255 255 / 88%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--ch-border, #e5e7eb);
+  background: #ffffff;
+  border-bottom: 1px solid #efeff8;
 }
 
 .bar {
-  max-width: 1140px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 0.75rem 1.5rem;
+  padding: 0.9rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -21,14 +19,14 @@
 .logo {
   font-weight: 800;
   font-size: 1.2rem;
-  color: var(--ch-navy, #111827);
+  color: #3f2abf;
   text-decoration: none;
   letter-spacing: -0.03em;
 }
 
 .logo span {
   font-weight: 800;
-  color: var(--ch-blue, #059669);
+  color: #3f2abf;
 }
 
 .nav {
@@ -40,11 +38,11 @@
 }
 
 .nav a:not(.cta):not(.ghost) {
-  color: var(--ch-text-muted, #6b7280);
+  color: #2f2b4a;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 600;
-  padding: 0.45rem 0.7rem;
+  padding: 0.45rem 0.62rem;
   border-radius: 8px;
   transition:
     color 0.15s ease,
@@ -52,8 +50,8 @@
 }
 
 .nav a:not(.cta):not(.ghost):hover {
-  color: var(--ch-navy, #111827);
-  background: rgb(17 24 39 / 4%);
+  color: #261f66;
+  background: #f5f3ff;
 }
 
 .ghost {
@@ -61,8 +59,8 @@
   align-items: center;
   padding: 0.5rem 1rem !important;
   margin-right: 0.35rem;
-  border: 1px solid var(--ch-border, #e5e7eb) !important;
-  color: var(--ch-navy, #111827) !important;
+  border: 1.5px solid #6d55ff !important;
+  color: #4c3ad2 !important;
   background: transparent !important;
   border-radius: 999px !important;
   font-weight: 600 !important;
@@ -70,20 +68,20 @@
 }
 
 .ghost:hover {
-  background: rgb(17 24 39 / 4%) !important;
-  border-color: var(--ch-border, #d1d5db) !important;
+  background: #f5f3ff !important;
+  border-color: #523ee6 !important;
 }
 
 .cta {
   display: inline-flex;
   align-items: center;
   padding: 0.52rem 1.2rem !important;
-  background: var(--ch-blue, #059669) !important;
+  background: linear-gradient(135deg, #6d55ff, #4f2dff) !important;
   color: #fff !important;
   border-radius: 999px !important;
   font-weight: 700 !important;
   font-size: 0.875rem !important;
-  box-shadow: 0 2px 12px rgb(5 150 105 / 28%);
+  box-shadow: 0 8px 22px rgb(79 45 255 / 28%);
   border: none !important;
   transition:
     background 0.15s ease,
@@ -92,8 +90,8 @@
 }
 
 .cta:hover {
-  background: var(--ch-blue-hover, #047857) !important;
+  background: linear-gradient(135deg, #5f49ef, #4427e0) !important;
   color: #fff !important;
-  box-shadow: 0 4px 18px rgb(5 150 105 / 35%);
+  box-shadow: 0 10px 26px rgb(79 45 255 / 35%);
   transform: translateY(-1px);
 }
