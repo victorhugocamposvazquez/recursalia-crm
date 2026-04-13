@@ -1,28 +1,29 @@
-/* Tokens estilo Crehana (morado #5022ED, superficies claras, mucho aire) */
+/* Tokens estilo Crehana: azul marca, grises fríos, superficies claras */
 .marketing {
-  --ch-purple: #5022ed;
-  --ch-purple-hover: #4312d4;
-  --ch-purple-muted: #6d4bd3;
-  --ch-purple-soft: #f5f3ff;
-  --ch-purple-tint: #ede9fe;
-  /* Alias para módulos que aún usan --ch-blue */
-  --ch-blue: #5022ed;
-  --ch-blue-hover: #4312d4;
-  --ch-blue-light: #ede9fe;
-  --ch-blue-muted: #a78bfa;
+  /* --ch-purple* se mantienen como alias por compatibilidad; valores = azul marca */
+  --ch-purple: #2066d6;
+  --ch-purple-hover: #1854b5;
+  --ch-purple-muted: #3b82f6;
+  --ch-purple-soft: #eff6ff;
+  --ch-purple-tint: #dbeafe;
 
-  --ch-navy: #1e1b4b;
-  --ch-navy-soft: #312e81;
+  --ch-blue: #2066d6;
+  --ch-blue-hover: #1854b5;
+  --ch-blue-light: #e8f1fc;
+  --ch-blue-muted: #60a5fa;
+
+  --ch-navy: #0c1a2e;
+  --ch-navy-soft: #1e3a5f;
   --ch-surface: #ffffff;
-  --ch-bg: #f7f5fc;
-  --ch-border: #e8e4f5;
-  --ch-text: #1e1b4b;
-  --ch-text-muted: #5b6472;
+  --ch-bg: #f5f7fa;
+  --ch-border: #e1e8f0;
+  --ch-text: #0c1a2e;
+  --ch-text-muted: #5c6b7a;
   --ch-highlight-green: #bbf7d0;
   --ch-radius: 16px;
   --ch-radius-sm: 10px;
-  --ch-shadow: 0 4px 28px rgb(30 27 75 / 7%);
-  --ch-shadow-lg: 0 20px 56px rgb(80 34 237 / 12%);
+  --ch-shadow: 0 4px 28px rgb(12 26 46 / 6%);
+  --ch-shadow-lg: 0 20px 56px rgb(32 102 214 / 12%);
 
   min-height: 100vh;
   display: flex;
@@ -45,7 +46,7 @@
   position: relative;
   text-align: center;
   padding: 3.25rem 1.5rem 4rem;
-  background: linear-gradient(180deg, #ffffff 0%, #faf8ff 50%, #f3f0ff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 45%, #f0f9ff 100%);
   overflow: hidden;
 }
 
@@ -59,7 +60,7 @@
 }
 
 .accent {
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   display: inline;
 }
 
@@ -87,14 +88,14 @@
 }
 
 .footerNote a {
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   text-decoration: none;
   font-weight: 600;
 }
 
 .footerNote a:hover {
   text-decoration: underline;
-  color: var(--ch-purple-hover);
+  color: var(--ch-blue-hover);
 }
 
 .trustRow {
@@ -126,7 +127,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--ch-purple);
+  background: var(--ch-blue);
   flex-shrink: 0;
 }
 
@@ -162,7 +163,7 @@
 
 .card:hover {
   box-shadow: var(--ch-shadow-lg);
-  border-color: rgb(80 34 237 / 22%);
+  border-color: rgb(32 102 214 / 22%);
   transform: translateY(-3px);
 }
 
@@ -173,7 +174,7 @@
 
 .cardImage {
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, var(--ch-purple-tint), #ddd6fe);
+  background: linear-gradient(135deg, var(--ch-blue-light), #bfdbfe);
   position: relative;
 }
 

@@ -11,7 +11,7 @@
 }
 
 .breadcrumb a {
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   text-decoration: none;
   font-weight: 600;
 }
@@ -67,14 +67,14 @@
 .heroImg {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(145deg, var(--ch-purple-tint), var(--ch-purple-soft));
+  background: linear-gradient(145deg, var(--ch-blue-light), var(--ch-blue-light));
 }
 
 .heroImg::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgb(30 27 75 / 35%) 100%);
+  background: linear-gradient(180deg, transparent 55%, rgb(12 26 46 / 35%) 100%);
   pointer-events: none;
 }
 
@@ -127,11 +127,11 @@
 }
 
 .ratingJump:hover {
-  background: var(--ch-purple-soft);
+  background: var(--ch-blue-light);
 }
 
 .ratingJump:focus-visible {
-  outline: 2px solid var(--ch-purple);
+  outline: 2px solid var(--ch-blue);
   outline-offset: 3px;
 }
 
@@ -173,7 +173,7 @@
 .sale {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 800;
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   letter-spacing: -0.02em;
 }
 
@@ -190,7 +190,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   margin: 0 0 0.65rem;
 }
 
@@ -217,13 +217,13 @@
   background: var(--ch-surface);
   border-radius: var(--ch-radius-sm);
   border: 1px solid var(--ch-border);
-  box-shadow: 0 2px 14px rgb(30 27 75 / 4%);
+  box-shadow: 0 2px 14px rgb(12 26 46 / 4%);
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .benefits li:hover {
-  border-color: rgb(80 34 237 / 18%);
-  box-shadow: 0 8px 28px rgb(80 34 237 / 8%);
+  border-color: rgb(32 102 214 / 18%);
+  box-shadow: 0 8px 28px rgb(32 102 214 / 8%);
 }
 
 .bIcon {
@@ -234,7 +234,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;
-  background: var(--ch-purple-soft);
+  background: var(--ch-blue-light);
   border-radius: 12px;
   line-height: 1;
 }
@@ -255,9 +255,9 @@
 
 .highlight {
   padding: 1.15rem 1.35rem;
-  background: linear-gradient(135deg, var(--ch-purple-soft), var(--ch-purple-tint));
+  background: linear-gradient(135deg, var(--ch-blue-light), var(--ch-blue-light));
   border-radius: var(--ch-radius-sm);
-  border: 1px solid rgb(80 34 237 / 15%);
+  border: 1px solid rgb(32 102 214 / 15%);
   font-size: 0.95rem;
   color: var(--ch-navy-soft);
   margin-bottom: 2rem;
@@ -277,13 +277,13 @@
   background: var(--ch-surface);
   border: 1px solid var(--ch-border);
   border-radius: var(--ch-radius-sm);
-  box-shadow: 0 2px 12px rgb(30 27 75 / 3%);
+  box-shadow: 0 2px 12px rgb(12 26 46 / 3%);
 }
 
 .module h4 {
   margin: 0 0 0.85rem;
   font-size: 1rem;
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   font-weight: 700;
   line-height: 1.35;
   display: flex;
@@ -308,7 +308,7 @@
   font-size: 0.75rem;
   font-weight: 800;
   color: #fff;
-  background: var(--ch-purple);
+  background: var(--ch-blue);
   border-radius: 8px;
 }
 
@@ -333,7 +333,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--ch-purple-muted);
+  background: var(--ch-blue-muted);
   opacity: 0.7;
 }
 
@@ -410,14 +410,14 @@
   width: 100%;
   text-align: center;
   padding: 0.95rem 1.15rem;
-  background: var(--ch-purple);
+  background: var(--ch-blue);
   color: #fff !important;
   font-weight: 700;
   font-size: 1rem;
   border-radius: var(--ch-radius-sm);
   text-decoration: none;
   margin-bottom: 0.65rem;
-  box-shadow: 0 6px 24px rgb(80 34 237 / 32%);
+  box-shadow: 0 6px 24px rgb(32 102 214 / 32%);
   transition:
     background 0.18s ease,
     box-shadow 0.18s ease,
@@ -425,8 +425,8 @@
 }
 
 .buy:hover {
-  background: var(--ch-purple-hover);
-  box-shadow: 0 10px 32px rgb(80 34 237 / 38%);
+  background: var(--ch-blue-hover);
+  box-shadow: 0 10px 32px rgb(32 102 214 / 38%);
   transform: translateY(-1px);
 }
 
@@ -456,7 +456,7 @@
 .secondaryLinks a {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   text-decoration: none;
 }
 
@@ -514,7 +514,7 @@
 }
 
 .backLink a {
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   font-weight: 600;
   text-decoration: none;
 }
@@ -559,7 +559,7 @@
   display: block;
   font-size: 1.2rem;
   font-weight: 800;
-  color: var(--ch-purple);
+  color: var(--ch-blue);
   letter-spacing: -0.02em;
 }
 
@@ -573,15 +573,15 @@
 .mobileBuy {
   flex-shrink: 0;
   padding: 0.8rem 1.25rem;
-  background: var(--ch-purple);
+  background: var(--ch-blue);
   color: #fff !important;
   font-weight: 700;
   font-size: 0.9rem;
   border-radius: var(--ch-radius-sm);
   text-decoration: none;
-  box-shadow: 0 4px 20px rgb(80 34 237 / 35%);
+  box-shadow: 0 4px 20px rgb(32 102 214 / 35%);
 }
 
 .mobileBuy:hover {
-  background: var(--ch-purple-hover);
+  background: var(--ch-blue-hover);
 }

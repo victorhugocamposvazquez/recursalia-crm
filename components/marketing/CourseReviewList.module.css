@@ -89,14 +89,14 @@
   margin: 0;
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
 }
 
 .empty {
   font-size: 0.95rem;
   color: var(--ch-text-muted);
   padding: 1.35rem;
-  background: var(--ch-purple-soft, #f5f3ff);
+  background: var(--ch-blue-light, #e8f1fc);
   border-radius: var(--ch-radius-sm, 10px);
   border: 1px dashed var(--ch-border);
   text-align: center;
@@ -112,7 +112,7 @@
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   transition:
     border-color 0.18s ease,
     background 0.18s ease,
@@ -120,7 +120,7 @@
 }
 
 .loadMore:hover {
-  border-color: var(--ch-purple, #5022ed);
-  background: var(--ch-purple-soft, #f5f3ff);
-  box-shadow: 0 4px 16px rgb(80 34 237 / 12%);
+  border-color: var(--ch-blue, #2066d6);
+  background: var(--ch-blue-light, #e8f1fc);
+  box-shadow: 0 4px 16px rgb(32 102 214 / 12%);
 }

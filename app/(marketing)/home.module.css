@@ -3,7 +3,7 @@
 .heroSplit {
   position: relative;
   padding: 2.5rem 1.5rem 3.5rem;
-  background: linear-gradient(180deg, #ffffff 0%, #faf8ff 55%, #f3f0ff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f0f9ff 100%);
   overflow: hidden;
 }
 
@@ -13,7 +13,7 @@
   inset: -30% 40% 20% -20%;
   background: radial-gradient(
     ellipse 60% 50% at 70% 20%,
-    rgb(80 34 237 / 9%) 0%,
+    rgb(32 102 214 / 9%) 0%,
     transparent 65%
   );
   pointer-events: none;
@@ -53,8 +53,8 @@
   gap: 0.4rem;
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--ch-purple, #5022ed);
-  background: rgb(80 34 237 / 8%);
+  color: var(--ch-blue, #2066d6);
+  background: rgb(32 102 214 / 8%);
   padding: 0.4rem 0.9rem;
   border-radius: 100px;
   margin-bottom: 1.25rem;
@@ -73,7 +73,7 @@
 .heroTitle em {
   font-style: italic;
   font-weight: 800;
-  color: var(--ch-purple-muted, #6d4bd3);
+  color: var(--ch-blue-muted, #3b82f6);
 }
 
 .heroLead {
@@ -145,13 +145,13 @@
   align-items: center;
   justify-content: center;
   padding: 0.85rem 1.5rem;
-  background: var(--ch-purple, #5022ed);
+  background: var(--ch-blue, #2066d6);
   color: #fff !important;
   font-weight: 700;
   font-size: 0.95rem;
   border-radius: 12px;
   text-decoration: none;
-  box-shadow: 0 6px 24px rgb(80 34 237 / 32%);
+  box-shadow: 0 6px 24px rgb(32 102 214 / 32%);
   border: none;
   cursor: pointer;
   transition:
@@ -160,8 +160,8 @@
 }
 
 .btnPrimary:hover {
-  background: var(--ch-purple-hover, #4312d4) !important;
-  box-shadow: 0 8px 28px rgb(80 34 237 / 40%);
+  background: var(--ch-blue-hover, #1854b5) !important;
+  box-shadow: 0 8px 28px rgb(32 102 214 / 40%);
 }
 
 .btnGhost {
@@ -170,19 +170,19 @@
   justify-content: center;
   padding: 0.85rem 1.35rem;
   background: transparent;
-  color: var(--ch-purple, #5022ed) !important;
+  color: var(--ch-blue, #2066d6) !important;
   font-weight: 700;
   font-size: 0.95rem;
   border-radius: 12px;
   text-decoration: none;
-  border: 2px solid var(--ch-purple, #5022ed);
+  border: 2px solid var(--ch-blue, #2066d6);
   transition:
     background 0.15s ease,
     color 0.15s ease;
 }
 
 .btnGhost:hover {
-  background: rgb(80 34 237 / 6%);
+  background: rgb(32 102 214 / 6%);
 }
 
 .searchBlock {
@@ -211,7 +211,7 @@
 }
 
 .heroFooterLinks a {
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   font-weight: 600;
   text-decoration: none;
 }
@@ -232,7 +232,7 @@
 }
 
 .sectionShellMuted {
-  background: var(--ch-bg, #f7f5fc);
+  background: var(--ch-bg, #f5f7fa);
   padding: 3rem 0;
 }
 
@@ -241,7 +241,7 @@
   border-radius: 20px;
   padding: 2.25rem 1.5rem;
   box-shadow: 0 8px 40px rgb(30 27 75 / 6%);
-  border: 1px solid rgb(80 34 237 / 7%);
+  border: 1px solid rgb(32 102 214 / 7%);
 }
 
 @media (min-width: 768px) {
@@ -255,7 +255,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   margin: 0 0 0.5rem;
 }
 
@@ -284,7 +284,7 @@
   display: inline-flex;
   margin-top: 1.75rem;
   font-weight: 700;
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   text-decoration: none;
 }
 
@@ -331,10 +331,10 @@
 }
 
 .catLink:hover {
-  border-color: var(--ch-purple, #5022ed);
-  background: rgb(80 34 237 / 5%);
-  color: var(--ch-purple, #5022ed);
-  box-shadow: 0 4px 16px rgb(80 34 237 / 10%);
+  border-color: var(--ch-blue, #2066d6);
+  background: rgb(32 102 214 / 5%);
+  color: var(--ch-blue, #2066d6);
+  box-shadow: 0 4px 16px rgb(32 102 214 / 10%);
 }
 
 /* Testimonios */
@@ -373,7 +373,7 @@
 
 .testimonialRole {
   font-size: 0.8rem;
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   font-weight: 600;
   margin-top: 0.2rem;
 }
@@ -412,8 +412,8 @@
 }
 
 .statCard {
-  background: linear-gradient(145deg, #faf8ff, #fff);
-  border: 1px solid rgb(80 34 237 / 12%);
+  background: linear-gradient(145deg, #f8fafc, #fff);
+  border: 1px solid rgb(32 102 214 / 12%);
   border-radius: 16px;
   padding: 1.35rem;
   text-align: center;
@@ -422,7 +422,7 @@
 .statNum {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   line-height: 1;
   margin-bottom: 0.35rem;
 }

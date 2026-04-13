@@ -18,8 +18,8 @@
   position: absolute;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgb(80 34 237 / 12%);
-  border: 1px solid rgb(80 34 237 / 8%);
+  box-shadow: 0 12px 40px rgb(32 102 214 / 12%);
+  border: 1px solid rgb(32 102 214 / 8%);
   overflow: hidden;
 }
 
@@ -53,7 +53,7 @@
 .cardTitle {
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   margin: 0 0 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -77,16 +77,16 @@
   height: 68px;
   border-radius: 50%;
   margin: 0.25rem auto 0.5rem;
-  border: 7px solid #ede9fe;
-  border-top-color: var(--ch-purple, #5022ed);
-  border-right-color: var(--ch-purple, #5022ed);
+  border: 7px solid #dbeafe;
+  border-top-color: var(--ch-blue, #2066d6);
+  border-right-color: var(--ch-blue, #2066d6);
   transform: rotate(-35deg);
 }
 
 .bar {
   height: 6px;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--ch-purple, #5022ed), #93c5fd);
+  background: linear-gradient(90deg, var(--ch-blue, #2066d6), #38bdf8);
   margin-top: 0.35rem;
 }
 
@@ -108,5 +108,5 @@
   flex: 1;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
-  background: linear-gradient(145deg, #e9d5ff, #ddd6fe);
+  background: linear-gradient(145deg, #bfdbfe, #e0f2fe);
 }

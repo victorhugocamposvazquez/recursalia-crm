@@ -6,7 +6,7 @@
   display: inline-flex;
   padding: 0.25rem;
   gap: 0.2rem;
-  background: var(--ch-purple-tint, #ede9fe);
+  background: var(--ch-blue-light, #e8f1fc);
   border-radius: 999px;
   margin-bottom: 1.5rem;
   border: 1px solid var(--ch-border, #e8e4f5);
@@ -28,14 +28,14 @@
 }
 
 .tabs button:hover {
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   background: rgb(255 255 255 / 65%);
 }
 
 .active {
   color: #fff !important;
-  background: var(--ch-purple, #5022ed) !important;
-  box-shadow: 0 4px 16px rgb(80 34 237 / 28%);
+  background: var(--ch-blue, #2066d6) !important;
+  box-shadow: 0 4px 16px rgb(32 102 214 / 28%);
 }
 
 .panel {

@@ -21,7 +21,7 @@
 .logo {
   font-weight: 800;
   font-size: 1.22rem;
-  color: var(--ch-purple, #5022ed);
+  color: var(--ch-blue, #2066d6);
   text-decoration: none;
   letter-spacing: -0.03em;
 }
@@ -51,8 +51,8 @@
 }
 
 .nav a:not(.cta):not(.ghost):hover {
-  color: var(--ch-purple, #5022ed);
-  background: rgb(80 34 237 / 6%);
+  color: var(--ch-blue, #2066d6);
+  background: rgb(32 102 214 / 6%);
 }
 
 .ghost {
@@ -60,8 +60,8 @@
   align-items: center;
   padding: 0.52rem 1rem !important;
   margin-right: 0.25rem;
-  border: 2px solid var(--ch-purple, #5022ed) !important;
-  color: var(--ch-purple, #5022ed) !important;
+  border: 2px solid var(--ch-blue, #2066d6) !important;
+  color: var(--ch-blue, #2066d6) !important;
   background: transparent !important;
   border-radius: 10px !important;
   font-weight: 700 !important;
@@ -69,19 +69,19 @@
 }
 
 .ghost:hover {
-  background: rgb(80 34 237 / 6%) !important;
+  background: rgb(32 102 214 / 6%) !important;
 }
 
 .cta {
   display: inline-flex;
   align-items: center;
   padding: 0.55rem 1.15rem !important;
-  background: var(--ch-purple, #5022ed) !important;
+  background: var(--ch-blue, #2066d6) !important;
   color: #fff !important;
   border-radius: 10px !important;
   font-weight: 700 !important;
   font-size: 0.88rem !important;
-  box-shadow: 0 4px 18px rgb(80 34 237 / 30%);
+  box-shadow: 0 4px 18px rgb(32 102 214 / 30%);
   border: 2px solid transparent !important;
   transition:
     background 0.15s ease,
@@ -89,7 +89,7 @@
 }
 
 .cta:hover {
-  background: var(--ch-purple-hover, #4312d4) !important;
+  background: var(--ch-blue-hover, #1854b5) !important;
   color: #fff !important;
-  box-shadow: 0 6px 22px rgb(80 34 237 / 38%);
+  box-shadow: 0 6px 22px rgb(32 102 214 / 38%);
 }

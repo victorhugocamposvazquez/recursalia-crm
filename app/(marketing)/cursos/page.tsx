@@ -58,7 +58,7 @@ export default async function CursosIndexPage({
         {qParam ? (
           <p className={styles.empty} style={{ marginBottom: '1.25rem' }}>
             Filtro: «{qParam}» ·{' '}
-            <Link href="/cursos" style={{ color: 'var(--ch-purple)', fontWeight: 700 }}>
+            <Link href="/cursos" style={{ color: 'var(--ch-blue)', fontWeight: 700 }}>
               Ver todos
             </Link>
           </p>

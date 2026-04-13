@@ -14,21 +14,21 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  border: 2px solid var(--ch-purple, #5022ed);
+  border: 2px solid var(--ch-blue, #2066d6);
   border-radius: 12px;
   background: #ffffff;
   padding: 0.2rem 0.65rem 0.2rem 1.1rem;
-  box-shadow: 0 4px 24px rgb(80 34 237 / 10%);
+  box-shadow: 0 4px 24px rgb(32 102 214 / 10%);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
 
 .inputShell:focus-within {
-  border-color: var(--ch-purple-hover, #4312d4);
+  border-color: var(--ch-blue-hover, #1854b5);
   box-shadow:
-    0 4px 28px rgb(80 34 237 / 14%),
-    0 0 0 4px rgb(80 34 237 / 12%);
+    0 4px 28px rgb(32 102 214 / 14%),
+    0 0 0 4px rgb(32 102 214 / 12%);
 }
 
 .input {
@@ -47,7 +47,7 @@
 
 .searchBtn {
   border: none;
-  background: var(--ch-purple, #5022ed);
+  background: var(--ch-blue, #2066d6);
   color: #ffffff;
   width: 46px;
   height: 46px;
@@ -61,7 +61,7 @@
 }
 
 .searchBtn:hover {
-  background: var(--ch-purple-hover, #4312d4);
+  background: var(--ch-blue-hover, #1854b5);
 }
 
 .dropdown {
@@ -94,14 +94,14 @@
 
 .item:hover,
 .itemActive {
-  background: var(--ch-purple-soft, #f5f3ff);
+  background: var(--ch-blue-light, #e8f1fc);
 }
 
 .thumb {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(145deg, var(--ch-purple, #5022ed), var(--ch-blue-muted, #a78bfa));
+  background: linear-gradient(145deg, var(--ch-blue, #2066d6), #38bdf8);
   flex-shrink: 0;
 }
 
