@@ -1,20 +1,28 @@
-/* Tokens estilo Crehana: claro, azul corporativo, mucho aire */
+/* Tokens estilo Crehana (morado #5022ED, superficies claras, mucho aire) */
 .marketing {
-  --ch-navy: #0c1a2e;
-  --ch-navy-soft: #1a365d;
-  --ch-blue: #2066d6;
-  --ch-blue-hover: #1854b5;
-  --ch-blue-light: #e8f1fc;
-  --ch-blue-muted: #6b9ae8;
+  --ch-purple: #5022ed;
+  --ch-purple-hover: #4312d4;
+  --ch-purple-muted: #6d4bd3;
+  --ch-purple-soft: #f5f3ff;
+  --ch-purple-tint: #ede9fe;
+  /* Alias para módulos que aún usan --ch-blue */
+  --ch-blue: #5022ed;
+  --ch-blue-hover: #4312d4;
+  --ch-blue-light: #ede9fe;
+  --ch-blue-muted: #a78bfa;
+
+  --ch-navy: #1e1b4b;
+  --ch-navy-soft: #312e81;
   --ch-surface: #ffffff;
-  --ch-bg: #f5f8fc;
-  --ch-border: #e1e8f0;
-  --ch-text: #0c1a2e;
-  --ch-text-muted: #5c6b7a;
-  --ch-radius: 12px;
-  --ch-radius-sm: 8px;
-  --ch-shadow: 0 4px 24px rgb(12 26 46 / 6%);
-  --ch-shadow-lg: 0 20px 50px rgb(32 102 214 / 8%);
+  --ch-bg: #f7f5fc;
+  --ch-border: #e8e4f5;
+  --ch-text: #1e1b4b;
+  --ch-text-muted: #5b6472;
+  --ch-highlight-green: #bbf7d0;
+  --ch-radius: 16px;
+  --ch-radius-sm: 10px;
+  --ch-shadow: 0 4px 28px rgb(30 27 75 / 7%);
+  --ch-shadow-lg: 0 20px 56px rgb(80 34 237 / 12%);
 
   min-height: 100vh;
   display: flex;
@@ -32,59 +40,26 @@
   padding: 0 1.5rem;
 }
 
-/* Hero tipo Crehana: sección clara + acento azul, sin fondo oscuro */
+/* Hero compacto (si se reutiliza en otras páginas) */
 .hero {
   position: relative;
   text-align: center;
   padding: 3.25rem 1.5rem 4rem;
-  background: linear-gradient(180deg, #ffffff 0%, #f0f6ff 42%, #e8f1fc 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #faf8ff 50%, #f3f0ff 100%);
   overflow: hidden;
-}
-
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: -40% -20% auto -20%;
-  height: 85%;
-  background: radial-gradient(
-    ellipse 55% 45% at 50% 0%,
-    rgb(32 102 214 / 12%) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
-}
-
-.hero::after {
-  content: '';
-  position: absolute;
-  right: -8%;
-  top: 15%;
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgb(32 102 214 / 8%) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.hero .inner {
-  position: relative;
-  z-index: 1;
 }
 
 .hero h1 {
   margin: 0 0 1.25rem;
   font-size: clamp(2rem, 4.5vw, 3rem);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.12;
   color: var(--ch-navy);
-  max-width: 18ch;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .accent {
-  color: var(--ch-blue);
+  color: var(--ch-purple);
   display: inline;
 }
 
@@ -112,17 +87,16 @@
 }
 
 .footerNote a {
-  color: var(--ch-blue);
+  color: var(--ch-purple);
   text-decoration: none;
   font-weight: 600;
 }
 
 .footerNote a:hover {
   text-decoration: underline;
-  color: var(--ch-blue-hover);
+  color: var(--ch-purple-hover);
 }
 
-/* Franja de confianza bajo el buscador (patrón Crehana) */
 .trustRow {
   display: flex;
   flex-wrap: wrap;
@@ -152,7 +126,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--ch-blue);
+  background: var(--ch-purple);
   flex-shrink: 0;
 }
 
@@ -163,8 +137,8 @@
 .section h2 {
   margin: 0 0 1.5rem;
   font-size: 1.65rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--ch-navy);
 }
 
@@ -188,8 +162,8 @@
 
 .card:hover {
   box-shadow: var(--ch-shadow-lg);
-  border-color: rgb(32 102 214 / 22%);
-  transform: translateY(-2px);
+  border-color: rgb(80 34 237 / 22%);
+  transform: translateY(-3px);
 }
 
 .card a {
@@ -199,7 +173,7 @@
 
 .cardImage {
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, var(--ch-blue-light), #dbeafe);
+  background: linear-gradient(135deg, var(--ch-purple-tint), #ddd6fe);
   position: relative;
 }
 
@@ -211,7 +185,7 @@
   margin: 0 0 0.4rem;
   font-size: 1.08rem;
   line-height: 1.35;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--ch-navy);
 }
 

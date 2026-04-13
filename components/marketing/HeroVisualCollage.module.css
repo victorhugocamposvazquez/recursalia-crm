@@ -1,0 +1,112 @@
+/* Collage decorativo tipo mockups flotantes (referencia Crehana hero derecha) */
+.root {
+  position: relative;
+  min-height: 320px;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+@media (min-width: 960px) {
+  .root {
+    min-height: 420px;
+    margin: 0;
+  }
+}
+
+.card {
+  position: absolute;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgb(80 34 237 / 12%);
+  border: 1px solid rgb(80 34 237 / 8%);
+  overflow: hidden;
+}
+
+.card1 {
+  left: 0;
+  top: 8%;
+  width: 58%;
+  padding: 0.85rem;
+  z-index: 3;
+  transform: rotate(-2deg);
+}
+
+.card2 {
+  right: 0;
+  top: 0;
+  width: 52%;
+  padding: 0.75rem;
+  z-index: 2;
+  transform: rotate(3deg);
+}
+
+.card3 {
+  left: 12%;
+  bottom: 5%;
+  width: 78%;
+  padding: 0.9rem;
+  z-index: 4;
+  transform: rotate(-0.5deg);
+}
+
+.cardTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ch-purple, #5022ed);
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.fakeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.fakeCell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #fde68a, #fca5a5, #93c5fd);
+  opacity: 0.85;
+}
+
+.ring {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  margin: 0.25rem auto 0.5rem;
+  border: 7px solid #ede9fe;
+  border-top-color: var(--ch-purple, #5022ed);
+  border-right-color: var(--ch-purple, #5022ed);
+  transform: rotate(-35deg);
+}
+
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ch-purple, #5022ed), #93c5fd);
+  margin-top: 0.35rem;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: #64748b;
+  margin-top: 0.35rem;
+}
+
+.thumbRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 0.5rem;
+}
+
+.thumb {
+  flex: 1;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #e9d5ff, #ddd6fe);
+}

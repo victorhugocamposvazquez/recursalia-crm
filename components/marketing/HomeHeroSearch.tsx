@@ -87,6 +87,7 @@ export function HomeHeroSearch() {
     <div className={styles.wrap} ref={wrapRef}>
       <div className={styles.inputShell}>
         <input
+          id="home-course-search"
           className={styles.input}
           type="search"
           placeholder="Ej. Inteligencia artificial, diseño web…"
