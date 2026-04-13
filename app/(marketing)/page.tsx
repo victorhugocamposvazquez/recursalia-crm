@@ -8,6 +8,23 @@ import homeStyles from './home.module.css';
 
 export const revalidate = 60;
 
+const TRUSTED_TEAMS = ['Cofoco', 'Bones', 'OLIOLI', 'Madklubben', 'Fårup', 'Dyreparken'];
+
+const SAAS_FEATURES = [
+  {
+    title: 'Contenido segmentado por equipos',
+    body: 'Publica manuales, cursos y comunicaciones para cada departamento con reglas claras de acceso.',
+  },
+  {
+    title: 'Adopción medible en tiempo real',
+    body: 'Sigue actividad, progreso y consumo del contenido para mejorar onboarding y operaciones diarias.',
+  },
+  {
+    title: 'Experiencia clara para toda la empresa',
+    body: 'Una interfaz pensada para que cualquier persona encuentre rápido lo que necesita y actúe al momento.',
+  },
+];
+
 export default async function MarketingHomePage() {
   let courses: CourseCardItem[] = [];
 
@@ -86,6 +103,19 @@ export default async function MarketingHomePage() {
         </div>
       </section>
 
+      <section className={homeStyles.trustStrip} aria-label="Equipos que confían en Recursalia">
+        <div className={homeStyles.panel}>
+          <p className={homeStyles.trustLabel}>Equipos que ya trabajan con una experiencia premium</p>
+          <div className={homeStyles.trustLogos}>
+            {TRUSTED_TEAMS.map((brand) => (
+              <span key={brand} className={homeStyles.trustLogo}>
+                {brand}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className={homeStyles.sectionShellMuted}>
         <div className={homeStyles.panel}>
           <div className={homeStyles.cardShell}>
@@ -116,6 +146,23 @@ export default async function MarketingHomePage() {
               >
                 {c.label}
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className={homeStyles.sectionShell}>
+        <div className={homeStyles.panel}>
+          <div className={homeStyles.sectionHeadCenter}>
+            <p className={homeStyles.kicker}>Por qué Recursalia</p>
+            <h2 className={homeStyles.sectionTitle}>Diseñada para escalar cultura y operaciones</h2>
+          </div>
+          <div className={homeStyles.featureGrid}>
+            {SAAS_FEATURES.map((feature) => (
+              <article key={feature.title} className={homeStyles.featureCard}>
+                <h3>{feature.title}</h3>
+                <p>{feature.body}</p>
+              </article>
             ))}
           </div>
         </div>
@@ -163,6 +210,27 @@ export default async function MarketingHomePage() {
                 <div className={homeStyles.statLabel}>Recursos publicados</div>
                 <div className={homeStyles.statSub}>En constante actualización</div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className={homeStyles.sectionShell}>
+        <div className={homeStyles.panel}>
+          <div className={homeStyles.finalCta}>
+            <p className={homeStyles.finalKicker}>Listo para dar el salto</p>
+            <h2>Convierte la formación interna en una ventaja competitiva</h2>
+            <p>
+              Lanza en días una experiencia moderna para equipos, managers y operaciones con
+              contenido útil desde el primer acceso.
+            </p>
+            <div className={homeStyles.finalActions}>
+              <Link href="/cursos" className={homeStyles.btnPrimary}>
+                Explorar catálogo
+              </Link>
+              <Link href="/login" className={homeStyles.btnGhost}>
+                Entrar al panel
+              </Link>
             </div>
           </div>
         </div>
