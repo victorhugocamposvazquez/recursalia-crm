@@ -1,9 +1,9 @@
-/* Home: hero split inspirado en Monotree (claro, verde acento, tipografía fuerte) */
+/* Home: look and feel SaaS editorial (claro, aireado, foco en jerarquía) */
 
 .heroSplit {
   position: relative;
   padding: 2.5rem 1.5rem 3.5rem;
-  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 50%, #f0fdf4 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 58%, #f3f4f6 100%);
   overflow: hidden;
 }
 
@@ -13,7 +13,7 @@
   inset: -30% 40% 20% -20%;
   background: radial-gradient(
     ellipse 55% 45% at 72% 18%,
-    rgb(16 185 129 / 7%) 0%,
+    rgb(17 24 39 / 6%) 0%,
     transparent 68%
   );
   pointer-events: none;
@@ -53,8 +53,9 @@
   gap: 0.4rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: var(--ch-blue, #059669);
-  background: rgb(16 185 129 / 10%);
+  color: #374151;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
   padding: 0.4rem 0.95rem;
   border-radius: 100px;
   margin-bottom: 1.25rem;
@@ -72,8 +73,21 @@
 }
 
 .heroAccent {
-  color: var(--ch-blue, #059669);
+  color: #111827;
   font-weight: 800;
+  position: relative;
+}
+
+.heroAccent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.08em;
+  height: 0.32em;
+  background: #dbeafe;
+  z-index: -1;
+  border-radius: 4px;
 }
 
 .heroLead {
@@ -92,10 +106,10 @@
 }
 
 .mark {
-  background: linear-gradient(180deg, transparent 62%, #bbf7d0 62%);
+  background: linear-gradient(180deg, transparent 62%, #e5e7eb 62%);
   padding: 0 0.1em;
   font-weight: 600;
-  color: #14532d;
+  color: #111827;
 }
 
 .bullets {
@@ -111,7 +125,7 @@
   padding-left: 1.35rem;
   margin-bottom: 0.5rem;
   font-size: 0.98rem;
-  color: #334155;
+  color: #4b5563;
   font-weight: 500;
 }
 
@@ -123,7 +137,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--ch-blue, #059669);
+  background: #6b7280;
 }
 
 .ctaRow {
@@ -145,13 +159,13 @@
   align-items: center;
   justify-content: center;
   padding: 0.85rem 1.5rem;
-  background: var(--ch-blue, #059669);
+  background: #111827;
   color: #fff !important;
   font-weight: 700;
   font-size: 0.95rem;
   border-radius: 999px;
   text-decoration: none;
-  box-shadow: 0 4px 20px rgb(5 150 105 / 30%);
+  box-shadow: 0 4px 20px rgb(17 24 39 / 24%);
   border: none;
   cursor: pointer;
   transition:
@@ -160,8 +174,8 @@
 }
 
 .btnPrimary:hover {
-  background: var(--ch-blue-hover, #047857) !important;
-  box-shadow: 0 8px 28px rgb(5 150 105 / 38%);
+  background: #1f2937 !important;
+  box-shadow: 0 8px 28px rgb(17 24 39 / 30%);
 }
 
 .btnGhost {
@@ -212,13 +226,55 @@
 }
 
 .heroFooterLinks a {
-  color: var(--ch-blue, #059669);
+  color: #374151;
   font-weight: 600;
   text-decoration: none;
 }
 
 .heroFooterLinks a:hover {
+  color: #111827;
   text-decoration: underline;
+}
+
+.heroMetrics {
+  max-width: 1140px;
+  margin: 1.25rem auto 0;
+  padding: 0 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 700px) {
+  .heroMetrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.metricCard {
+  background: #ffffff;
+  border: 1px solid var(--ch-border, #e5e7eb);
+  border-radius: 14px;
+  padding: 0.95rem 1rem;
+  box-shadow: 0 2px 14px rgb(17 24 39 / 5%);
+}
+
+.metricValue {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.1;
+}
+
+.metricLabel {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 /* Bloque trending dentro de tarjeta blanca */
@@ -242,7 +298,7 @@
   border-radius: 20px;
   padding: 2.25rem 1.5rem;
   box-shadow: 0 8px 40px rgb(17 24 39 / 5%);
-  border: 1px solid rgb(5 150 105 / 8%);
+  border: 1px solid var(--ch-border, #e5e7eb);
 }
 
 @media (min-width: 768px) {
@@ -256,7 +312,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--ch-blue, #059669);
+  color: #6b7280;
   margin: 0 0 0.5rem;
 }
 
@@ -285,7 +341,7 @@
   display: inline-flex;
   margin-top: 1.75rem;
   font-weight: 700;
-  color: var(--ch-blue, #059669);
+  color: #111827;
   text-decoration: none;
 }
 
@@ -332,10 +388,10 @@
 }
 
 .catLink:hover {
-  border-color: var(--ch-blue, #059669);
-  background: rgb(16 185 129 / 6%);
-  color: var(--ch-blue, #059669);
-  box-shadow: 0 4px 16px rgb(5 150 105 / 12%);
+  border-color: #9ca3af;
+  background: #f9fafb;
+  color: #111827;
+  box-shadow: 0 4px 16px rgb(17 24 39 / 8%);
 }
 
 /* Testimonios */
@@ -374,7 +430,7 @@
 
 .testimonialRole {
   font-size: 0.8rem;
-  color: var(--ch-blue, #059669);
+  color: #6b7280;
   font-weight: 600;
   margin-top: 0.2rem;
 }
@@ -414,7 +470,7 @@
 
 .statCard {
   background: linear-gradient(145deg, #f8fafc, #fff);
-  border: 1px solid rgb(5 150 105 / 14%);
+  border: 1px solid var(--ch-border, #e5e7eb);
   border-radius: 16px;
   padding: 1.35rem;
   text-align: center;
@@ -423,7 +479,7 @@
 .statNum {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--ch-blue, #059669);
+  color: #111827;
   line-height: 1;
   margin-bottom: 0.35rem;
 }

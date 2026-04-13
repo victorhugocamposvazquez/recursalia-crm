@@ -34,19 +34,19 @@ export default async function MarketingHomePage() {
       <section className={homeStyles.heroSplit}>
         <div className={homeStyles.heroGrid}>
           <div className={homeStyles.heroLeft}>
-            <span className={homeStyles.badge}>Formación online sin fricción</span>
+            <span className={homeStyles.badge}>Plataforma de aprendizaje interno</span>
             <h1 className={homeStyles.heroTitle}>
-              La formación que pone a las{' '}
-              <span className={homeStyles.heroAccent}>personas</span> primero
+              Una experiencia de formación
+              <br />
+              centrada en tus <span className={homeStyles.heroAccent}>equipos</span>
             </h1>
             <p className={homeStyles.heroLead}>
-              Nuestros{' '}
-              <mark className={homeStyles.mark}>cursos, guías y manuales</mark> son el aliado que
-              necesitas para formarte con rigor y sin complicaciones.
+              Crea y publica <mark className={homeStyles.mark}>cursos, guías y manuales</mark> con
+              una interfaz clara, ordenada y lista para escalar en cada área de la empresa.
             </p>
             <ul className={homeStyles.bullets}>
-              <li>Simple, modular y contenido pensado para aplicar ya.</li>
-              <li>Pensado para personas reales, con resultados medibles.</li>
+              <li>Onboarding, formación y documentación en un único flujo.</li>
+              <li>Contenido segmentado por rol, equipo o necesidad.</li>
             </ul>
             <div className={homeStyles.ctaRow}>
               <Link href="/cursos" className={homeStyles.btnPrimary}>
@@ -70,17 +70,31 @@ export default async function MarketingHomePage() {
             <HeroVisualCollage />
           </div>
         </div>
+        <div className={homeStyles.heroMetrics}>
+          <article className={homeStyles.metricCard}>
+            <span className={homeStyles.metricValue}>4.9/5</span>
+            <span className={homeStyles.metricLabel}>Satisfacción media</span>
+          </article>
+          <article className={homeStyles.metricCard}>
+            <span className={homeStyles.metricValue}>75%</span>
+            <span className={homeStyles.metricLabel}>Actividad semanal</span>
+          </article>
+          <article className={homeStyles.metricCard}>
+            <span className={homeStyles.metricValue}>+50</span>
+            <span className={homeStyles.metricLabel}>Recursos activos</span>
+          </article>
+        </div>
       </section>
 
       <section className={homeStyles.sectionShellMuted}>
         <div className={homeStyles.panel}>
           <div className={homeStyles.cardShell}>
-            <p className={homeStyles.kicker}>Lo más trending</p>
-            <h2 className={homeStyles.sectionTitle}>Encuentra tu reCURSO perfecto</h2>
+            <p className={homeStyles.kicker}>Cursos destacados</p>
+            <h2 className={homeStyles.sectionTitle}>Formación práctica para cada perfil</h2>
             <CourseCardGrid courses={trending} />
             <div className={homeStyles.moreWrap}>
               <Link href="/cursos" className={homeStyles.moreLink}>
-                Ver todos los reCURSOS →
+                Ver catálogo completo →
               </Link>
             </div>
           </div>
@@ -91,7 +105,7 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>Categorías</p>
-            <h2 className={homeStyles.sectionTitle}>Categorías más populares</h2>
+            <h2 className={homeStyles.sectionTitle}>Explora por áreas y necesidades</h2>
           </div>
           <div className={homeStyles.catGrid}>
             {HOME_COURSE_CATEGORIES.map((c) => (
@@ -110,10 +124,8 @@ export default async function MarketingHomePage() {
       <section className={homeStyles.sectionShellMuted}>
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
-            <p className={homeStyles.kicker}>Orgullosos de nuestro trabajo</p>
-            <h2 className={homeStyles.sectionTitle}>
-              Educando a particulares y empresas de todo el mundo
-            </h2>
+            <p className={homeStyles.kicker}>Casos reales</p>
+            <h2 className={homeStyles.sectionTitle}>Equipos que ya aprenden con Recursalia</h2>
           </div>
           <div className={homeStyles.testimonialGrid}>
             {HOME_TESTIMONIALS.map((t) => (
@@ -129,16 +141,16 @@ export default async function MarketingHomePage() {
 
       <section className={homeStyles.sectionShell}>
         <div className={homeStyles.panel}>
-          <p className={homeStyles.kicker}>Nuestro valor</p>
-          <h2 className={homeStyles.sectionTitle}>Para ayudarte con tus metas</h2>
+          <p className={homeStyles.kicker}>Plataforma</p>
+          <h2 className={homeStyles.sectionTitle}>Todo tu aprendizaje interno en un solo lugar</h2>
           <div className={homeStyles.valueGrid}>
             <div>
               <p className={homeStyles.valueText}>
-                Instructores con experiencia creando contenido práctico. Los materiales están
-                pensados para que puedas aplicar lo aprendido desde el primer día, con soporte de
-                pago seguro y acceso claro a cada recurso.
+                Diseñada para operaciones, people y formación: publica contenido accionable,
+                ordénalo por equipos y mantén a cada persona alineada con procesos y conocimiento
+                actualizado.
               </p>
-              <p className={homeStyles.valueHighlight}>¡Súmate al éxito!</p>
+              <p className={homeStyles.valueHighlight}>Menos fricción. Más adopción.</p>
             </div>
             <div className={homeStyles.stats}>
               <div className={homeStyles.statCard}>
