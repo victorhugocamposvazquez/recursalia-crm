@@ -237,7 +237,7 @@ export default async function CursoLandingPage({
             {course.featured_image_url ? (
               <Image
                 src={course.featured_image_url}
-                alt=""
+                alt={title}
                 fill
                 priority
                 sizes="(max-width: 960px) 100vw, 65vw"
@@ -279,7 +279,7 @@ export default async function CursoLandingPage({
 
         {content.benefits && content.benefits.length > 0 && (
           <>
-            <p className={styles.sectionLabel}>Por qué este curso</p>
+            <p className={styles.sectionLabel}>Qué obtienes</p>
             <ul className={styles.benefits}>
               {content.benefits.map((b, i) => (
                 <li key={i}>
@@ -308,7 +308,7 @@ export default async function CursoLandingPage({
           id="opiniones"
           aria-labelledby="reviews-heading"
         >
-          <p className={styles.sectionLabel}>Alumnos</p>
+          <p className={styles.sectionLabel}>Opiniones</p>
           <CourseReviewList reviews={reviews} average={avg} />
         </section>
       </article>
@@ -399,7 +399,7 @@ export default async function CursoLandingPage({
         </ul>
 
         <div className={styles.tagsBlock}>
-          <span className={styles.tagsTitle}>Tags</span>
+          <span className={styles.tagsTitle}>Temas</span>
           <div className={styles.tagsRow}>
             {tagParts.map((t, i) => (
               <span key={`${i}-${t}`} className={styles.tagChip}>

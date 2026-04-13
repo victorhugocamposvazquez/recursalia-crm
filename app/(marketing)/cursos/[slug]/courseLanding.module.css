@@ -1,4 +1,4 @@
-/* Landing curso — alineada con tokens marketing (morado Crehana) */
+/* Landing curso — tokens marketing (verde / grises, estilo producto B2B) */
 
 .breadcrumb {
   display: flex;
@@ -74,7 +74,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 55%, rgb(12 26 46 / 35%) 100%);
+  background: linear-gradient(180deg, transparent 55%, rgb(17 24 39 / 32%) 100%);
   pointer-events: none;
 }
 
@@ -217,7 +217,7 @@
   background: var(--ch-surface);
   border-radius: var(--ch-radius-sm);
   border: 1px solid var(--ch-border);
-  box-shadow: 0 2px 14px rgb(12 26 46 / 4%);
+  box-shadow: 0 2px 14px rgb(17 24 39 / 4%);
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -277,7 +277,7 @@
   background: var(--ch-surface);
   border: 1px solid var(--ch-border);
   border-radius: var(--ch-radius-sm);
-  box-shadow: 0 2px 12px rgb(12 26 46 / 3%);
+  box-shadow: 0 2px 12px rgb(17 24 39 / 3%);
 }
 
 .module h4 {
@@ -377,7 +377,7 @@
   color: var(--ch-navy);
 }
 
-/* Sidebar fija (referencia tipo checkout / Crehana) */
+/* Sidebar compra (sticky desktop) */
 .sidebar {
   position: sticky;
   top: 5.25rem;
@@ -387,8 +387,8 @@
   border-radius: var(--ch-radius);
   padding: 1.6rem 1.4rem 1.35rem;
   box-shadow:
-    0 4px 6px rgb(12 26 46 / 4%),
-    0 12px 40px rgb(12 26 46 / 8%);
+    0 4px 6px rgb(17 24 39 / 4%),
+    0 12px 40px rgb(17 24 39 / 7%);
 }
 
 .sidebarTitle {
