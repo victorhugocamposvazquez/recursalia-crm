@@ -18,6 +18,7 @@ type CourseRow = {
   generated_content: GeneratedCourseStructure | null;
   published_title: string | null;
   featured_image_url: string | null;
+  published_at: string | null;
 };
 
 export async function generateMetadata({
@@ -60,6 +61,40 @@ function formatMoney(n: number | undefined, currency = 'EUR') {
   }).format(n);
 }
 
+function formatScoreEs(n: number): string {
+  return n.toFixed(1).replace('.', ',');
+}
+
+function formatUpdatedAt(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return '—';
+    return new Intl.DateTimeFormat('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(d);
+  } catch {
+    return '—';
+  }
+}
+
+function CartIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden
+    >
+      <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1 1 0 0021 4H5.21L4.27 2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+    </svg>
+  );
+}
+
 export default async function CursoLandingPage({
   params,
 }: {
@@ -75,7 +110,7 @@ export default async function CursoLandingPage({
     const { data: c } = await supabase
       .from('courses')
       .select(
-        'id, public_slug, hotmart_product_id, input_payload, generated_content, published_title, featured_image_url'
+        'id, public_slug, hotmart_product_id, input_payload, generated_content, published_title, featured_image_url, published_at'
       )
       .eq('public_slug', slug)
       .eq('status', 'published')
@@ -113,6 +148,27 @@ export default async function CursoLandingPage({
 
   const hotmartUrl = course.hotmart_product_id?.trim() || null;
   const displayPrice = formatMoney(sale ?? original);
+  const updatedLabel = formatUpdatedAt(course.published_at);
+  const tagParts = (() => {
+    const parts = input.topic
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .slice(0, 6);
+    if (parts.length > 0) return parts;
+    const single = input.topic.trim();
+    return single ? [single] : ['Curso online'];
+  })();
+
+  const levelEs: Record<string, string> = {
+    beginner: 'Principiante',
+    intermediate: 'Intermedio',
+    advanced: 'Avanzado',
+  };
+  const accessDisplay =
+    content.access_level?.trim() ||
+    levelEs[input.level] ||
+    input.level;
 
   const infoTab = (
     <div className={styles.prose}>
@@ -259,12 +315,34 @@ export default async function CursoLandingPage({
 
       <aside className={styles.sidebar} aria-label="Comprar curso">
         <h2 className={styles.sidebarTitle}>{title}</h2>
-        <div className={styles.priceRow}>
-          {showStrike && (
-            <span className={styles.original}>{formatMoney(original)}</span>
+
+        <a
+          href="#opiniones"
+          className={styles.sidebarRating}
+          aria-label="Ir a opiniones de alumnos"
+        >
+          {avg != null ? (
+            <>
+              <span className={styles.sidebarScore}>{formatScoreEs(avg)}</span>
+              <StarRatingDisplay
+                value={avg}
+                ariaHidden
+                className={styles.sidebarStars}
+              />
+              <span className={styles.sidebarReviewCount}>({reviews.length})</span>
+            </>
+          ) : (
+            <span className={styles.sidebarNoReviews}>Sin opiniones aún</span>
           )}
-          <span className={styles.sale}>{displayPrice}</span>
+        </a>
+
+        <div className={styles.sidebarPriceBlock}>
+          {showStrike && (
+            <span className={styles.sidebarStrike}>{formatMoney(original)}</span>
+          )}
+          <span className={styles.sidebarPriceMain}>{displayPrice}</span>
         </div>
+
         {hotmartUrl ? (
           <a
             className={styles.buy}
@@ -272,38 +350,69 @@ export default async function CursoLandingPage({
             target="_blank"
             rel="noopener noreferrer"
           >
+            <CartIcon className={styles.buyCart} />
             Comprar ahora
           </a>
         ) : (
-          <div className={styles.buyDisabled}>Enlace de compra pendiente</div>
+          <div className={styles.buyDisabled}>
+            <CartIcon className={styles.buyCart} />
+            Enlace de compra pendiente
+          </div>
         )}
-        <div className={styles.secondaryLinks}>
-          <Link href="#opiniones">Ver opiniones</Link>
-          <Link href="/cursos">Más cursos</Link>
-        </div>
+
         <p className={styles.trust}>
-          Pago seguro con Hotmart · Acceso al contenido tras la compra
+          <span className={styles.trustLock} aria-hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+            </svg>
+          </span>
+          Pago seguro con Hotmart, garantía de devolución
         </p>
+
         <ul className={styles.metaList}>
           <li>
-            <span>Nivel</span>
-            <span>{content.access_level ?? input.level}</span>
+            <span className={styles.metaLabel}>Actualizado</span>
+            <span className={styles.metaPill}>{updatedLabel}</span>
           </li>
           <li>
-            <span>Diploma</span>
-            <span>{content.certificate ? 'Sí' : 'No'}</span>
+            <span className={styles.metaLabel}>Acceso</span>
+            <span className={styles.metaPill}>{accessDisplay}</span>
           </li>
           <li>
-            <span>Bolsa de trabajo</span>
-            <span>{content.job_bank ? 'Sí' : 'No'}</span>
+            <span className={styles.metaLabel}>Diploma / certificado</span>
+            <span className={styles.metaPill}>
+              {content.certificate ? 'Sí' : 'No'}
+            </span>
           </li>
           <li>
-            <span>Idioma</span>
-            <span>{content.language ?? 'Español'}</span>
+            <span className={styles.metaLabel}>Bolsa de trabajo</span>
+            <span className={styles.metaPill}>
+              {content.job_bank ? 'Sí' : 'No'}
+            </span>
+          </li>
+          <li>
+            <span className={styles.metaLabel}>Idioma</span>
+            <span className={styles.metaPill}>
+              {content.language ?? 'Español'}
+            </span>
           </li>
         </ul>
+
+        <div className={styles.tagsBlock}>
+          <span className={styles.tagsTitle}>Tags</span>
+          <div className={styles.tagsRow}>
+            {tagParts.map((t, i) => (
+              <span key={`${i}-${t}`} className={styles.tagChip}>
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+
         <div className={styles.backLink}>
-          <Link href="/cursos">← Volver al catálogo</Link>
+          <Link href="#opiniones">Ver todas las opiniones</Link>
+          <span className={styles.backSep}>·</span>
+          <Link href="/cursos">Catálogo</Link>
         </div>
       </aside>
 

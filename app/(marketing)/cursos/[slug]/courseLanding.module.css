@@ -377,7 +377,7 @@
   color: var(--ch-navy);
 }
 
-/* Sidebar */
+/* Sidebar fija (referencia tipo checkout / Crehana) */
 .sidebar {
   position: sticky;
   top: 5.25rem;
@@ -385,109 +385,171 @@
   background: var(--ch-surface);
   border: 1px solid var(--ch-border);
   border-radius: var(--ch-radius);
-  padding: 1.5rem 1.35rem;
-  box-shadow: var(--ch-shadow-lg);
+  padding: 1.6rem 1.4rem 1.35rem;
+  box-shadow:
+    0 4px 6px rgb(12 26 46 / 4%),
+    0 12px 40px rgb(12 26 46 / 8%);
 }
 
 .sidebarTitle {
-  margin: 0 0 1rem;
-  font-size: 0.9375rem;
+  margin: 0 0 0.85rem;
+  font-size: 1.0625rem;
   color: var(--ch-navy);
-  font-weight: 700;
-  line-height: 1.35;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.sidebar .priceRow {
-  margin-bottom: 1.15rem;
+.sidebarRating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  margin-bottom: 1.1rem;
+  text-decoration: none;
+  color: inherit;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.15rem 0;
+  border-radius: var(--ch-radius-sm);
+  transition: opacity 0.15s ease;
+}
+
+.sidebarRating:hover {
+  opacity: 0.88;
+}
+
+.sidebarScore {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--ch-navy);
+  letter-spacing: -0.02em;
+}
+
+.sidebarReviewCount {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ch-text-muted);
+}
+
+.sidebarNoReviews {
+  font-size: 0.875rem;
+  color: var(--ch-text-muted);
+}
+
+.sidebarStars {
+  font-size: 1.05rem;
+}
+
+.sidebarPriceBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  margin-bottom: 1.1rem;
+}
+
+.sidebarStrike {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.sidebarPriceMain {
+  font-size: clamp(1.65rem, 4vw, 2rem);
+  font-weight: 800;
+  color: var(--ch-navy);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 .buy {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   width: 100%;
-  text-align: center;
   padding: 0.95rem 1.15rem;
-  background: var(--ch-blue);
+  background: linear-gradient(90deg, #2066d6 0%, #0d9488 42%, #059669 100%);
   color: #fff !important;
   font-weight: 700;
   font-size: 1rem;
-  border-radius: var(--ch-radius-sm);
+  border-radius: 12px;
   text-decoration: none;
-  margin-bottom: 0.65rem;
-  box-shadow: 0 6px 24px rgb(32 102 214 / 32%);
+  margin-bottom: 0.85rem;
+  box-shadow: 0 8px 28px rgb(5 150 105 / 28%);
+  border: none;
   transition:
-    background 0.18s ease,
+    filter 0.18s ease,
     box-shadow 0.18s ease,
     transform 0.15s ease;
 }
 
 .buy:hover {
-  background: var(--ch-blue-hover);
-  box-shadow: 0 10px 32px rgb(32 102 214 / 38%);
+  filter: brightness(1.06);
+  box-shadow: 0 12px 36px rgb(5 150 105 / 35%);
   transform: translateY(-1px);
 }
 
+.buyCart {
+  flex-shrink: 0;
+  opacity: 0.95;
+}
+
 .buyDisabled {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
   width: 100%;
-  text-align: center;
   padding: 0.95rem 1.15rem;
   background: #94a3b8;
   color: #fff !important;
   font-weight: 700;
   font-size: 0.9375rem;
-  border-radius: var(--ch-radius-sm);
-  margin-bottom: 0.65rem;
+  border-radius: 12px;
+  margin-bottom: 0.85rem;
   cursor: not-allowed;
   user-select: none;
 }
 
-.secondaryLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.secondaryLinks a {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--ch-blue);
-  text-decoration: none;
-}
-
-.secondaryLinks a:hover {
-  text-decoration: underline;
-}
-
 .trust {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
   font-size: 0.75rem;
   color: var(--ch-text-muted);
-  text-align: center;
-  margin: 0 0 1.1rem;
   line-height: 1.45;
+  margin: 0 0 1.15rem;
+  text-align: left;
+}
+
+.trustLock {
+  flex-shrink: 0;
+  margin-top: 0.12rem;
+  color: #94a3b8;
+  display: flex;
 }
 
 .metaList {
   list-style: none;
   padding: 0;
   margin: 0;
-  font-size: 0.8125rem;
-  color: var(--ch-text-muted);
   border-top: 1px solid var(--ch-border);
-  padding-top: 1rem;
+  padding-top: 0.35rem;
 }
 
 .metaList li {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 0.45rem 0;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
   border-bottom: 1px solid var(--ch-border);
 }
 
@@ -495,22 +557,68 @@
   border-bottom: none;
 }
 
-.metaList span:first-child {
+.metaLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
   color: var(--ch-text-muted);
-  font-weight: 500;
+  flex-shrink: 0;
 }
 
-.metaList span:last-child {
-  color: var(--ch-navy);
+.metaPill {
+  font-size: 0.75rem;
   font-weight: 700;
+  color: var(--ch-navy);
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
   text-align: right;
+  max-width: 58%;
+}
+
+.tagsBlock {
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ch-border);
+}
+
+.tagsTitle {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ch-navy);
+  margin-bottom: 0.65rem;
+}
+
+.tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tagChip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ch-blue);
+  background: var(--ch-blue-light);
+  border: 1px solid rgb(32 102 214 / 15%);
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
 }
 
 .backLink {
-  margin-top: 1.15rem;
+  margin-top: 1.1rem;
   padding-top: 1rem;
   border-top: 1px solid var(--ch-border);
   font-size: 0.8125rem;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .backLink a {
@@ -523,6 +631,11 @@
   text-decoration: underline;
 }
 
+.backSep {
+  color: var(--ch-border);
+  user-select: none;
+}
+
 /* CTA fijo móvil */
 .mobileCta {
   display: none;
@@ -532,7 +645,7 @@
   bottom: 0;
   z-index: 40;
   padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0));
-  background: linear-gradient(180deg, transparent, rgb(247 245 252 / 92%) 18%, var(--ch-bg));
+  background: linear-gradient(180deg, transparent, rgb(245 247 250 / 94%) 18%, var(--ch-bg));
   border-top: 1px solid var(--ch-border);
 }
 
@@ -573,15 +686,15 @@
 .mobileBuy {
   flex-shrink: 0;
   padding: 0.8rem 1.25rem;
-  background: var(--ch-blue);
+  background: linear-gradient(90deg, #2066d6 0%, #0d9488 45%, #059669 100%);
   color: #fff !important;
   font-weight: 700;
   font-size: 0.9rem;
-  border-radius: var(--ch-radius-sm);
+  border-radius: 12px;
   text-decoration: none;
-  box-shadow: 0 4px 20px rgb(32 102 214 / 35%);
+  box-shadow: 0 6px 22px rgb(5 150 105 / 32%);
 }
 
 .mobileBuy:hover {
-  background: var(--ch-blue-hover);
+  filter: brightness(1.06);
 }
