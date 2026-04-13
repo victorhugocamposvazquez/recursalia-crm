@@ -1,10 +1,10 @@
 .heading {
   margin: 0 0 1.25rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--ch-border, #e8e4f5);
+  border-bottom: 1px solid var(--ch-border, #e5e7eb);
   font-size: clamp(1.05rem, 2.2vw, 1.2rem);
   font-weight: 700;
-  color: var(--ch-navy, #1e1b4b);
+  color: var(--ch-navy, #111827);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -19,7 +19,7 @@
 
 .headingScore {
   font-weight: 800;
-  color: var(--ch-navy, #1e1b4b);
+  color: var(--ch-navy, #111827);
   letter-spacing: -0.02em;
 }
 
@@ -30,7 +30,7 @@
 
 .headingCount {
   font-weight: 600;
-  color: var(--ch-text-muted, #5b6472);
+  color: var(--ch-text-muted, #6b7280);
   font-size: 0.95em;
 }
 
@@ -42,7 +42,7 @@
 .item {
   margin: 0;
   padding: 1.35rem 0 1.5rem;
-  border-bottom: 1px solid var(--ch-border, #e8e4f5);
+  border-bottom: 1px solid var(--ch-border, #e5e7eb);
 }
 
 .item:last-child {
@@ -54,7 +54,7 @@
   margin: 0 0 0.55rem;
   font-size: 1.0625rem;
   font-weight: 700;
-  color: var(--ch-navy, #1e1b4b);
+  color: var(--ch-navy, #111827);
   line-height: 1.35;
   letter-spacing: -0.015em;
 }
@@ -73,14 +73,14 @@
 }
 
 .itemDate {
-  color: var(--ch-text-muted, #5b6472);
+  color: var(--ch-text-muted, #6b7280);
   text-transform: capitalize;
 }
 
 .itemBody {
   margin: 0 0 0.75rem;
   font-size: 0.9375rem;
-  color: var(--ch-text, #1e1b4b);
+  color: var(--ch-text, #111827);
   line-height: 1.65;
   max-width: 72ch;
 }
@@ -89,14 +89,14 @@
   margin: 0;
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
 }
 
 .empty {
   font-size: 0.95rem;
   color: var(--ch-text-muted);
   padding: 1.35rem;
-  background: var(--ch-blue-light, #e8f1fc);
+  background: var(--ch-blue-light, #ecfdf5);
   border-radius: var(--ch-radius-sm, 10px);
   border: 1px dashed var(--ch-border);
   text-align: center;
@@ -106,13 +106,13 @@
 .loadMore {
   margin-top: 1.25rem;
   padding: 0.65rem 1.35rem;
-  border: 1px solid var(--ch-border, #e8e4f5);
+  border: 1px solid var(--ch-border, #e5e7eb);
   background: var(--ch-surface, #fff);
   border-radius: var(--ch-radius-sm, 10px);
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   transition:
     border-color 0.18s ease,
     background 0.18s ease,
@@ -120,7 +120,7 @@
 }
 
 .loadMore:hover {
-  border-color: var(--ch-blue, #2066d6);
-  background: var(--ch-blue-light, #e8f1fc);
-  box-shadow: 0 4px 16px rgb(32 102 214 / 12%);
+  border-color: var(--ch-blue, #059669);
+  background: var(--ch-blue-light, #ecfdf5);
+  box-shadow: 0 4px 16px rgb(5 150 105 / 12%);
 }

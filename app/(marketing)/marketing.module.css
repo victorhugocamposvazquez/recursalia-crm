@@ -1,29 +1,29 @@
-/* Tokens estilo Crehana: azul marca, grises fríos, superficies claras */
+/* Tokens inspirados en Monotree (monotree.com/es): verde esmeralda, grises neutros, mucho blanco */
 .marketing {
-  /* --ch-purple* se mantienen como alias por compatibilidad; valores = azul marca */
-  --ch-purple: #2066d6;
-  --ch-purple-hover: #1854b5;
-  --ch-purple-muted: #3b82f6;
-  --ch-purple-soft: #eff6ff;
-  --ch-purple-tint: #dbeafe;
+  /* Marca = verde (alias --ch-blue / --ch-purple por compatibilidad en módulos) */
+  --ch-purple: #059669;
+  --ch-purple-hover: #047857;
+  --ch-purple-muted: #10b981;
+  --ch-purple-soft: #ecfdf5;
+  --ch-purple-tint: #d1fae5;
 
-  --ch-blue: #2066d6;
-  --ch-blue-hover: #1854b5;
-  --ch-blue-light: #e8f1fc;
-  --ch-blue-muted: #60a5fa;
+  --ch-blue: #059669;
+  --ch-blue-hover: #047857;
+  --ch-blue-light: #ecfdf5;
+  --ch-blue-muted: #34d399;
 
-  --ch-navy: #0c1a2e;
-  --ch-navy-soft: #1e3a5f;
+  --ch-navy: #111827;
+  --ch-navy-soft: #374151;
   --ch-surface: #ffffff;
-  --ch-bg: #f5f7fa;
-  --ch-border: #e1e8f0;
-  --ch-text: #0c1a2e;
-  --ch-text-muted: #5c6b7a;
-  --ch-highlight-green: #bbf7d0;
-  --ch-radius: 16px;
+  --ch-bg: #f9fafb;
+  --ch-border: #e5e7eb;
+  --ch-text: #111827;
+  --ch-text-muted: #6b7280;
+  --ch-highlight-green: #a7f3d0;
+  --ch-radius: 14px;
   --ch-radius-sm: 10px;
-  --ch-shadow: 0 4px 28px rgb(12 26 46 / 6%);
-  --ch-shadow-lg: 0 20px 56px rgb(32 102 214 / 12%);
+  --ch-shadow: 0 1px 2px rgb(17 24 39 / 5%), 0 4px 24px rgb(17 24 39 / 6%);
+  --ch-shadow-lg: 0 8px 40px rgb(17 24 39 / 8%);
 
   min-height: 100vh;
   display: flex;
@@ -41,12 +41,11 @@
   padding: 0 1.5rem;
 }
 
-/* Hero compacto (si se reutiliza en otras páginas) */
 .hero {
   position: relative;
   text-align: center;
   padding: 3.25rem 1.5rem 4rem;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 45%, #f0f9ff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 50%, #f0fdf4 100%);
   overflow: hidden;
 }
 
@@ -163,7 +162,7 @@
 
 .card:hover {
   box-shadow: var(--ch-shadow-lg);
-  border-color: rgb(32 102 214 / 22%);
+  border-color: rgb(5 150 105 / 22%);
   transform: translateY(-3px);
 }
 
@@ -174,7 +173,7 @@
 
 .cardImage {
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, var(--ch-blue-light), #bfdbfe);
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
   position: relative;
 }
 
@@ -203,4 +202,3 @@
   max-width: 42ch;
   line-height: 1.6;
 }
-

@@ -6,10 +6,10 @@
   display: inline-flex;
   padding: 0.25rem;
   gap: 0.2rem;
-  background: var(--ch-blue-light, #e8f1fc);
+  background: var(--ch-blue-light, #ecfdf5);
   border-radius: 999px;
   margin-bottom: 1.5rem;
-  border: 1px solid var(--ch-border, #e8e4f5);
+  border: 1px solid var(--ch-border, #e5e7eb);
 }
 
 .tabs button {
@@ -18,7 +18,7 @@
   padding: 0.55rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--ch-text-muted, #5b6472);
+  color: var(--ch-text-muted, #6b7280);
   cursor: pointer;
   border-radius: 999px;
   transition:
@@ -28,27 +28,27 @@
 }
 
 .tabs button:hover {
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   background: rgb(255 255 255 / 65%);
 }
 
 .active {
   color: #fff !important;
-  background: var(--ch-blue, #2066d6) !important;
-  box-shadow: 0 4px 16px rgb(32 102 214 / 28%);
+  background: var(--ch-blue, #059669) !important;
+  box-shadow: 0 4px 16px rgb(5 150 105 / 26%);
 }
 
 .panel {
   font-size: 0.98rem;
   line-height: 1.65;
-  color: var(--ch-text-muted, #5b6472);
+  color: var(--ch-text-muted, #6b7280);
   padding: 0.25rem 0 0.5rem;
 }
 
 .panel h4 {
   margin: 1.15rem 0 0.5rem;
   font-size: 1.05rem;
-  color: var(--ch-navy, #1e1b4b);
+  color: var(--ch-navy, #111827);
   font-weight: 700;
 }
 

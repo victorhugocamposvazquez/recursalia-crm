@@ -222,8 +222,8 @@
 }
 
 .benefits li:hover {
-  border-color: rgb(32 102 214 / 18%);
-  box-shadow: 0 8px 28px rgb(32 102 214 / 8%);
+  border-color: rgb(5 150 105 / 22%);
+  box-shadow: 0 8px 28px rgb(5 150 105 / 10%);
 }
 
 .bIcon {
@@ -257,7 +257,7 @@
   padding: 1.15rem 1.35rem;
   background: linear-gradient(135deg, var(--ch-blue-light), var(--ch-blue-light));
   border-radius: var(--ch-radius-sm);
-  border: 1px solid rgb(32 102 214 / 15%);
+  border: 1px solid rgb(5 150 105 / 16%);
   font-size: 0.95rem;
   color: var(--ch-navy-soft);
   margin-bottom: 2rem;
@@ -475,11 +475,11 @@
   gap: 0.55rem;
   width: 100%;
   padding: 0.95rem 1.15rem;
-  background: linear-gradient(90deg, #2066d6 0%, #0d9488 42%, #059669 100%);
+  background: var(--ch-blue, #059669);
   color: #fff !important;
   font-weight: 700;
   font-size: 1rem;
-  border-radius: 12px;
+  border-radius: 999px;
   text-decoration: none;
   margin-bottom: 0.85rem;
   box-shadow: 0 8px 28px rgb(5 150 105 / 28%);
@@ -603,7 +603,7 @@
   font-weight: 600;
   color: var(--ch-blue);
   background: var(--ch-blue-light);
-  border: 1px solid rgb(32 102 214 / 15%);
+  border: 1px solid rgb(5 150 105 / 16%);
   padding: 0.3rem 0.65rem;
   border-radius: 999px;
 }
@@ -686,11 +686,11 @@
 .mobileBuy {
   flex-shrink: 0;
   padding: 0.8rem 1.25rem;
-  background: linear-gradient(90deg, #2066d6 0%, #0d9488 45%, #059669 100%);
+  background: var(--ch-blue, #059669);
   color: #fff !important;
   font-weight: 700;
   font-size: 0.9rem;
-  border-radius: 12px;
+  border-radius: 999px;
   text-decoration: none;
   box-shadow: 0 6px 22px rgb(5 150 105 / 32%);
 }

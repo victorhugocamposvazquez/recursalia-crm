@@ -19,7 +19,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  color: var(--ch-border, #e8e4f5);
+  color: var(--ch-border, #e5e7eb);
   line-height: 1;
   user-select: none;
 }

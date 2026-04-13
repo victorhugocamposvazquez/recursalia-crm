@@ -18,8 +18,8 @@
   position: absolute;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgb(32 102 214 / 12%);
-  border: 1px solid rgb(32 102 214 / 8%);
+  box-shadow: 0 12px 40px rgb(17 24 39 / 8%);
+  border: 1px solid rgb(5 150 105 / 10%);
   overflow: hidden;
 }
 
@@ -53,7 +53,7 @@
 .cardTitle {
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   margin: 0 0 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -68,7 +68,7 @@
 .fakeCell {
   aspect-ratio: 1;
   border-radius: 6px;
-  background: linear-gradient(135deg, #fde68a, #fca5a5, #93c5fd);
+  background: linear-gradient(135deg, #fde68a, #a7f3d0, #6ee7b7);
   opacity: 0.85;
 }
 
@@ -77,16 +77,16 @@
   height: 68px;
   border-radius: 50%;
   margin: 0.25rem auto 0.5rem;
-  border: 7px solid #dbeafe;
-  border-top-color: var(--ch-blue, #2066d6);
-  border-right-color: var(--ch-blue, #2066d6);
+  border: 7px solid #d1fae5;
+  border-top-color: var(--ch-blue, #059669);
+  border-right-color: var(--ch-blue, #059669);
   transform: rotate(-35deg);
 }
 
 .bar {
   height: 6px;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--ch-blue, #2066d6), #38bdf8);
+  background: linear-gradient(90deg, var(--ch-blue, #059669), #34d399);
   margin-top: 0.35rem;
 }
 
@@ -108,5 +108,5 @@
   flex: 1;
   aspect-ratio: 4 / 3;
   border-radius: 8px;
-  background: linear-gradient(145deg, #bfdbfe, #e0f2fe);
+  background: linear-gradient(145deg, #a7f3d0, #ecfdf5);
 }

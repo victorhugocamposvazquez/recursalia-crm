@@ -1,9 +1,9 @@
-/* Home extendida: layout hero split + secciones tipo recursalia.com / Crehana */
+/* Home: hero split inspirado en Monotree (claro, verde acento, tipografía fuerte) */
 
 .heroSplit {
   position: relative;
   padding: 2.5rem 1.5rem 3.5rem;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 55%, #f0f9ff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f9fafb 50%, #f0fdf4 100%);
   overflow: hidden;
 }
 
@@ -12,9 +12,9 @@
   position: absolute;
   inset: -30% 40% 20% -20%;
   background: radial-gradient(
-    ellipse 60% 50% at 70% 20%,
-    rgb(32 102 214 / 9%) 0%,
-    transparent 65%
+    ellipse 55% 45% at 72% 18%,
+    rgb(16 185 129 / 7%) 0%,
+    transparent 68%
   );
   pointer-events: none;
 }
@@ -51,14 +51,15 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: var(--ch-blue, #2066d6);
-  background: rgb(32 102 214 / 8%);
-  padding: 0.4rem 0.9rem;
+  color: var(--ch-blue, #059669);
+  background: rgb(16 185 129 / 10%);
+  padding: 0.4rem 0.95rem;
   border-radius: 100px;
   margin-bottom: 1.25rem;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .heroTitle {
@@ -66,21 +67,20 @@
   font-size: clamp(2rem, 4.2vw, 2.85rem);
   font-weight: 800;
   letter-spacing: -0.035em;
-  line-height: 1.1;
-  color: #1e1b4b;
+  line-height: 1.08;
+  color: #111827;
 }
 
-.heroTitle em {
-  font-style: italic;
+.heroAccent {
+  color: var(--ch-blue, #059669);
   font-weight: 800;
-  color: var(--ch-blue-muted, #3b82f6);
 }
 
 .heroLead {
   margin: 0 0 1.25rem;
   font-size: 1.125rem;
   line-height: 1.6;
-  color: var(--ch-text-muted, #5b6472);
+  color: var(--ch-text-muted, #6b7280);
   max-width: 36rem;
 }
 
@@ -123,7 +123,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #1e1b4b;
+  background: var(--ch-blue, #059669);
 }
 
 .ctaRow {
@@ -145,13 +145,13 @@
   align-items: center;
   justify-content: center;
   padding: 0.85rem 1.5rem;
-  background: var(--ch-blue, #2066d6);
+  background: var(--ch-blue, #059669);
   color: #fff !important;
   font-weight: 700;
   font-size: 0.95rem;
-  border-radius: 12px;
+  border-radius: 999px;
   text-decoration: none;
-  box-shadow: 0 6px 24px rgb(32 102 214 / 32%);
+  box-shadow: 0 4px 20px rgb(5 150 105 / 30%);
   border: none;
   cursor: pointer;
   transition:
@@ -160,8 +160,8 @@
 }
 
 .btnPrimary:hover {
-  background: var(--ch-blue-hover, #1854b5) !important;
-  box-shadow: 0 8px 28px rgb(32 102 214 / 40%);
+  background: var(--ch-blue-hover, #047857) !important;
+  box-shadow: 0 8px 28px rgb(5 150 105 / 38%);
 }
 
 .btnGhost {
@@ -170,19 +170,20 @@
   justify-content: center;
   padding: 0.85rem 1.35rem;
   background: transparent;
-  color: var(--ch-blue, #2066d6) !important;
+  color: var(--ch-navy, #111827) !important;
   font-weight: 700;
   font-size: 0.95rem;
-  border-radius: 12px;
+  border-radius: 999px;
   text-decoration: none;
-  border: 2px solid var(--ch-blue, #2066d6);
+  border: 1px solid var(--ch-border, #e5e7eb);
   transition:
     background 0.15s ease,
     color 0.15s ease;
 }
 
 .btnGhost:hover {
-  background: rgb(32 102 214 / 6%);
+  background: rgb(17 24 39 / 4%);
+  border-color: #d1d5db !important;
 }
 
 .searchBlock {
@@ -194,7 +195,7 @@
   margin-bottom: 0.6rem;
   font-size: 1rem;
   font-weight: 600;
-  color: #1e1b4b;
+  color: #111827;
   text-align: center;
 }
 
@@ -207,11 +208,11 @@
 .heroFooterLinks {
   margin-top: 1.5rem;
   font-size: 0.92rem;
-  color: var(--ch-text-muted, #5b6472);
+  color: var(--ch-text-muted, #6b7280);
 }
 
 .heroFooterLinks a {
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   font-weight: 600;
   text-decoration: none;
 }
@@ -232,7 +233,7 @@
 }
 
 .sectionShellMuted {
-  background: var(--ch-bg, #f5f7fa);
+  background: var(--ch-bg, #f9fafb);
   padding: 3rem 0;
 }
 
@@ -240,8 +241,8 @@
   background: #fff;
   border-radius: 20px;
   padding: 2.25rem 1.5rem;
-  box-shadow: 0 8px 40px rgb(30 27 75 / 6%);
-  border: 1px solid rgb(32 102 214 / 7%);
+  box-shadow: 0 8px 40px rgb(17 24 39 / 5%);
+  border: 1px solid rgb(5 150 105 / 8%);
 }
 
 @media (min-width: 768px) {
@@ -255,7 +256,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   margin: 0 0 0.5rem;
 }
 
@@ -264,7 +265,7 @@
   font-size: clamp(1.45rem, 2.8vw, 2rem);
   font-weight: 800;
   letter-spacing: -0.03em;
-  color: #1e1b4b;
+  color: #111827;
 }
 
 .sectionTitleCenter {
@@ -284,7 +285,7 @@
   display: inline-flex;
   margin-top: 1.75rem;
   font-weight: 700;
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   text-decoration: none;
 }
 
@@ -318,9 +319,9 @@
   padding: 0.65rem 0.85rem;
   font-size: 0.88rem;
   font-weight: 700;
-  color: #1e1b4b;
+  color: #111827;
   background: #fff;
-  border: 1px solid var(--ch-border, #e8e4f5);
+  border: 1px solid var(--ch-border, #e5e7eb);
   border-radius: 14px;
   text-decoration: none;
   transition:
@@ -331,10 +332,10 @@
 }
 
 .catLink:hover {
-  border-color: var(--ch-blue, #2066d6);
-  background: rgb(32 102 214 / 5%);
-  color: var(--ch-blue, #2066d6);
-  box-shadow: 0 4px 16px rgb(32 102 214 / 10%);
+  border-color: var(--ch-blue, #059669);
+  background: rgb(16 185 129 / 6%);
+  color: var(--ch-blue, #059669);
+  box-shadow: 0 4px 16px rgb(5 150 105 / 12%);
 }
 
 /* Testimonios */
@@ -354,8 +355,8 @@
   background: #fff;
   border-radius: 16px;
   padding: 1.5rem;
-  border: 1px solid var(--ch-border, #e8e4f5);
-  box-shadow: 0 4px 20px rgb(30 27 75 / 5%);
+  border: 1px solid var(--ch-border, #e5e7eb);
+  box-shadow: 0 4px 20px rgb(17 24 39 / 4%);
 }
 
 .testimonialQuote {
@@ -368,12 +369,12 @@
 .testimonialAuthor {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #1e1b4b;
+  color: #111827;
 }
 
 .testimonialRole {
   font-size: 0.8rem;
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   font-weight: 600;
   margin-top: 0.2rem;
 }
@@ -400,7 +401,7 @@
 
 .valueHighlight {
   font-weight: 800;
-  color: #1e1b4b;
+  color: #111827;
   font-size: 1.1rem;
   margin: 0 0 1.5rem;
 }
@@ -413,7 +414,7 @@
 
 .statCard {
   background: linear-gradient(145deg, #f8fafc, #fff);
-  border: 1px solid rgb(32 102 214 / 12%);
+  border: 1px solid rgb(5 150 105 / 14%);
   border-radius: 16px;
   padding: 1.35rem;
   text-align: center;
@@ -422,7 +423,7 @@
 .statNum {
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   line-height: 1;
   margin-bottom: 0.35rem;
 }
@@ -430,7 +431,7 @@
 .statLabel {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #1e1b4b;
+  color: #111827;
 }
 
 .statSub {

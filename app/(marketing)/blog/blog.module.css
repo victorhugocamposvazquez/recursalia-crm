@@ -7,37 +7,37 @@
 .item {
   margin-bottom: 1.35rem;
   padding-bottom: 1.35rem;
-  border-bottom: 1px solid var(--ch-border, #e1e8f0);
+  border-bottom: 1px solid var(--ch-border, #e5e7eb);
 }
 
 .link {
   font-size: 1.12rem;
   font-weight: 700;
-  color: var(--ch-navy, #0c1a2e);
+  color: var(--ch-navy, #111827);
   text-decoration: none;
   letter-spacing: -0.02em;
   transition: color 0.15s ease;
 }
 
 .link:hover {
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
 }
 
 .desc {
   margin: 0.4rem 0 0;
   font-size: 0.92rem;
-  color: var(--ch-text-muted, #5c6b7a);
+  color: var(--ch-text-muted, #6b7280);
   line-height: 1.5;
 }
 
 .breadcrumb {
   font-size: 0.88rem;
-  color: var(--ch-text-muted, #5c6b7a);
+  color: var(--ch-text-muted, #6b7280);
   margin-bottom: 0.65rem;
 }
 
 .breadcrumb a {
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   text-decoration: none;
   font-weight: 600;
 }
@@ -49,7 +49,7 @@
 .title {
   margin: 0 0 1.5rem;
   font-size: clamp(1.55rem, 3vw, 2.35rem);
-  color: var(--ch-navy, #0c1a2e);
+  color: var(--ch-navy, #111827);
   line-height: 1.18;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -58,16 +58,16 @@
 .prose {
   font-size: 1.05rem;
   line-height: 1.75;
-  color: var(--ch-text-muted, #5c6b7a);
+  color: var(--ch-text-muted, #6b7280);
 }
 
 .prose :global(h2),
 .prose :global(h3) {
-  color: var(--ch-navy, #0c1a2e);
+  color: var(--ch-navy, #111827);
   margin-top: 1.75rem;
 }
 
 .prose :global(a) {
-  color: var(--ch-blue, #2066d6);
+  color: var(--ch-blue, #059669);
   font-weight: 600;
 }

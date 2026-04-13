@@ -1,9 +1,9 @@
 .footer {
   margin-top: auto;
-  background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 48%, #0f172a 100%);
-  color: #cbd5e1;
+  background: #111827;
+  color: #9ca3af;
   padding: 3rem 1.5rem 2rem;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
 }
 
 .inner {
@@ -15,17 +15,17 @@
 }
 
 .footer strong {
-  color: #ffffff;
+  color: #f9fafb;
   display: block;
   margin-bottom: 0.85rem;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   font-weight: 700;
 }
 
 .footer a {
-  color: #93c5fd;
+  color: #d1d5db;
   text-decoration: none;
   display: block;
   margin-bottom: 0.5rem;
@@ -34,15 +34,15 @@
 }
 
 .footer a:hover {
-  color: #fff;
+  color: #6ee7b7;
 }
 
 .copy {
   max-width: 1140px;
   margin: 2.5rem auto 0;
   padding-top: 1.75rem;
-  border-top: 1px solid rgb(255 255 255 / 10%);
-  font-size: 0.82rem;
-  color: rgb(255 255 255 / 45%);
+  border-top: 1px solid rgb(255 255 255 / 8%);
+  font-size: 0.8rem;
+  color: rgb(255 255 255 / 38%);
   text-align: center;
 }

@@ -34,9 +34,10 @@ export default async function MarketingHomePage() {
       <section className={homeStyles.heroSplit}>
         <div className={homeStyles.heroGrid}>
           <div className={homeStyles.heroLeft}>
-            <span className={homeStyles.badge}>🏆 Líderes en enseñanza online</span>
+            <span className={homeStyles.badge}>Formación online sin fricción</span>
             <h1 className={homeStyles.heroTitle}>
-              Mejora tu presente. Decide tu <em>futuro</em>
+              La formación que pone a las{' '}
+              <span className={homeStyles.heroAccent}>personas</span> primero
             </h1>
             <p className={homeStyles.heroLead}>
               Nuestros{' '}
