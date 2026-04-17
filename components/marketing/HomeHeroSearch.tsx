@@ -90,7 +90,7 @@ export function HomeHeroSearch() {
           id="home-course-search"
           className={styles.input}
           type="search"
-          placeholder="Ej. Inteligencia artificial, diseño web…"
+          placeholder="Encuentra tu recurso perfecto…"
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
