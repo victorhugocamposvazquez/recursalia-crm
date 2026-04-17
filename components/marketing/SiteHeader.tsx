@@ -88,7 +88,19 @@ export function SiteHeader() {
 
           <div className={styles.actions}>
             <Link href="/cursos" className={styles.cta}>
-              Recursos
+              <span className={styles.ctaLabel}>Recursos</span>
+              <span className={styles.ctaBadge} aria-hidden>
+                <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M7 17L17 7M10 7h7v7"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
             </Link>
             <button
               type="button"

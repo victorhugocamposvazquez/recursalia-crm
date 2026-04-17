@@ -20,7 +20,7 @@
 }
 
 .link:hover {
-  color: #4928fd;
+  color: #1b38c4;
 }
 
 .desc {
@@ -37,7 +37,7 @@
 }
 
 .breadcrumb a {
-  color: #4928fd;
+  color: #1b38c4;
   text-decoration: none;
   font-weight: 500;
 }
@@ -70,6 +70,6 @@
 }
 
 .prose :global(a) {
-  color: #4928fd;
+  color: #1b38c4;
   font-weight: 500;
 }

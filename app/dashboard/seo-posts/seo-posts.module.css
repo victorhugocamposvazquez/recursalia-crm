@@ -112,8 +112,8 @@
 
 .select:focus {
   outline: none;
-  border-color: #4928fd;
-  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
+  border-color: #1b38c4;
+  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
 }
 
 .generateBtn {
@@ -130,8 +130,8 @@
 }
 
 .generateBtn:hover:not(:disabled) {
-  background: #4928fd;
-  border-color: #4928fd;
+  background: #1b38c4;
+  border-color: #1b38c4;
   transform: translateY(-1px);
 }
 
@@ -157,7 +157,7 @@
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(135deg, #4928fd, #7b62ff);
+  background: linear-gradient(135deg, #1b38c4, #7b62ff);
   border-radius: 9999px;
   transition: width 0.3s ease;
 }
@@ -225,8 +225,8 @@
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 500;
-  background: rgb(73 40 253 / 12%);
-  color: #4928fd;
+  background: rgb(27 56 196 / 12%);
+  color: #1b38c4;
   white-space: nowrap;
 }
 
@@ -306,7 +306,7 @@
 }
 
 .link {
-  color: #4928fd;
+  color: #1b38c4;
   text-decoration: none;
   font-weight: 500;
 }

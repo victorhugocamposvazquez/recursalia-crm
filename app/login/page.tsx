@@ -137,7 +137,7 @@ export default function LoginPage() {
           letter-spacing: -0.02em;
         }
         .brandMark {
-          color: #4928fd;
+          color: #1b38c4;
           display: inline-flex;
           align-items: center;
           justify-content: center;
@@ -166,7 +166,7 @@ export default function LoginPage() {
           letter-spacing: -0.02em;
         }
         .title-accent {
-          color: #4928fd;
+          color: #1b38c4;
           font-family: var(--font-display);
           font-style: italic;
         }
@@ -205,8 +205,8 @@ export default function LoginPage() {
         }
         .field input:focus {
           outline: none;
-          border-color: #4928fd;
-          box-shadow: 0 0 0 3px rgb(73 40 253 / 18%);
+          border-color: #1b38c4;
+          box-shadow: 0 0 0 3px rgb(27 56 196 / 18%);
         }
         .error {
           margin: 0;
@@ -230,8 +230,8 @@ export default function LoginPage() {
           transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
         }
         button:hover:not(:disabled) {
-          background: #4928fd;
-          border-color: #4928fd;
+          background: #1b38c4;
+          border-color: #1b38c4;
         }
         button:disabled {
           opacity: 0.6;
@@ -244,7 +244,7 @@ export default function LoginPage() {
           font-size: 0.92rem;
         }
         .hint-link {
-          color: #4928fd;
+          color: #1b38c4;
           font-weight: 500;
           text-decoration: none;
         }

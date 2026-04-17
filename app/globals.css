@@ -1,7 +1,7 @@
 :root {
   /* Paleta package (Awake) — usada globalmente */
   --ch-dark-black: #1b1d1e;
-  --ch-purple-blue: #4928fd;
+  --ch-purple-blue: #1b38c4;
   --ch-purple: #ba81ee;
   --ch-blue: #70b5ff;
   --ch-orange: #ffaf68;
@@ -64,6 +64,6 @@ a {
 }
 
 ::selection {
-  background: rgb(73 40 253 / 18%);
+  background: rgb(27 56 196 / 18%);
   color: #1b1d1e;
 }

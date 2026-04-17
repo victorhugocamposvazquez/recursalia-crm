@@ -58,7 +58,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #4928fd;
+  color: #1b38c4;
 }
 
 .logoText {
@@ -150,8 +150,9 @@
 .cta {
   display: none;
   align-items: center;
-  padding: 0.6rem 1.2rem;
-  background: #1b1d1e;
+  gap: 0.5rem;
+  padding: 0.28rem 0.28rem 0.28rem 1.15rem;
+  background: #1b38c4;
   color: #ffffff !important;
   border-radius: 9999px;
   font-weight: 500;
@@ -159,13 +160,38 @@
   text-decoration: none;
   transition:
     background-color 0.15s ease,
-    transform 0.15s ease;
-  border: 1px solid #1b1d1e;
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  border: 1px solid #1b38c4;
+  box-shadow: 0 2px 10px rgb(27 56 196 / 25%);
 }
 
 .cta:hover {
-  background: #4928fd;
-  border-color: #4928fd;
+  background: #142a99;
+  border-color: #142a99;
+  box-shadow: 0 4px 16px rgb(27 56 196 / 32%);
+  transform: translateY(-1px);
+}
+
+.ctaLabel {
+  line-height: 1;
+}
+
+.ctaBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #1b38c4;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.cta:hover .ctaBadge {
+  transform: rotate(-8deg);
 }
 
 @media (min-width: 640px) {
@@ -322,8 +348,8 @@
 }
 
 .drawerCta:hover {
-  background: #4928fd;
-  border-color: #4928fd;
+  background: #1b38c4;
+  border-color: #1b38c4;
 }
 
 @keyframes fadeIn {

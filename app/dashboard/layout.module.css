@@ -215,7 +215,7 @@
 .logoutBtn {
   background: none;
   border: none;
-  color: #4928fd;
+  color: #1b38c4;
   cursor: pointer;
   font-size: 0.85rem;
   padding: 0;
@@ -312,8 +312,8 @@
 }
 
 .footerGenerateBtn:hover:not(:disabled) {
-  background: #4928fd;
-  border-color: #4928fd;
+  background: #1b38c4;
+  border-color: #1b38c4;
   transform: translateY(-1px);
 }
 

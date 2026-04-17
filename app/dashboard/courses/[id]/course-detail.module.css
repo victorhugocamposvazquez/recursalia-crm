@@ -41,8 +41,8 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #4928fd;
-  border-color: #4928fd;
+  background: #1b38c4;
+  border-color: #1b38c4;
 }
 
 .btnPrimary:disabled {
@@ -104,16 +104,16 @@
   font-size: 0.9rem;
   margin-bottom: 1rem;
   padding: 0.8rem 1rem;
-  background: rgb(73 40 253 / 8%);
-  border: 1px solid rgb(73 40 253 / 20%);
+  background: rgb(27 56 196 / 8%);
+  border: 1px solid rgb(27 56 196 / 20%);
   border-radius: 10px;
   white-space: pre-wrap;
 }
 
 .reviewsConfig {
   padding: 1.25rem;
-  background: rgb(73 40 253 / 5%);
-  border: 1px solid rgb(73 40 253 / 18%);
+  background: rgb(27 56 196 / 5%);
+  border: 1px solid rgb(27 56 196 / 18%);
   border-radius: 14px;
   margin-bottom: 1.25rem;
 }
@@ -121,7 +121,7 @@
 .reviewsConfigTitle {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #4928fd;
+  color: #1b38c4;
   margin: 0 0 1rem;
 }
 
@@ -145,8 +145,8 @@
 
 .selectInput:focus {
   outline: none;
-  border-color: #4928fd;
-  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
+  border-color: #1b38c4;
+  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
 }
 
 .meta {
@@ -226,8 +226,8 @@
 
 .hotmartInput:focus {
   outline: none;
-  border-color: #4928fd;
-  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
+  border-color: #1b38c4;
+  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
 }
 
 .copyRow {
@@ -257,15 +257,15 @@
   padding: 0.35rem 0.75rem;
   font-size: 0.8rem;
   border-radius: 9999px;
-  background: rgb(73 40 253 / 10%);
-  color: #4928fd;
-  border: 1px solid rgb(73 40 253 / 28%);
+  background: rgb(27 56 196 / 10%);
+  color: #1b38c4;
+  border: 1px solid rgb(27 56 196 / 28%);
   cursor: pointer;
   font-weight: 500;
 }
 
 .copyBtn:hover {
-  background: rgb(73 40 253 / 18%);
+  background: rgb(27 56 196 / 18%);
 }
 
 .copyAllPreview {
@@ -299,8 +299,8 @@
 
 .copyAllBtn:hover,
 .pdfDownloadBtn:hover {
-  background: #4928fd;
-  border-color: #4928fd;
+  background: #1b38c4;
+  border-color: #1b38c4;
 }
 
 .pdfDownloadBtn {
@@ -322,7 +322,7 @@
 
 .pdfProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, #4928fd, #7b62ff, #a78bfa);
+  background: linear-gradient(90deg, #1b38c4, #7b62ff, #a78bfa);
   border-radius: 9999px;
   transition: width 0.4s ease;
   min-width: 2%;
@@ -338,7 +338,7 @@
 .pdfProgressLabel {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #4928fd;
+  color: #1b38c4;
   flex-shrink: 0;
 }
 
@@ -364,7 +364,7 @@
   display: inline-block;
   margin-top: 0.75rem;
   font-size: 0.9rem;
-  color: #4928fd;
+  color: #1b38c4;
   text-decoration: none;
   font-weight: 500;
 }
@@ -387,8 +387,8 @@
 
 .socialTextarea:focus {
   outline: none;
-  border-color: #4928fd;
-  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
+  border-color: #1b38c4;
+  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
 }
 
 .socialBtnPublish {
@@ -460,8 +460,8 @@
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #4928fd;
-  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
+  border-color: #1b38c4;
+  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
 }
 
 .field textarea {
@@ -557,12 +557,12 @@
 }
 
 .highlight {
-  background: rgb(73 40 253 / 8%);
+  background: rgb(27 56 196 / 8%);
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  color: #4928fd;
+  color: #1b38c4;
   margin-bottom: 1.5rem;
-  border: 1px solid rgb(73 40 253 / 18%);
+  border: 1px solid rgb(27 56 196 / 18%);
 }
 
 .benefits {
