@@ -87,11 +87,8 @@ export function SiteHeader() {
           </div>
 
           <div className={styles.actions}>
-            <Link href="/login" className={styles.ghost}>
-              Ingresar
-            </Link>
             <Link href="/cursos" className={styles.cta}>
-              Agenda un demo
+              Recursos
             </Link>
             <button
               type="button"
