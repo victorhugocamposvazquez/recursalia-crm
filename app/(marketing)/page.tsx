@@ -9,6 +9,7 @@ import homeStyles from './home.module.css';
 export const revalidate = 60;
 
 const TRUSTED_TEAMS = ['Cofoco', 'Bones', 'OLIOLI', 'Madklubben', 'Fårup', 'Dyreparken'];
+const HERO_CLIENTS = ['AL', 'MC', 'JR', 'PS'];
 
 const SAAS_FEATURES = [
   {
@@ -148,31 +149,23 @@ export default async function MarketingHomePage() {
               <br />
               todo el journey del <span className={homeStyles.heroAccent}>talento</span>
             </h1>
-            <p className={homeStyles.heroLead}>
-              Desde el <mark className={homeStyles.mark}>reclutamiento hasta el crecimiento</mark>,
-              una plataforma inteligente que conecta tus procesos de HR en una sola experiencia.
-            </p>
-            <ul className={homeStyles.bullets}>
-              <li>Simple, modular y potenciada por AI.</li>
-              <li>Pensada para las personas, creada para el negocio.</li>
-            </ul>
-            <div className={homeStyles.ctaRow}>
-              <Link href="/cursos" className={homeStyles.btnPrimary}>
-                Solicitar una demo
-              </Link>
-              <Link href="/blog" className={homeStyles.btnGhost}>
-                Ver recursos
-              </Link>
-            </div>
             <div className={homeStyles.searchBlock}>
               <label htmlFor="home-course-search">¿Qué quieres aprender?</label>
               <HomeHeroSearch />
             </div>
-            <p className={homeStyles.heroFooterLinks}>
-              <Link href="/cursos">Catálogo completo</Link>
-              {' · '}
-              <Link href="/login">Ingresar</Link>
-            </p>
+            <div className={homeStyles.heroSocialProof}>
+              <ul className={homeStyles.heroAvatars} aria-label="Clientes satisfechos">
+                {HERO_CLIENTS.map((client) => (
+                  <li key={client}>{client}</li>
+                ))}
+              </ul>
+              <div className={homeStyles.heroReviewBlock}>
+                <div className={homeStyles.heroStars} aria-hidden>
+                  ★★★★★
+                </div>
+                <p>Trusted by 1000+ clients</p>
+              </div>
+            </div>
           </div>
           <div>
             <HeroVisualCollage />

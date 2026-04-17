@@ -22,7 +22,7 @@
 .heroGrid {
   position: relative;
   z-index: 1;
-  max-width: 1140px;
+  max-width: 1240px;
   margin: 0 auto;
   display: grid;
   gap: 2.5rem;
@@ -31,8 +31,8 @@
 
 @media (min-width: 960px) {
   .heroGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    grid-template-columns: 1.08fr 0.92fr;
+    gap: 3.5rem;
     padding: 0 1.5rem;
   }
 }
@@ -65,17 +65,18 @@
 
 .heroTitle {
   margin: 0 0 1rem;
-  font-size: clamp(2rem, 4.2vw, 2.85rem);
-  font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 4.6rem);
+  font-weight: 600;
   letter-spacing: -0.035em;
-  line-height: 1.08;
+  line-height: 1.02;
   color: #23155b;
 }
 
 .heroAccent {
   color: #5b43f4;
-  font-weight: 800;
+  font-weight: 400;
   font-style: italic;
+  font-family: 'Instrument Serif', 'Times New Roman', serif;
 }
 
 .heroLead {
@@ -189,15 +190,22 @@
 }
 
 .searchBlock {
-  max-width: 100%;
+  max-width: 38rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 960px) {
+  .searchBlock {
+    margin: 0;
+  }
 }
 
 .searchBlock label {
   display: block;
-  margin-bottom: 0.6rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111827;
+  margin-bottom: 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #6b7280;
   text-align: center;
 }
 
@@ -222,6 +230,68 @@
 .heroFooterLinks a:hover {
   color: #3522a8;
   text-decoration: underline;
+}
+
+.heroSocialProof {
+  margin-top: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.1rem;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 960px) {
+  .heroSocialProof {
+    justify-content: flex-start;
+  }
+}
+
+.heroAvatars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.heroAvatars li {
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 999px;
+  border: 2px solid #e5e7eb;
+  background: linear-gradient(145deg, #dbe4ff, #f5f3ff);
+  color: #312e81;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -0.3rem;
+}
+
+.heroAvatars li:first-child {
+  margin-left: 0;
+}
+
+.heroReviewBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: left;
+}
+
+.heroStars {
+  color: #f59e0b;
+  letter-spacing: 0.08em;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.heroReviewBlock p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.95rem;
 }
 
 .heroMetrics {
