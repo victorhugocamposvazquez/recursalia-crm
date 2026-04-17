@@ -159,10 +159,10 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.heroGrid}>
           <div className={homeStyles.heroCenter}>
             <h1 className={homeStyles.heroTitle}>
-              <TextGenerateEffect words="Formacion para tu presente" />
+              <TextGenerateEffect words="Formación que transforma tu hoy" />
               <br />
               <TextGenerateEffect
-                words="y decidir tu futuro"
+                words="y construye tu mañana"
                 delay={0.8}
                 className={homeStyles.heroAccent}
               />
