@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
-import { HeroVisualCollage } from '@/components/marketing/HeroVisualCollage';
 import { CourseCardGrid, type CourseCardItem } from '@/components/marketing/CourseCardGrid';
 import { HOME_COURSE_CATEGORIES, HOME_TESTIMONIALS } from '@/lib/homeContent';
 import homeStyles from './home.module.css';
@@ -10,6 +9,7 @@ export const revalidate = 60;
 
 const TRUSTED_TEAMS = ['Cofoco', 'Bones', 'OLIOLI', 'Madklubben', 'Fårup', 'Dyreparken'];
 const HERO_CLIENTS = ['AL', 'MC', 'JR', 'PS'];
+const HERO_LOGOS = ['logoipsum', 'logoipsum', 'logoipsum', 'logoipsum', 'logoipsum', 'logoipsum'];
 
 const SAAS_FEATURES = [
   {
@@ -142,17 +142,17 @@ export default async function MarketingHomePage() {
     <>
       <section className={homeStyles.heroSplit}>
         <div className={homeStyles.heroGrid}>
-          <div className={homeStyles.heroLeft}>
-            <span className={homeStyles.badge}>Plataforma de aprendizaje interno</span>
+          <div className={homeStyles.heroCenter}>
             <h1 className={homeStyles.heroTitle}>
-              El software de HR que acompaña
+              Diseñamos crecimiento real
               <br />
-              todo el journey del <span className={homeStyles.heroAccent}>talento</span>
+              con formación <span className={homeStyles.heroAccent}>que inspira</span>
             </h1>
-            <div className={homeStyles.searchBlock}>
-              <label htmlFor="home-course-search">¿Qué quieres aprender?</label>
+
+            <div className={homeStyles.heroSearchWrap}>
               <HomeHeroSearch />
             </div>
+
             <div className={homeStyles.heroSocialProof}>
               <ul className={homeStyles.heroAvatars} aria-label="Clientes satisfechos">
                 {HERO_CLIENTS.map((client) => (
@@ -167,34 +167,13 @@ export default async function MarketingHomePage() {
               </div>
             </div>
           </div>
-          <div>
-            <HeroVisualCollage />
-          </div>
         </div>
-        <div className={homeStyles.heroMetrics}>
-          <article className={homeStyles.metricCard}>
-            <span className={homeStyles.metricValue}>+1.200</span>
-            <span className={homeStyles.metricLabel}>Empresas en LATAM</span>
-          </article>
-          <article className={homeStyles.metricCard}>
-            <span className={homeStyles.metricValue}>4.9/5</span>
-            <span className={homeStyles.metricLabel}>Valoración promedio</span>
-          </article>
-          <article className={homeStyles.metricCard}>
-            <span className={homeStyles.metricValue}>+75%</span>
-            <span className={homeStyles.metricLabel}>Actividad semanal</span>
-          </article>
-        </div>
-      </section>
 
-      <section className={homeStyles.trustStrip} aria-label="Equipos que confían en Recursalia">
-        <div className={homeStyles.panel}>
-          <p className={homeStyles.trustLabel}>Equipos líderes que ya confían en Recursalia</p>
-          <div className={homeStyles.trustLogos}>
-            {TRUSTED_TEAMS.map((brand) => (
-              <span key={brand} className={homeStyles.trustLogo}>
-                {brand}
-              </span>
+        <div className={homeStyles.heroBrandWrap}>
+          <p className={homeStyles.heroBrandLine}>Loved by 1000+ big and small brands around the world</p>
+          <div className={homeStyles.heroBrandLogos}>
+            {HERO_LOGOS.map((logo, index) => (
+              <span key={`${logo}-${index}`}>{logo}</span>
             ))}
           </div>
         </div>

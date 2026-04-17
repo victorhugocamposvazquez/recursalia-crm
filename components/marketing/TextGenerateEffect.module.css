@@ -1,0 +1,39 @@
+.root {
+  display: inline;
+}
+
+.word {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(8px);
+  animation-name: revealWord;
+  animation-duration: var(--word-duration, 0.55s);
+  animation-timing-function: ease;
+  animation-fill-mode: forwards;
+  animation-delay: calc(var(--start-delay, 0s) + (var(--word-index, 0) * var(--word-stagger, 0.08s)));
+  will-change: opacity, filter, transform;
+}
+
+@keyframes revealWord {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .word {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
