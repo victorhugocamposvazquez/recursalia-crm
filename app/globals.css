@@ -1,16 +1,69 @@
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: #0f0f23;
-  color: #e2e8f0;
-  line-height: 1.5;
+:root {
+  /* Paleta package (Awake) — usada globalmente */
+  --ch-dark-black: #1b1d1e;
+  --ch-purple-blue: #4928fd;
+  --ch-purple: #ba81ee;
+  --ch-blue: #70b5ff;
+  --ch-orange: #ffaf68;
+  --ch-green: #79d45e;
+  --ch-pink: #f4889a;
+  --ch-blue-gradient: #d9f3fc;
+  --ch-yellow-gradient: #fdf1d3;
+  --ch-pale-yellow: #f6e683;
+
+  --ch-bg: #ffffff;
+  --ch-surface: #ffffff;
+  --ch-border: rgb(27 29 30 / 10%);
+  --ch-text: #1b1d1e;
+  --ch-text-muted: rgb(27 29 30 / 60%);
+
+  --ch-radius-sm: 10px;
+  --ch-radius: 16px;
+  --ch-radius-lg: 22px;
+  --ch-radius-pill: 9999px;
+
+  --ch-shadow-sm: 0 1px 3px rgb(0 0 0 / 6%);
+  --ch-shadow: 0 8px 24px rgb(17 24 39 / 8%);
+  --ch-shadow-lg: 0 18px 44px rgb(17 24 39 / 12%);
+
+  --font-sans: var(--font-marketing), 'Inter Tight', system-ui, -apple-system,
+    'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--font-marketing-display), 'Times New Roman', serif;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--ch-bg);
+  color: var(--ch-text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgb(73 40 253 / 18%);
+  color: #1b1d1e;
 }

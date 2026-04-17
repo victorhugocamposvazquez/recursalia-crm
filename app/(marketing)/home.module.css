@@ -2,16 +2,23 @@
 
 .heroSplit {
   position: relative;
-  padding: 9rem 1.5rem 2.5rem;
+  padding: 6rem 1.5rem 3.5rem;
+  margin-top: -4rem;
   background: #ffffff;
   overflow: hidden;
   isolation: isolate;
 }
 
+@media (min-width: 1024px) {
+  .heroSplit {
+    padding: 8rem 1.5rem 5rem;
+  }
+}
+
 .heroSplit::before {
   content: '';
   position: absolute;
-  top: 6rem;
+  top: 2rem;
   left: 0;
   right: 0;
   width: 100%;

@@ -1,5 +1,5 @@
 .page {
-  max-width: 800px;
+  max-width: 820px;
 }
 
 .topBar {
@@ -10,111 +10,118 @@
 }
 
 .back {
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   text-decoration: none;
   font-size: 0.95rem;
 }
 
 .back:hover {
-  color: #fff;
+  color: #1b1d1e;
 }
 
 .actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .btnPrimary,
 .btnSecondary {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .btnPrimary {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #fff;
-  border: none;
+  background: #1b1d1e;
+  color: #ffffff;
+  border: 1px solid #1b1d1e;
 }
 
 .btnPrimary:hover:not(:disabled) {
-  opacity: 0.9;
+  background: #4928fd;
+  border-color: #4928fd;
 }
 
 .btnPrimary:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 .btnSecondary {
-  background: rgba(255, 255, 255, 0.08);
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  color: #1b1d1e;
+  border: 1px solid rgb(27 29 30 / 18%);
 }
 
 .btnSecondary:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgb(27 29 30 / 4%);
+  border-color: rgb(27 29 30 / 28%);
 }
 
 .btnDanger {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 500;
   cursor: pointer;
-  background: rgba(248, 113, 113, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(248, 113, 113, 0.4);
+  background: rgb(248 113 113 / 10%);
+  color: #b91c1c;
+  border: 1px solid rgb(248 113 113 / 36%);
 }
 
 .btnDanger:hover:not(:disabled) {
-  background: rgba(248, 113, 113, 0.25);
+  background: rgb(248 113 113 / 20%);
 }
 
 .btnDanger:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
 .loading,
 .error {
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   padding: 2rem 0;
 }
 
 .errorMsg,
 .errorLog {
-  color: #f87171;
+  color: #9b1c1c;
   font-size: 0.9rem;
   margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: rgba(248, 113, 113, 0.1);
-  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  background: rgb(248 113 113 / 10%);
+  border: 1px solid rgb(248 113 113 / 28%);
+  border-radius: 10px;
   white-space: pre-wrap;
 }
 
 .progressLog {
-  color: #cbd5e1;
+  color: #1b1d1e;
   font-size: 0.9rem;
   margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: rgba(99, 102, 241, 0.14);
-  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  background: rgb(73 40 253 / 8%);
+  border: 1px solid rgb(73 40 253 / 20%);
+  border-radius: 10px;
   white-space: pre-wrap;
 }
 
 .reviewsConfig {
   padding: 1.25rem;
-  background: rgba(99, 102, 241, 0.08);
-  border: 1px solid rgba(99, 102, 241, 0.2);
-  border-radius: 10px;
+  background: rgb(73 40 253 / 5%);
+  border: 1px solid rgb(73 40 253 / 18%);
+  border-radius: 14px;
   margin-bottom: 1.25rem;
 }
 
 .reviewsConfigTitle {
   font-size: 0.95rem;
-  color: #a5b4fc;
+  font-weight: 500;
+  color: #4928fd;
   margin: 0 0 1rem;
 }
 
@@ -126,13 +133,20 @@
 }
 
 .selectInput {
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.25);
-  color: #fff;
-  font-size: 1rem;
+  padding: 0.7rem 0.95rem;
+  border-radius: 10px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
+  font-size: 0.95rem;
   width: 100%;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.selectInput:focus {
+  outline: none;
+  border-color: #4928fd;
+  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
 }
 
 .meta {
@@ -144,24 +158,25 @@
 
 .badge {
   padding: 0.25rem 0.65rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  background: rgba(148, 163, 184, 0.2);
-  color: #94a3b8;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  background: rgb(148 163 184 / 18%);
+  color: #475569;
+  font-weight: 500;
 }
 
 .topic {
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   font-size: 0.95rem;
 }
 
 .date {
-  color: #64748b;
+  color: rgb(27 29 30 / 50%);
   font-size: 0.85rem;
 }
 
 .metaLine {
-  color: #64748b;
+  color: rgb(27 29 30 / 50%);
   font-size: 0.85rem;
   margin: 0 0 0.5rem;
 }
@@ -175,20 +190,21 @@
 
 .hotmartCard {
   padding: 1.25rem;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgb(27 29 30 / 8%);
+  border-radius: 14px;
 }
 
 .hotmartCardTitle {
   font-size: 1rem;
-  color: #e2e8f0;
+  color: #1b1d1e;
   margin: 0 0 0.5rem;
+  font-weight: 500;
 }
 
 .hotmartNote {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   margin: 0 0 1rem;
 }
 
@@ -200,12 +216,18 @@
 
 .hotmartInput {
   flex: 1;
-  padding: 0.65rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
+  padding: 0.65rem 0.95rem;
+  border-radius: 10px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
   font-size: 0.95rem;
+}
+
+.hotmartInput:focus {
+  outline: none;
+  border-color: #4928fd;
+  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
 }
 
 .copyRow {
@@ -218,13 +240,13 @@
 .copyLabel {
   flex: 0 0 120px;
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: rgb(27 29 30 / 55%);
 }
 
 .copyValue {
   flex: 1;
   font-size: 0.9rem;
-  color: #e2e8f0;
+  color: #1b1d1e;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -232,23 +254,25 @@
 
 .copyBtn {
   flex-shrink: 0;
-  padding: 0.35rem 0.65rem;
+  padding: 0.35rem 0.75rem;
   font-size: 0.8rem;
-  border-radius: 6px;
-  background: rgba(99, 102, 241, 0.2);
-  color: #a5b4fc;
-  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 9999px;
+  background: rgb(73 40 253 / 10%);
+  color: #4928fd;
+  border: 1px solid rgb(73 40 253 / 28%);
   cursor: pointer;
+  font-weight: 500;
 }
 
 .copyBtn:hover {
-  background: rgba(99, 102, 241, 0.3);
+  background: rgb(73 40 253 / 18%);
 }
 
 .copyAllPreview {
-  padding: 0.75rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  background: rgb(27 29 30 / 3%);
+  border: 1px solid rgb(27 29 30 / 8%);
+  border-radius: 10px;
   margin-bottom: 0.75rem;
 }
 
@@ -258,39 +282,29 @@
   gap: 1rem;
 }
 
-.copyAllBtn {
+.copyAllBtn,
+.pdfDownloadBtn {
   padding: 0.55rem 1.25rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #fff;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  border: none;
-  border-radius: 8px;
+  color: #ffffff;
+  background: #1b1d1e;
+  border: 1px solid #1b1d1e;
+  border-radius: 9999px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: background 0.2s, border-color 0.2s;
+  text-decoration: none;
+  display: inline-block;
 }
 
-.copyAllBtn:hover {
-  opacity: 0.9;
+.copyAllBtn:hover,
+.pdfDownloadBtn:hover {
+  background: #4928fd;
+  border-color: #4928fd;
 }
 
 .pdfDownloadBtn {
-  display: inline-block;
-  padding: 0.55rem 1.25rem;
   margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #fff;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  transition: opacity 0.2s;
-}
-
-.pdfDownloadBtn:hover {
-  opacity: 0.9;
 }
 
 .pdfProgressWrap {
@@ -301,15 +315,15 @@
 
 .pdfProgressBar {
   height: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
+  background: rgb(27 29 30 / 8%);
+  border-radius: 9999px;
   overflow: hidden;
 }
 
 .pdfProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6, #a78bfa);
-  border-radius: 8px;
+  background: linear-gradient(90deg, #4928fd, #7b62ff, #a78bfa);
+  border-radius: 9999px;
   transition: width 0.4s ease;
   min-width: 2%;
 }
@@ -324,33 +338,35 @@
 .pdfProgressLabel {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #a5b4fc;
+  color: #4928fd;
   flex-shrink: 0;
 }
 
 .pdfProgressLesson {
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .pdfError {
-  color: #f87171;
+  color: #9b1c1c;
   font-size: 0.85rem;
   margin-top: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(248, 113, 113, 0.1);
-  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  background: rgb(248 113 113 / 10%);
+  border: 1px solid rgb(248 113 113 / 25%);
+  border-radius: 8px;
 }
 
 .hotmartLink {
   display: inline-block;
   margin-top: 0.75rem;
   font-size: 0.9rem;
-  color: #818cf8;
+  color: #4928fd;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .hotmartLink:hover {
@@ -360,13 +376,19 @@
 .socialTextarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
-  font-size: 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
+  font-size: 0.92rem;
   font-family: inherit;
   resize: vertical;
+}
+
+.socialTextarea:focus {
+  outline: none;
+  border-color: #4928fd;
+  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
 }
 
 .socialBtnPublish {
@@ -374,16 +396,16 @@
   margin-top: 0.75rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #fff;
+  color: #ffffff;
   border: none;
-  border-radius: 8px;
+  border-radius: 9999px;
   cursor: pointer;
   background: linear-gradient(135deg, #1877f2, #833ab4, #e4405f);
   transition: opacity 0.2s;
 }
 
 .socialBtnPublish:hover:not(:disabled) {
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
 .socialBtnPublish:disabled {
@@ -392,16 +414,17 @@
 }
 
 .socialSuccess {
-  color: #34d399;
+  color: #065f46;
   font-size: 0.85rem;
   margin-top: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(52, 211, 153, 0.1);
-  border-radius: 6px;
+  padding: 0.55rem 0.8rem;
+  background: rgb(52 211 153 / 12%);
+  border: 1px solid rgb(52 211 153 / 28%);
+  border-radius: 8px;
 }
 
 .noContent {
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   padding: 2rem 0;
 }
 
@@ -419,17 +442,26 @@
 
 .field label {
   font-size: 0.9rem;
-  color: #cbd5e1;
+  color: #1b1d1e;
+  font-weight: 500;
 }
 
 .field input,
 .field textarea {
   padding: 0.75rem 1rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.25);
-  color: #fff;
-  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
+  font-size: 0.98rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #4928fd;
+  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
 }
 
 .field textarea {
@@ -443,26 +475,28 @@
 
 .topicsSection h3 {
   font-size: 1.1rem;
-  color: #fff;
+  color: #1b1d1e;
   margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 .topicBlock {
   margin-bottom: 1.5rem;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
+  background: rgb(27 29 30 / 3%);
+  border: 1px solid rgb(27 29 30 / 8%);
+  border-radius: 12px;
 }
 
 .topicTitle {
   width: 100%;
-  padding: 0.65rem 1rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   margin-bottom: 1rem;
 }
 
@@ -474,21 +508,21 @@
 .lessonTitle {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
+  border-radius: 8px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
 }
 
 .lessonContent {
   width: 100%;
-  padding: 0.65rem 1rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.2);
-  color: #fff;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
   font-size: 0.9rem;
   font-family: monospace;
   resize: vertical;
@@ -496,12 +530,14 @@
 
 .view h1 {
   font-size: 1.75rem;
-  color: #fff;
+  color: #1b1d1e;
   margin: 0 0 0.75rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .shortDesc {
-  color: #94a3b8;
+  color: rgb(27 29 30 / 72%);
   font-size: 1rem;
   margin-bottom: 1rem;
 }
@@ -511,21 +547,22 @@
 }
 
 .priceOriginal {
-  color: #64748b;
+  color: rgb(27 29 30 / 50%);
   text-decoration: line-through;
 }
 
 .priceSale {
-  color: #34d399;
+  color: #059669;
   font-weight: 600;
 }
 
 .highlight {
-  background: rgba(99, 102, 241, 0.15);
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  color: #a5b4fc;
+  background: rgb(73 40 253 / 8%);
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  color: #4928fd;
   margin-bottom: 1.5rem;
+  border: 1px solid rgb(73 40 253 / 18%);
 }
 
 .benefits {
@@ -534,14 +571,15 @@
 
 .benefits h3 {
   font-size: 1rem;
-  color: #e2e8f0;
+  color: #1b1d1e;
   margin-bottom: 0.5rem;
+  font-weight: 500;
 }
 
 .benefits ul {
   margin: 0;
   padding-left: 1.25rem;
-  color: #cbd5e1;
+  color: rgb(27 29 30 / 78%);
 }
 
 .benefits li {
@@ -557,6 +595,7 @@
 .description {
   margin-bottom: 2rem;
   line-height: 1.7;
+  color: rgb(27 29 30 / 78%);
 }
 
 .description :global(p) {
@@ -575,10 +614,12 @@
 
 .topicView h2 {
   font-size: 1.25rem;
-  color: #fff;
+  color: #1b1d1e;
   margin: 0 0 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgb(27 29 30 / 8%);
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 .lessonView {
@@ -588,11 +629,12 @@
 
 .lessonView h3 {
   font-size: 1.1rem;
-  color: #e2e8f0;
+  color: #1b1d1e;
   margin: 0 0 0.5rem;
+  font-weight: 500;
 }
 
 .lessonView > div {
   line-height: 1.6;
-  color: #cbd5e1;
+  color: rgb(27 29 30 / 78%);
 }

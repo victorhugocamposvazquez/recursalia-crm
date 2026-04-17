@@ -1,18 +1,18 @@
 .page {
-  max-width: 680px;
+  max-width: 720px;
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
-  margin: 0 0 0.25rem;
+  font-size: 1.65rem;
+  font-weight: 500;
+  color: #1b1d1e;
+  margin: 0 0 0.35rem;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: #94a3b8;
-  font-size: 0.9rem;
+  color: rgb(27 29 30 / 60%);
+  font-size: 0.95rem;
   margin: 0 0 1.75rem;
 }
 
@@ -21,24 +21,25 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 /* ── Card sections ── */
 
 .card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgb(27 29 30 / 10%);
+  border-radius: 18px;
   padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
 }
 
 .cardTitle {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #6366f1;
+  letter-spacing: 0.08em;
+  color: #4928fd;
   margin: 0 0 1rem;
 }
 
@@ -47,43 +48,43 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.4rem;
 }
 
 .field label {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: #1b1d1e;
 }
 
 .field input,
 .field select,
 .field textarea {
-  padding: 0.6rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(0, 0, 0, 0.3);
-  color: #fff;
-  font-size: 0.9rem;
-  transition: border-color 0.15s;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
+  font-size: 0.92rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #475569;
+  color: rgb(27 29 30 / 40%);
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+  border-color: #4928fd;
+  box-shadow: 0 0 0 3px rgb(73 40 253 / 15%);
 }
 
 .field textarea {
   resize: vertical;
-  min-height: 72px;
+  min-height: 80px;
 }
 
 /* ── Grid rows ── */
@@ -129,8 +130,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #cbd5e1;
-  font-size: 0.85rem;
+  color: #1b1d1e;
+  font-size: 0.88rem;
   cursor: pointer;
   user-select: none;
   padding-bottom: 0.6rem;
@@ -140,7 +141,7 @@
 .toggle input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #6366f1;
+  accent-color: #4928fd;
   cursor: pointer;
   margin: 0;
   border-radius: 4px;
@@ -149,8 +150,8 @@
 /* ── Hint text ── */
 
 .hint {
-  font-size: 0.78rem;
-  color: #64748b;
+  font-size: 0.8rem;
+  color: rgb(27 29 30 / 55%);
   margin: 0.5rem 0 0;
 }
 
@@ -181,58 +182,59 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-top: 0.75rem;
-  padding: 0.6rem 0.85rem;
-  background: rgba(99, 102, 241, 0.06);
-  border-radius: 8px;
-  border: 1px solid rgba(99, 102, 241, 0.1);
+  padding: 0.7rem 0.95rem;
+  background: rgb(73 40 253 / 6%);
+  border-radius: 10px;
+  border: 1px solid rgb(73 40 253 / 14%);
 }
 
 .priceOld {
-  color: #94a3b8;
+  color: rgb(27 29 30 / 45%);
   text-decoration: line-through;
   font-size: 0.9rem;
 }
 
 .priceArrow {
-  color: #475569;
+  color: rgb(27 29 30 / 40%);
   font-size: 0.85rem;
 }
 
 .priceFinal {
-  color: #34d399;
+  color: #1b1d1e;
   font-weight: 700;
   font-size: 1.1rem;
 }
 
 .priceSaving {
-  color: #818cf8;
-  font-size: 0.8rem;
+  color: #4928fd;
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
 /* ── Feedback ── */
 
 .error {
-  color: #f87171;
-  font-size: 0.85rem;
+  color: #9b1c1c;
+  font-size: 0.88rem;
   margin: 0;
-  padding: 0.6rem 0.85rem;
-  background: rgba(248, 113, 113, 0.08);
-  border-radius: 8px;
-  border: 1px solid rgba(248, 113, 113, 0.15);
+  padding: 0.7rem 0.9rem;
+  background: rgb(248 113 113 / 10%);
+  border-radius: 10px;
+  border: 1px solid rgb(248 113 113 / 25%);
 }
 
 .success {
-  color: #34d399;
-  font-size: 0.9rem;
+  color: #065f46;
+  font-size: 0.92rem;
   margin: 0;
-  padding: 0.6rem 0.85rem;
-  background: rgba(52, 211, 153, 0.08);
-  border-radius: 8px;
-  border: 1px solid rgba(52, 211, 153, 0.15);
+  padding: 0.7rem 0.9rem;
+  background: rgb(52 211 153 / 10%);
+  border-radius: 10px;
+  border: 1px solid rgb(52 211 153 / 30%);
 }
 
 .success a {
-  color: #818cf8;
+  color: #4928fd;
   text-decoration: none;
   font-weight: 600;
 }
@@ -244,20 +246,21 @@
 /* ── Submit ── */
 
 .submitBtn {
-  padding: 0.8rem 2rem;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #fff;
-  font-weight: 600;
+  padding: 0.85rem 2rem;
+  border-radius: 9999px;
+  border: 1px solid #1b1d1e;
+  background: #1b1d1e;
+  color: #ffffff;
+  font-weight: 500;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
   align-self: flex-start;
 }
 
 .submitBtn:hover:not(:disabled) {
-  opacity: 0.92;
+  background: #4928fd;
+  border-color: #4928fd;
   transform: translateY(-1px);
 }
 

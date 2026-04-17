@@ -13,9 +13,10 @@
 
 .title {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 500;
+  color: #1b1d1e;
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
 .filters label {
@@ -23,21 +24,21 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
 }
 
 .filters select {
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.25);
-  color: #fff;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
   font-size: 0.9rem;
 }
 
 .loading,
 .empty {
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   padding: 3rem 0;
   text-align: center;
 }
@@ -47,8 +48,9 @@
 }
 
 .link {
-  color: #6366f1;
+  color: #4928fd;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .link:hover {
@@ -57,6 +59,9 @@
 
 .tableWrap {
   overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid rgb(27 29 30 / 8%);
+  border-radius: 14px;
 }
 
 .table {
@@ -68,50 +73,51 @@
 .table td {
   padding: 0.85rem 1rem;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgb(27 29 30 / 6%);
 }
 
 .table th {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  background: rgb(27 29 30 / 3%);
 }
 
 .table td {
   font-size: 0.95rem;
-  color: #e2e8f0;
+  color: #1b1d1e;
 }
 
 .table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgb(27 29 30 / 3%);
 }
 
 .badge {
   padding: 0.25rem 0.65rem;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
   font-weight: 500;
 }
 
 .badgeDraft {
-  background: rgba(148, 163, 184, 0.2);
-  color: #94a3b8;
+  background: rgb(148 163 184 / 18%);
+  color: #475569;
 }
 
 .badgePublished {
-  background: rgba(52, 211, 153, 0.2);
-  color: #34d399;
+  background: rgb(52 211 153 / 18%);
+  color: #059669;
 }
 
 .badgeError {
-  background: rgba(248, 113, 113, 0.2);
-  color: #f87171;
+  background: rgb(248 113 113 / 18%);
+  color: #b91c1c;
 }
 
 .date {
-  color: #64748b;
+  color: rgb(27 29 30 / 55%);
   font-size: 0.9rem;
 }
 
@@ -122,9 +128,10 @@
 }
 
 .action {
-  color: #6366f1;
+  color: #4928fd;
   text-decoration: none;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .action:hover {
@@ -134,15 +141,15 @@
 .deleteBtn {
   padding: 0.35rem 0.65rem;
   font-size: 0.85rem;
-  color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  border-radius: 6px;
+  color: #b91c1c;
+  background: rgb(248 113 113 / 10%);
+  border: 1px solid rgb(248 113 113 / 28%);
+  border-radius: 8px;
   cursor: pointer;
 }
 
 .deleteBtn:hover:not(:disabled) {
-  background: rgba(248, 113, 113, 0.2);
+  background: rgb(248 113 113 / 18%);
 }
 
 .deleteBtn:disabled {
@@ -152,6 +159,6 @@
 
 .total {
   margin-top: 1rem;
-  font-size: 0.9rem;
-  color: #64748b;
+  font-size: 0.88rem;
+  color: rgb(27 29 30 / 55%);
 }

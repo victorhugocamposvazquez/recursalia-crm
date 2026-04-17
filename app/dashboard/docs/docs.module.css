@@ -8,42 +8,44 @@
 
 .title {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 500;
+  color: #1b1d1e;
   margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 .subtitle {
-  font-size: 0.9rem;
-  color: #64748b;
+  font-size: 0.95rem;
+  color: rgb(27 29 30 / 60%);
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 /* Feature cards */
 .featureList {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .featureCard {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgb(27 29 30 / 8%);
+  border-radius: 16px;
   overflow: hidden;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .featureCard:hover {
-  border-color: rgba(99, 102, 241, 0.25);
+  border-color: rgb(73 40 253 / 30%);
+  box-shadow: 0 6px 20px rgb(17 24 39 / 6%);
 }
 
 .featureHeader {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.25rem 1.5rem;
+  padding: 1.1rem 1.35rem;
   cursor: pointer;
   user-select: none;
 }
@@ -51,7 +53,7 @@
 .featureIcon {
   width: 42px;
   height: 42px;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,43 +62,43 @@
 }
 
 .iconPurple {
-  background: rgba(99, 102, 241, 0.15);
-  color: #a5b4fc;
+  background: rgb(73 40 253 / 12%);
+  color: #4928fd;
 }
 
 .iconGreen {
-  background: rgba(52, 211, 153, 0.15);
-  color: #34d399;
+  background: rgb(52 211 153 / 15%);
+  color: #059669;
 }
 
 .iconBlue {
-  background: rgba(56, 189, 248, 0.15);
-  color: #38bdf8;
+  background: rgb(56 189 248 / 15%);
+  color: #0284c7;
 }
 
 .iconOrange {
-  background: rgba(251, 191, 36, 0.15);
-  color: #fbbf24;
+  background: rgb(251 191 36 / 18%);
+  color: #b45309;
 }
 
 .iconPink {
-  background: rgba(244, 114, 182, 0.15);
-  color: #f472b6;
+  background: rgb(244 114 182 / 15%);
+  color: #be185d;
 }
 
 .iconRed {
-  background: rgba(248, 113, 113, 0.15);
-  color: #f87171;
+  background: rgb(248 113 113 / 15%);
+  color: #b91c1c;
 }
 
 .iconTeal {
-  background: rgba(45, 212, 191, 0.15);
-  color: #2dd4bf;
+  background: rgb(45 212 191 / 15%);
+  color: #0f766e;
 }
 
 .iconIndigo {
-  background: rgba(129, 140, 248, 0.15);
-  color: #818cf8;
+  background: rgb(129 140 248 / 15%);
+  color: #4338ca;
 }
 
 .featureInfo {
@@ -105,20 +107,21 @@
 }
 
 .featureName {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #fff;
-  margin: 0 0 0.2rem;
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: #1b1d1e;
+  margin: 0 0 0.15rem;
+  letter-spacing: -0.01em;
 }
 
 .featureShort {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   margin: 0;
 }
 
 .chevron {
-  color: #64748b;
+  color: rgb(27 29 30 / 45%);
   font-size: 1.1rem;
   transition: transform 0.2s;
   flex-shrink: 0;
@@ -131,19 +134,19 @@
 
 /* Expanded content */
 .featureBody {
-  padding: 0 1.5rem 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0 1.35rem 1.35rem;
+  border-top: 1px solid rgb(27 29 30 / 6%);
 }
 
 .featureDesc {
   font-size: 0.9rem;
-  color: #cbd5e1;
+  color: rgb(27 29 30 / 78%);
   line-height: 1.7;
   margin: 1rem 0 0;
 }
 
 .featureDesc strong {
-  color: #e2e8f0;
+  color: #1b1d1e;
 }
 
 .detailList {
@@ -160,12 +163,12 @@
   align-items: flex-start;
   gap: 0.6rem;
   font-size: 0.88rem;
-  color: #94a3b8;
-  line-height: 1.5;
+  color: rgb(27 29 30 / 72%);
+  line-height: 1.55;
 }
 
 .detailBullet {
-  color: #6366f1;
+  color: #4928fd;
   font-weight: 700;
   flex-shrink: 0;
   margin-top: 1px;
@@ -179,29 +182,30 @@
 }
 
 .techBadge {
-  padding: 0.2rem 0.55rem;
-  border-radius: 5px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 500;
-  background: rgba(99, 102, 241, 0.12);
-  color: #a5b4fc;
+  background: rgb(73 40 253 / 10%);
+  color: #4928fd;
   white-space: nowrap;
 }
 
 /* Architecture section */
 .archSection {
-  margin-top: 2.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  margin-top: 2.25rem;
+  background: #ffffff;
+  border: 1px solid rgb(27 29 30 / 8%);
+  border-radius: 16px;
   padding: 1.5rem;
 }
 
 .archTitle {
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 500;
+  color: #1b1d1e;
   margin: 0 0 1rem;
+  letter-spacing: -0.01em;
 }
 
 .archGrid {
@@ -211,61 +215,59 @@
 }
 
 .archItem {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
+  background: rgb(27 29 30 / 3%);
+  border: 1px solid rgb(27 29 30 / 6%);
+  border-radius: 12px;
   padding: 0.85rem;
   text-align: center;
 }
 
 .archLabel {
-  font-size: 0.75rem;
-  color: #64748b;
+  font-size: 0.72rem;
+  color: rgb(27 29 30 / 55%);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   margin: 0 0 0.3rem;
 }
 
 .archValue {
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #e2e8f0;
+  font-weight: 500;
+  color: #1b1d1e;
   margin: 0;
 }
 
 /* Footer credits */
 .credits {
-  margin-top: 2.5rem;
+  margin-top: 2.25rem;
   padding: 1.5rem;
-  background: rgba(99, 102, 241, 0.06);
-  border: 1px solid rgba(99, 102, 241, 0.15);
-  border-radius: 12px;
+  background: rgb(73 40 253 / 4%);
+  border: 1px solid rgb(73 40 253 / 14%);
+  border-radius: 16px;
   text-align: center;
 }
 
 .creditsText {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: rgb(27 29 30 / 60%);
   margin: 0 0 0.25rem;
   line-height: 1.6;
 }
 
 .creditsAuthor {
   font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 500;
+  color: #1b1d1e;
   margin: 0;
 }
 
 .creditsAuthor span {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #4928fd;
+  font-weight: 600;
 }
 
 .version {
   font-size: 0.8rem;
-  color: #475569;
+  color: rgb(27 29 30 / 50%);
   margin: 0.5rem 0 0;
 }
