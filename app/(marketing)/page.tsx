@@ -220,7 +220,7 @@ export default async function MarketingHomePage() {
                     />
                   </svg>
                 </div>
-                <p>Trusted by 1000+ clients</p>
+                <p>más de 1000+ alumnos</p>
               </div>
             </div>
           </div>
