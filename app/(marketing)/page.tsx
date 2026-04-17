@@ -159,10 +159,10 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.heroGrid}>
           <div className={homeStyles.heroCenter}>
             <h1 className={homeStyles.heroTitle}>
-              <TextGenerateEffect words="Formación que transforma tu hoy" />
+              <TextGenerateEffect words="Formación para tu próximo empleo" />
               <br />
               <TextGenerateEffect
-                words="y construye tu mañana"
+                words="empiece aquí"
                 delay={0.8}
                 className={homeStyles.heroAccent}
               />
@@ -189,21 +189,36 @@ export default async function MarketingHomePage() {
               <div className={homeStyles.heroReviewBlock}>
                 <div className={homeStyles.heroStars} aria-hidden>
                   {[0, 1, 2, 3].map((index) => (
-                    <Image
+                    <svg
                       key={`star-${index}`}
-                      src="/images/home/rating_star.svg"
-                      alt=""
-                      width={16}
-                      height={16}
-                    />
+                      className={homeStyles.heroStar}
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden
+                    >
+                      <path
+                        fill="#f5a623"
+                        d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
+                      />
+                    </svg>
                   ))}
-                  <Image
-                    src="/images/home/rating_star.svg"
-                    alt=""
-                    width={16}
-                    height={16}
-                    className={homeStyles.heroStarEmpty}
-                  />
+                  <svg
+                    className={homeStyles.heroStar}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden
+                  >
+                    <defs>
+                      <linearGradient id="heroStarPartial" x1="0" x2="1" y1="0" y2="0">
+                        <stop offset="85%" stopColor="#f5a623" />
+                        <stop offset="85%" stopColor="#f5a623" stopOpacity="0.22" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      fill="url(#heroStarPartial)"
+                      d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
+                    />
+                  </svg>
                 </div>
                 <p>Trusted by 1000+ clients</p>
               </div>
