@@ -322,7 +322,7 @@
 
 .pdfProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, #1b38c4, #7b62ff, #a78bfa);
+  background: linear-gradient(90deg, #1b38c4, #1b38c4, #1b38c4);
   border-radius: 9999px;
   transition: width 0.4s ease;
   min-width: 2%;

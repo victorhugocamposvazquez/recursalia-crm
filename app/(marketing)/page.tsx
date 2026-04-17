@@ -4,6 +4,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
 import { CourseCardGrid, type CourseCardItem } from '@/components/marketing/CourseCardGrid';
 import { TextGenerateEffect } from '@/components/marketing/TextGenerateEffect';
+import { ResourceMarquee } from '@/components/marketing/ResourceMarquee';
 import { HOME_COURSE_CATEGORIES, HOME_TESTIMONIALS } from '@/lib/homeContent';
 import homeStyles from './home.module.css';
 
@@ -226,21 +227,8 @@ export default async function MarketingHomePage() {
           </div>
         </div>
 
-        <div className={homeStyles.heroBrandWrap}>
-          <p className={homeStyles.heroBrandLine}>
-            <span>Loved by 1000+ big and small brands around the world</span>
-          </p>
-          <div className={homeStyles.heroBrandLogos}>
-            {HERO_LOGOS.map((logo) => (
-              <Image
-                key={logo.alt}
-                src={logo.src}
-                alt={logo.alt}
-                width={130}
-                height={40}
-              />
-            ))}
-          </div>
+        <div className={homeStyles.heroMarqueeWrap}>
+          <ResourceMarquee />
         </div>
       </section>
 

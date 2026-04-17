@@ -30,7 +30,7 @@ function safe(text: string): string {
 const C = {
   primary: '#1a1b3a',
   accent: '#4f46e5',
-  accentLight: '#818cf8',
+  accentLight: '#1b38c4',
   accentBg: '#eef2ff',
   body: '#2d2d3a',
   muted: '#6b7280',
@@ -39,7 +39,7 @@ const C = {
   bg: '#f8f9fa',
   white: '#ffffff',
   coverBg: '#1e1b4b',
-  coverAccent: '#6366f1',
+  coverAccent: '#1b38c4',
   topicBg: '#f0f0ff',
 };
 

@@ -96,7 +96,7 @@
   font-size: 0.95rem;
   color: var(--ch-text-muted);
   padding: 1.35rem;
-  background: var(--ch-blue-light, #ecfdf5);
+  background: var(--ch-blue-light, #eaefff);
   border-radius: var(--ch-radius-sm, 10px);
   border: 1px dashed var(--ch-border);
   text-align: center;
@@ -121,6 +121,6 @@
 
 .loadMore:hover {
   border-color: var(--ch-blue, #059669);
-  background: var(--ch-blue-light, #ecfdf5);
+  background: var(--ch-blue-light, #eaefff);
   box-shadow: 0 4px 16px rgb(5 150 105 / 12%);
 }
