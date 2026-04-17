@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
 import { CourseCardGrid, type CourseCardItem } from '@/components/marketing/CourseCardGrid';
+import { TextGenerateEffect } from '@/components/marketing/TextGenerateEffect';
 import { HOME_COURSE_CATEGORIES, HOME_TESTIMONIALS } from '@/lib/homeContent';
 import homeStyles from './home.module.css';
 
@@ -144,9 +145,13 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.heroGrid}>
           <div className={homeStyles.heroCenter}>
             <h1 className={homeStyles.heroTitle}>
-              Diseñamos crecimiento real
+              <TextGenerateEffect words="Diseñamos crecimiento real con formación" />
               <br />
-              con formación <span className={homeStyles.heroAccent}>que inspira</span>
+              <TextGenerateEffect
+                words="que inspira"
+                delay={0.45}
+                className={homeStyles.heroAccent}
+              />
             </h1>
 
             <div className={homeStyles.heroSearchWrap}>
@@ -183,7 +188,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>Soluciones</p>
-            <h2 className={homeStyles.sectionTitle}>Activa el potencial de tu organización</h2>
+            <h2 className={homeStyles.sectionTitle}>
+              <TextGenerateEffect words="Activa el potencial de tu organización" />
+            </h2>
             <div className={homeStyles.solutionPills}>
               {SOLUTION_PILLS.map((pill) => (
                 <span key={pill} className={homeStyles.solutionPill}>
@@ -212,7 +219,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>People Analytics</p>
-            <h2 className={homeStyles.sectionTitle}>Toma decisiones con inteligencia, no con intuición</h2>
+            <h2 className={homeStyles.sectionTitle}>
+              <TextGenerateEffect words="Toma decisiones con inteligencia, no con intuición" />
+            </h2>
           </div>
           <div className={homeStyles.analyticsGrid}>
             {ANALYTICS_ITEMS.map((item) => (
@@ -229,7 +238,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.cardShell}>
             <p className={homeStyles.kicker}>Cursos destacados</p>
-            <h2 className={homeStyles.sectionTitle}>Formación práctica para cada perfil</h2>
+            <h2 className={homeStyles.sectionTitle}>
+              <TextGenerateEffect words="Formación práctica para cada perfil" />
+            </h2>
             <CourseCardGrid courses={trending} />
             <div className={homeStyles.moreWrap}>
               <Link href="/cursos" className={homeStyles.moreLink}>
@@ -244,7 +255,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>Categorías</p>
-            <h2 className={homeStyles.sectionTitle}>Explora por áreas y necesidades</h2>
+            <h2 className={homeStyles.sectionTitle}>
+              <TextGenerateEffect words="Explora por áreas y necesidades" />
+            </h2>
           </div>
           <div className={homeStyles.catGrid}>
             {HOME_COURSE_CATEGORIES.map((c) => (
@@ -264,7 +277,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>Por qué Recursalia</p>
-            <h2 className={homeStyles.sectionTitle}>Diseñada para escalar cultura y operaciones</h2>
+            <h2 className={homeStyles.sectionTitle}>
+              <TextGenerateEffect words="Diseñada para escalar cultura y operaciones" />
+            </h2>
           </div>
           <div className={homeStyles.featureGrid}>
             {SAAS_FEATURES.map((feature) => (
@@ -281,7 +296,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>Casos reales</p>
-            <h2 className={homeStyles.sectionTitle}>Equipos que ya aprenden con Recursalia</h2>
+            <h2 className={homeStyles.sectionTitle}>
+              <TextGenerateEffect words="Equipos que ya aprenden con Recursalia" />
+            </h2>
           </div>
           <div className={homeStyles.caseShowcase}>
             <div className={homeStyles.caseMedia}>
@@ -308,7 +325,9 @@ export default async function MarketingHomePage() {
       <section className={homeStyles.sectionShell}>
         <div className={homeStyles.panel}>
           <p className={homeStyles.kicker}>Plataforma</p>
-          <h2 className={homeStyles.sectionTitle}>Todo tu aprendizaje interno en un solo lugar</h2>
+          <h2 className={homeStyles.sectionTitle}>
+            <TextGenerateEffect words="Todo tu aprendizaje interno en un solo lugar" />
+          </h2>
           <div className={homeStyles.valueGrid}>
             <div>
               <p className={homeStyles.valueText}>
@@ -338,7 +357,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>Acompañamiento</p>
-            <h2 className={homeStyles.sectionTitle}>Un equipo dedicado para alcanzar tus objetivos</h2>
+            <h2 className={homeStyles.sectionTitle}>
+              <TextGenerateEffect words="Un equipo dedicado para alcanzar tus objetivos" />
+            </h2>
           </div>
           <div className={homeStyles.supportLayout}>
             <div className={homeStyles.supportVisual} aria-hidden>
@@ -362,7 +383,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.sectionHeadCenter}>
             <p className={homeStyles.kicker}>Recursos</p>
-            <h2 className={homeStyles.sectionTitle}>Contenido útil para tu día a día</h2>
+            <h2 className={homeStyles.sectionTitle}>
+              <TextGenerateEffect words="Contenido útil para tu día a día" />
+            </h2>
           </div>
           <div className={homeStyles.resourceGrid}>
             {RESOURCE_CARDS.map((resource) => (
@@ -381,7 +404,9 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.panel}>
           <div className={homeStyles.finalCta}>
             <p className={homeStyles.finalKicker}>Listo para dar el salto</p>
-            <h2>Convierte la formación interna en una ventaja competitiva</h2>
+            <h2>
+              <TextGenerateEffect words="Convierte la formación interna en una ventaja competitiva" />
+            </h2>
             <p>
               Lanza en días una experiencia moderna para equipos, managers y operaciones con
               contenido útil desde el primer acceso.

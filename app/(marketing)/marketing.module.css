@@ -1,29 +1,28 @@
-/* Tokens inspirados en Monotree (monotree.com/es): verde esmeralda, grises neutros, mucho blanco */
+/* Base visual tomada de diseño/package (Inter Tight + púrpura + gradientes suaves) */
 .marketing {
-  /* Marca = verde (alias --ch-blue / --ch-purple por compatibilidad en módulos) */
-  --ch-purple: #059669;
-  --ch-purple-hover: #047857;
-  --ch-purple-muted: #10b981;
-  --ch-purple-soft: #ecfdf5;
-  --ch-purple-tint: #d1fae5;
+  --ch-purple: #4928fd;
+  --ch-purple-hover: #381ce0;
+  --ch-purple-muted: #7b62ff;
+  --ch-purple-soft: #f5f2ff;
+  --ch-purple-tint: #ddd6fe;
 
-  --ch-blue: #059669;
-  --ch-blue-hover: #047857;
-  --ch-blue-light: #ecfdf5;
-  --ch-blue-muted: #34d399;
+  --ch-blue: #4928fd;
+  --ch-blue-hover: #381ce0;
+  --ch-blue-light: #f5f2ff;
+  --ch-blue-muted: #7b62ff;
 
-  --ch-navy: #111827;
-  --ch-navy-soft: #374151;
+  --ch-navy: #1b1d1e;
+  --ch-navy-soft: #2f2b4a;
   --ch-surface: #ffffff;
-  --ch-bg: #f9fafb;
-  --ch-border: #e5e7eb;
-  --ch-text: #111827;
+  --ch-bg: #ffffff;
+  --ch-border: #eceaf8;
+  --ch-text: #1b1d1e;
   --ch-text-muted: #6b7280;
-  --ch-highlight-green: #a7f3d0;
+  --ch-highlight-green: #f6e683;
   --ch-radius: 14px;
   --ch-radius-sm: 10px;
-  --ch-shadow: 0 1px 2px rgb(17 24 39 / 5%), 0 4px 24px rgb(17 24 39 / 6%);
-  --ch-shadow-lg: 0 8px 40px rgb(17 24 39 / 8%);
+  --ch-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  --ch-shadow-lg: 0 8px 34px rgb(73 40 253 / 14%);
 
   min-height: 100vh;
   display: flex;
@@ -33,6 +32,11 @@
   font-family: var(--font-marketing), system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+}
+
+.displaySerif {
+  font-family: var(--font-marketing-display), 'Times New Roman', serif;
+  font-style: italic;
 }
 
 .inner {

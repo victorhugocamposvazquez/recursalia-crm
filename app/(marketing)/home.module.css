@@ -55,14 +55,14 @@
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 0.96;
-  color: #23155b;
+  color: var(--ch-navy, #1b1d1e);
 }
 
 .heroAccent {
-  color: #5b43f4;
+  color: var(--ch-blue, #4928fd);
   font-weight: 400;
   font-style: italic;
-  font-family: 'Instrument Serif', 'Times New Roman', serif;
+  font-family: var(--font-marketing-display), 'Times New Roman', serif;
 }
 
 .btnPrimary {
