@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
@@ -9,8 +10,21 @@ import homeStyles from './home.module.css';
 export const revalidate = 60;
 
 const TRUSTED_TEAMS = ['Cofoco', 'Bones', 'OLIOLI', 'Madklubben', 'Fårup', 'Dyreparken'];
-const HERO_CLIENTS = ['AL', 'MC', 'JR', 'PS'];
-const HERO_LOGOS = ['logoipsum', 'logoipsum', 'logoipsum', 'logoipsum', 'logoipsum', 'logoipsum'];
+
+const HERO_AVATARS = [
+  { src: '/images/home/avatar_1.jpg', alt: 'Sarah Johnson' },
+  { src: '/images/home/avatar_2.jpg', alt: 'Olivia Miller' },
+  { src: '/images/home/avatar_3.jpg', alt: 'Sophia Roberts' },
+  { src: '/images/home/avatar_4.jpg', alt: 'Isabella Clark' },
+];
+
+const HERO_LOGOS = [
+  { src: '/images/home/brand/brand-icon-1.svg', alt: 'Adobe' },
+  { src: '/images/home/brand/brand-icon-2.svg', alt: 'Figma' },
+  { src: '/images/home/brand/brand-icon-3.svg', alt: 'Shopify' },
+  { src: '/images/home/brand/brand-icon-4.svg', alt: 'Dribbble' },
+  { src: '/images/home/brand/brand-icon-5.svg', alt: 'Webflow' },
+];
 
 const SAAS_FEATURES = [
   {
@@ -145,11 +159,11 @@ export default async function MarketingHomePage() {
         <div className={homeStyles.heroGrid}>
           <div className={homeStyles.heroCenter}>
             <h1 className={homeStyles.heroTitle}>
-              <TextGenerateEffect words="Diseñamos crecimiento real con formación" />
+              <TextGenerateEffect words="Diseñamos equipos con" />
               <br />
               <TextGenerateEffect
-                words="que inspira"
-                delay={0.45}
+                words="formación que inspira"
+                delay={0.8}
                 className={homeStyles.heroAccent}
               />
             </h1>
@@ -160,13 +174,36 @@ export default async function MarketingHomePage() {
 
             <div className={homeStyles.heroSocialProof}>
               <ul className={homeStyles.heroAvatars} aria-label="Clientes satisfechos">
-                {HERO_CLIENTS.map((client) => (
-                  <li key={client}>{client}</li>
+                {HERO_AVATARS.map((avatar) => (
+                  <li key={avatar.alt}>
+                    <Image
+                      src={avatar.src}
+                      alt={avatar.alt}
+                      width={44}
+                      height={44}
+                      quality={100}
+                    />
+                  </li>
                 ))}
               </ul>
               <div className={homeStyles.heroReviewBlock}>
                 <div className={homeStyles.heroStars} aria-hidden>
-                  ★★★★★
+                  {[0, 1, 2, 3].map((index) => (
+                    <Image
+                      key={`star-${index}`}
+                      src="/images/home/rating_star.svg"
+                      alt=""
+                      width={16}
+                      height={16}
+                    />
+                  ))}
+                  <Image
+                    src="/images/home/rating_star.svg"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className={homeStyles.heroStarEmpty}
+                  />
                 </div>
                 <p>Trusted by 1000+ clients</p>
               </div>
@@ -175,10 +212,18 @@ export default async function MarketingHomePage() {
         </div>
 
         <div className={homeStyles.heroBrandWrap}>
-          <p className={homeStyles.heroBrandLine}>Loved by 1000+ big and small brands around the world</p>
+          <p className={homeStyles.heroBrandLine}>
+            <span>Loved by 1000+ big and small brands around the world</span>
+          </p>
           <div className={homeStyles.heroBrandLogos}>
-            {HERO_LOGOS.map((logo, index) => (
-              <span key={`${logo}-${index}`}>{logo}</span>
+            {HERO_LOGOS.map((logo) => (
+              <Image
+                key={logo.alt}
+                src={logo.src}
+                alt={logo.alt}
+                width={130}
+                height={40}
+              />
             ))}
           </div>
         </div>
