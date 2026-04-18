@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { CourseSearchField } from '@/components/marketing/CourseSearchField';
+import { DrawerCategoriesSection, HeaderCategories } from '@/components/marketing/HeaderCategories';
 import styles from './SiteHeader.module.css';
 
 const NAV_ITEMS: {
@@ -94,13 +94,7 @@ export function SiteHeader() {
             <span className={styles.logoText}>Recursalia</span>
           </Link>
 
-          <div className={styles.headerSearch} role="search">
-            <CourseSearchField
-              variant="header"
-              placeholder="¿Qué quieres aprender?"
-              inputId="header-course-search"
-            />
-          </div>
+          <HeaderCategories />
 
           <div className={styles.navWrap}>
             <ul className={styles.nav}>
@@ -189,14 +183,7 @@ export function SiteHeader() {
             </svg>
           </button>
         </div>
-        <div className={styles.drawerSearch}>
-          <CourseSearchField
-            variant="hero"
-            fullWidth
-            placeholder="¿Qué quieres aprender?"
-            inputId="drawer-course-search"
-          />
-        </div>
+        <DrawerCategoriesSection onNavigate={() => setOpen(false)} />
         <ul className={styles.drawerNav}>
           {NAV_ITEMS.map((item) => {
             const active = item.isActive(pathname);

@@ -45,19 +45,6 @@
   }
 }
 
-.headerSearch {
-  display: none;
-  flex: 0 0 auto;
-  width: 14rem;
-  max-width: 18rem;
-}
-
-@media (min-width: 1024px) {
-  .headerSearch {
-    display: block;
-  }
-}
-
 .barSticky {
   background: rgb(255 255 255 / 85%);
   backdrop-filter: saturate(160%) blur(14px);
@@ -284,11 +271,6 @@
 
 .drawerOpen {
   transform: translateX(0);
-}
-
-.drawerSearch {
-  padding: 0 1rem 1rem;
-  border-bottom: 1px solid #ebe9f8;
 }
 
 .drawerHead {
