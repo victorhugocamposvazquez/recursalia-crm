@@ -9,14 +9,8 @@
 .container {
   max-width: 82.8rem;
   margin: 0 auto;
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem var(--marketing-gutter-x, 1.25rem);
   pointer-events: none;
-}
-
-@media (min-width: 640px) {
-  .container {
-    padding: 0.75rem 1.75rem;
-  }
 }
 
 .bar {
@@ -67,9 +61,9 @@
 
 .navWrap {
   display: none;
-  background: rgb(27 29 30 / 6%);
+  background: #eceef2;
   border-radius: 9999px;
-  padding: 0.3rem;
+  padding: 0.28rem;
 }
 
 @media (min-width: 1024px) {
@@ -91,27 +85,32 @@
   display: inline-flex;
   align-items: center;
   padding: 0.45rem 0.95rem;
-  color: #1b1d1e;
+  color: #64748b;
   font-size: 0.86rem;
   font-weight: 500;
   text-decoration: none;
   border-radius: 9999px;
   transition:
     background-color 0.15s ease,
-    color 0.15s ease;
+    color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .navLink:hover {
-  background: rgb(27 29 30 / 6%);
+  color: #475569;
+  background: rgb(255 255 255 / 55%);
 }
 
 .navLinkActive {
-  background: #1b1d1e;
-  color: #ffffff;
+  background: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
 }
 
 .navLinkActive:hover {
-  background: #1b1d1e;
+  background: #ffffff;
+  color: #334155;
 }
 
 .actions {
@@ -311,6 +310,12 @@
   background: rgb(27 29 30 / 6%);
 }
 
+.drawerLinkActive {
+  background: #eaefff;
+  color: #1b38c4;
+  font-weight: 600;
+}
+
 .drawerActions {
   display: flex;
   flex-direction: column;
@@ -343,13 +348,14 @@
 }
 
 .drawerCta {
-  background: #1b1d1e;
+  background: #1b38c4;
+  border-color: #1b38c4;
   color: #ffffff !important;
 }
 
 .drawerCta:hover {
-  background: #1b38c4;
-  border-color: #1b38c4;
+  background: #142a99;
+  border-color: #142a99;
 }
 
 @keyframes fadeIn {

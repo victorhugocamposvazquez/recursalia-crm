@@ -34,9 +34,9 @@
 }
 
 .layout {
-  max-width: 1180px;
+  max-width: 82.8rem;
   margin: 0 auto;
-  padding: 1.25rem 1.25rem 5.5rem;
+  padding: 1.25rem var(--marketing-gutter-x, 1.25rem) 5.5rem;
   display: grid;
   gap: 2rem;
   grid-template-columns: 1fr;

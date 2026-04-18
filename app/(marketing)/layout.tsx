@@ -1,6 +1,7 @@
 import { Instrument_Serif, Inter_Tight } from 'next/font/google';
 import { SiteHeader } from '@/components/marketing/SiteHeader';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
+import { MarketingMain } from '@/components/marketing/MarketingMain';
 import styles from './marketing.module.css';
 
 const interTight = Inter_Tight({
@@ -24,7 +25,7 @@ export default function MarketingLayout({
   return (
     <div className={`${styles.marketing} ${interTight.variable} ${instrumentSerif.variable}`}>
       <SiteHeader />
-      <main>{children}</main>
+      <MarketingMain>{children}</MarketingMain>
       <SiteFooter />
     </div>
   );

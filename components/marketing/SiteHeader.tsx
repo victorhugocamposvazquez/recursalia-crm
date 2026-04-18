@@ -5,13 +5,41 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styles from './SiteHeader.module.css';
 
-const NAV_ITEMS = [
-  { label: 'Soluciones', href: '/cursos' },
-  { label: 'Recursos', href: '/blog' },
-  { label: 'Nosotros', href: '/cursos' },
-  { label: 'Clientes', href: '/cursos' },
-  { label: 'Recursalia AI', href: '/cursos' },
-  { label: 'Referidos', href: '/cursos' },
+const NAV_ITEMS: {
+  label: string;
+  href: string;
+  isActive: (pathname: string) => boolean;
+}[] = [
+  {
+    label: 'Soluciones',
+    href: '/cursos',
+    isActive: (p) => p === '/cursos' || p.startsWith('/cursos/'),
+  },
+  {
+    label: 'Recursos',
+    href: '/blog',
+    isActive: (p) => p.startsWith('/blog'),
+  },
+  {
+    label: 'Nosotros',
+    href: '/nosotros',
+    isActive: (p) => p.startsWith('/nosotros'),
+  },
+  {
+    label: 'Clientes',
+    href: '/clientes',
+    isActive: (p) => p.startsWith('/clientes'),
+  },
+  {
+    label: 'Recursalia AI',
+    href: '/recursalia-ai',
+    isActive: (p) => p.startsWith('/recursalia-ai'),
+  },
+  {
+    label: 'Referidos',
+    href: '/referidos',
+    isActive: (p) => p.startsWith('/referidos'),
+  },
 ];
 
 export function SiteHeader() {
@@ -68,10 +96,7 @@ export function SiteHeader() {
           <div className={styles.navWrap}>
             <ul className={styles.nav}>
               {NAV_ITEMS.map((item) => {
-                const active =
-                  item.href === '/'
-                    ? pathname === '/'
-                    : pathname.startsWith(item.href);
+                const active = item.isActive(pathname);
                 return (
                   <li key={item.label}>
                     <Link
@@ -87,7 +112,7 @@ export function SiteHeader() {
           </div>
 
           <div className={styles.actions}>
-            <Link href="/cursos" className={styles.cta}>
+            <Link href="/blog" className={styles.cta}>
               <span className={styles.ctaLabel}>Recursos</span>
               <span className={styles.ctaBadge} aria-hidden>
                 <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
@@ -156,13 +181,19 @@ export function SiteHeader() {
           </button>
         </div>
         <ul className={styles.drawerNav}>
-          {NAV_ITEMS.map((item) => (
-            <li key={item.label}>
-              <Link href={item.href} className={styles.drawerLink}>
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const active = item.isActive(pathname);
+            return (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className={`${styles.drawerLink} ${active ? styles.drawerLinkActive : ''}`}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
         <div className={styles.drawerActions}>
           <Link href="/login" className={styles.drawerGhost}>

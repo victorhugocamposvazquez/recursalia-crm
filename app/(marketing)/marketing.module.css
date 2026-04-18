@@ -1,5 +1,6 @@
 /* Marketing container — Awake/package look & feel */
 .marketing {
+  --marketing-gutter-x: 1.25rem;
   --ch-navy: #1b1d1e;
   --ch-navy-soft: #2a2c2d;
   --ch-accent: #1b38c4;
@@ -27,6 +28,12 @@
   -webkit-font-smoothing: antialiased;
 }
 
+@media (min-width: 640px) {
+  .marketing {
+    --marketing-gutter-x: 1.75rem;
+  }
+}
+
 .displaySerif {
   font-family: var(--font-marketing-display), 'Times New Roman', serif;
   font-style: italic;
@@ -35,7 +42,7 @@
 .inner {
   max-width: 82.8rem;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 var(--marketing-gutter-x, 1.25rem);
 }
 
 .section {

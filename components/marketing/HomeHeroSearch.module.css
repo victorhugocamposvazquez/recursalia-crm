@@ -2,6 +2,7 @@
   max-width: 38rem;
   margin: 0 auto;
   position: relative;
+  z-index: 40;
 }
 
 @media (min-width: 960px) {
@@ -25,10 +26,10 @@
 }
 
 .inputShell:focus-within {
-  border-color: #5b43f4;
+  border-color: #1b38c4;
   box-shadow:
-    0 4px 24px rgb(79 45 255 / 14%),
-    0 0 0 3px rgb(109 85 255 / 16%);
+    0 4px 24px rgb(27 56 196 / 14%),
+    0 0 0 3px rgb(27 56 196 / 18%);
 }
 
 .input {
@@ -47,7 +48,7 @@
 
 .searchBtn {
   border: none;
-  background: linear-gradient(135deg, #6d55ff, #4f2dff);
+  background: #1b38c4;
   color: #ffffff;
   width: 46px;
   height: 46px;
@@ -61,7 +62,7 @@
 }
 
 .searchBtn:hover {
-  background: linear-gradient(135deg, #6048f3, #4528de);
+  background: #142a99;
 }
 
 .dropdown {
@@ -74,8 +75,9 @@
   border: 1px solid var(--ch-border, #e5e7eb);
   max-height: 320px;
   overflow-y: auto;
-  z-index: 50;
-  box-shadow: 0 16px 48px rgb(17 24 39 / 10%);
+  z-index: 60;
+  box-shadow: 0 16px 48px rgb(17 24 39 / 12%);
+  isolation: isolate;
 }
 
 .item {
@@ -88,13 +90,13 @@
   text-align: left;
   width: 100%;
   border: none;
-  background: transparent;
+  background: #ffffff;
   font-size: 0.95rem;
 }
 
 .item:hover,
 .itemActive {
-  background: #eef2ff;
+  background: #eaefff;
 }
 
 .thumb {

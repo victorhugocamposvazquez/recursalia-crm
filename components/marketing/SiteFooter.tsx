@@ -4,13 +4,13 @@ import styles from './SiteFooter.module.css';
 const SITEMAP = [
   { name: 'Soluciones', url: '/cursos' },
   { name: 'Recursos', url: '/blog' },
-  { name: 'Recursalia AI', url: '/cursos' },
-  { name: 'Nuestros Clientes', url: '/cursos' },
+  { name: 'Recursalia AI', url: '/recursalia-ai' },
+  { name: 'Nuestros Clientes', url: '/clientes' },
 ];
 
 const COMPANY = [
-  { name: 'Nosotros', url: '/cursos' },
-  { name: 'Referidos', url: '/cursos' },
+  { name: 'Nosotros', url: '/nosotros' },
+  { name: 'Referidos', url: '/referidos' },
   { name: 'Agenda un demo', url: '/cursos' },
   { name: 'Iniciar sesión', url: '/login' },
 ];
