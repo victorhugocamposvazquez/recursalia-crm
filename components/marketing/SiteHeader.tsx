@@ -36,8 +36,9 @@ export function SiteHeader() {
 
   return (
     <header className={styles.header}>
-      <div className={styles.container}>
-        <nav className={`${styles.bar} ${sticky ? styles.barSticky : ''}`}>
+      <div className={styles.outer}>
+        <div className={styles.inner}>
+          <nav className={`${styles.bar} ${sticky ? styles.barSticky : ''}`}>
           <Link href="/" className={styles.logo}>
             <span className={styles.logoMark} aria-hidden>
               <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -103,6 +104,7 @@ export function SiteHeader() {
             </button>
           </div>
         </nav>
+        </div>
       </div>
 
       {open ? (

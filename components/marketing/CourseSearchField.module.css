@@ -16,8 +16,8 @@
 
 .wrapHeader {
   width: 100%;
-  min-width: 11rem;
-  max-width: 20rem;
+  min-width: 0;
+  max-width: none;
 }
 
 .wrapFull {
