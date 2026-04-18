@@ -3,7 +3,6 @@
   flex-shrink: 0;
   z-index: 55;
   display: none;
-  margin-right: 0.35rem;
 }
 
 @media (min-width: 1024px) {
@@ -71,14 +70,15 @@
 .trigger {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.28rem;
   margin: 0;
-  padding: 0.45rem 0.35rem;
+  padding: 0.42rem 0.4rem;
   border: none;
   background: transparent;
   color: #64748b;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 500;
+  letter-spacing: -0.01em;
   font-family: inherit;
   cursor: pointer;
   border-radius: 8px;
@@ -89,7 +89,12 @@
 
 .trigger:hover {
   color: #475569;
-  background: rgb(27 29 30 / 4%);
+  background: transparent;
+}
+
+.trigger:focus-visible {
+  outline: 2px solid rgb(27 56 196 / 35%);
+  outline-offset: 2px;
 }
 
 .chevron {

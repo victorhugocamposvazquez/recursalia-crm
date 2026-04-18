@@ -38,81 +38,77 @@ export function SiteHeader() {
     <header className={styles.header}>
       <div className={styles.outer}>
         <div className={styles.inner}>
-          <nav className={`${styles.bar} ${sticky ? styles.barSticky : ''}`}>
-          <Link href="/" className={styles.logo}>
-            <span className={styles.logoMark} aria-hidden>
-              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 2L21 7V17L12 22L3 17V7L12 2Z"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M7 10L12 12.5L17 10"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-            <span className={styles.logoText}>Recursalia</span>
-          </Link>
-
-          <div className={styles.headerSearch} role="search">
-            <CourseSearchField
-              variant="header"
-              placeholder="¿Qué quieres aprender?"
-              inputId="header-course-search"
-            />
-          </div>
-
-          <HeaderCategories />
-
-          <div className={styles.actions}>
-            <Link href="/cursos" className={styles.cta}>
-              <span className={styles.ctaLabel}>Recursos</span>
-              <span className={styles.ctaBadge} aria-hidden>
-                <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
+          <nav className={`${styles.bar} ${sticky ? styles.barSticky : ''}`} aria-label="Principal">
+            <Link href="/" className={styles.logo}>
+              <span className={styles.logoMark} aria-hidden>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
-                    d="M7 17L17 7M10 7h7v7"
-                    fill="none"
+                    d="M12 2L21 7V17L12 22L3 17V7L12 2Z"
                     stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
+                    strokeWidth="1.6"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M7 10L12 12.5L17 10"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
                     strokeLinejoin="round"
                   />
                 </svg>
               </span>
+              <span className={styles.logoText}>Recursalia</span>
             </Link>
-            <button
-              type="button"
-              className={styles.burger}
-              onClick={() => setOpen(true)}
-              aria-label="Abrir menú"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeMiterlimit="10"
-                  strokeWidth="1.5"
-                  d="M4.5 12h15m-15 5.77h15M4.5 6.23h15"
-                />
-              </svg>
-            </button>
-          </div>
-        </nav>
+
+            <div className={styles.headerSearch} role="search">
+              <CourseSearchField
+                variant="header"
+                placeholder="¿Qué quieres aprender?"
+                inputId="header-course-search"
+              />
+            </div>
+
+            <HeaderCategories />
+
+            <div className={styles.actions}>
+              <Link href="/cursos" className={styles.cta}>
+                <span className={styles.ctaLabel}>Recursos</span>
+                <span className={styles.ctaBadge} aria-hidden>
+                  <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M7 17L17 7M10 7h7v7"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </Link>
+              <button
+                type="button"
+                className={styles.burger}
+                onClick={() => setOpen(true)}
+                aria-label="Abrir menú"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeMiterlimit="10"
+                    strokeWidth="1.5"
+                    d="M4.5 12h15m-15 5.77h15M4.5 6.23h15"
+                  />
+                </svg>
+              </button>
+            </div>
+          </nav>
         </div>
       </div>
 
       {open ? (
-        <div
-          className={styles.overlay}
-          onClick={() => setOpen(false)}
-          aria-hidden
-        />
+        <div className={styles.overlay} onClick={() => setOpen(false)} aria-hidden />
       ) : null}
 
       <aside

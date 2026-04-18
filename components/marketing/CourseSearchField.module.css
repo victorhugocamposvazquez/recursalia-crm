@@ -44,9 +44,16 @@
 }
 
 .inputShellHeader {
-  padding: 0.28rem 0.32rem 0.28rem 0.6rem;
-  gap: 0.4rem;
-  box-shadow: 0 1px 8px rgb(17 24 39 / 5%);
+  align-items: center;
+  padding: 0.3rem 0.38rem 0.3rem 0.52rem;
+  gap: 0.38rem;
+  border-color: #e2e5eb;
+  background: #fafbfc;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 80%);
+}
+
+.inputShellHeader:focus-within {
+  background: #ffffff;
 }
 
 .inputShell:focus-within {
@@ -69,8 +76,8 @@
 }
 
 .inputShellHeader .leadIcon {
-  width: 2rem;
-  height: 2rem;
+  width: 1.75rem;
+  height: 1.75rem;
 }
 
 .leadIcon svg {
@@ -90,7 +97,7 @@
 
 .inputHeader {
   font-size: 0.875rem;
-  padding: 0.5rem 0;
+  padding: 0.42rem 0;
 }
 
 .input::placeholder {
@@ -119,10 +126,10 @@
 }
 
 .searchBtnHeader {
-  width: 2.125rem;
-  height: 2.125rem;
-  min-width: 2.125rem;
-  min-height: 2.125rem;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
 }
 
 .searchBtn:hover {
