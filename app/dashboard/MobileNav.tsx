@@ -2,9 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
-import { DASHBOARD_NAV } from './nav-items';
+import { DashboardNav } from './DashboardNav';
 import styles from './layout.module.css';
 
 interface MobileNavProps {
@@ -83,19 +82,7 @@ export function MobileNav({ userEmail }: MobileNavProps) {
           </button>
         </div>
         <nav className={styles.mobileNav}>
-          {DASHBOARD_NAV.map((item, i) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={styles.navLink}
-              onClick={() => setIsOpen(false)}
-            >
-              <span className={styles.navIdx} aria-hidden="true">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span className={styles.navLabel}>{item.label}</span>
-            </Link>
-          ))}
+          <DashboardNav onNavigate={() => setIsOpen(false)} />
         </nav>
         <div className={styles.user}>
           <span>{userEmail}</span>

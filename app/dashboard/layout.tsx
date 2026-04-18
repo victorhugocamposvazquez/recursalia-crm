@@ -1,10 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import Image from 'next/image';
 import { MobileNav } from './MobileNav';
 import { Footer } from './Footer';
-import { DASHBOARD_NAV } from './nav-items';
+import { DashboardNav } from './DashboardNav';
 import styles from './layout.module.css';
 
 export default async function DashboardLayout({
@@ -33,15 +32,8 @@ export default async function DashboardLayout({
             className={styles.brandLogo}
           />
         </div>
-        <nav className={styles.nav}>
-          {DASHBOARD_NAV.map((item, i) => (
-            <Link key={item.href} href={item.href} className={styles.navLink}>
-              <span className={styles.navIdx} aria-hidden="true">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span className={styles.navLabel}>{item.label}</span>
-            </Link>
-          ))}
+        <nav className={styles.sidebarNav} aria-label="Navegación del panel">
+          <DashboardNav />
         </nav>
       </aside>
       <main className={styles.main}>{children}</main>
