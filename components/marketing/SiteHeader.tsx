@@ -67,7 +67,15 @@ export function SiteHeader() {
               />
             </div>
 
-            <HeaderCategories />
+            <div className={styles.navCluster}>
+              <HeaderCategories />
+              <Link
+                href="/inspiracion"
+                className={`${styles.inspiracionLink} ${pathname === '/inspiracion' ? styles.inspiracionLinkActive : ''}`}
+              >
+                Inspiración
+              </Link>
+            </div>
 
             <div className={styles.actions}>
               <Link href="/cursos" className={styles.cta}>
@@ -144,6 +152,13 @@ export function SiteHeader() {
           />
         </div>
         <div className={styles.drawerScroll}>
+          <Link
+            href="/inspiracion"
+            className={styles.drawerInspiracion}
+            onClick={() => setOpen(false)}
+          >
+            Inspiración
+          </Link>
           <DrawerCategoriesSection onNavigate={() => setOpen(false)} />
         </div>
         <div className={styles.drawerActions}>

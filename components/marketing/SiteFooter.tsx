@@ -3,6 +3,7 @@ import styles from './SiteFooter.module.css';
 
 const SITEMAP = [
   { name: 'Soluciones', url: '/cursos' },
+  { name: 'Inspiración', url: '/inspiracion' },
   { name: 'Recursos', url: '/blog' },
   { name: 'Recursalia AI', url: '/recursalia-ai' },
   { name: 'Nuestros Clientes', url: '/clientes' },
