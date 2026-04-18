@@ -91,7 +91,7 @@
   display: none;
   align-items: center;
   flex-shrink: 0;
-  gap: 0.5rem;
+  gap: 1.2rem;
 }
 
 @media (min-width: 1024px) {
@@ -163,6 +163,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  margin-left: 6rem;
   min-width: 10.25rem;
   padding: 0.38rem 0.52rem 0.38rem 1.6rem;
   background: #1b38c4;
