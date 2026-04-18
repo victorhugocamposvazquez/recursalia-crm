@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { DASHBOARD_NAV } from './nav-items';
 import styles from './layout.module.css';
 
 interface MobileNavProps {
@@ -49,8 +50,8 @@ export function MobileNav({ userEmail }: MobileNavProps) {
         <Image
           src="/logos/recursalia-logo.png"
           alt="Recursalia"
-          width={140}
-          height={40}
+          width={118}
+          height={36}
           priority
           className={styles.mobileBrandLogo}
         />
@@ -67,8 +68,8 @@ export function MobileNav({ userEmail }: MobileNavProps) {
           <Image
             src="/logos/recursalia-logo.png"
             alt="Recursalia"
-            width={140}
-            height={40}
+            width={118}
+            height={36}
             priority
             className={styles.mobileBrandLogo}
           />
@@ -82,21 +83,19 @@ export function MobileNav({ userEmail }: MobileNavProps) {
           </button>
         </div>
         <nav className={styles.mobileNav}>
-          <Link href="/dashboard" className={styles.navLink} onClick={() => setIsOpen(false)}>
-            Generar curso
-          </Link>
-          <Link href="/dashboard/courses" className={styles.navLink} onClick={() => setIsOpen(false)}>
-            Mis cursos
-          </Link>
-          <Link href="/dashboard/reviews" className={styles.navLink} onClick={() => setIsOpen(false)}>
-            Generar reseñas
-          </Link>
-          <Link href="/dashboard/seo-posts" className={styles.navLink} onClick={() => setIsOpen(false)}>
-            Posts SEO
-          </Link>
-          <Link href="/dashboard/docs" className={styles.navLink} onClick={() => setIsOpen(false)}>
-            Documentacion
-          </Link>
+          {DASHBOARD_NAV.map((item, i) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={styles.navLink}
+              onClick={() => setIsOpen(false)}
+            >
+              <span className={styles.navIdx} aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span className={styles.navLabel}>{item.label}</span>
+            </Link>
+          ))}
         </nav>
         <div className={styles.user}>
           <span>{userEmail}</span>

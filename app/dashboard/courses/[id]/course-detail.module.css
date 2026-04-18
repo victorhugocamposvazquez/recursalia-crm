@@ -27,7 +27,7 @@
 .btnPrimary,
 .btnSecondary {
   padding: 0.55rem 1.1rem;
-  border-radius: 9999px;
+  border-radius: 4px;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -41,8 +41,8 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #1b38c4;
-  border-color: #1b38c4;
+  background: #46433e;
+  border-color: #46433e;
 }
 
 .btnPrimary:disabled {
@@ -63,7 +63,7 @@
 
 .btnDanger {
   padding: 0.55rem 1.1rem;
-  border-radius: 9999px;
+  border-radius: 4px;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -104,16 +104,16 @@
   font-size: 0.9rem;
   margin-bottom: 1rem;
   padding: 0.8rem 1rem;
-  background: rgb(27 56 196 / 8%);
-  border: 1px solid rgb(27 56 196 / 20%);
+  background: rgb(70 67 62 / 8%);
+  border: 1px solid rgb(70 67 62 / 20%);
   border-radius: 10px;
   white-space: pre-wrap;
 }
 
 .reviewsConfig {
   padding: 1.25rem;
-  background: rgb(27 56 196 / 5%);
-  border: 1px solid rgb(27 56 196 / 18%);
+  background: rgb(70 67 62 / 5%);
+  border: 1px solid rgb(70 67 62 / 18%);
   border-radius: 14px;
   margin-bottom: 1.25rem;
 }
@@ -121,7 +121,7 @@
 .reviewsConfigTitle {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #1b38c4;
+  color: #46433e;
   margin: 0 0 1rem;
 }
 
@@ -145,8 +145,8 @@
 
 .selectInput:focus {
   outline: none;
-  border-color: #1b38c4;
-  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
+  border-color: #46433e;
+  box-shadow: 0 0 0 3px rgb(70 67 62 / 22%);
 }
 
 .meta {
@@ -226,8 +226,8 @@
 
 .hotmartInput:focus {
   outline: none;
-  border-color: #1b38c4;
-  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
+  border-color: #46433e;
+  box-shadow: 0 0 0 3px rgb(70 67 62 / 22%);
 }
 
 .copyRow {
@@ -256,16 +256,16 @@
   flex-shrink: 0;
   padding: 0.35rem 0.75rem;
   font-size: 0.8rem;
-  border-radius: 9999px;
-  background: rgb(27 56 196 / 10%);
-  color: #1b38c4;
-  border: 1px solid rgb(27 56 196 / 28%);
+  border-radius: 4px;
+  background: rgb(70 67 62 / 10%);
+  color: #46433e;
+  border: 1px solid rgb(70 67 62 / 28%);
   cursor: pointer;
   font-weight: 500;
 }
 
 .copyBtn:hover {
-  background: rgb(27 56 196 / 18%);
+  background: rgb(70 67 62 / 18%);
 }
 
 .copyAllPreview {
@@ -290,7 +290,7 @@
   color: #ffffff;
   background: #1b1d1e;
   border: 1px solid #1b1d1e;
-  border-radius: 9999px;
+  border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
   text-decoration: none;
@@ -299,8 +299,8 @@
 
 .copyAllBtn:hover,
 .pdfDownloadBtn:hover {
-  background: #1b38c4;
-  border-color: #1b38c4;
+  background: #46433e;
+  border-color: #46433e;
 }
 
 .pdfDownloadBtn {
@@ -316,14 +316,14 @@
 .pdfProgressBar {
   height: 10px;
   background: rgb(27 29 30 / 8%);
-  border-radius: 9999px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .pdfProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, #1b38c4, #1b38c4, #1b38c4);
-  border-radius: 9999px;
+  background: #6a665e;
+  border-radius: 4px;
   transition: width 0.4s ease;
   min-width: 2%;
 }
@@ -338,7 +338,7 @@
 .pdfProgressLabel {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #1b38c4;
+  color: #46433e;
   flex-shrink: 0;
 }
 
@@ -364,7 +364,7 @@
   display: inline-block;
   margin-top: 0.75rem;
   font-size: 0.9rem;
-  color: #1b38c4;
+  color: #46433e;
   text-decoration: none;
   font-weight: 500;
 }
@@ -387,8 +387,8 @@
 
 .socialTextarea:focus {
   outline: none;
-  border-color: #1b38c4;
-  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
+  border-color: #46433e;
+  box-shadow: 0 0 0 3px rgb(70 67 62 / 22%);
 }
 
 .socialBtnPublish {
@@ -398,7 +398,7 @@
   font-weight: 500;
   color: #ffffff;
   border: none;
-  border-radius: 9999px;
+  border-radius: 4px;
   cursor: pointer;
   background: linear-gradient(135deg, #1877f2, #833ab4, #e4405f);
   transition: opacity 0.2s;
@@ -460,8 +460,8 @@
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #1b38c4;
-  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
+  border-color: #46433e;
+  box-shadow: 0 0 0 3px rgb(70 67 62 / 22%);
 }
 
 .field textarea {
@@ -474,10 +474,10 @@
 }
 
 .topicsSection h3 {
-  font-size: 1.1rem;
-  color: #1b1d1e;
-  margin-bottom: 1rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  color: #242320;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
 }
 
 .topicBlock {
@@ -529,10 +529,10 @@
 }
 
 .view h1 {
-  font-size: 1.75rem;
-  color: #1b1d1e;
-  margin: 0 0 0.75rem;
-  font-weight: 500;
+  font-size: 1.25rem;
+  color: #242320;
+  margin: 0 0 0.6rem;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
@@ -557,12 +557,12 @@
 }
 
 .highlight {
-  background: rgb(27 56 196 / 8%);
+  background: rgb(70 67 62 / 8%);
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  color: #1b38c4;
+  color: #46433e;
   margin-bottom: 1.5rem;
-  border: 1px solid rgb(27 56 196 / 18%);
+  border: 1px solid rgb(70 67 62 / 18%);
 }
 
 .benefits {
@@ -613,12 +613,12 @@
 }
 
 .topicView h2 {
-  font-size: 1.25rem;
-  color: #1b1d1e;
-  margin: 0 0 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgb(27 29 30 / 8%);
-  font-weight: 500;
+  font-size: 1.05rem;
+  color: #242320;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid rgb(36 35 32 / 9%);
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -628,10 +628,10 @@
 }
 
 .lessonView h3 {
-  font-size: 1.1rem;
-  color: #1b1d1e;
-  margin: 0 0 0.5rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  color: #242320;
+  margin: 0 0 0.45rem;
+  font-weight: 600;
 }
 
 .lessonView > div {

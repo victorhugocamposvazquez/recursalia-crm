@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MobileNav } from './MobileNav';
 import { Footer } from './Footer';
+import { DASHBOARD_NAV } from './nav-items';
 import styles from './layout.module.css';
 
 export default async function DashboardLayout({
@@ -26,28 +27,21 @@ export default async function DashboardLayout({
           <Image
             src="/logos/recursalia-logo.png"
             alt="Recursalia"
-            width={180}
-            height={60}
+            width={112}
+            height={38}
             priority
             className={styles.brandLogo}
           />
         </div>
         <nav className={styles.nav}>
-          <Link href="/dashboard" className={styles.navLink}>
-            Generar curso
-          </Link>
-          <Link href="/dashboard/courses" className={styles.navLink}>
-            Mis cursos
-          </Link>
-          <Link href="/dashboard/reviews" className={styles.navLink}>
-            Generar reseñas
-          </Link>
-          <Link href="/dashboard/seo-posts" className={styles.navLink}>
-            Posts SEO
-          </Link>
-          <Link href="/dashboard/docs" className={styles.navLink}>
-            Documentacion
-          </Link>
+          {DASHBOARD_NAV.map((item, i) => (
+            <Link key={item.href} href={item.href} className={styles.navLink}>
+              <span className={styles.navIdx} aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span className={styles.navLabel}>{item.label}</span>
+            </Link>
+          ))}
         </nav>
       </aside>
       <main className={styles.main}>{children}</main>

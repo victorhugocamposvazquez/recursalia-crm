@@ -3,24 +3,24 @@
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #1b1d1e;
-  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #242320;
+  margin: 0 0 0.35rem;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: rgb(27 29 30 / 60%);
-  font-size: 0.95rem;
-  margin-bottom: 2rem;
+  color: rgb(36 35 32 / 58%);
+  font-size: 0.8125rem;
+  margin-bottom: 1.25rem;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  margin-bottom: 2rem;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .field {
@@ -30,20 +30,20 @@
 }
 
 .field label {
-  font-size: 0.9rem;
-  color: #1b1d1e;
+  font-size: 0.75rem;
+  color: #2f2e2b;
   font-weight: 500;
 }
 
 .field select,
 .field input,
 .field textarea {
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  border: 1px solid rgb(27 29 30 / 14%);
-  background: #ffffff;
-  color: #1b1d1e;
-  font-size: 0.98rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 4px;
+  border: 1px solid rgb(36 35 32 / 16%);
+  background: #fff;
+  color: #242320;
+  font-size: 0.8125rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -51,8 +51,8 @@
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #1b38c4;
-  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
+  border-color: #46433e;
+  box-shadow: 0 0 0 2px rgb(70 67 62 / 22%);
 }
 
 .field textarea {
@@ -72,19 +72,20 @@
 }
 
 .btnPrimary {
-  padding: 0.85rem 1.75rem;
-  border-radius: 9999px;
-  border: 1px solid #1b1d1e;
-  background: #1b1d1e;
-  color: #ffffff;
+  padding: 0.55rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #46433e;
+  background: #46433e;
+  color: #f7f6f2;
   font-weight: 500;
+  font-size: 0.78rem;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #1b38c4;
-  border-color: #1b38c4;
+  background: #46433e;
+  border-color: #46433e;
 }
 
 .btnPrimary:disabled {
@@ -98,10 +99,10 @@
 }
 
 .preview h2 {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #1b1d1e;
-  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #242320;
+  margin: 0 0 0.75rem;
   letter-spacing: -0.01em;
 }
 
@@ -113,10 +114,10 @@
 }
 
 .reviewCard {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 1.1rem 1.2rem;
-  border: 1px solid rgb(27 29 30 / 10%);
+  background: #fbfaf7;
+  border-radius: 6px;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgb(36 35 32 / 10%);
 }
 
 .reviewHeader {

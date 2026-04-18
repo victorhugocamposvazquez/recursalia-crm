@@ -3,17 +3,17 @@
 }
 
 .title {
-  font-size: 1.65rem;
-  font-weight: 500;
-  color: #1b1d1e;
-  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #242320;
+  margin: 0 0 0.3rem;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: rgb(27 29 30 / 60%);
-  font-size: 0.95rem;
-  margin: 0 0 1.75rem;
+  color: rgb(36 35 32 / 58%);
+  font-size: 0.8125rem;
+  margin: 0 0 1.25rem;
 }
 
 /* ── Form layout ── */
@@ -21,26 +21,25 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 /* ── Card sections ── */
 
 .card {
-  background: #ffffff;
-  border: 1px solid rgb(27 29 30 / 10%);
-  border-radius: 18px;
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 4%);
+  background: #fbfaf7;
+  border: 1px solid rgb(36 35 32 / 10%);
+  border-radius: 6px;
+  padding: 1rem 1.1rem;
 }
 
 .cardTitle {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.65rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #1b38c4;
-  margin: 0 0 1rem;
+  letter-spacing: 0.1em;
+  color: #6b6760;
+  margin: 0 0 0.85rem;
 }
 
 /* ── Fields ── */
@@ -52,20 +51,20 @@
 }
 
 .field label {
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  color: #1b1d1e;
+  color: #2f2e2b;
 }
 
 .field input,
 .field select,
 .field textarea {
-  padding: 0.65rem 0.85rem;
-  border-radius: 10px;
-  border: 1px solid rgb(27 29 30 / 14%);
-  background: #ffffff;
-  color: #1b1d1e;
-  font-size: 0.92rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 4px;
+  border: 1px solid rgb(36 35 32 / 16%);
+  background: #fff;
+  color: #242320;
+  font-size: 0.8125rem;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -78,8 +77,8 @@
 .field select:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #1b38c4;
-  box-shadow: 0 0 0 3px rgb(27 56 196 / 15%);
+  border-color: #46433e;
+  box-shadow: 0 0 0 2px rgb(70 67 62 / 22%);
 }
 
 .field textarea {
@@ -130,8 +129,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #1b1d1e;
-  font-size: 0.88rem;
+  color: #242320;
+  font-size: 0.78rem;
   cursor: pointer;
   user-select: none;
   padding-bottom: 0.6rem;
@@ -139,9 +138,9 @@
 }
 
 .toggle input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: #1b38c4;
+  width: 14px;
+  height: 14px;
+  accent-color: #46433e;
   cursor: pointer;
   margin: 0;
   border-radius: 4px;
@@ -150,8 +149,8 @@
 /* ── Hint text ── */
 
 .hint {
-  font-size: 0.8rem;
-  color: rgb(27 29 30 / 55%);
+  font-size: 0.72rem;
+  color: rgb(36 35 32 / 52%);
   margin: 0.5rem 0 0;
 }
 
@@ -182,10 +181,10 @@
   gap: 0.5rem;
   flex-wrap: wrap;
   margin-top: 0.75rem;
-  padding: 0.7rem 0.95rem;
-  background: rgb(27 56 196 / 6%);
-  border-radius: 10px;
-  border: 1px solid rgb(27 56 196 / 14%);
+  padding: 0.55rem 0.75rem;
+  background: rgb(70 67 62 / 6%);
+  border-radius: 4px;
+  border: 1px solid rgb(70 67 62 / 14%);
 }
 
 .priceOld {
@@ -200,14 +199,14 @@
 }
 
 .priceFinal {
-  color: #1b1d1e;
-  font-weight: 700;
-  font-size: 1.1rem;
+  color: #242320;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .priceSaving {
-  color: #1b38c4;
-  font-size: 0.82rem;
+  color: #46433e;
+  font-size: 0.72rem;
   font-weight: 500;
 }
 
@@ -234,7 +233,7 @@
 }
 
 .success a {
-  color: #1b38c4;
+  color: #46433e;
   text-decoration: none;
   font-weight: 600;
 }
@@ -246,22 +245,21 @@
 /* ── Submit ── */
 
 .submitBtn {
-  padding: 0.85rem 2rem;
-  border-radius: 9999px;
-  border: 1px solid #1b1d1e;
-  background: #1b1d1e;
-  color: #ffffff;
+  padding: 0.55rem 1.1rem;
+  border-radius: 4px;
+  border: 1px solid #46433e;
+  background: #46433e;
+  color: #f7f6f2;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.78rem;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  transition: background 0.15s, border-color 0.15s;
   align-self: flex-start;
 }
 
 .submitBtn:hover:not(:disabled) {
-  background: #1b38c4;
-  border-color: #1b38c4;
-  transform: translateY(-1px);
+  background: #2f2d2a;
+  border-color: #2f2d2a;
 }
 
 .submitBtn:disabled {

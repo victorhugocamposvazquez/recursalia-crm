@@ -3,22 +3,22 @@
 }
 
 .header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #1b1d1e;
-  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #242320;
+  margin: 0 0 0.35rem;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  font-size: 0.95rem;
-  color: rgb(27 29 30 / 60%);
+  font-size: 0.8125rem;
+  color: rgb(36 35 32 / 58%);
   margin: 0;
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
 /* Feature cards */
@@ -29,16 +29,15 @@
 }
 
 .featureCard {
-  background: #ffffff;
-  border: 1px solid rgb(27 29 30 / 8%);
-  border-radius: 16px;
+  background: #fbfaf7;
+  border: 1px solid rgb(36 35 32 / 10%);
+  border-radius: 6px;
   overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 
 .featureCard:hover {
-  border-color: rgb(27 56 196 / 30%);
-  box-shadow: 0 6px 20px rgb(17 24 39 / 6%);
+  border-color: rgb(70 67 62 / 28%);
 }
 
 .featureHeader {
@@ -62,8 +61,8 @@
 }
 
 .iconPurple {
-  background: rgb(27 56 196 / 12%);
-  color: #1b38c4;
+  background: rgb(70 67 62 / 12%);
+  color: #46433e;
 }
 
 .iconGreen {
@@ -98,7 +97,7 @@
 
 .iconIndigo {
   background: rgb(129 140 248 / 15%);
-  color: #1b38c4;
+  color: #46433e;
 }
 
 .featureInfo {
@@ -168,7 +167,7 @@
 }
 
 .detailBullet {
-  color: #1b38c4;
+  color: #46433e;
   font-weight: 700;
   flex-shrink: 0;
   margin-top: 1px;
@@ -186,8 +185,8 @@
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 500;
-  background: rgb(27 56 196 / 10%);
-  color: #1b38c4;
+  background: rgb(70 67 62 / 10%);
+  color: #46433e;
   white-space: nowrap;
 }
 
@@ -241,8 +240,8 @@
 .credits {
   margin-top: 2.25rem;
   padding: 1.5rem;
-  background: rgb(27 56 196 / 4%);
-  border: 1px solid rgb(27 56 196 / 14%);
+  background: rgb(70 67 62 / 4%);
+  border: 1px solid rgb(70 67 62 / 14%);
   border-radius: 16px;
   text-align: center;
 }
@@ -262,7 +261,7 @@
 }
 
 .creditsAuthor span {
-  color: #1b38c4;
+  color: #46433e;
   font-weight: 600;
 }
 
