@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { CourseSearchField } from '@/components/marketing/CourseSearchField';
 import styles from './SiteHeader.module.css';
 
 const NAV_ITEMS: {
@@ -93,6 +94,14 @@ export function SiteHeader() {
             <span className={styles.logoText}>Recursalia</span>
           </Link>
 
+          <div className={styles.headerSearch} role="search">
+            <CourseSearchField
+              variant="header"
+              placeholder="¿Qué quieres aprender?"
+              inputId="header-course-search"
+            />
+          </div>
+
           <div className={styles.navWrap}>
             <ul className={styles.nav}>
               {NAV_ITEMS.map((item) => {
@@ -112,7 +121,7 @@ export function SiteHeader() {
           </div>
 
           <div className={styles.actions}>
-            <Link href="/blog" className={styles.cta}>
+            <Link href="/cursos" className={styles.cta}>
               <span className={styles.ctaLabel}>Recursos</span>
               <span className={styles.ctaBadge} aria-hidden>
                 <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
@@ -179,6 +188,14 @@ export function SiteHeader() {
               />
             </svg>
           </button>
+        </div>
+        <div className={styles.drawerSearch}>
+          <CourseSearchField
+            variant="hero"
+            fullWidth
+            placeholder="¿Qué quieres aprender?"
+            inputId="drawer-course-search"
+          />
         </div>
         <ul className={styles.drawerNav}>
           {NAV_ITEMS.map((item) => {

@@ -1,28 +1,52 @@
 .wrap {
-  max-width: 38rem;
-  margin: 0 auto;
   position: relative;
   z-index: 40;
 }
 
+.wrapHero {
+  max-width: 38rem;
+  margin: 0 auto;
+}
+
 @media (min-width: 960px) {
-  .wrap {
+  .wrapHero {
     margin: 0;
   }
 }
 
+.wrapHeader {
+  width: 100%;
+  min-width: 11rem;
+  max-width: 20rem;
+}
+
+.wrapFull {
+  max-width: none !important;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+/* Contenedor: lupa izquierda (Platzi) + input + botón redondo alineado */
 .inputShell {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.5rem;
   border: 1px solid var(--ch-border, #e5e7eb);
   border-radius: 999px;
   background: #ffffff;
-  padding: 0.2rem 0.65rem 0.2rem 1.1rem;
+  /* Simétrico: mismo “aire” entre borde–icono y borde–botón */
+  padding: 0.35rem 0.4rem 0.35rem 0.75rem;
   box-shadow: 0 2px 16px rgb(17 24 39 / 6%);
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
+}
+
+.inputShellHeader {
+  padding: 0.28rem 0.32rem 0.28rem 0.6rem;
+  gap: 0.4rem;
+  box-shadow: 0 1px 8px rgb(17 24 39 / 5%);
 }
 
 .inputShell:focus-within {
@@ -32,37 +56,81 @@
     0 0 0 3px rgb(27 56 196 / 18%);
 }
 
+.leadIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.inputShellHeader .leadIcon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.leadIcon svg {
+  display: block;
+}
+
 .input {
   flex: 1;
+  min-width: 0;
   border: none;
   background: transparent;
   color: var(--ch-navy, #111827);
   font-size: 1.02rem;
-  padding: 0.85rem 0;
+  padding: 0.65rem 0;
   outline: none;
+}
+
+.inputHeader {
+  font-size: 0.875rem;
+  padding: 0.5rem 0;
 }
 
 .input::placeholder {
   color: #9ca3af;
 }
 
+/* Botón circular: mismo radio visual que el track de la píldora */
 .searchBtn {
   border: none;
   background: #1b38c4;
   color: #ffffff;
-  width: 46px;
-  height: 46px;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
   border-radius: 999px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding: 0;
+  margin: 0;
   transition: background 0.15s ease;
+  box-sizing: border-box;
+}
+
+.searchBtnHeader {
+  width: 2.125rem;
+  height: 2.125rem;
+  min-width: 2.125rem;
+  min-height: 2.125rem;
 }
 
 .searchBtn:hover {
   background: #142a99;
+}
+
+.searchBtn svg {
+  display: block;
 }
 
 .dropdown {
@@ -75,9 +143,15 @@
   border: 1px solid var(--ch-border, #e5e7eb);
   max-height: 320px;
   overflow-y: auto;
-  z-index: 60;
+  z-index: 100;
   box-shadow: 0 16px 48px rgb(17 24 39 / 12%);
   isolation: isolate;
+}
+
+.dropdownHeader {
+  min-width: min(22rem, 90vw);
+  width: max(100%, 18rem);
+  right: auto;
 }
 
 .item {
@@ -103,7 +177,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(145deg, #6d55ff, #8b78ff);
+  background: linear-gradient(145deg, #1b38c4, #4d6ee5);
   flex-shrink: 0;
 }
 
