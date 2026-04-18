@@ -3,45 +3,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { CourseSearchField } from '@/components/marketing/CourseSearchField';
 import { DrawerCategoriesSection, HeaderCategories } from '@/components/marketing/HeaderCategories';
 import styles from './SiteHeader.module.css';
-
-const NAV_ITEMS: {
-  label: string;
-  href: string;
-  isActive: (pathname: string) => boolean;
-}[] = [
-  {
-    label: 'Soluciones',
-    href: '/cursos',
-    isActive: (p) => p === '/cursos' || p.startsWith('/cursos/'),
-  },
-  {
-    label: 'Recursos',
-    href: '/blog',
-    isActive: (p) => p.startsWith('/blog'),
-  },
-  {
-    label: 'Nosotros',
-    href: '/nosotros',
-    isActive: (p) => p.startsWith('/nosotros'),
-  },
-  {
-    label: 'Clientes',
-    href: '/clientes',
-    isActive: (p) => p.startsWith('/clientes'),
-  },
-  {
-    label: 'Recursalia AI',
-    href: '/recursalia-ai',
-    isActive: (p) => p.startsWith('/recursalia-ai'),
-  },
-  {
-    label: 'Referidos',
-    href: '/referidos',
-    isActive: (p) => p.startsWith('/referidos'),
-  },
-];
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -94,25 +58,15 @@ export function SiteHeader() {
             <span className={styles.logoText}>Recursalia</span>
           </Link>
 
-          <HeaderCategories />
-
-          <div className={styles.navWrap}>
-            <ul className={styles.nav}>
-              {NAV_ITEMS.map((item) => {
-                const active = item.isActive(pathname);
-                return (
-                  <li key={item.label}>
-                    <Link
-                      href={item.href}
-                      className={`${styles.navLink} ${active ? styles.navLinkActive : ''}`}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+          <div className={styles.headerSearch} role="search">
+            <CourseSearchField
+              variant="header"
+              placeholder="¿Qué quieres aprender?"
+              inputId="header-course-search"
+            />
           </div>
+
+          <HeaderCategories />
 
           <div className={styles.actions}>
             <Link href="/cursos" className={styles.cta}>
@@ -183,28 +137,23 @@ export function SiteHeader() {
             </svg>
           </button>
         </div>
-        <DrawerCategoriesSection onNavigate={() => setOpen(false)} />
-        <ul className={styles.drawerNav}>
-          {NAV_ITEMS.map((item) => {
-            const active = item.isActive(pathname);
-            return (
-              <li key={item.label}>
-                <Link
-                  href={item.href}
-                  className={`${styles.drawerLink} ${active ? styles.drawerLinkActive : ''}`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className={styles.drawerSearch}>
+          <CourseSearchField
+            variant="hero"
+            fullWidth
+            placeholder="¿Qué quieres aprender?"
+            inputId="drawer-course-search"
+          />
+        </div>
+        <div className={styles.drawerScroll}>
+          <DrawerCategoriesSection onNavigate={() => setOpen(false)} />
+        </div>
         <div className={styles.drawerActions}>
-          <Link href="/login" className={styles.drawerGhost}>
+          <Link href="/login" className={styles.drawerGhost} onClick={() => setOpen(false)}>
             Ingresar
           </Link>
-          <Link href="/cursos" className={styles.drawerCta}>
-            Agenda un demo
+          <Link href="/cursos" className={styles.drawerCta} onClick={() => setOpen(false)}>
+            Recursos
           </Link>
         </div>
       </aside>

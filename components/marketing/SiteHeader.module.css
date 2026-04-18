@@ -45,6 +45,19 @@
   }
 }
 
+.headerSearch {
+  display: none;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 22rem;
+}
+
+@media (min-width: 1024px) {
+  .headerSearch {
+    display: block;
+  }
+}
+
 .barSticky {
   background: rgb(255 255 255 / 85%);
   backdrop-filter: saturate(160%) blur(14px);
@@ -74,62 +87,6 @@
 
 .logoText {
   font-family: var(--font-marketing), sans-serif;
-}
-
-.navWrap {
-  display: none;
-  background: #eceef2;
-  border-radius: 9999px;
-  padding: 0.28rem;
-  flex-shrink: 1;
-  min-width: 0;
-}
-
-@media (min-width: 1024px) {
-  .navWrap {
-    display: inline-flex;
-  }
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  gap: 0.15rem;
-}
-
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.4rem 0.72rem;
-  color: #64748b;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  text-decoration: none;
-  border-radius: 9999px;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.navLink:hover {
-  color: #475569;
-  background: rgb(255 255 255 / 55%);
-}
-
-.navLinkActive {
-  background: #ffffff;
-  color: #334155;
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgb(15 23 42 / 8%);
-}
-
-.navLinkActive:hover {
-  background: #ffffff;
-  color: #334155;
 }
 
 .actions {
@@ -273,6 +230,18 @@
   transform: translateX(0);
 }
 
+.drawerSearch {
+  flex-shrink: 0;
+  padding: 0 1rem 1rem;
+  border-bottom: 1px solid #ebe9f8;
+}
+
+.drawerScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .drawerHead {
   display: flex;
   align-items: center;
@@ -304,42 +273,11 @@
   background: rgb(27 29 30 / 8%);
 }
 
-.drawerNav {
-  list-style: none;
-  margin: 0;
-  padding: 0.5rem 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.drawerLink {
-  display: flex;
-  align-items: center;
-  padding: 0.85rem 0.9rem;
-  border-radius: 12px;
-  color: #1b1d1e;
-  font-size: 0.98rem;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.drawerLink:hover {
-  background: rgb(27 29 30 / 6%);
-}
-
-.drawerLinkActive {
-  background: #eaefff;
-  color: #1b38c4;
-  font-weight: 600;
-}
-
 .drawerActions {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
+  flex-shrink: 0;
   padding: 1rem 1.25rem 1.35rem;
   border-top: 1px solid #ebe9f8;
 }
