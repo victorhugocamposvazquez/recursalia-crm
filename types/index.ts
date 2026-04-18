@@ -127,3 +127,29 @@ export interface CourseListResponse {
   courses: CourseRecord[];
   total?: number;
 }
+
+/** Menú Categorías + buscadores (sitio marketing) */
+export interface FrontCategoryPublic {
+  id: string;
+  label: string;
+  q: string;
+}
+
+export interface FrontSearchCopy {
+  hero: string;
+  header: string;
+  drawer: string;
+}
+
+export interface FrontSitePayload {
+  categories: FrontCategoryPublic[];
+  searchCopy: FrontSearchCopy;
+}
+
+export interface FrontCategoryInput {
+  id?: string;
+  label: string;
+  query_q: string;
+  sort_order: number;
+  is_active: boolean;
+}

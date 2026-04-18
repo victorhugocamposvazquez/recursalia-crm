@@ -5,9 +5,11 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CourseSearchField } from '@/components/marketing/CourseSearchField';
 import { DrawerCategoriesSection, HeaderCategories } from '@/components/marketing/HeaderCategories';
+import { useMarketingContent } from '@/components/marketing/MarketingContentProvider';
 import styles from './SiteHeader.module.css';
 
 export function SiteHeader() {
+  const { searchCopy } = useMarketingContent();
   const pathname = usePathname();
   const [sticky, setSticky] = useState(false);
   const [open, setOpen] = useState(false);
@@ -62,7 +64,7 @@ export function SiteHeader() {
             <div className={styles.headerSearch} role="search">
               <CourseSearchField
                 variant="header"
-                placeholder="¿Qué quieres aprender?"
+                placeholder={searchCopy.header}
                 inputId="header-course-search"
               />
             </div>
@@ -147,7 +149,7 @@ export function SiteHeader() {
           <CourseSearchField
             variant="hero"
             fullWidth
-            placeholder="¿Qué quieres aprender?"
+            placeholder={searchCopy.drawer}
             inputId="drawer-course-search"
           />
         </div>

@@ -5,7 +5,8 @@ import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
 import { CourseCardGrid, type CourseCardItem } from '@/components/marketing/CourseCardGrid';
 import { TextGenerateEffect } from '@/components/marketing/TextGenerateEffect';
 import { ResourceMarquee } from '@/components/marketing/ResourceMarquee';
-import { HOME_COURSE_CATEGORIES, HOME_TESTIMONIALS } from '@/lib/homeContent';
+import { HomeCategoryGrid } from '@/components/marketing/HomeCategoryGrid';
+import { HOME_TESTIMONIALS } from '@/lib/homeContent';
 import homeStyles from './home.module.css';
 
 export const revalidate = 60;
@@ -307,17 +308,7 @@ export default async function MarketingHomePage() {
               <TextGenerateEffect words="Explora por áreas y necesidades" />
             </h2>
           </div>
-          <div className={homeStyles.catGrid}>
-            {HOME_COURSE_CATEGORIES.map((c) => (
-              <Link
-                key={c.label}
-                href={`/cursos?q=${encodeURIComponent(c.q)}`}
-                className={homeStyles.catLink}
-              >
-                {c.label}
-              </Link>
-            ))}
-          </div>
+          <HomeCategoryGrid />
         </div>
       </section>
 

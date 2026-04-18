@@ -2,6 +2,8 @@ import { Instrument_Serif, Inter_Tight } from 'next/font/google';
 import { SiteHeader } from '@/components/marketing/SiteHeader';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
 import { MarketingMain } from '@/components/marketing/MarketingMain';
+import { MarketingContentProvider } from '@/components/marketing/MarketingContentProvider';
+import { loadFrontSitePayload } from '@/lib/front-site-data';
 import styles from './marketing.module.css';
 
 const interTight = Inter_Tight({
@@ -17,16 +19,20 @@ const instrumentSerif = Instrument_Serif({
   variable: '--font-marketing-display',
 });
 
-export default function MarketingLayout({
+export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const frontPayload = await loadFrontSitePayload();
+
   return (
-    <div className={`${styles.marketing} ${interTight.variable} ${instrumentSerif.variable}`}>
-      <SiteHeader />
-      <MarketingMain>{children}</MarketingMain>
-      <SiteFooter />
-    </div>
+    <MarketingContentProvider value={frontPayload}>
+      <div className={`${styles.marketing} ${interTight.variable} ${instrumentSerif.variable}`}>
+        <SiteHeader />
+        <MarketingMain>{children}</MarketingMain>
+        <SiteFooter />
+      </div>
+    </MarketingContentProvider>
   );
 }

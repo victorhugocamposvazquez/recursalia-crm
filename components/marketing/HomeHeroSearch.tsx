@@ -1,6 +1,10 @@
-import { CourseSearchField } from './CourseSearchField';
+'use client';
 
-/** Buscador del hero (misma lógica que `CourseSearchField` variante hero). */
+import { CourseSearchField } from './CourseSearchField';
+import { useMarketingContent } from './MarketingContentProvider';
+
+/** Buscador del hero: placeholder desde el panel Front web. */
 export function HomeHeroSearch() {
-  return <CourseSearchField variant="hero" />;
+  const { searchCopy } = useMarketingContent();
+  return <CourseSearchField variant="hero" placeholder={searchCopy.hero} />;
 }

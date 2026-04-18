@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { HOME_COURSE_CATEGORIES } from '@/lib/homeContent';
+import { useMarketingContent } from '@/components/marketing/MarketingContentProvider';
 import styles from './HeaderCategories.module.css';
 
 export function HeaderCategories() {
+  const { categories } = useMarketingContent();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -54,8 +55,8 @@ export function HeaderCategories() {
       {open ? (
         <div className={styles.dropdown} role="menu">
           <ul className={styles.list}>
-            {HOME_COURSE_CATEGORIES.map((c) => (
-              <li key={c.q} role="none">
+            {categories.map((c) => (
+              <li key={c.id} role="none">
                 <Link
                   href={`/cursos?q=${encodeURIComponent(c.q)}`}
                   className={styles.item}
@@ -84,14 +85,15 @@ type DrawerCategoriesProps = {
 
 /** Lista de categorías en el drawer móvil (sin buscador). */
 export function DrawerCategoriesSection({ onNavigate }: DrawerCategoriesProps) {
+  const { categories } = useMarketingContent();
   const close = () => onNavigate?.();
 
   return (
     <div className={styles.drawerBlock}>
       <p className={styles.drawerTitle}>Categorías</p>
       <ul className={styles.drawerList}>
-        {HOME_COURSE_CATEGORIES.map((c) => (
-          <li key={c.q}>
+        {categories.map((c) => (
+          <li key={c.id}>
             <Link
               href={`/cursos?q=${encodeURIComponent(c.q)}`}
               className={styles.drawerLink}

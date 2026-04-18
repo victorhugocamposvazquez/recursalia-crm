@@ -6,12 +6,7 @@ export const CURSOS_NAV = [
   { href: '/dashboard/docs', label: 'Documentación' },
 ] as const;
 
-/** Enlaces al sitio público (misma origen) */
-export const FRONT_WEB_NAV = [
-  { href: '/', label: 'Inicio' },
-  { href: '/cursos', label: 'Catálogo de cursos' },
-  { href: '/blog', label: 'Blog' },
-  { href: '/inspiracion', label: 'Inspiración' },
+/** Zona Front web (contenido del sitio público) */
+export const FRONT_ADMIN_NAV = [
+  { href: '/dashboard/front', label: 'Contenido del sitio' },
 ] as const;
-
-export type NavTab = 'cursos' | 'front';
