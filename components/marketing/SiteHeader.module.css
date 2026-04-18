@@ -162,10 +162,9 @@
   display: none;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1.1rem;
   margin-left: 6rem;
-  min-width: 10.25rem;
-  padding: 0.38rem 0.52rem 0.38rem 1.6rem;
+  padding: .38rem .52rem .38rem 1.2rem;
   background: #1b38c4;
   color: #ffffff !important;
   border-radius: 9999px;
