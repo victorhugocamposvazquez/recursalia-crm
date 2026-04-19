@@ -16,6 +16,9 @@ import styles from './InspiracionExperience.module.css';
 
 const STORAGE_KEY = 'recursalia_inspiracion_flow_v2';
 
+/** Misma duración que `thinkingDuration` por defecto en `ParticleOracle.jsx` */
+const ORACLE_THINKING_MS = 600;
+
 type FlowState = {
   step: number;
   name: string;
@@ -66,10 +69,15 @@ function saveFlow(s: FlowState) {
 export function InspiracionExperience() {
   const router = useRouter();
   const oracleRef = useRef<ParticleOracleHandle | null>(null);
+  const flowRef = useRef<FlowState>(emptyFlow);
+  const oracleSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mounted, setMounted] = useState(false);
   const [oracleSize, setOracleSize] = useState(168);
   const [flow, setFlow] = useState<FlowState>(emptyFlow);
   const [draftName, setDraftName] = useState('');
+  const [ctaOracleAttention, setCtaOracleAttention] = useState(false);
+
+  flowRef.current = flow;
 
   useEffect(() => {
     setMounted(true);
@@ -88,6 +96,12 @@ export function InspiracionExperience() {
     return () => window.removeEventListener('resize', pick);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (oracleSyncTimerRef.current) clearTimeout(oracleSyncTimerRef.current);
+    };
+  }, []);
+
   const persist = useCallback((next: FlowState) => {
     setFlow(next);
     saveFlow(next);
@@ -95,6 +109,12 @@ export function InspiracionExperience() {
 
   const bumpOracle = useCallback(() => {
     oracleRef.current?.pulse();
+    if (oracleSyncTimerRef.current) clearTimeout(oracleSyncTimerRef.current);
+    setCtaOracleAttention(true);
+    oracleSyncTimerRef.current = setTimeout(() => {
+      setCtaOracleAttention(false);
+      oracleSyncTimerRef.current = null;
+    }, ORACLE_THINKING_MS);
   }, []);
 
   const filledSegments = useMemo(() => {
@@ -113,13 +133,10 @@ export function InspiracionExperience() {
   }
 
   function goBack() {
-    setFlow((prev) => {
-      if (prev.step <= 0) return prev;
-      oracleRef.current?.pulse();
-      const next = { ...prev, step: prev.step - 1 };
-      saveFlow(next);
-      return next;
-    });
+    const prev = flowRef.current;
+    if (prev.step <= 0) return;
+    bumpOracle();
+    persist({ ...prev, step: prev.step - 1 });
   }
 
   function goIntro() {
@@ -215,12 +232,9 @@ export function InspiracionExperience() {
   switch (flow.step) {
     case 0:
       ctaDock = (
-        <>
-          <button type="button" className={styles.cta} onClick={goIntro}>
-            Empezar ahora →
-          </button>
-          <p className={styles.ctaMicro}>4 preguntas · ~1 min · sin registro</p>
-        </>
+        <button type="button" className={styles.cta} onClick={goIntro}>
+          Empezar ahora →
+        </button>
       );
       break;
     case 1:
@@ -233,7 +247,7 @@ export function InspiracionExperience() {
     case 2:
       ctaDock = (
         <button type="button" className={styles.cta} disabled={flow.worlds.length === 0} onClick={continueWorlds}>
-          Me lo guardo →
+          Continuar →
         </button>
       );
       break;
@@ -308,8 +322,10 @@ export function InspiracionExperience() {
           {flow.step === 0 ? (
             <>
               <div className={styles.introBrand}>
-                <p className={styles.introBrandHi}>Hola, soy</p>
-                <p className={styles.introBrandName}>Neurall</p>
+                <p className={styles.introBrandLine}>
+                  <span className={styles.introBrandSoy}>Soy </span>
+                  <span className={styles.introBrandName}>Neurall</span>
+                </p>
                 <p className={styles.tagline}>Tu brújula inteligente de aprendizaje</p>
               </div>
               <h1 className={styles.headline}>
@@ -319,17 +335,6 @@ export function InspiracionExperience() {
                 Cuatro preguntas breves. Con ellas cruzo intereses, tiempo y punto de partida para orientarte hacia
                 cursos que encajen — <em>a tu ritmo, a tu medida</em>.
               </p>
-              <div className={styles.pills}>
-                <span className={styles.pill}>
-                  <span className={styles.pillIcon}>✦</span> Catálogo vivo
-                </span>
-                <span className={styles.pill}>
-                  <span className={styles.pillIcon}>✦</span> Rutas sugeridas
-                </span>
-                <span className={styles.pill}>
-                  <span className={styles.pillIcon}>✦</span> Inspiración guiada
-                </span>
-              </div>
             </>
           ) : null}
 
@@ -506,7 +511,12 @@ export function InspiracionExperience() {
           ) : null}
         </div>
 
-        <div className={styles.ctaDock}>{ctaDock}</div>
+        <div
+          className={`${styles.ctaDock} ${ctaOracleAttention ? styles.ctaDockOracleAttention : ''}`.trim()}
+          aria-busy={ctaOracleAttention || undefined}
+        >
+          {ctaDock}
+        </div>
       </div>
     </div>
   );

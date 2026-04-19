@@ -100,6 +100,39 @@
   text-align: center;
 }
 
+@keyframes ctaOraclePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(198 240 77 / 0%);
+    border-color: rgb(160 179 255 / 35%);
+  }
+
+  50% {
+    box-shadow: 0 0 22px rgb(198 240 77 / 38%);
+    border-color: rgb(198 240 77 / 52%);
+  }
+}
+
+/* Misma ventana que el pulso del oráculo: el CTA principal no acepta clics y muestra “en curso” */
+.ctaDockOracleAttention .cta {
+  pointer-events: none;
+  cursor: wait;
+  animation: ctaOraclePulse 0.45s ease-in-out infinite;
+}
+
+.ctaDockOracleAttention .cta:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ctaDockOracleAttention .cta {
+    animation: none;
+    box-shadow: 0 0 16px rgb(198 240 77 / 26%);
+    border-color: rgb(198 240 77 / 42%);
+  }
+}
+
 @media (max-width: 639px) {
   .shell {
     padding-bottom: 0;
@@ -239,15 +272,25 @@
   margin-top: 0.5rem;
 }
 
-.introBrandHi {
+.introBrandLine {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.08em;
   margin: 0;
   font-family: var(--font-marketing-display), Georgia, serif;
-  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.introBrandSoy {
+  font-size: clamp(1.1rem, 4.2vw, 1.4rem);
+  font-weight: 500;
   color: rgb(255 255 255 / 88%);
 }
 
 .introBrandName {
-  margin: 0.15rem 0 0;
+  margin: 0;
   font-size: clamp(1.85rem, 7vw, 2.35rem);
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -260,32 +303,6 @@
   font-size: 0.95rem;
   font-style: italic;
   color: rgb(255 255 255 / 78%);
-}
-
-.pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  justify-content: center;
-  margin: 1.35rem 0 0;
-}
-
-.pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.65rem;
-  border-radius: 999px;
-  border: 1px solid var(--insp-glass-border);
-  background: rgb(10 30 90 / 45%);
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: rgb(255 255 255 / 88%);
-}
-
-.pillIcon {
-  color: var(--insp-lime);
-  font-size: 0.55rem;
 }
 
 .inputWrap {
@@ -343,16 +360,29 @@
     transform 0.1s ease;
 }
 
-.chip:hover {
+.chip:not(.chipSelected):hover {
   border-color: rgb(198 240 77 / 35%);
   background: rgb(255 255 255 / 8%);
 }
 
 .chipSelected {
-  border-color: var(--insp-lime);
-  background: rgb(198 240 77 / 22%);
-  color: #0b1438;
-  font-weight: 700;
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(0 0 0 / 18%);
+  color: #fff;
+  font-weight: 500;
+  box-shadow:
+    0 0 0 2px var(--insp-lime),
+    0 0 22px rgb(198 240 77 / 48%),
+    0 0 40px rgb(198 240 77 / 22%);
+}
+
+.chipSelected:hover {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(0 0 0 / 18%);
+  box-shadow:
+    0 0 0 2px var(--insp-lime),
+    0 0 26px rgb(198 240 77 / 55%),
+    0 0 48px rgb(198 240 77 / 28%);
 }
 
 .optionList {
@@ -381,15 +411,27 @@
     background 0.15s ease;
 }
 
-.option:hover {
+.option:not(.optionSelected):hover {
   border-color: rgb(198 240 77 / 35%);
   background: rgb(255 255 255 / 6%);
 }
 
 .optionSelected {
-  border-color: var(--insp-lime);
-  background: rgb(198 240 77 / 12%);
-  box-shadow: 0 0 0 1px rgb(198 240 77 / 18%) inset;
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(0 0 0 / 16%);
+  box-shadow:
+    0 0 0 2px var(--insp-lime),
+    0 0 20px rgb(198 240 77 / 45%),
+    0 0 38px rgb(198 240 77 / 20%);
+}
+
+.optionSelected:hover {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(0 0 0 / 16%);
+  box-shadow:
+    0 0 0 2px var(--insp-lime),
+    0 0 24px rgb(198 240 77 / 52%),
+    0 0 44px rgb(198 240 77 / 26%);
 }
 
 .optionEmoji {
