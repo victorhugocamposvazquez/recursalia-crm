@@ -11,6 +11,7 @@ import styles from './SiteHeader.module.css';
 export function SiteHeader() {
   const { searchCopy } = useMarketingContent();
   const pathname = usePathname();
+  const isInspiracion = pathname === '/inspiracion';
   const [sticky, setSticky] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -37,7 +38,7 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${isInspiracion ? styles.headerInspiracion : ''}`.trim()}>
       <div className={styles.outer}>
         <div className={styles.inner}>
           <nav className={`${styles.bar} ${sticky ? styles.barSticky : ''}`} aria-label="Principal">

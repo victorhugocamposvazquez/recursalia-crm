@@ -28,6 +28,24 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Ruta /inspiracion: sin franjas blancas; el main crece entre cabecera y el borde inferior */
+.marketingInspiracion {
+  --ch-bg: #081338;
+  min-height: 100dvh;
+  background-color: #081338;
+  background-image: radial-gradient(120% 90% at 50% -5%, #2a52e8 0%, #1a3cb8 32%, #152d9e 52%, #0a1748 88%);
+  background-attachment: fixed;
+  color: #f4f6ff;
+}
+
+.marketingInspiracion > main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: transparent;
+}
+
 @media (min-width: 640px) {
   .marketing {
     --marketing-gutter-x: 1.75rem;

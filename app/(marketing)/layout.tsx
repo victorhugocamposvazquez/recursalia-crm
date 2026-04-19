@@ -2,6 +2,7 @@ import { Instrument_Serif, Inter_Tight } from 'next/font/google';
 import { SiteHeader } from '@/components/marketing/SiteHeader';
 import { SiteFooter } from '@/components/marketing/SiteFooter';
 import { MarketingMain } from '@/components/marketing/MarketingMain';
+import { MarketingPageFrame } from '@/components/marketing/MarketingPageFrame';
 import { MarketingContentProvider } from '@/components/marketing/MarketingContentProvider';
 import { loadFrontSitePayload } from '@/lib/front-site-data';
 import styles from './marketing.module.css';
@@ -28,11 +29,12 @@ export default async function MarketingLayout({
 
   return (
     <MarketingContentProvider value={frontPayload}>
-      <div className={`${styles.marketing} ${interTight.variable} ${instrumentSerif.variable}`}>
-        <SiteHeader />
-        <MarketingMain>{children}</MarketingMain>
-        <SiteFooter />
-      </div>
+      <MarketingPageFrame
+        className={`${styles.marketing} ${interTight.variable} ${instrumentSerif.variable}`}
+        header={<SiteHeader />}
+        main={<MarketingMain>{children}</MarketingMain>}
+        footer={<SiteFooter />}
+      />
     </MarketingContentProvider>
   );
 }

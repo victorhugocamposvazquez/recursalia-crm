@@ -384,3 +384,73 @@
     opacity: 1;
   }
 }
+
+/* Inspiración: cabecera Recursalia sobre fondo azul Neurall */
+.headerInspiracion .bar,
+.headerInspiracion .barSticky {
+  background: rgb(8 19 56 / 78%);
+  border-color: rgb(255 255 255 / 16%);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 35%);
+  backdrop-filter: saturate(150%) blur(14px);
+  -webkit-backdrop-filter: saturate(150%) blur(14px);
+}
+
+.headerInspiracion .logo {
+  color: #f4f6ff;
+}
+
+.headerInspiracion .logoMark {
+  color: #c6f04d;
+}
+
+.headerInspiracion .inspiracionLink {
+  color: rgb(244 246 255 / 78%);
+}
+
+.headerInspiracion .inspiracionLink:hover {
+  color: #f4f6ff;
+}
+
+.headerInspiracion .inspiracionLinkActive {
+  color: #c6f04d;
+}
+
+.headerInspiracion .ghost {
+  border-color: rgb(255 255 255 / 35%);
+  color: #f4f6ff !important;
+  background: rgb(0 0 0 / 15%);
+}
+
+.headerInspiracion .ghost:hover {
+  background: rgb(255 255 255 / 12%);
+  color: #fff !important;
+}
+
+.headerInspiracion .cta {
+  background: #c6f04d;
+  border-color: rgb(198 240 77 / 55%);
+  color: #0b1438 !important;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 12%),
+    0 6px 22px rgb(198 240 77 / 22%);
+}
+
+.headerInspiracion .cta:hover {
+  background: #d8ff5c;
+  border-color: #d8ff5c;
+  color: #081338 !important;
+}
+
+.headerInspiracion .ctaBadge {
+  background: #081338;
+  color: #c6f04d;
+}
+
+.headerInspiracion .burger {
+  color: #f4f6ff;
+  border-color: rgb(255 255 255 / 18%);
+}
+
+.headerInspiracion .burger:hover {
+  background: rgb(255 255 255 / 10%);
+}

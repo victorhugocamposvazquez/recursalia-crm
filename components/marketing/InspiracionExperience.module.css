@@ -1,8 +1,6 @@
 /* Flujo Inspiración — pantalla completa oscura, acentos lima */
 
 .shell {
-  --insp-bg: #152d9e;
-  --insp-bg-deep: #0a1748;
   --insp-lime: #c6f04d;
   --insp-lime-hot: #d8ff5c;
   --insp-muted: #a0b3ff;
@@ -11,16 +9,33 @@
   --insp-text: #f4f6ff;
   --insp-text-dim: rgb(244 246 255 / 72%);
 
-  min-height: calc(100vh - clamp(3.25rem, 6vw, 4.75rem));
+  flex: 1;
   width: 100%;
-  max-width: 28rem;
-  margin: 0 auto;
-  padding: 0 1.15rem 2.5rem;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
-  background: radial-gradient(120% 80% at 50% 0%, #1e3fc4 0%, var(--insp-bg) 42%, var(--insp-bg-deep) 100%);
+  padding: 0 0 2.5rem;
+  background: transparent;
   color: var(--insp-text);
   font-family: var(--font-marketing), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+.shellColumn {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 0 max(1.15rem, env(safe-area-inset-left)) 0 max(1.15rem, env(safe-area-inset-right));
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .shellColumn {
+    max-width: 36rem;
+  }
 }
 
 .topBar {

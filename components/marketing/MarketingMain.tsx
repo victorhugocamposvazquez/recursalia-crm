@@ -7,7 +7,5 @@ export function MarketingMain({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isHome = pathname === '/';
 
-  return (
-    <main className={isHome ? undefined : styles.mainBelowHeader}>{children}</main>
-  );
+  return <main className={!isHome ? styles.mainBelowHeader : undefined}>{children}</main>;
 }

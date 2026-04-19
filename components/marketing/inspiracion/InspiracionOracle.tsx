@@ -12,7 +12,7 @@ type Props = {
  * Oráculo provisional (esfera + anillos + pulso al cambiar `pulseKey`).
  * Sustituir por el componente definitivo cuando esté listo.
  */
-export function InspiracionOracle({ pulseKey, brandLine = 'Recursalia' }: Props) {
+export function InspiracionOracle({ pulseKey, brandLine = 'Neurall' }: Props) {
   return (
     <div className={styles.wrap}>
       <div className={styles.rings} aria-hidden />

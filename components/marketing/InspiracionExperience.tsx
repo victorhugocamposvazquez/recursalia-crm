@@ -174,7 +174,9 @@ export function InspiracionExperience() {
   if (!mounted) {
     return (
       <div className={styles.shell}>
-        <div className={styles.loading}>Cargando…</div>
+        <div className={styles.shellColumn}>
+          <div className={styles.loading}>Cargando…</div>
+        </div>
       </div>
     );
   }
@@ -183,6 +185,7 @@ export function InspiracionExperience() {
 
   return (
     <div className={styles.shell}>
+      <div className={styles.shellColumn}>
       <header className={styles.topBar}>
         <button
           type="button"
@@ -210,14 +213,14 @@ export function InspiracionExperience() {
         </button>
       </header>
 
-      <InspiracionOracle pulseKey={pulseKey} />
+      <InspiracionOracle pulseKey={pulseKey} brandLine="Neurall" />
 
       {flow.step === 0 ? (
         <>
           <div className={styles.introBrand}>
             <p className={styles.introBrandHi}>Hola, soy</p>
-            <p className={styles.introBrandName}>Recursalia</p>
-            <p className={styles.tagline}>Tu brújula de aprendizaje</p>
+            <p className={styles.introBrandName}>Neurall</p>
+            <p className={styles.tagline}>Tu brújula inteligente de aprendizaje</p>
           </div>
           <h1 className={styles.headline}>
             Encuentro la <em>formación</em> perfecta para ti.
@@ -460,6 +463,7 @@ export function InspiracionExperience() {
           </div>
         </>
       ) : null}
+      </div>
     </div>
   );
 }
