@@ -4,8 +4,6 @@
   --insp-lime: #c6f04d;
   --insp-lime-hot: #d8ff5c;
   --insp-muted: #a0b3ff;
-  --insp-glass: rgb(255 255 255 / 8%);
-  --insp-glass-border: rgb(160 179 255 / 22%);
   --insp-text: #f4f6ff;
   --insp-text-dim: rgb(244 246 255 / 72%);
 
@@ -277,21 +275,21 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: baseline;
-  gap: 0.08em;
+  gap: clamp(0.65rem, 3.2vw, 1.15rem);
   margin: 0;
   font-family: var(--font-marketing-display), Georgia, serif;
   line-height: 1.15;
 }
 
 .introBrandSoy {
-  font-size: clamp(1.1rem, 4.2vw, 1.4rem);
+  font-size: clamp(1.5rem, 5.8vw, 1.95rem);
   font-weight: 500;
   color: rgb(255 255 255 / 88%);
 }
 
 .introBrandName {
   margin: 0;
-  font-size: clamp(1.85rem, 7vw, 2.35rem);
+  font-size: clamp(2.45rem, 11vw, 3.25rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--insp-lime);

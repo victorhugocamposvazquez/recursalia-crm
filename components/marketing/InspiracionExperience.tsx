@@ -72,7 +72,7 @@ export function InspiracionExperience() {
   const flowRef = useRef<FlowState>(emptyFlow);
   const oracleSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [oracleSize, setOracleSize] = useState(168);
+  const [oracleSizes, setOracleSizes] = useState({ normal: 168, intro: 256 });
   const [flow, setFlow] = useState<FlowState>(emptyFlow);
   const [draftName, setDraftName] = useState('');
   const [ctaOracleAttention, setCtaOracleAttention] = useState(false);
@@ -89,7 +89,11 @@ export function InspiracionExperience() {
   useEffect(() => {
     const pick = () => {
       if (typeof window === 'undefined') return;
-      setOracleSize(window.matchMedia('(min-width: 1024px)').matches ? 200 : 168);
+      const wide = window.matchMedia('(min-width: 1024px)').matches;
+      setOracleSizes({
+        normal: wide ? 200 : 168,
+        intro: wide ? 320 : 264,
+      });
     };
     pick();
     window.addEventListener('resize', pick);
@@ -314,7 +318,11 @@ export function InspiracionExperience() {
         </header>
 
         <div className={styles.oracleBlock}>
-          <ParticleOracle ref={oracleRef} size={oracleSize} className={styles.oracleCanvas} />
+          <ParticleOracle
+            ref={oracleRef}
+            size={flow.step === 0 ? oracleSizes.intro : oracleSizes.normal}
+            className={styles.oracleCanvas}
+          />
           {flow.step !== 0 ? <p className={styles.oracleBrand}>Neurall</p> : null}
         </div>
 
@@ -323,7 +331,7 @@ export function InspiracionExperience() {
             <>
               <div className={styles.introBrand}>
                 <p className={styles.introBrandLine}>
-                  <span className={styles.introBrandSoy}>Soy </span>
+                  <span className={styles.introBrandSoy}>Soy</span>
                   <span className={styles.introBrandName}>Neurall</span>
                 </p>
                 <p className={styles.tagline}>Tu brújula inteligente de aprendizaje</p>
