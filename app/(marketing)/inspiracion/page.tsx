@@ -1,19 +1,17 @@
 import type { Metadata } from 'next';
 import { InspiracionExperience } from '@/components/marketing/InspiracionExperience';
-import styles from '../marketing.module.css';
+import pageStyles from './inspiracion-page.module.css';
 
 export const metadata: Metadata = {
   title: 'Inspiración | Recursalia',
   description:
-    'Descubre cursos recomendados según tus aficiones, disponibilidad y nivel. Experiencia guiada y personalizada.',
+    'Cuatro pasos para orientar tu formación: intereses, tiempo, punto de partida y objetivo. Experiencia guiada.',
 };
 
 export default function InspiracionPage() {
   return (
-    <section className={styles.section}>
-      <div className={styles.inner}>
-        <InspiracionExperience />
-      </div>
+    <section className={pageStyles.wrap}>
+      <InspiracionExperience />
     </section>
   );
 }
