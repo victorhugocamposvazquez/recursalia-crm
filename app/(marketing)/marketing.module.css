@@ -28,7 +28,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ruta /inspiracion: sin franjas blancas; el main crece entre cabecera y el borde inferior */
+/* Ruta /inspiracion: sin franjas blancas; el main ocupa toda la altura (sin cabecera ni footer) */
 .marketingInspiracion {
   --ch-bg: #081338;
   min-height: 100dvh;

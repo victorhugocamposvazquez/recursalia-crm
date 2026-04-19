@@ -23,7 +23,7 @@ export function MarketingPageFrame({ className, header, main, footer }: Props) {
       className={`${className} ${isInspiracion ? styles.marketingInspiracion : ''}`.trim()}
       data-inspiracion={isInspiracion ? 'true' : undefined}
     >
-      {header}
+      {!isInspiracion ? header : null}
       {main}
       {!isInspiracion ? footer : null}
     </div>
