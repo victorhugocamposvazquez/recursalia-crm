@@ -348,7 +348,6 @@ export function InspiracionExperience() {
 
           {flow.step === 1 ? (
             <>
-              <p className={styles.stepMeta}>Paso 1 de 4</p>
               <h1 className={styles.headline}>
                 Empecemos por lo <em>esencial</em>.
               </h1>
@@ -371,7 +370,6 @@ export function InspiracionExperience() {
 
           {flow.step === 2 ? (
             <>
-              <p className={styles.stepMeta}>Paso 2 de 4</p>
               <h1 className={styles.headline}>
                 {firstName}, ¿qué mundos te <em>despiertan</em>?
               </h1>
@@ -396,7 +394,6 @@ export function InspiracionExperience() {
 
           {flow.step === 3 ? (
             <>
-              <p className={styles.stepMeta}>Paso 3 de 4</p>
               <h1 className={styles.headline}>
                 ¿De dónde <em>partimos</em>?
               </h1>
@@ -421,7 +418,6 @@ export function InspiracionExperience() {
 
           {flow.step === 4 ? (
             <>
-              <p className={styles.stepMeta}>Último paso</p>
               <h1 className={styles.headline}>
                 Y ahora, <em>¿hacia dónde?</em>
               </h1>

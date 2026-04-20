@@ -226,16 +226,6 @@
   box-shadow: 0 0 10px rgb(198 240 77 / 45%);
 }
 
-.stepMeta {
-  text-align: center;
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--insp-muted);
-  margin: 0.35rem 0 0;
-}
-
 .headline {
   margin: 0.85rem 0 0;
   font-family: var(--font-marketing-display), Georgia, serif;
