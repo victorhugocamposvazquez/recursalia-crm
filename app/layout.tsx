@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Instrument_Serif, Inter_Tight } from 'next/font/google';
+import { Inter_Tight, Poppins } from 'next/font/google';
 import './globals.css';
 
 const interTight = Inter_Tight({
@@ -8,10 +8,10 @@ const interTight = Inter_Tight({
   variable: '--font-marketing',
 });
 
-const instrumentSerif = Instrument_Serif({
+const poppinsDisplay = Poppins({
   subsets: ['latin'],
   display: 'swap',
-  weight: ['400'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-marketing-display',
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${interTight.variable} ${instrumentSerif.variable}`}
+      className={`${interTight.variable} ${poppinsDisplay.variable}`}
     >
       <body>{children}</body>
     </html>

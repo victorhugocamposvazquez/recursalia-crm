@@ -133,7 +133,7 @@
 
 .brand {
   margin: 1rem 0 0;
-  font-family: var(--font-marketing-display), Georgia, 'Times New Roman', serif;
+  font-family: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
   font-size: 0.72rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;

@@ -231,7 +231,7 @@
 
 .headline {
   margin: 0.85rem 0 0;
-  font-family: var(--font-marketing-display), Georgia, serif;
+  font-family: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
   font-size: clamp(1.45rem, 5.5vw, 1.75rem);
   font-weight: 500;
   line-height: 1.2;
@@ -270,7 +270,7 @@
   align-items: baseline;
   gap: clamp(0.65rem, 3.2vw, 1.15rem);
   margin: 0;
-  font-family: var(--font-marketing-display), Georgia, serif;
+  font-family: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
   line-height: 1.15;
 }
 
@@ -290,7 +290,7 @@
 
 .tagline {
   margin: 0.35rem 0 0;
-  font-family: var(--font-marketing-display), Georgia, serif;
+  font-family: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
   font-size: 0.95rem;
   font-style: italic;
   color: rgb(255 255 255 / 78%);
@@ -309,7 +309,7 @@
   background: rgb(0 0 0 / 22%);
   color: #fff;
   font-size: 1.05rem;
-  font-family: var(--font-marketing-display), Georgia, serif;
+  font-family: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
   outline: none;
   transition:
     border-color 0.15s ease,
@@ -539,7 +539,7 @@
 
 .cardTitle {
   margin: 0;
-  font-family: var(--font-marketing-display), Georgia, serif;
+  font-family: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
   font-size: 1.2rem;
   font-weight: 500;
 }

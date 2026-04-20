@@ -28,7 +28,7 @@
 
   --font-sans: var(--font-marketing), 'Inter Tight', system-ui, -apple-system,
     'Segoe UI', Roboto, sans-serif;
-  --font-display: var(--font-marketing-display), 'Times New Roman', serif;
+  --font-display: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
 }
 
 * {

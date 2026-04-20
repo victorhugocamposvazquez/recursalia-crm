@@ -1,4 +1,4 @@
-/* Hero pixel-mirror del package (Awake): Inter Tight + Instrument Serif + óvalo blur azul→amarillo */
+/* Hero: Inter Tight + Poppins + óvalo blur azul→amarillo */
 
 .heroSplit {
   position: relative;
@@ -80,7 +80,7 @@
 }
 
 .heroAccent {
-  font-family: var(--font-marketing-display), 'Times New Roman', serif;
+  font-family: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
   font-style: italic;
   font-weight: 400;
   color: #1b1d1e;
