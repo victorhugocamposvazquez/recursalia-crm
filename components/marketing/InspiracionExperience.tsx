@@ -19,6 +19,22 @@ const STORAGE_KEY = 'recursalia_inspiracion_flow_v2';
 /** Misma duración que `thinkingDuration` por defecto en `ParticleOracle.jsx` */
 const ORACLE_THINKING_MS = 600;
 
+function DockChevronBack({ onClick, ariaLabel }: { onClick: () => void; ariaLabel: string }) {
+  return (
+    <button type="button" className={styles.ctaDockBackIcon} onClick={onClick} aria-label={ariaLabel}>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M15 18l-6-6 6-6"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+}
+
 type FlowState = {
   step: number;
   name: string;
@@ -236,45 +252,75 @@ export function InspiracionExperience() {
   switch (flow.step) {
     case 0:
       ctaDock = (
-        <button type="button" className={styles.cta} onClick={goIntro}>
-          Empezar ahora →
-        </button>
+        <div className={styles.ctaDockRow}>
+          <DockChevronBack onClick={() => router.push('/')} ariaLabel="Volver al inicio" />
+          <div className={styles.ctaDockPrimarySlot}>
+            <button type="button" className={styles.cta} onClick={goIntro}>
+              Empezar ahora →
+            </button>
+          </div>
+        </div>
       );
       break;
     case 1:
       ctaDock = (
-        <button type="button" className={styles.cta} disabled={!draftName.trim()} onClick={submitName}>
-          Continuar →
-        </button>
+        <div className={styles.ctaDockRow}>
+          <DockChevronBack onClick={goBack} ariaLabel="Paso anterior" />
+          <div className={styles.ctaDockPrimarySlot}>
+            <button type="button" className={styles.cta} disabled={!draftName.trim()} onClick={submitName}>
+              Continuar →
+            </button>
+          </div>
+        </div>
       );
       break;
     case 2:
       ctaDock = (
-        <button type="button" className={styles.cta} disabled={flow.worlds.length === 0} onClick={continueWorlds}>
-          Continuar →
-        </button>
+        <div className={styles.ctaDockRow}>
+          <DockChevronBack onClick={goBack} ariaLabel="Paso anterior" />
+          <div className={styles.ctaDockPrimarySlot}>
+            <button type="button" className={styles.cta} disabled={flow.worlds.length === 0} onClick={continueWorlds}>
+              Continuar →
+            </button>
+          </div>
+        </div>
       );
       break;
     case 3:
       ctaDock = (
-        <button type="button" className={styles.cta} disabled={!flow.fromId} onClick={continueFrom}>
-          Continuar →
-        </button>
+        <div className={styles.ctaDockRow}>
+          <DockChevronBack onClick={goBack} ariaLabel="Paso anterior" />
+          <div className={styles.ctaDockPrimarySlot}>
+            <button type="button" className={styles.cta} disabled={!flow.fromId} onClick={continueFrom}>
+              Continuar →
+            </button>
+          </div>
+        </div>
       );
       break;
     case 4:
       ctaDock = (
-        <button type="button" className={styles.cta} disabled={!flow.goalId} onClick={continueGoal}>
-          Ver mi formación →
-        </button>
+        <div className={styles.ctaDockRow}>
+          <DockChevronBack onClick={goBack} ariaLabel="Paso anterior" />
+          <div className={styles.ctaDockPrimarySlot}>
+            <button type="button" className={styles.cta} disabled={!flow.goalId} onClick={continueGoal}>
+              Ver mi formación →
+            </button>
+          </div>
+        </div>
       );
       break;
     case 5:
       ctaDock = (
         <>
-          <button type="button" className={styles.cta} onClick={() => router.push('/cursos')}>
-            Ir al catálogo →
-          </button>
+          <div className={styles.ctaDockRow}>
+            <DockChevronBack onClick={goBack} ariaLabel="Paso anterior" />
+            <div className={styles.ctaDockPrimarySlot}>
+              <button type="button" className={styles.cta} onClick={() => router.push('/cursos')}>
+                Ir al catálogo →
+              </button>
+            </div>
+          </div>
           <div className={styles.ctaDockSecondary}>
             <button type="button" className={styles.linkDim} onClick={refineAnswers}>
               Refinar respuestas
