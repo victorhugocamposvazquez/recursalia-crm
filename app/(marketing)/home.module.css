@@ -66,10 +66,9 @@
 
 .heroTitle {
   margin: 0;
-  font-size: clamp(2.6rem, 8.5vw, 8rem);
   font-weight: 500;
   letter-spacing: -0.03em;
-  line-height: 1;
+  line-height: 1.05;
   color: #1b1d1e;
 }
 
@@ -79,12 +78,28 @@
   }
 }
 
+/* Línea 1: más contenida, negro sólido */
+.heroTitleLead {
+  font-family: var(--font-marketing), 'Inter Tight', system-ui, sans-serif;
+  font-size: clamp(1.55rem, 4.2vw, 2.35rem);
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  color: #1b1d1e;
+}
+
+/* Línea 2: mayor énfasis, azul marca, cursiva display */
 .heroAccent {
+  display: inline-block;
+  margin-top: 0.08em;
   font-family: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
   font-style: italic;
-  font-weight: 400;
-  color: #1b1d1e;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  font-size: clamp(2.15rem, 7.2vw, 4.75rem);
+  color: #2b47c6;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
 }
 
 .btnPrimary {
