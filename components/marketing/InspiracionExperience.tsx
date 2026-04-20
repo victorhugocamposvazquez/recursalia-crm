@@ -349,12 +349,9 @@ export function InspiracionExperience() {
           {flow.step === 1 ? (
             <>
               <h1 className={styles.headline}>
-                Empecemos por lo <em>esencial</em>.
+                Me gustaría saber <em>tu nombre</em>
               </h1>
-              <p className={styles.body}>
-                Dime cómo te llamas y te hablaré por tu nombre en cada paso. Así esto deja de ser un cuestionario y
-                empieza a ser una <strong>conversación</strong>.
-              </p>
+              <p className={styles.body}>Y empezaré a crear la formación ideal para ti</p>
               <div className={styles.inputWrap}>
                 <input
                   className={styles.input}
