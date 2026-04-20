@@ -366,7 +366,7 @@ export function InspiracionExperience() {
           {flow.step !== 0 ? <p className={styles.oracleBrand}>Neurall</p> : null}
         </div>
 
-        <div className={styles.scrollBody}>
+        <div className={`${styles.scrollBody} ${flow.step === 0 ? styles.scrollBodyIntro : ''}`.trim()}>
           {flow.step === 0 ? (
             <>
               <div className={styles.introBrand}>
@@ -381,7 +381,7 @@ export function InspiracionExperience() {
               </h1>
               <p className={styles.body}>
                 Estoy diseñado y entrenado para encontrar <em>la mejor formación</em> gracias a la agregación de datos
-                de bolsas de empleo globales, estadísticas de inserción laboral y demanda laboral.
+                de bolsas de empleo globales, estadísticas de inserción y demanda laboral.
               </p>
             </>
           ) : null}
