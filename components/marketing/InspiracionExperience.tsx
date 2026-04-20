@@ -380,8 +380,8 @@ export function InspiracionExperience() {
                 Encuentro la <em>formación</em> perfecta para ti.
               </h1>
               <p className={styles.body}>
-                Cuatro preguntas breves. Con ellas cruzo intereses, tiempo y punto de partida para orientarte hacia
-                cursos que encajen — <em>a tu ritmo, a tu medida</em>.
+                Estoy diseñado y entrenado para encontrar <em>la mejor formación</em> gracias a la agregación de datos
+                de bolsas de empleo globales, estadísticas de inserción laboral y demanda laboral.
               </p>
             </>
           ) : null}
