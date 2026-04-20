@@ -358,23 +358,17 @@
 }
 
 .chipSelected {
-  border-color: rgb(255 255 255 / 14%);
+  border: 2px solid var(--insp-lime);
   background: rgb(0 0 0 / 18%);
   color: #fff;
   font-weight: 500;
-  box-shadow:
-    0 0 0 2px var(--insp-lime),
-    0 0 22px rgb(198 240 77 / 48%),
-    0 0 40px rgb(198 240 77 / 22%);
+  box-shadow: none;
 }
 
 .chipSelected:hover {
-  border-color: rgb(255 255 255 / 14%);
+  border-color: var(--insp-lime-hot);
   background: rgb(0 0 0 / 18%);
-  box-shadow:
-    0 0 0 2px var(--insp-lime),
-    0 0 26px rgb(198 240 77 / 55%),
-    0 0 48px rgb(198 240 77 / 28%);
+  box-shadow: none;
 }
 
 .optionList {
@@ -410,21 +404,15 @@
 }
 
 .optionSelected {
-  border-color: rgb(255 255 255 / 14%);
+  border: 2px solid var(--insp-lime);
   background: rgb(0 0 0 / 16%);
-  box-shadow:
-    0 0 0 2px var(--insp-lime),
-    0 0 20px rgb(198 240 77 / 45%),
-    0 0 38px rgb(198 240 77 / 20%);
+  box-shadow: none;
 }
 
 .optionSelected:hover {
-  border-color: rgb(255 255 255 / 14%);
+  border-color: var(--insp-lime-hot);
   background: rgb(0 0 0 / 16%);
-  box-shadow:
-    0 0 0 2px var(--insp-lime),
-    0 0 24px rgb(198 240 77 / 52%),
-    0 0 44px rgb(198 240 77 / 26%);
+  box-shadow: none;
 }
 
 .optionEmoji {
