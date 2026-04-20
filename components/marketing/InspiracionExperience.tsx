@@ -252,14 +252,9 @@ export function InspiracionExperience() {
   switch (flow.step) {
     case 0:
       ctaDock = (
-        <div className={styles.ctaDockRow}>
-          <DockChevronBack onClick={() => router.push('/')} ariaLabel="Volver al inicio" />
-          <div className={styles.ctaDockPrimarySlot}>
-            <button type="button" className={styles.cta} onClick={goIntro}>
-              Empezar ahora →
-            </button>
-          </div>
-        </div>
+        <button type="button" className={styles.cta} onClick={goIntro}>
+          Empezar ahora →
+        </button>
       );
       break;
     case 1:
@@ -337,22 +332,21 @@ export function InspiracionExperience() {
     <div className={styles.shell}>
       <div className={styles.shellColumn}>
         <header className={styles.topBar}>
-          <button
-            type="button"
-            className={styles.backBtn}
-            onClick={() => (flow.step <= 0 ? router.push('/') : goBack())}
-            aria-label={flow.step <= 0 ? 'Volver al inicio' : 'Paso anterior'}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path
-                d="M15 18l-6-6 6-6"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          {flow.step === 0 ? (
+            <div className={styles.topBarLeadSpacer} aria-hidden />
+          ) : (
+            <button type="button" className={styles.backBtn} onClick={goBack} aria-label="Paso anterior">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path
+                  d="M15 18l-6-6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          )}
           <div className={styles.progress} aria-hidden>
             {[0, 1, 2, 3].map((i) => (
               <div key={i} className={`${styles.progressSeg} ${i < filledSegments ? styles.progressSegOn : ''}`} />
@@ -562,7 +556,7 @@ export function InspiracionExperience() {
           className={`${styles.ctaDock} ${ctaOracleAttention ? styles.ctaDockOracleAttention : ''}`.trim()}
           aria-busy={ctaOracleAttention || undefined}
         >
-          {ctaDock}
+          <div className={styles.ctaDockInner}>{ctaDock}</div>
         </div>
       </div>
     </div>

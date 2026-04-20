@@ -13,7 +13,7 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 0 0 1.25rem;
+  padding: 0 0 0;
   background: transparent;
   color: var(--insp-text);
   font-family: var(--font-marketing), system-ui, sans-serif;
@@ -43,6 +43,13 @@
   justify-content: space-between;
   gap: 0.75rem;
   padding: max(0.5rem, env(safe-area-inset-top, 0px)) 0 0.35rem;
+  flex-shrink: 0;
+}
+
+/* Paso 0: sin atrás; mantiene el hueco del botón para alinear progreso y Salir */
+.topBarLeadSpacer {
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
 }
 
@@ -76,15 +83,40 @@
   /* El scrollport recorta box-shadow: hueco para bordes/glow de chips y opciones */
   padding-inline: clamp(12px, 3.5vw, 20px);
   padding-top: 4px;
-  padding-bottom: 1.75rem;
+  /* Hueco para la barra inferior fija (móvil y escritorio) */
+  padding-bottom: calc(5.9rem + env(safe-area-inset-bottom, 0px) + 12px);
 }
 
 .ctaDock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding-top: 0.65rem;
+  padding: 0.65rem 0 max(0.85rem, calc(0.45rem + env(safe-area-inset-bottom, 0px)));
+  background: linear-gradient(to top, rgb(8 19 56 / 96%) 55%, rgb(8 19 56 / 0%));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgb(255 255 255 / 10%);
+  box-shadow: 0 -12px 40px rgb(0 0 0 / 25%);
+}
+
+.ctaDockInner {
+  width: 100%;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 0 max(1.15rem, env(safe-area-inset-left)) 0 max(1.15rem, env(safe-area-inset-right));
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .ctaDockInner {
+    max-width: 36rem;
+  }
 }
 
 .ctaDockRow {
@@ -177,37 +209,9 @@
   }
 }
 
-@media (max-width: 639px) {
-  .shell {
-    padding-bottom: 0;
-  }
-
-  .scrollBody {
-    padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px) + 14px);
-  }
-
-  .ctaDock {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 20;
-    padding: 0.65rem max(1.15rem, env(safe-area-inset-left)) max(0.65rem, env(safe-area-inset-bottom))
-      max(1.15rem, env(safe-area-inset-right));
-    padding-bottom: max(0.85rem, calc(0.45rem + env(safe-area-inset-bottom, 0px)));
-    background: linear-gradient(to top, rgb(8 19 56 / 96%) 55%, rgb(8 19 56 / 0%));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-top: 1px solid rgb(255 255 255 / 10%);
-    box-shadow: 0 -12px 40px rgb(0 0 0 / 25%);
-  }
-}
-
 @media (min-width: 640px) {
   .ctaDock {
-    padding-top: 0.85rem;
-    border-top: 1px solid rgb(255 255 255 / 8%);
-    margin-top: 0.35rem;
+    padding-top: 0.75rem;
   }
 }
 
