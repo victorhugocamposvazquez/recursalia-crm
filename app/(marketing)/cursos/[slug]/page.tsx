@@ -2,9 +2,9 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
-import { CourseTabs } from '@/components/marketing/CourseTabs';
 import { CourseProgramAccordion } from '@/components/marketing/CourseProgramAccordion';
 import { CourseReviewList, type ReviewRow } from '@/components/marketing/CourseReviewList';
+import { CourseSectionNav } from '@/components/marketing/CourseSectionNav';
 import { SalaryMoneyBagIcon } from '@/components/marketing/SalaryMoneyBagIcon';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
@@ -172,41 +172,6 @@ export default async function CursoLandingPage({
     levelEs[input.level] ||
     input.level;
 
-  const infoTab = (
-    <div className={styles.prose}>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: content.description.replace(/\n/g, '<br/>'),
-        }}
-      />
-      {content.benefits && content.benefits.length > 0 && (
-        <>
-          <h4>Beneficios</h4>
-          <ul>
-            {content.benefits.map((b, i) => (
-              <li key={i}>
-                <strong>{b.title}</strong>: {b.description}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-      {(content.author_name || content.author_bio) && (
-        <>
-          <h4>Autor</h4>
-          {content.author_name && (
-            <p>
-              <strong>{content.author_name}</strong>
-            </p>
-          )}
-          {content.author_bio && <p>{content.author_bio}</p>}
-        </>
-      )}
-    </div>
-  );
-
-  const programTab = <CourseProgramAccordion topics={content.topics ?? []} />;
-
   return (
     <div className={styles.layout}>
       <article className={styles.main}>
@@ -263,7 +228,7 @@ export default async function CursoLandingPage({
           </div>
         </div>
 
-        {(!!content.benefits?.length || !!content.highlight) && (
+        {!!content.benefits?.length && (
           <section
             className={styles.whatYouGet}
             aria-labelledby="what-you-get-heading"
@@ -271,41 +236,82 @@ export default async function CursoLandingPage({
             <h2 id="what-you-get-heading" className={styles.whatYouGetTitle}>
               Qué obtienes
             </h2>
-            {content.benefits && content.benefits.length > 0 && (
-              <ul className={styles.benefits}>
-                {content.benefits.map((b, i) => (
-                  <li key={i} className={styles.youGetCard}>
-                    <span className={styles.bIcon}>{b.icon || '✓'}</span>
-                    <div className={styles.bBody}>
-                      <h3>{b.title}</h3>
-                      <p>{b.description}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {content.highlight && (
-              <div className={`${styles.youGetCard} ${styles.highlight}`} role="note">
-                <span className={styles.highlightIconBox} aria-hidden>
-                  <SalaryMoneyBagIcon className={styles.highlightIcon} />
-                </span>
-                <p className={styles.highlightCopy}>{content.highlight}</p>
-              </div>
-            )}
+            <ul className={styles.benefits}>
+              {content.benefits!.map((b, i) => (
+                <li key={i} className={styles.youGetCard}>
+                  <span className={styles.bIcon}>{b.icon || '✓'}</span>
+                  <div className={styles.bBody}>
+                    <h3>{b.title}</h3>
+                    <p>{b.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
-        <div className={styles.tabsSection}>
-          <p className={styles.sectionLabel}>Contenido</p>
-          <CourseTabs info={infoTab} program={programTab} />
-        </div>
+        {content.highlight && (
+          <div className={styles.highlightWrap}>
+            <div className={styles.highlight} role="note">
+              <span className={styles.highlightIconBox} aria-hidden>
+                <SalaryMoneyBagIcon className={styles.highlightIcon} />
+              </span>
+              <p className={styles.highlightCopy}>{content.highlight}</p>
+            </div>
+          </div>
+        )}
+
+        <CourseSectionNav />
 
         <section
-          className={styles.reviews}
+          id="beneficios"
+          className={styles.anchorSection}
+          aria-labelledby="beneficios-heading"
+        >
+          <div className={styles.beneficiosSheet}>
+            <h2 id="beneficios-heading" className={styles.sheetTitle}>
+              Beneficios
+            </h2>
+            <div className={styles.sheetBody}>
+              <div
+                className={styles.detailProse}
+                dangerouslySetInnerHTML={{
+                  __html: content.description.replace(/\n/g, '<br/>'),
+                }}
+              />
+              {(content.author_name || content.author_bio) && (
+                <>
+                  <h4 className={styles.authorHeading}>Autor</h4>
+                  {content.author_name && (
+                    <p className={styles.authorName}>
+                      <strong>{content.author_name}</strong>
+                    </p>
+                  )}
+                  {content.author_bio && (
+                    <p className={styles.authorBio}>{content.author_bio}</p>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="programa"
+          className={styles.anchorSection}
+          aria-labelledby="programa-heading"
+        >
+          <h2 id="programa-heading" className={styles.programaHeading}>
+            Programa
+          </h2>
+          <CourseProgramAccordion topics={content.topics ?? []} />
+        </section>
+
+        <section
+          className={`${styles.reviews} ${styles.anchorSection}`}
           id="opiniones"
           aria-labelledby="reviews-heading"
         >
-          <p className={styles.sectionLabel}>Opiniones</p>
           <CourseReviewList reviews={reviews} average={avg} />
         </section>
       </article>
