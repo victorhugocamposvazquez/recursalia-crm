@@ -5,6 +5,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { CourseTabs } from '@/components/marketing/CourseTabs';
 import { CourseProgramAccordion } from '@/components/marketing/CourseProgramAccordion';
 import { CourseReviewList, type ReviewRow } from '@/components/marketing/CourseReviewList';
+import { MoneyBagIcon } from '@/components/marketing/MoneyBagIcon';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
 import styles from './courseLanding.module.css';
@@ -268,8 +269,10 @@ export default async function CursoLandingPage({
             <ul className={styles.benefits}>
               {content.benefits.map((b, i) => (
                 <li key={i}>
-                  <span className={styles.bIcon}>{b.icon || '✓'}</span>
-                  <div>
+                  <span className={styles.bIcon} aria-hidden>
+                    <MoneyBagIcon className={styles.bSvg} />
+                  </span>
+                  <div className={styles.bText}>
                     <h3>{b.title}</h3>
                     <p>{b.description}</p>
                   </div>
@@ -280,7 +283,12 @@ export default async function CursoLandingPage({
         )}
 
         {content.highlight && (
-          <div className={styles.highlight}>{content.highlight}</div>
+          <div className={styles.highlight}>
+            <span className={styles.highlightIconWrap} aria-hidden>
+              <MoneyBagIcon className={styles.highlightSvg} />
+            </span>
+            <p className={styles.highlightCopy}>{content.highlight}</p>
+          </div>
         )}
 
         <div className={styles.tabsSection}>
