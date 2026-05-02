@@ -1,0 +1,105 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.block {
+  background: rgb(243 244 246 / 88%);
+  border: 1px solid var(--ch-border, rgb(229 231 235));
+  border-radius: 1.1rem;
+  overflow: hidden;
+}
+
+.heading {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.05rem 1.2rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--ch-navy, #111827);
+  transition: background 0.15s ease;
+}
+
+.trigger:hover {
+  background: rgb(255 255 255 / 55%);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--ch-blue, #059669);
+}
+
+.triggerTitle {
+  font-weight: 700;
+  line-height: 1.35;
+  flex: 1;
+  min-width: 0;
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--ch-text-muted, #6b7280);
+  transition: transform 0.22s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.panel {
+  padding: 0 1.2rem 1.05rem;
+  border-top: 1px solid rgb(229 231 235 / 80%);
+}
+
+.lessonList {
+  list-style: none;
+  margin: 0;
+  padding: 0.65rem 0 0;
+}
+
+.lessonRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgb(229 231 235 / 70%);
+  font-size: 0.94rem;
+  line-height: 1.45;
+  color: var(--ch-navy-soft, #1f2937);
+  font-weight: 400;
+}
+
+.lessonRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.lessonNum {
+  flex-shrink: 0;
+  min-width: 1.35rem;
+  color: var(--ch-text-muted, #6b7280);
+}
+
+.lessonTitle {
+  flex: 1;
+  min-width: 0;
+}
+
+.empty {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ch-text-muted, #6b7280);
+}

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { CourseTabs } from '@/components/marketing/CourseTabs';
+import { CourseProgramAccordion } from '@/components/marketing/CourseProgramAccordion';
 import { CourseReviewList, type ReviewRow } from '@/components/marketing/CourseReviewList';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
@@ -203,23 +204,7 @@ export default async function CursoLandingPage({
     </div>
   );
 
-  const programTab = (
-    <div>
-      {(content.topics ?? []).map((topic, ti) => (
-        <div key={ti} className={styles.module}>
-          <h4>
-            <span className={styles.moduleNum}>{ti + 1}</span>
-            <span>{topic.title}</span>
-          </h4>
-          {(topic.lessons ?? []).map((lesson, li) => (
-            <div key={li} className={styles.lesson}>
-              {lesson.title}
-            </div>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
+  const programTab = <CourseProgramAccordion topics={content.topics ?? []} />;
 
   return (
     <div className={styles.layout}>
