@@ -174,9 +174,7 @@ export default async function CursoLandingPage({
     input.level;
 
   return (
-    <div
-      className={`${styles.layout}${hotmartUrl ? ` ${styles.layoutStickyCheckout}` : ''}`}
-    >
+    <div className={`${styles.layout} ${styles.layoutStickyCheckout}`}>
       <article className={styles.main}>
         <nav className={styles.breadcrumb} aria-label="Migas de pan">
           <Link href="/">Inicio</Link>
@@ -422,15 +420,13 @@ export default async function CursoLandingPage({
         </div>
       </aside>
 
-      {hotmartUrl && (
-        <CourseStickyCheckoutBar
-          title={title}
-          hotmartUrl={hotmartUrl}
-          displayPriceLabel={displayPrice}
-          originalPriceLabel={showStrike ? formatMoney(original) : null}
-          showStrike={showStrike}
-        />
-      )}
+      <CourseStickyCheckoutBar
+        title={title}
+        hotmartUrl={hotmartUrl}
+        displayPriceLabel={displayPrice}
+        originalPriceLabel={showStrike ? formatMoney(original) : null}
+        showStrike={showStrike}
+      />
     </div>
   );
 }

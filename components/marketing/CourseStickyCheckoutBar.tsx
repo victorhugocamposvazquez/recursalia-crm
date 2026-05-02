@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './CourseStickyCheckoutBar.module.css';
 
 function CartIcon({ className }: { className?: string }) {
@@ -18,11 +19,41 @@ function CartIcon({ className }: { className?: string }) {
   );
 }
 
-const SCROLL_SHOW_PX = 220;
+/** Poco scroll: la barra es el CTA principal móvil; debe aparecer pronto */
+const SCROLL_SHOW_PX = 72;
+
+function CheckoutCta({
+  hotmartUrl,
+  className,
+}: {
+  hotmartUrl: string | null;
+  className: string;
+}) {
+  if (!hotmartUrl) {
+    return (
+      <span className={`${className} ${styles.ctaPending}`} aria-disabled="true">
+        <CartIcon className={styles.ctaCart} />
+        <span className={styles.ctaText}>Enlace pendiente</span>
+      </span>
+    );
+  }
+  return (
+    <a
+      className={className}
+      href={hotmartUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <CartIcon className={styles.ctaCart} />
+      <span className={styles.ctaText}>Comprar ahora</span>
+    </a>
+  );
+}
 
 export type CourseStickyCheckoutBarProps = {
   title: string;
-  hotmartUrl: string;
+  /** URL Hotmart completa o null si aún no hay enlace guardado */
+  hotmartUrl: string | null;
   displayPriceLabel: string;
   originalPriceLabel?: string | null;
   showStrike: boolean;
@@ -36,6 +67,11 @@ export function CourseStickyCheckoutBar({
   showStrike,
 }: CourseStickyCheckoutBarProps) {
   const [revealed, setRevealed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const tick = () => setRevealed(window.scrollY > SCROLL_SHOW_PX);
@@ -48,7 +84,7 @@ export function CourseStickyCheckoutBar({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  return (
+  const shell = (
     <div
       className={`${styles.root} ${revealed ? styles.rootVisible : ''}`}
       role="region"
@@ -68,15 +104,7 @@ export function CourseStickyCheckoutBar({
             <span className={styles.now}>{displayPriceLabel}</span>
           </div>
 
-          <a
-            className={styles.cta}
-            href={hotmartUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <CartIcon className={styles.ctaCart} />
-            <span className={styles.ctaText}>Comprar ahora</span>
-          </a>
+          <CheckoutCta hotmartUrl={hotmartUrl} className={styles.cta} />
 
           <p className={styles.trustInline}>
             <span className={styles.lock} aria-hidden>
@@ -115,15 +143,7 @@ export function CourseStickyCheckoutBar({
             )}
             <span className={styles.now}>{displayPriceLabel}</span>
           </div>
-          <a
-            className={styles.cta}
-            href={hotmartUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <CartIcon className={styles.ctaCart} />
-            <span className={styles.ctaText}>Comprar ahora</span>
-          </a>
+          <CheckoutCta hotmartUrl={hotmartUrl} className={styles.cta} />
         </div>
 
         <p className={styles.trustMobile}>
@@ -137,4 +157,10 @@ export function CourseStickyCheckoutBar({
       </div>
     </div>
   );
+
+  if (!mounted || typeof document === 'undefined') {
+    return null;
+  }
+
+  return createPortal(shell, document.body);
 }
