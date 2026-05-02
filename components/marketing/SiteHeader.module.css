@@ -470,18 +470,20 @@
     padding-right: max(var(--marketing-gutter-x, 1.25rem), env(safe-area-inset-right, 0px));
   }
 
-  /* Bandeja: solo redondeo superior + base recta (continúa en main blanco, como mock) */
+  /*
+    Estado inicial (referencia “bien”): sin caja blanca ni sombra; mismo ancho que breadcrumb/hero vía gutter en .inner.
+    Logo y menú al borde útil de la columna — no “hueco extra” dentro de la barra.
+  */
   .bar.barCourseLanding:not(.barSticky) {
     justify-content: space-between;
-    border-radius: clamp(28px, 9vw, 36px) clamp(28px, 9vw, 36px) 0 0;
-    background: #ffffff;
-    border-color: rgb(229 231 239);
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 90%),
-      0 10px 34px rgb(15 23 42 / 7%);
-    padding: 0.75rem 0.6rem;
+    border-radius: 0;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    padding: 0.62rem 0;
   }
 
+  /* Al hacer scroll recuperamos el pill habitual (.barSticky + radios base del .bar) */
   .bar.barCourseLanding.barSticky .actions {
     margin-right: -0.5rem;
     padding-right: 0.08rem;
