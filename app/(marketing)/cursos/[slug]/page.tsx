@@ -282,7 +282,9 @@ export default async function CursoLandingPage({
 
         {content.highlight && (
           <div className={styles.highlight} role="note">
-            <MoneyBagIcon className={styles.highlightIcon} aria-hidden />
+            <span className={styles.highlightIconBox} aria-hidden>
+              <MoneyBagIcon className={styles.highlightIcon} />
+            </span>
             <p className={styles.highlightCopy}>{content.highlight}</p>
           </div>
         )}
