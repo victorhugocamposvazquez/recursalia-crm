@@ -1,7 +1,6 @@
 .heading {
   margin: 0 0 1.25rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--ch-border, #e5e7eb);
   font-size: clamp(1.05rem, 2.2vw, 1.2rem);
   font-weight: 700;
   color: var(--ch-navy, #111827);
@@ -42,11 +41,9 @@
 .item {
   margin: 0;
   padding: 1.35rem 0 1.5rem;
-  border-bottom: 1px solid var(--ch-border, #e5e7eb);
 }
 
 .item:last-child {
-  border-bottom: none;
   padding-bottom: 0.25rem;
 }
 
@@ -98,7 +95,6 @@
   padding: 1.35rem;
   background: var(--ch-blue-light, #eaefff);
   border-radius: var(--ch-radius-sm, 10px);
-  border: 1px dashed var(--ch-border);
   text-align: center;
   margin-top: 0.5rem;
 }
@@ -106,21 +102,17 @@
 .loadMore {
   margin-top: 1.25rem;
   padding: 0.65rem 1.35rem;
-  border: 1px solid var(--ch-border, #e5e7eb);
-  background: var(--ch-surface, #fff);
+  border: none;
+  background: rgb(241 245 249);
   border-radius: var(--ch-radius-sm, 10px);
   cursor: pointer;
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--ch-blue, #059669);
-  transition:
-    border-color 0.18s ease,
-    background 0.18s ease,
-    box-shadow 0.18s ease;
+  transition: background 0.18s ease, box-shadow 0.18s ease;
 }
 
 .loadMore:hover {
-  border-color: var(--ch-blue, #059669);
   background: var(--ch-blue-light, #eaefff);
   box-shadow: 0 4px 16px rgb(5 150 105 / 12%);
 }

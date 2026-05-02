@@ -9,7 +9,6 @@
   background: var(--ch-blue-light, #eaefff);
   border-radius: 999px;
   margin-bottom: 1.5rem;
-  border: 1px solid var(--ch-border, #e5e7eb);
 }
 
 .tabs button {

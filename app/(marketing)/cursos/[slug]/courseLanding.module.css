@@ -58,7 +58,6 @@
 .heroCard {
   background: var(--ch-surface);
   border-radius: var(--ch-radius);
-  border: 1px solid var(--ch-border);
   box-shadow: var(--ch-shadow);
   overflow: hidden;
   margin-bottom: 1.75rem;
@@ -216,13 +215,11 @@
   padding: 1.15rem 1.2rem;
   background: var(--ch-surface);
   border-radius: var(--ch-radius-sm);
-  border: 1px solid var(--ch-border);
   box-shadow: 0 2px 14px rgb(17 24 39 / 4%);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .benefits li:hover {
-  border-color: rgb(5 150 105 / 22%);
   box-shadow: 0 8px 28px rgb(5 150 105 / 10%);
 }
 
@@ -257,7 +254,6 @@
   padding: 1.15rem 1.35rem;
   background: linear-gradient(135deg, var(--ch-blue-light), var(--ch-blue-light));
   border-radius: var(--ch-radius-sm);
-  border: 1px solid rgb(5 150 105 / 16%);
   font-size: 0.95rem;
   color: var(--ch-navy-soft);
   margin-bottom: 2rem;
@@ -274,7 +270,6 @@
 .reviews {
   margin-top: 2.75rem;
   padding-top: 2.25rem;
-  border-top: 1px solid var(--ch-border);
   scroll-margin-top: 5.75rem;
 }
 
@@ -316,7 +311,6 @@
   top: 5.25rem;
   align-self: start;
   background: var(--ch-surface);
-  border: 1px solid var(--ch-border);
   border-radius: var(--ch-radius);
   padding: 1.6rem 1.4rem 1.35rem;
   box-shadow:
@@ -473,8 +467,10 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  border-top: 1px solid var(--ch-border);
   padding-top: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .metaList li {
@@ -483,11 +479,6 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 0;
-  border-bottom: 1px solid var(--ch-border);
-}
-
-.metaList li:last-child {
-  border-bottom: none;
 }
 
 .metaLabel {
@@ -501,8 +492,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--ch-navy);
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: #eef2f6;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
   text-align: right;
@@ -512,7 +502,6 @@
 .tagsBlock {
   margin-top: 1.1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--ch-border);
 }
 
 .tagsTitle {
@@ -536,7 +525,6 @@
   font-weight: 600;
   color: var(--ch-blue);
   background: var(--ch-blue-light);
-  border: 1px solid rgb(5 150 105 / 16%);
   padding: 0.3rem 0.65rem;
   border-radius: 999px;
 }
@@ -544,7 +532,6 @@
 .backLink {
   margin-top: 1.1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--ch-border);
   font-size: 0.8125rem;
   text-align: center;
   display: flex;
@@ -579,7 +566,6 @@
   z-index: 40;
   padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0));
   background: linear-gradient(180deg, transparent, rgb(245 247 250 / 94%) 18%, var(--ch-bg));
-  border-top: 1px solid var(--ch-border);
 }
 
 @media (max-width: 959px) {
