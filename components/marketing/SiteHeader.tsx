@@ -6,11 +6,13 @@ import { useEffect, useState } from 'react';
 import { CourseSearchField } from '@/components/marketing/CourseSearchField';
 import { DrawerCategoriesSection, HeaderCategories } from '@/components/marketing/HeaderCategories';
 import { useMarketingContent } from '@/components/marketing/MarketingContentProvider';
+import { isMarketingCourseLandingPath } from '@/lib/marketing-path';
 import styles from './SiteHeader.module.css';
 
 export function SiteHeader() {
   const { searchCopy } = useMarketingContent();
   const pathname = usePathname();
+  const courseLanding = isMarketingCourseLandingPath(pathname);
   const [sticky, setSticky] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -38,9 +40,14 @@ export function SiteHeader() {
 
   return (
     <header className={styles.header}>
-      <div className={styles.outer}>
+      <div
+        className={`${styles.outer} ${courseLanding ? styles.outerCourseLanding : ''}`.trim()}
+      >
         <div className={styles.inner}>
-          <nav className={`${styles.bar} ${sticky ? styles.barSticky : ''}`} aria-label="Principal">
+          <nav
+            className={`${styles.bar} ${sticky ? styles.barSticky : ''} ${courseLanding ? styles.barCourseLanding : ''}`}
+            aria-label="Principal"
+          >
             <Link href="/" className={styles.logo}>
               <span className={styles.logoMark} aria-hidden>
                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">

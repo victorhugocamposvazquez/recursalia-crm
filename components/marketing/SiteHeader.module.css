@@ -454,3 +454,31 @@
 .headerInspiracion .burger:hover {
   background: rgb(255 255 255 / 10%);
 }
+
+/* —— Landing curso (/cursos/[slug]): móvil, bandeja alta con esquinas; al scroll, barra pill habitual —— */
+@media (max-width: 1023px) {
+  .outerCourseLanding {
+    padding-top: max(0.4rem, env(safe-area-inset-top));
+    padding-bottom: 0.35rem;
+  }
+
+  /*
+    Misma columna que el hero (outer + gutter alineados con padding de .layout en la landing).
+    Reducimos padding horizontal respecto al pill genérico para alinear mejor con breadcrumbs / foto.
+  */
+  .bar.barCourseLanding:not(.barSticky) {
+    justify-content: space-between;
+    border-radius: clamp(26px, 10vw, 36px) clamp(26px, 10vw, 36px) 14px 14px;
+    background: #ffffff;
+    border-color: rgb(229 231 239);
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 90%),
+      0 10px 34px rgb(15 23 42 / 7%);
+    padding: 0.72rem clamp(0.45rem, 2.5vw, 0.75rem);
+  }
+
+  .bar.barCourseLanding.barSticky .actions {
+    margin-right: -0.5rem;
+    padding-right: 0.08rem;
+  }
+}

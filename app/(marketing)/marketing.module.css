@@ -28,6 +28,11 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Landing curso (/cursos/[slug]): franja superior tratada detrás del menú tipo “pastilla grande” */
+.marketing[data-course-landing='true'] {
+  background: #ebeff5;
+}
+
 /* Ruta /inspiracion: sin franjas blancas; el main ocupa toda la altura (sin cabecera ni footer) */
 .marketingInspiracion {
   --ch-bg: #081338;
