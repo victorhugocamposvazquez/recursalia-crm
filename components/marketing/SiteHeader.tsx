@@ -43,7 +43,7 @@ export function SiteHeader() {
       <div
         className={`${styles.outer} ${courseLanding ? styles.outerCourseLanding : ''}`.trim()}
       >
-        <div className={styles.inner}>
+        <div className={`${styles.inner} ${courseLanding ? styles.innerCourseLanding : ''}`.trim()}>
           <nav
             className={`${styles.bar} ${sticky ? styles.barSticky : ''} ${courseLanding ? styles.barCourseLanding : ''}`}
             aria-label="Principal"

@@ -455,26 +455,31 @@
   background: rgb(255 255 255 / 10%);
 }
 
-/* —— Landing curso (/cursos/[slug]): móvil, bandeja alta con esquinas; al scroll, barra pill habitual —— */
+/* —— Landing curso (/cursos/[slug]): móvil; misma “columna” que .layout curso —— */
 @media (max-width: 1023px) {
-  .outerCourseLanding {
-    padding-top: max(0.4rem, env(safe-area-inset-top));
+  /* Gutter dentro de max-width (como `.layout`), no en outer → el blanco mismo ancho que hero */
+  .outer.outerCourseLanding {
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: max(0.35rem, env(safe-area-inset-top));
     padding-bottom: 0.35rem;
   }
 
-  /*
-    Misma columna que el hero (outer + gutter alineados con padding de .layout en la landing).
-    Reducimos padding horizontal respecto al pill genérico para alinear mejor con breadcrumbs / foto.
-  */
+  .inner.innerCourseLanding {
+    padding-left: max(var(--marketing-gutter-x, 1.25rem), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--marketing-gutter-x, 1.25rem), env(safe-area-inset-right, 0px));
+  }
+
+  /* Bandeja: solo redondeo superior + base recta (continúa en main blanco, como mock) */
   .bar.barCourseLanding:not(.barSticky) {
     justify-content: space-between;
-    border-radius: clamp(26px, 10vw, 36px) clamp(26px, 10vw, 36px) 14px 14px;
+    border-radius: clamp(28px, 9vw, 36px) clamp(28px, 9vw, 36px) 0 0;
     background: #ffffff;
     border-color: rgb(229 231 239);
     box-shadow:
       0 1px 0 rgb(255 255 255 / 90%),
       0 10px 34px rgb(15 23 42 / 7%);
-    padding: 0.72rem clamp(0.45rem, 2.5vw, 0.75rem);
+    padding: 0.75rem 0.6rem;
   }
 
   .bar.barCourseLanding.barSticky .actions {
