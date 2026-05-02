@@ -269,10 +269,8 @@ export default async function CursoLandingPage({
             <ul className={styles.benefits}>
               {content.benefits.map((b, i) => (
                 <li key={i}>
-                  <span className={styles.bIcon} aria-hidden>
-                    <MoneyBagIcon className={styles.bSvg} />
-                  </span>
-                  <div className={styles.bText}>
+                  <span className={styles.bIcon}>{b.icon || '✓'}</span>
+                  <div>
                     <h3>{b.title}</h3>
                     <p>{b.description}</p>
                   </div>
@@ -283,10 +281,8 @@ export default async function CursoLandingPage({
         )}
 
         {content.highlight && (
-          <div className={styles.highlight}>
-            <span className={styles.highlightIconWrap} aria-hidden>
-              <MoneyBagIcon className={styles.highlightSvg} />
-            </span>
+          <div className={styles.highlight} role="note">
+            <MoneyBagIcon className={styles.highlightIcon} aria-hidden />
             <p className={styles.highlightCopy}>{content.highlight}</p>
           </div>
         )}

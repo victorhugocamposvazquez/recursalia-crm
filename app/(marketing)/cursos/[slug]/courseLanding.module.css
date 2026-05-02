@@ -212,91 +212,72 @@
   display: flex;
   gap: 1rem;
   align-items: flex-start;
-  padding: 1.15rem 1.35rem;
-  background: rgb(250 245 255);
-  border-radius: 14px;
-  box-shadow: 0 4px 20px rgb(126 34 206 / 5%);
-  transition: box-shadow 0.22s ease;
+  padding: 1.15rem 1.2rem;
+  background: var(--ch-surface);
+  border-radius: var(--ch-radius-sm);
+  box-shadow: 0 2px 14px rgb(17 24 39 / 4%);
+  transition: box-shadow 0.2s ease;
 }
 
 .benefits li:hover {
-  box-shadow: 0 12px 32px rgb(126 34 206 / 9%);
+  box-shadow: 0 8px 28px rgb(5 150 105 / 10%);
 }
 
 .bIcon {
   flex-shrink: 0;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(243 232 255);
-  border-radius: 10px;
-  color: rgb(126 34 206);
-}
-
-.bSvg {
-  display: block;
-  width: 1.35rem;
-  height: 1.35rem;
-}
-
-.bText {
-  min-width: 0;
-  flex: 1;
+  font-size: 1.25rem;
+  background: var(--ch-blue-light);
+  border-radius: 12px;
+  line-height: 1;
 }
 
 .benefits h3 {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.3rem;
   font-size: 0.98rem;
-  color: rgb(17 24 39);
+  color: var(--ch-navy);
   font-weight: 700;
 }
 
 .benefits p {
   margin: 0;
   font-size: 0.875rem;
-  color: rgb(71 85 105);
-  line-height: 1.52;
+  color: var(--ch-text-muted);
+  line-height: 1.5;
 }
 
 .highlight {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.2rem 1.4rem;
-  background: rgb(238 242 255);
-  border-radius: 14px;
+  gap: clamp(1rem, 4vw, 1.85rem);
+  padding: clamp(1.35rem, 4vw, 1.85rem) clamp(1.5rem, 5vw, 2.65rem);
   margin-bottom: 2rem;
-  box-shadow: 0 4px 22px rgb(99 102 241 / 6%);
+  background: #e9ecf7;
+  border-radius: 22px;
 }
 
-.highlightIconWrap {
+.highlightIcon {
   flex-shrink: 0;
-  width: 2.75rem;
-  height: 2.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgb(243 232 255);
-  border-radius: 10px;
-  color: rgb(126 34 206);
-}
-
-.highlightSvg {
+  width: clamp(2.125rem, 5.5vw, 2.5rem);
+  height: clamp(2.125rem, 5.5vw, 2.5rem);
+  align-self: center;
   display: block;
-  width: 1.4rem;
-  height: 1.4rem;
+  color: #5f6faa;
 }
 
 .highlightCopy {
   margin: 0;
   flex: 1;
   min-width: 0;
-  font-size: 0.95rem;
-  color: rgb(30 41 59);
-  font-weight: 500;
-  line-height: 1.55;
+  font-size: clamp(1.02rem, 2.35vw, 1.135rem);
+  font-weight: 600;
+  color: #262b36;
+  line-height: 1.52;
+  letter-spacing: -0.018em;
 }
 
 /* Tabs contenido */
