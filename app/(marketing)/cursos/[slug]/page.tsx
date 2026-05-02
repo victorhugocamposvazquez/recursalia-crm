@@ -274,7 +274,7 @@ export default async function CursoLandingPage({
             {content.benefits && content.benefits.length > 0 && (
               <ul className={styles.benefits}>
                 {content.benefits.map((b, i) => (
-                  <li key={i}>
+                  <li key={i} className={styles.youGetCard}>
                     <span className={styles.bIcon}>{b.icon || '✓'}</span>
                     <div className={styles.bBody}>
                       <h3>{b.title}</h3>
@@ -285,7 +285,7 @@ export default async function CursoLandingPage({
               </ul>
             )}
             {content.highlight && (
-              <div className={styles.highlight} role="note">
+              <div className={`${styles.youGetCard} ${styles.highlight}`} role="note">
                 <span className={styles.highlightIconBox} aria-hidden>
                   <SalaryMoneyBagIcon className={styles.highlightIcon} />
                 </span>
