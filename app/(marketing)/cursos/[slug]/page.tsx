@@ -5,6 +5,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { CourseProgramAccordion } from '@/components/marketing/CourseProgramAccordion';
 import { CourseReviewList, type ReviewRow } from '@/components/marketing/CourseReviewList';
 import { CourseSectionNav } from '@/components/marketing/CourseSectionNav';
+import { CourseStickyCheckoutBar } from '@/components/marketing/CourseStickyCheckoutBar';
 import { SalaryMoneyBagIcon } from '@/components/marketing/SalaryMoneyBagIcon';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
@@ -173,7 +174,9 @@ export default async function CursoLandingPage({
     input.level;
 
   return (
-    <div className={styles.layout}>
+    <div
+      className={`${styles.layout}${hotmartUrl ? ` ${styles.layoutStickyCheckout}` : ''}`}
+    >
       <article className={styles.main}>
         <nav className={styles.breadcrumb} aria-label="Migas de pan">
           <Link href="/">Inicio</Link>
@@ -420,17 +423,13 @@ export default async function CursoLandingPage({
       </aside>
 
       {hotmartUrl && (
-        <div className={styles.mobileCta}>
-          <div className={styles.mobileCtaInner}>
-            <div className={styles.mobilePrice}>
-              {showStrike && <span>{formatMoney(original)}</span>}
-              <strong>{displayPrice}</strong>
-            </div>
-            <a className={styles.mobileBuy} href={hotmartUrl}>
-              Comprar
-            </a>
-          </div>
-        </div>
+        <CourseStickyCheckoutBar
+          title={title}
+          hotmartUrl={hotmartUrl}
+          displayPriceLabel={displayPrice}
+          originalPriceLabel={showStrike ? formatMoney(original) : null}
+          showStrike={showStrike}
+        />
       )}
     </div>
   );

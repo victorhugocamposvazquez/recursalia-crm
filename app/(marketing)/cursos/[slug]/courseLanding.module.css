@@ -50,6 +50,16 @@
   }
 }
 
+.layoutStickyCheckout {
+  padding-bottom: clamp(6rem, 14vh, 7.85rem);
+}
+
+@media (min-width: 960px) {
+  .layout.layoutStickyCheckout {
+    padding-bottom: clamp(6.35rem, 13vh, 8rem);
+  }
+}
+
 .main {
   min-width: 0;
 }
@@ -677,66 +687,4 @@
 .backSep {
   color: var(--ch-border);
   user-select: none;
-}
-
-/* CTA fijo móvil */
-.mobileCta {
-  display: none;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 40;
-  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0));
-  background: linear-gradient(180deg, transparent, rgb(245 247 250 / 94%) 18%, var(--ch-bg));
-}
-
-@media (max-width: 959px) {
-  .mobileCta {
-    display: block;
-  }
-}
-
-.mobileCtaInner {
-  max-width: 1180px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.mobilePrice {
-  flex: 1;
-  min-width: 0;
-}
-
-.mobilePrice strong {
-  display: block;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--ch-blue);
-  letter-spacing: -0.02em;
-}
-
-.mobilePrice span {
-  font-size: 0.7rem;
-  color: var(--ch-text-muted);
-  text-decoration: line-through;
-  margin-right: 0.35rem;
-}
-
-.mobileBuy {
-  flex-shrink: 0;
-  padding: 0.8rem 1.25rem;
-  background: var(--ch-blue, #059669);
-  color: #fff !important;
-  font-weight: 700;
-  font-size: 0.9rem;
-  border-radius: 999px;
-  text-decoration: none;
-  box-shadow: 0 6px 22px rgb(5 150 105 / 32%);
-}
-
-.mobileBuy:hover {
-  filter: brightness(1.06);
 }

@@ -1,0 +1,243 @@
+.root {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 46;
+  padding: 0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0)
+    env(safe-area-inset-left, 0);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(calc(100% + 6px));
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.24s ease;
+}
+
+.rootVisible {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.inner {
+  max-width: 82.8rem;
+  margin: 0 auto;
+  padding: 0.8rem var(--marketing-gutter-x, 1.25rem) 0.65rem;
+  background: var(--ch-surface, #ffffff);
+  border-top: 1px solid rgb(27 29 30 / 7%);
+  box-shadow:
+    0 -8px 32px rgb(17 24 39 / 6%),
+    0 -2px 8px rgb(17 24 39 / 4%);
+}
+
+/* —— Escritorio —— */
+.desktopHead {
+  display: none;
+}
+
+.desktopActions {
+  display: none;
+}
+
+.courseTitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--ch-navy, #1b1d1e);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.priceCluster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.06rem;
+  min-width: 0;
+}
+
+.was {
+  font-size: 0.72rem;
+  color: var(--ch-text-muted, rgb(27 29 30 / 55%));
+  text-decoration: line-through;
+}
+
+.now {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--ch-blue, #1b38c4);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.cta {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.48rem;
+  padding: 0.72rem 1.35rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff !important;
+  background: linear-gradient(145deg, #10b981 0%, #059669 48%, #047857 100%);
+  border: 1px solid rgb(27 56 196 / 24%);
+  box-shadow:
+    0 10px 28px rgb(5 150 105 / 32%),
+    inset 0 1px 0 rgb(255 255 255 / 18%);
+  transition:
+    transform 0.15s ease,
+    filter 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.cta:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    0 14px 36px rgb(5 150 105 / 36%),
+    inset 0 1px 0 rgb(255 255 255 / 22%);
+  transform: translateY(-1px);
+}
+
+.ctaCart {
+  flex-shrink: 0;
+  opacity: 0.95;
+}
+
+.trustInline {
+  display: none;
+  align-items: center;
+  gap: 0.32rem;
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: min(240px, 100%);
+  max-width: 280px;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--ch-text-muted, rgb(27 29 30 / 58%));
+}
+
+.lock {
+  flex-shrink: 0;
+  display: inline-flex;
+  margin-top: 0.05rem;
+}
+
+.toTop {
+  flex-shrink: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid rgb(27 56 196 / 35%);
+  background: #fff;
+  color: var(--ch-blue, #1b38c4);
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.15s ease;
+}
+
+.toTop:hover {
+  background: var(--ch-blue-light, #eaefff);
+  border-color: rgb(27 56 196 / 55%);
+}
+
+/* —— Móvil —— */
+.mobileRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+}
+
+.trustMobile {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding-top: 0.15rem;
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  color: var(--ch-text-muted, rgb(27 29 30 / 58%));
+  text-align: center;
+}
+
+.ctaText {
+  white-space: nowrap;
+}
+
+@media (min-width: 960px) {
+  .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.75rem;
+    padding: 0.9rem var(--marketing-gutter-x, 1.75rem) 0.85rem;
+  }
+
+  .desktopHead {
+    display: block;
+    flex: 1 1 32%;
+    min-width: 0;
+  }
+
+  .desktopActions {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.85rem 1.15rem;
+  }
+
+  .desktopActions .priceCluster {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .desktopActions .now {
+    font-size: 1.35rem;
+  }
+
+  .trustInline {
+    display: flex;
+  }
+
+  .toTop {
+    display: flex;
+  }
+
+  .mobileRow,
+  .trustMobile {
+    display: none;
+  }
+
+  .cta {
+    padding: 0.78rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 959px) {
+  .mobileRow .priceCluster {
+    flex-shrink: 0;
+  }
+
+  .mobileRow .cta {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+}
