@@ -5,7 +5,7 @@ import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { CourseTabs } from '@/components/marketing/CourseTabs';
 import { CourseProgramAccordion } from '@/components/marketing/CourseProgramAccordion';
 import { CourseReviewList, type ReviewRow } from '@/components/marketing/CourseReviewList';
-import { MoneyBagIcon } from '@/components/marketing/MoneyBagIcon';
+import { SalaryMoneyBagIcon } from '@/components/marketing/SalaryMoneyBagIcon';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
 import styles from './courseLanding.module.css';
@@ -263,30 +263,36 @@ export default async function CursoLandingPage({
           </div>
         </div>
 
-        {content.benefits && content.benefits.length > 0 && (
-          <>
-            <p className={styles.sectionLabel}>Qué obtienes</p>
-            <ul className={styles.benefits}>
-              {content.benefits.map((b, i) => (
-                <li key={i}>
-                  <span className={styles.bIcon}>{b.icon || '✓'}</span>
-                  <div>
-                    <h3>{b.title}</h3>
-                    <p>{b.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-
-        {content.highlight && (
-          <div className={styles.highlight} role="note">
-            <span className={styles.highlightIconBox} aria-hidden>
-              <MoneyBagIcon className={styles.highlightIcon} />
-            </span>
-            <p className={styles.highlightCopy}>{content.highlight}</p>
-          </div>
+        {(!!content.benefits?.length || !!content.highlight) && (
+          <section
+            className={styles.whatYouGet}
+            aria-labelledby="what-you-get-heading"
+          >
+            <h2 id="what-you-get-heading" className={styles.whatYouGetTitle}>
+              Qué obtienes
+            </h2>
+            {content.benefits && content.benefits.length > 0 && (
+              <ul className={styles.benefits}>
+                {content.benefits.map((b, i) => (
+                  <li key={i}>
+                    <span className={styles.bIcon}>{b.icon || '✓'}</span>
+                    <div className={styles.bBody}>
+                      <h3>{b.title}</h3>
+                      <p>{b.description}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {content.highlight && (
+              <div className={styles.highlight} role="note">
+                <span className={styles.highlightIconBox} aria-hidden>
+                  <SalaryMoneyBagIcon className={styles.highlightIcon} />
+                </span>
+                <p className={styles.highlightCopy}>{content.highlight}</p>
+              </div>
+            )}
+          </section>
         )}
 
         <div className={styles.tabsSection}>
