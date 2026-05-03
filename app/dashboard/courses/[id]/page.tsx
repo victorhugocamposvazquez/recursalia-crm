@@ -29,6 +29,8 @@ export default function CourseDetailPage() {
   const [reviewsAvgRating, setReviewsAvgRating] = useState<'high' | 'mixed'>('high');
   const [reviewsPrompt, setReviewsPrompt] = useState('');
   const [showReviewsConfig, setShowReviewsConfig] = useState(false);
+  const [republishRegenImage, setRepublishRegenImage] = useState(false);
+  const [republishRegenReviews, setRepublishRegenReviews] = useState(false);
   const [socialPosting, setSocialPosting] = useState<'facebook' | 'instagram' | null>(null);
   const [socialMessage, setSocialMessage] = useState('');
   const [socialResult, setSocialResult] = useState<string | null>(null);
@@ -124,6 +126,42 @@ export default function CourseDetailPage() {
       }
       await fetchCourse(false);
       setIsPublishing(false);
+      setSaving(false);
+    }
+  }
+
+  async function handleRepublishWeb() {
+    if (!course?.generated_content) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/publish-course', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseId: id,
+          republish: true,
+          regenerateFeaturedImage: republishRegenImage,
+          regenerateReviews: republishRegenReviews,
+          reviewsCount: republishRegenReviews ? reviewsCount : undefined,
+          reviewsAvgRating: republishRegenReviews ? reviewsAvgRating : undefined,
+          reviewsPrompt:
+            republishRegenReviews && reviewsPrompt.trim()
+              ? reviewsPrompt.trim()
+              : undefined,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.details ?? data.error ?? 'Error al republicar');
+      }
+      setCourse(data);
+      await fetchCourse(false);
+      setRepublishRegenImage(false);
+      setRepublishRegenReviews(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
       setSaving(false);
     }
   }
@@ -313,6 +351,53 @@ export default function CourseDetailPage() {
         </div>
       )}
 
+      {course.generated_content && !editMode && (
+        <section className={styles.republishPanel} aria-label="Página pública Recursalia">
+          <h4 className={styles.republishTitle}>Web pública (/cursos/…)</h4>
+          <p className={styles.republishHint}>
+            Republicar sincroniza título y metadescripciones desde el contenido generado o editado
+            en Supabase para que los vea la web pública (/cursos/…) al momento.
+            {course.status !== 'published'
+              ? ' Si estás en borrador, también se activa estado publicado y se asigna el slug.'
+              : ''}
+          </p>
+          <div className={styles.republishActions}>
+            <button
+              type="button"
+              onClick={() => handleRepublishWeb()}
+              disabled={saving}
+              className={styles.btnPrimary}
+            >
+              {course.status === 'published'
+                ? saving
+                  ? 'Actualizando…'
+                  : 'Actualizar página pública'
+                : saving
+                  ? 'Activando…'
+                  : 'Activar página pública'}
+            </button>
+          </div>
+          <div className={styles.republishChecks}>
+            <label>
+              <input
+                type="checkbox"
+                checked={republishRegenImage}
+                onChange={(e) => setRepublishRegenImage(e.target.checked)}
+              />
+              Regenerar portada con Gemini (sustituye imagen si hay API configurada)
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                checked={republishRegenReviews}
+                onChange={(e) => setRepublishRegenReviews(e.target.checked)}
+              />
+              Regenerar todas las reseñas en Supabase (IA); usa cantidad/media de Config reseñas si está definida antes de republicar.
+            </label>
+          </div>
+        </section>
+      )}
+
       {error && <p className={styles.errorMsg}>{error}</p>}
 
       <div className={styles.meta}>
@@ -323,9 +408,8 @@ export default function CourseDetailPage() {
         </span>
       </div>
 
-      {course.wp_course_id && (
-        <p className={styles.metaLine}>WordPress ID: {course.wp_course_id}</p>
-      )}
+
+
       {course.public_slug && (
         <p className={styles.metaLine}>
           Web pública:{' '}
@@ -335,13 +419,13 @@ export default function CourseDetailPage() {
         </p>
       )}
 
-      {!editMode && content && (course.wp_course_id || course.public_slug) && (
+      {!editMode && content && course.public_slug && (
         <section className={styles.hotmartSection}>
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Enlace de pago Hotmart</h3>
             <p className={styles.hotmartNote}>
-              Crea el producto en Hotmart y pega aquí el enlace de pago; se sincroniza con Supabase
-              {course.wp_course_id ? ' y con WordPress' : ''}.
+              Crea el producto en Hotmart y pega aquí el enlace de pago; queda guardado en Supabase
+              junto al curso.
             </p>
             <div className={styles.hotmartRow}>
               <input
@@ -374,7 +458,7 @@ export default function CourseDetailPage() {
                   }
                 }}
               >
-                {savingHotmart ? 'Guardando...' : course.wp_course_id ? 'Guardar en WordPress' : 'Guardar enlace'}
+                {savingHotmart ? 'Guardando...' : 'Guardar enlace'}
               </button>
             </div>
           </div>

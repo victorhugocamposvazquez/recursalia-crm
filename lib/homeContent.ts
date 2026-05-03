@@ -1,4 +1,4 @@
-/** Categorías alineadas con la home actual de recursalia.com (WordPress / Tutor). */
+/** Etiquetas de categorías para búsqueda en la home. */
 export const HOME_COURSE_CATEGORIES = [
   { label: 'Yoga', q: 'yoga' },
   { label: 'Relaciones', q: 'relaciones' },

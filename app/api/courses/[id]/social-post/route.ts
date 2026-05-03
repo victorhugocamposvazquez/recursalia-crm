@@ -1,59 +1,13 @@
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
-import { postToBoth, buildFacebookMessage, buildInstagramCaption } from '@/services/metaSocialService';
+import {
+  postToBoth,
+  buildFacebookMessage,
+  buildInstagramCaption,
+} from '@/services/metaSocialService';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 import type { GeneratedCourseStructure } from '@/types';
-
-async function getWpCourseData(wpCourseId: string): Promise<{ imageUrl?: string; permalink?: string }> {
-  const wpUrl = process.env.WORDPRESS_URL;
-  const user = process.env.WORDPRESS_USER;
-  const pass = process.env.WORDPRESS_APP_PASSWORD;
-  if (!wpUrl || !user || !pass) {
-    console.warn('[social-post] WP credentials missing:', { wpUrl: !!wpUrl, user: !!user, pass: !!pass });
-    return {};
-  }
-
-  const authHeader = `Basic ${Buffer.from(`${user}:${pass}`).toString('base64')}`;
-  const result: { imageUrl?: string; permalink?: string } = {};
-
-  try {
-    const courseEndpoint = `${wpUrl}/wp-json/wp/v2/courses/${wpCourseId}?_fields=featured_media,link`;
-    console.log('[social-post] Fetching WP course:', courseEndpoint);
-
-    const res = await fetch(courseEndpoint, {
-      headers: { Authorization: authHeader },
-    });
-    if (!res.ok) {
-      console.warn('[social-post] WP course fetch failed:', res.status, await res.text());
-      return {};
-    }
-    const data = (await res.json()) as { featured_media?: number; link?: string };
-    console.log('[social-post] WP course data:', { featured_media: data.featured_media, link: data.link });
-
-    if (data.link) {
-      result.permalink = data.link;
-    }
-
-    if (data.featured_media) {
-      const mediaEndpoint = `${wpUrl}/wp-json/wp/v2/media/${data.featured_media}?_fields=source_url`;
-      const mediaRes = await fetch(mediaEndpoint, {
-        headers: { Authorization: authHeader },
-      });
-      if (!mediaRes.ok) {
-        console.warn('[social-post] WP media fetch failed:', mediaRes.status, await mediaRes.text());
-      } else {
-        const mediaData = (await mediaRes.json()) as { source_url?: string };
-        console.log('[social-post] source_url:', mediaData.source_url);
-        result.imageUrl = mediaData.source_url;
-      }
-    }
-  } catch (err) {
-    console.error('[social-post] getWpCourseData error:', err);
-  }
-
-  return result;
-}
 
 export async function POST(
   req: NextRequest,
@@ -68,7 +22,7 @@ export async function POST(
 
     const { data: course, error: fetchError } = await getSupabase()
       .from('courses')
-      .select('generated_content, wp_course_id')
+      .select('generated_content, public_slug, featured_image_url')
       .eq('id', id)
       .single();
 
@@ -78,19 +32,14 @@ export async function POST(
 
     const content = course.generated_content as GeneratedCourseStructure;
 
+    const siteBase = (process.env.NEXT_PUBLIC_SITE_URL ?? '').replace(/\/$/, '');
+
     let courseUrl: string | undefined;
-    let imageUrl: string | undefined;
-
-    console.log('[social-post] wp_course_id:', course.wp_course_id);
-    if (course.wp_course_id) {
-      const wpData = await getWpCourseData(String(course.wp_course_id));
-      courseUrl = wpData.permalink;
-      imageUrl = wpData.imageUrl;
+    if (course.public_slug && siteBase) {
+      courseUrl = `${siteBase}/cursos/${course.public_slug}`;
     }
-    console.log('[social-post] courseUrl:', courseUrl ?? '(none)');
-    console.log('[social-post] imageUrl:', imageUrl ?? '(none)');
 
-    const wpUrl = process.env.WORDPRESS_URL;
+    const imageUrl = course.featured_image_url?.trim() || undefined;
 
     const facebookMessage =
       body.message?.trim() ||
@@ -98,9 +47,18 @@ export async function POST(
 
     const instagramCaption =
       body.message?.trim() ||
-      buildInstagramCaption(content.title, content.short_description, wpUrl);
+      buildInstagramCaption(
+        content.title,
+        content.short_description,
+        siteBase || undefined
+      );
 
-    const result = await postToBoth({ facebookMessage, instagramCaption, link: courseUrl, imageUrl });
+    const result = await postToBoth({
+      facebookMessage,
+      instagramCaption,
+      link: courseUrl,
+      imageUrl,
+    });
 
     const published: string[] = [];
     if (result.facebook) published.push('Facebook');

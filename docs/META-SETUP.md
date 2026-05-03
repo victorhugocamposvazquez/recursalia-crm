@@ -108,12 +108,12 @@ Documentación: [App Review - Meta for Developers](https://developers.facebook.c
 
 ---
 
-## Orden de publicación (Instagram necesita imagen)
+## Orden recomendado (Instagram necesita imagen)
 
-1. **Publicar el curso en WordPress** primero (con imagen destacada generada por Gemini)
+1. **Publicar o republicar el curso** con portada (`featured_image_url` en Supabase, p. ej. vía Gemini)
 2. **Después** publicar en Facebook e Instagram
 
-Si publicas en redes antes de WordPress, no habrá imagen y Instagram fallará con "requiere imagen".
+Sin imagen destacada, Instagram responderá que requiere imagen.
 
 ---
 

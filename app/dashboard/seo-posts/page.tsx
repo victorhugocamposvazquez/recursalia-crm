@@ -191,7 +191,7 @@ export default function SeoPostsPage() {
 
             {selectedCourse && (
               <p style={{ marginTop: '0.75rem', fontSize: '0.85rem', color: '#64748b' }}>
-                Tema: {selectedCourse.topic} | WP ID: {selectedCourse.wp_course_id ?? 'N/A'}
+                Tema: {selectedCourse.topic}
               </p>
             )}
 

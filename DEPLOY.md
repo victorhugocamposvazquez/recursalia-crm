@@ -15,7 +15,7 @@ SUPABASE_SERVICE_ROLE_KEY=placeholder
 1. Cuenta Vercel
 2. Repo Git (GitHub/GitLab/Bitbucket)
 3. Supabase con migraciones 001 + 002 (`public_slug`, RLS, reseñas, blog)
-4. `OPENAI_API_KEY`; Hotmart si usas checkout; WordPress solo si `WORDPRESS_PUBLISH_ENABLED` no es `false`
+4. `OPENAI_API_KEY`; Hotmart si usas checkout manual (sin API en CRM)
 
 ## Pasos
 
@@ -34,10 +34,6 @@ Si al publicar ves **«Could not find the 'featured_image_url' column»**, **«S
 **Qué hacer:** en Supabase → **SQL** → pega y ejecuta el archivo `supabase/migrations/002_public_site_blog_reviews.sql` completo (es idempotente: `IF NOT EXISTS`, etc.). Al final del script se ejecuta `NOTIFY pgrst, 'reload schema'` para refrescar la caché. Si tras aplicar el SQL el error de “schema cache” continúa unos minutos, en **Project Settings → API** a veces ayuda esperar o revisar la [guía oficial de refresh](https://supabase.com/docs/guides/troubleshooting/postgrest-not-recognizing-new-columns-or-functions-bd75f5).
 
 **Gemini (imagen destacada):** si ves **429 / quota / `gemini-2.5-flash-preview-image`**, los modelos de imagen suelen exigir **plan de pago** en Google AI Studio o tienen cuota 0 en free tier. Opciones: activar facturación en el proyecto de Google Cloud vinculado, o **quitar `GOOGLE_GEMINI_API_KEY`** en Vercel para omitir la imagen (la publicación sigue). No definas `GEMINI_IMAGE_MODEL` con sufijo `-preview-` salvo que sepas que tu proyecto tiene cuota para ese modelo; el código usa por defecto `gemini-2.5-flash-image`.
-
-Para **solo Next + Supabase** (sin WordPress), en Vercel define `WORDPRESS_PUBLISH_ENABLED=false` y no hace falta `WORDPRESS_*` para publicar cursos en la web.
-
-Variable recomendada: `NEXT_PUBLIC_SITE_URL` (origen canónico, p. ej. `https://tu-dominio.com`) para enlaces en artículos SEO.
 
 O con Supabase CLI:
 ```bash
@@ -60,15 +56,13 @@ En **Project Settings → Environment Variables** añadir:
 | `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase | All |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon/public key | All |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key (secret) | All |
+| `NEXT_PUBLIC_SITE_URL` | Origen público canónico, p. ej. `https://tu-dominio.com` | All |
 | `OPENAI_API_KEY` | API key de OpenAI | All |
-| `WORDPRESS_PUBLISH_ENABLED` | `false` para solo landings Next (sin WP). Si publicas en WP, omite o `true` | All |
-| `WORDPRESS_URL` | https://tudominio.com (solo si publicas en WP) | All |
-| `WORDPRESS_USER` | Usuario WP | All |
-| `WORDPRESS_APP_PASSWORD` | Application Password | All |
-| `HOTMART_CLIENT_ID` | Client ID de Hotmart | All |
-| `HOTMART_CLIENT_SECRET` | Client Secret de Hotmart | All |
-| `GOOGLE_GEMINI_API_KEY` | API key de Google AI (imagen destacada) | All |
-| `GEMINI_IMAGE_MODEL` | Opcional. Por defecto `gemini-2.5-flash-image` (el preview 2.0-imagen ya no existe en la API) | All |
+| `GOOGLE_GEMINI_API_KEY` | API key de Google AI (imagen destacada, opcional) | All |
+| `GEMINI_IMAGE_MODEL` | Opcional. Por defecto `gemini-2.5-flash-image` | All |
+| `CRON_SECRET` | Secreto para `/api/cron/publish-posts` | All |
+
+Opcionales según uso: tokens Meta (`META_*`) para redes; `CRON_SECRET` solo si activas cron de blog.
 
 ### 4. Deploy
 
@@ -90,20 +84,11 @@ vercel --prod
 
 O conectar el repo desde el dashboard de Vercel (Import Git Repository).
 
-### 5. WordPress
+### 5. Hotmart (opcional)
 
-- Crear Application Password: Usuarios → Tu perfil → Application Passwords
-- Tutor LMS: El CPT `courses` se crea vía `/wp-json/wp/v2/courses`
-- **Plugin Recursalia Course API**: Copiar `wordpress-plugin/recursalia-course-api/` a `wp-content/plugins/` y activar. Requiere Site Reviews instalado.
-- Permalinks: Settings → Permalinks → Post name
+El CRM no crea productos en Hotmart por API. Si en el futuro usas OAuth de Hotmart en otro flujo, configura las credenciales en Vercel según esa integración.
 
-### 6. Hotmart
-
-- Crear app en https://developers.hotmart.com
-- OAuth2 client_credentials
-- Si el endpoint de productos difiere, usar `HOTMART_PRODUCTS_URL`
-
-### 7. Verificación
+### 6. Verificación
 
 ```bash
 # Generar curso

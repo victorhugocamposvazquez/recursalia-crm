@@ -1,10 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
-import {
-  createReviewCategory,
-  createReviews as createSiteReviews,
-} from '@/services/siteReviewsService';
+import { replaceCourseReviews } from '@/services/coursePublicService';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 import type { GeneratedReview } from '@/types';
 
@@ -15,7 +12,6 @@ export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as {
       courseId: string;
-      wpCourseId?: number;
       reviews: GeneratedReview[];
     };
 
@@ -32,7 +28,7 @@ export async function POST(req: NextRequest) {
     const supabase = getSupabase();
     const { data: course, error: fetchError } = await supabase
       .from('courses')
-      .select('id, wp_course_id, generated_content')
+      .select('id')
       .eq('id', courseId)
       .single();
 
@@ -40,25 +36,12 @@ export async function POST(req: NextRequest) {
       return errorResponse('Course not found', 404);
     }
 
-    const wpId = body.wpCourseId ?? Number(course.wp_course_id);
-    if (!wpId || isNaN(wpId)) {
-      return errorResponse(
-        'Course must be published in WordPress first (wp_course_id required)',
-        400
-      );
-    }
+    await replaceCourseReviews(courseId, reviews);
 
-    const courseTitle =
-      (course.generated_content as { title?: string })?.title ?? courseId;
-    const category = await createReviewCategory(courseTitle);
-    const { created } = await createSiteReviews(
-      wpId,
-      category.slug,
-      reviews,
-      category.term_id
-    );
-
-    return jsonResponse({ created, total: reviews.length });
+    return jsonResponse({
+      saved: reviews.length,
+      total: reviews.length,
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return errorResponse('Publish reviews failed', 500, msg);

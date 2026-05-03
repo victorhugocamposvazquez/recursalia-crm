@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
-import { setCourseHotmartLink } from '@/services/wordpressCourseMetaService';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 
 export async function POST(
@@ -24,7 +23,7 @@ export async function POST(
 
     const { data: course, error: fetchError } = await getSupabase()
       .from('courses')
-      .select('wp_course_id, public_slug')
+      .select('public_slug')
       .eq('id', id)
       .single();
 
@@ -32,19 +31,11 @@ export async function POST(
       return errorResponse('Course not found', 404);
     }
 
-    if (!course.wp_course_id && !course.public_slug) {
+    if (!course.public_slug) {
       return errorResponse(
-        'Publica el curso primero (sitio web o WordPress) para asociar el enlace Hotmart',
+        'Publica el curso primero (landing con slug público) para asociar el enlace Hotmart',
         400
       );
-    }
-
-    if (course.wp_course_id) {
-      const wpCourseId = Number(course.wp_course_id);
-      if (!Number.isFinite(wpCourseId)) {
-        return errorResponse('Invalid WordPress course id', 400);
-      }
-      await setCourseHotmartLink(wpCourseId, url);
     }
 
     const { data: updated, error: updateError } = await getSupabase()

@@ -76,7 +76,7 @@ export default function ReviewsPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al publicar');
       setError(null);
-      alert(`Publicadas ${data.created} reseñas en Site Reviews`);
+      alert(`Guardadas ${data.saved ?? data.total} reseñas en Supabase`);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -84,15 +84,12 @@ export default function ReviewsPage() {
     }
   }
 
-  const selectedCourse = courses.find((c) => c.id === selectedCourseId);
-  const hasWpCourse = selectedCourse?.wp_course_id;
-
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Generar reseñas con IA</h1>
       <p className={styles.subtitle}>
-        Escribe un prompt personalizado, genera reseñas y publícalas en Site
-        Reviews.
+        Escribe un prompt personalizado, genera reseñas y guárdalas en Supabase
+        para la ficha pública del curso.
       </p>
 
       <div className={styles.form}>
@@ -105,7 +102,7 @@ export default function ReviewsPage() {
             <option value="">— Seleccionar —</option>
             {courses.map((c) => (
               <option key={c.id} value={c.id}>
-                {c.generated_content?.title ?? c.topic} {c.wp_course_id ? '✓ WP' : ''}
+                {c.generated_content?.title ?? c.topic}
               </option>
             ))}
           </select>
@@ -166,14 +163,12 @@ export default function ReviewsPage() {
           )}
           <button
             onClick={handlePublish}
-            disabled={publishing || !hasWpCourse}
+            disabled={publishing}
             className={styles.btnPublish}
           >
             {publishing
-              ? 'Publicando...'
-              : hasWpCourse
-                ? `Publicar ${reviews.length} reseñas a Site Reviews`
-                : 'El curso debe estar publicado en WP primero'}
+              ? 'Guardando...'
+              : `Guardar ${reviews.length} reseñas en Supabase`}
           </button>
         </div>
       )}

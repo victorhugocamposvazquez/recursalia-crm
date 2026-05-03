@@ -79,7 +79,7 @@ Devuelve UNICAMENTE un JSON valido (sin markdown ni texto adicional) con esta es
 
 REGLAS OBLIGATORIAS:
 1. "content" debe tener entre 1200 y 1800 palabras.
-2. Usar HTML semantico: h2, h3, p, ul, li, strong. NO usar h1 (WordPress lo pone).
+2. Usar HTML semantico: h2, h3, p, ul, li, strong. NO usar h1 (la plantilla del blog ya pone titulo principal).
 3. Incluir entre 4-6 subtitulos h2 con keywords secundarias.
 4. Escribir en espanol neutro (usar "tu", evitar "vosotros" y "vos", vocabulario universal).
 5. Tono profesional pero cercano. Sin emojis en el texto.
