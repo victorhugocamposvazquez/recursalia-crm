@@ -55,33 +55,55 @@ export default function DashboardBlogIndexPage() {
           <Link href="/dashboard/seo-posts">Posts SEO</Link>.
         </p>
       ) : (
-        <ul className={styles.courseGrid}>
-          {courses.map((c) => {
-            const total = c.drafts + c.published;
-            return (
-              <li key={c.id} className={styles.courseCard}>
-                <Link href={`/dashboard/blog/${encodeURIComponent(c.id)}`} className={styles.courseCardLink}>
-                  <span className={styles.courseCardTitle}>{c.displayTitle}</span>
-                  <span className={styles.courseCardTopic}>{c.topic}</span>
-                  <span className={styles.courseCardCounts}>
-                    {c.drafts} borrador{c.drafts === 1 ? '' : 'es'} · {c.published} publicado
-                    {c.published === 1 ? '' : 's'} · {total} total
-                  </span>
-                </Link>
-                <div className={styles.courseCardActions}>
-                  <Link href={`/dashboard/courses/${c.id}`} className={styles.courseCardTinyLink}>
-                    Ficha curso
-                  </Link>
-                  {c.public_slug ? (
-                    <Link href={`/cursos/${encodeURIComponent(c.public_slug)}`} className={styles.courseCardTinyLink}>
-                      Web
-                    </Link>
-                  ) : null}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Tema</th>
+                <th>Entradas</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {courses.map((c) => {
+                const total = c.drafts + c.published;
+                return (
+                  <tr key={c.id}>
+                    <td className={styles.tableTitleCell}>
+                      <Link href={`/dashboard/blog/${encodeURIComponent(c.id)}`}>{c.displayTitle}</Link>
+                    </td>
+                    <td className={styles.tableTopic}>{c.topic}</td>
+                    <td className={styles.tableCounts}>
+                      {c.drafts} borrador{c.drafts === 1 ? '' : 'es'} · {c.published} publicado
+                      {c.published === 1 ? '' : 's'} · {total} total
+                    </td>
+                    <td className={styles.actionsCell}>
+                      <Link
+                        href={`/dashboard/blog/${encodeURIComponent(c.id)}`}
+                        className={`${styles.tableAction} ${styles.tableActionAccent}`}
+                      >
+                        Gestionar posts
+                      </Link>
+                      <Link href={`/dashboard/courses/${c.id}`} className={styles.tableAction}>
+                        Ficha curso
+                      </Link>
+                      {c.public_slug ? (
+                        <Link
+                          href={`/cursos/${encodeURIComponent(c.public_slug)}`}
+                          className={styles.tableAction}
+                        >
+                          Web
+                        </Link>
+                      ) : null}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className={styles.totalFooter}>Total: {courses.length} curso{courses.length === 1 ? '' : 's'}</p>
+        </div>
       )}
     </div>
   );
