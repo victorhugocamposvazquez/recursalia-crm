@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import type { SeoPostType, GeneratedSeoPost } from '@/types';
+import { logOpenAiChatUsage } from '@/services/aiUsageLogService';
 
 const CONCURRENCY = 3;
 
@@ -102,6 +103,7 @@ export async function generateSeoPosts(
   courseTitle: string,
   courseUrl: string,
   onProgress?: SeoProgressCallback,
+  courseId?: string | null,
 ): Promise<GeneratedSeoPost[]> {
   const openai = getOpenAI();
   const specs = getPostSpecs(courseTopic);
@@ -125,6 +127,11 @@ export async function generateSeoPosts(
       ],
       temperature: 0.8,
       max_completion_tokens: 16000,
+    });
+
+    logOpenAiChatUsage('seo_post', 'gpt-4o-mini', response.usage, courseId, {
+      post_index: index,
+      post_type: spec.type,
     });
 
     const raw = response.choices[0]?.message?.content?.trim();

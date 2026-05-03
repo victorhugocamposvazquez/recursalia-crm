@@ -47,7 +47,12 @@ export async function POST(req: NextRequest) {
       ? `${custom}\n\n${ratingInstruction}`
       : ratingInstruction;
 
-    const reviews = await generateReviews(courseTitle, count, composedPrompt);
+    const reviews = await generateReviews(
+      courseTitle,
+      count,
+      composedPrompt,
+      courseId
+    );
 
     return jsonResponse({ reviews, count: reviews.length });
   } catch (err) {

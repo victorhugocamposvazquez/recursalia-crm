@@ -51,7 +51,7 @@ export async function GET(
 
   if (!stream) {
     try {
-      const expanded = await expandCourseForEbook(raw);
+      const expanded = await expandCourseForEbook(raw, undefined, id);
       const logos = loadLogos();
       const pdfBytes = await generateCoursePdf(expanded, logos);
       const safeName = (raw.title ?? 'curso')
@@ -83,9 +83,13 @@ export async function GET(
       try {
         send({ type: 'start', total });
 
-        const expanded = await expandCourseForEbook(raw, (current, tot, title) => {
-          send({ type: 'progress', current, total: tot, lesson: title });
-        });
+        const expanded = await expandCourseForEbook(
+          raw,
+          (current, tot, title) => {
+            send({ type: 'progress', current, total: tot, lesson: title });
+          },
+          id
+        );
 
         send({ type: 'progress', current: total, total, lesson: 'Generando PDF...' });
 

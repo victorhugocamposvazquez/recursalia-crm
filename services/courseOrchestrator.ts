@@ -46,7 +46,7 @@ export async function generateAndSaveCourse(
   const courseId = insertData.id;
 
   try {
-    const generatedContent = await generateCourseStructure(payload);
+    const generatedContent = await generateCourseStructure(payload, courseId);
 
     const { error: updateError } = await supabase
       .from('courses')
@@ -110,7 +110,10 @@ export async function publishCourse(
   if (process.env.GOOGLE_GEMINI_API_KEY) {
     await setProgress('Generando imagen destacada con Gemini...');
     try {
-      featuredImageBuffer = await generateCourseFeaturedImage(content);
+      featuredImageBuffer = await generateCourseFeaturedImage(
+        content,
+        courseId
+      );
       await setProgress(`Imagen generada (${featuredImageBuffer.length} bytes).`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -149,7 +152,12 @@ export async function publishCourse(
     `Generando ${revCount} resenas (perfil: ${preset})...`
   );
   try {
-    const reviews = await generateReviews(content.title, revCount, revPrompt);
+    const reviews = await generateReviews(
+      content.title,
+      revCount,
+      revPrompt,
+      courseId
+    );
     await replaceCourseReviews(courseId, reviews);
     await setProgress('Resenas guardadas en Supabase.');
   } catch (err) {
@@ -246,7 +254,7 @@ export async function republishPublicSnapshot(
   if (opts?.regenerateFeaturedImage && process.env.GOOGLE_GEMINI_API_KEY) {
     logBits.push(`${stamp()} Regenerando portada (Gemini)...`);
     try {
-      const buf = await generateCourseFeaturedImage(content);
+      const buf = await generateCourseFeaturedImage(content, courseId);
       featuredImageUrl = await uploadCourseCoverImage(
         courseId,
         buf,
@@ -275,7 +283,12 @@ export async function republishPublicSnapshot(
       : ratingInstruction;
     logBits.push(`${stamp()} Regenerando ${revCount} resenas (perfil ${preset})...`);
     try {
-      const reviews = await generateReviews(content.title, revCount, revPrompt);
+      const reviews = await generateReviews(
+        content.title,
+        revCount,
+        revPrompt,
+        courseId
+      );
       await replaceCourseReviews(courseId, reviews);
       logBits.push(`${stamp()} Reseñas actualizadas en Supabase.`);
     } catch (err) {

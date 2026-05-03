@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import type { GeneratedCourseStructure } from '@/types';
+import { logGeminiImageUsage } from '@/services/aiUsageLogService';
 
 function getClient(): GoogleGenAI {
   const key = process.env.GOOGLE_GEMINI_API_KEY;
@@ -48,8 +49,22 @@ function extractImageBuffer(response: unknown): Buffer | null {
   return null;
 }
 
+function formatGeminiClientError(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err);
+  if (/429|"code"\s*:\s*429|quota|rate.?limit/i.test(raw)) {
+    return [
+      'Google Gemini rechazo la peticion por CUOTA / limite del plan (HTTP 429).',
+      'En AI Studio usa «Configurar la facturacion» para pagar uso o espera el reinicio de la cuota gratuita.',
+      'Documentacion de limites: https://ai.google.dev/gemini-api/docs/rate-limits',
+    ].join(' ');
+  }
+  if (raw.length > 380) return `${raw.slice(0, 380)}…`;
+  return raw;
+}
+
 export async function generateCourseFeaturedImage(
-  content: GeneratedCourseStructure
+  content: GeneratedCourseStructure,
+  courseId?: string | null
 ): Promise<Buffer> {
   const ai = getClient();
   const prompt = buildImagePrompt(content);
@@ -61,24 +76,49 @@ export async function generateCourseFeaturedImage(
    * Documentación oficial gemini-2.5-flash-image (JS): solo `imageConfig`, sin responseModalities.
    * Pasar responseModalities con TEXT+IMAGE en 2.5 a veces deja respuesta solo texto → "no regenerate".
    */
-  const response = await ai.models.generateContent({
-    model: modelId,
-    contents: prompt,
-    config: {
-      imageConfig: { aspectRatio: '16:9' },
-    },
-  });
+  let response: unknown;
+  try {
+    response = await ai.models.generateContent({
+      model: modelId,
+      contents: prompt,
+      config: {
+        imageConfig: { aspectRatio: '16:9' },
+      },
+    });
+  } catch (err) {
+    throw new Error(formatGeminiClientError(err));
+  }
 
-  const buf = extractImageBuffer(response);
-  if (buf && buf.length > 0) return buf;
+  try {
+    const buf = extractImageBuffer(response);
+    if (buf && buf.length > 0) {
+      logGeminiImageUsage(
+        'course_featured_image',
+        modelId,
+        courseId,
+        1
+      );
+      return buf;
+    }
 
-  const parts = (
-    response as { candidates?: Array<{ content?: { parts?: GenContentPart[] } }> }
-  ).candidates?.[0]?.content?.parts ?? [];
-  const firstText = parts.map((p) => p.text).filter(Boolean)[0];
-  throw new Error(
-    firstText
-      ? `Gemini no devolvio imagen (solo texto): ${String(firstText).slice(0, 200)}…`
-      : 'No image data in Gemini response. Comprueba el modelo en AI Studio y que soporte generacion nativa.',
-  );
+    const parts = (
+      response as { candidates?: Array<{ content?: { parts?: GenContentPart[] } }> }
+    ).candidates?.[0]?.content?.parts ?? [];
+    const firstText = parts.map((p) => p.text).filter(Boolean)[0];
+    if (firstText) {
+      const t = String(firstText);
+      if (/429|"code"\s*:\s*429|quota|rate.?limit/i.test(t)) {
+        throw new Error(formatGeminiClientError(new Error(t)));
+      }
+      throw new Error(
+        `Gemini no devolvio imagen (solo texto): ${t.slice(0, 280)}`,
+      );
+    }
+    throw new Error(
+      'No image data in Gemini response. Comprueba el modelo en AI Studio y que soporte generacion nativa.',
+    );
+  } catch (e) {
+    if (e instanceof Error && e.message.startsWith('Gemini bloqueo')) throw e;
+    throw new Error(formatGeminiClientError(e));
+  }
 }

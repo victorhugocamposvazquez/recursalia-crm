@@ -4,6 +4,7 @@ import type {
   CourseVertical,
   GeneratedCourseStructure,
 } from '@/types';
+import { logOpenAiChatUsage } from '@/services/aiUsageLogService';
 
 function verticalToneBlock(vertical: CourseVertical | undefined): string {
   const v = vertical ?? 'general';
@@ -136,7 +137,8 @@ REGLAS OBLIGATORIAS:
 }
 
 export async function generateCourseStructure(
-  payload: CourseInputPayload
+  payload: CourseInputPayload,
+  courseId?: string | null
 ): Promise<GeneratedCourseStructure> {
   const response = await getOpenAI().chat.completions.create({
     model: 'gpt-4o-mini',
@@ -150,6 +152,13 @@ export async function generateCourseStructure(
     ],
     temperature: 0.7,
   });
+
+  logOpenAiChatUsage(
+    'course_structure',
+    'gpt-4o-mini',
+    response.usage,
+    courseId
+  );
 
   const raw = response.choices[0]?.message?.content?.trim();
   if (!raw) throw new Error('OpenAI returned empty response');

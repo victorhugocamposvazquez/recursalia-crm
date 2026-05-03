@@ -1,6 +1,7 @@
 export const CURSOS_NAV = [
   { href: '/dashboard', label: 'Generar curso' },
   { href: '/dashboard/operations', label: 'Operaciones' },
+  { href: '/dashboard/gastos-ia', label: 'Gastos IA' },
   { href: '/dashboard/courses', label: 'Mis cursos' },
   { href: '/dashboard/reviews', label: 'Generar reseñas' },
   { href: '/dashboard/seo-posts', label: 'Posts SEO' },

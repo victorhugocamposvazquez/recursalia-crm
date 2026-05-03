@@ -5,6 +5,7 @@
 
 import OpenAI from 'openai';
 import type { GeneratedCourseStructure } from '@/types';
+import { logOpenAiChatUsage } from '@/services/aiUsageLogService';
 
 const CONCURRENCY = 6;
 
@@ -37,7 +38,8 @@ async function expandLesson(
   courseTitle: string,
   topicTitle: string,
   lessonTitle: string,
-  lessonBrief: string
+  lessonBrief: string,
+  courseId?: string | null
 ): Promise<string> {
   const response = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
@@ -66,6 +68,14 @@ INSTRUCCIONES:
     max_tokens: 2000,
   });
 
+  logOpenAiChatUsage(
+    'ebook_lesson_expand',
+    'gpt-4o-mini',
+    response.usage,
+    courseId,
+    { lesson_title: lessonTitle, topic_title: topicTitle }
+  );
+
   return response.choices[0]?.message?.content?.trim() ?? '';
 }
 
@@ -85,7 +95,8 @@ interface LessonJob {
 
 export async function expandCourseForEbook(
   content: GeneratedCourseStructure,
-  onProgress?: ProgressCallback
+  onProgress?: ProgressCallback,
+  courseId?: string | null
 ): Promise<ExpandedCourseContent> {
   const openai = getOpenAI();
   const total = countLessons(content);
@@ -116,7 +127,8 @@ export async function expandCourseForEbook(
       content.title,
       job.topicTitle,
       job.lessonTitle,
-      job.brief
+      job.brief,
+      courseId
     );
     results.set(`${job.topicIdx}-${job.lessonIdx}`, text);
     completed++;

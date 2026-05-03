@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import type { GeneratedReview } from '@/types';
+import { logOpenAiChatUsage } from '@/services/aiUsageLogService';
 
 function getOpenAI(): OpenAI {
   const key = process.env.OPENAI_API_KEY;
@@ -45,7 +46,8 @@ Cada "date" debe ser string YYYY-MM-DD (prioriza fechas en los ultimos 3 meses c
 export async function generateReviews(
   courseTitle: string,
   totalCount: number = 50,
-  customPrompt?: string
+  customPrompt?: string,
+  courseId?: string | null
 ): Promise<GeneratedReview[]> {
   const allReviews: GeneratedReview[] = [];
 
@@ -67,6 +69,14 @@ export async function generateReviews(
       response_format: { type: 'json_object' },
       max_tokens: 8000,
     });
+
+    logOpenAiChatUsage(
+      'reviews_batch',
+      'gpt-4o-mini',
+      response.usage,
+      courseId,
+      { batch_size: count, offset }
+    );
 
     const raw = response.choices[0]?.message?.content?.trim();
     if (!raw) continue;

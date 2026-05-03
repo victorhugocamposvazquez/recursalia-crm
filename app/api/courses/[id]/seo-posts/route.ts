@@ -62,6 +62,7 @@ export async function POST(
       (current, total, title) => {
         console.log(`[seo-posts] ${current}/${total}: ${title}`);
       },
+      id,
     );
 
     console.log(`[seo-posts] Generated ${posts.length} posts, saving drafts to Supabase...`);
