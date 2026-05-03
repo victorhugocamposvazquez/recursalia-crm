@@ -36,6 +36,9 @@ export default function SeoPostsPage() {
   const [error, setError] = useState('');
   const [publishing, setPublishing] = useState(false);
   const [publishResult, setPublishResult] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkWorking, setBulkWorking] = useState(false);
+  const [resultActionMsg, setResultActionMsg] = useState<{ ok?: string; err?: string }>({});
 
   const fetchCourses = useCallback(async () => {
     setLoading(true);
@@ -66,6 +69,10 @@ export default function SeoPostsPage() {
     fetchCourses();
   }, [fetchCourses]);
 
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [result]);
+
   const selectedCourse = courses.find((c) => c.id === selectedCourseId);
 
   const totalDrafts = courses.reduce(
@@ -78,6 +85,7 @@ export default function SeoPostsPage() {
     setGenerating(true);
     setResult(null);
     setError('');
+    setResultActionMsg({});
     setProgressCurrent(0);
     setProgressTitle('Iniciando generacion...');
 
@@ -131,6 +139,76 @@ export default function SeoPostsPage() {
       setPublishResult(`Error: ${err instanceof Error ? err.message : 'desconocido'}`);
     } finally {
       setPublishing(false);
+    }
+  }
+
+  async function deleteSelectedFromResult() {
+    if (!result || !selectedCourseId) return;
+    const ids = Array.from(selectedIds).filter((id) =>
+      result.records.some((r) => r.id === id),
+    );
+    if (!ids.length) return;
+    if (!confirm(`¿Eliminar ${ids.length} borrador(es) de esta lista? No se puede deshacer.`)) return;
+    setBulkWorking(true);
+    setResultActionMsg({});
+    try {
+      const res = await fetch('/api/blog/posts', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, courseId: selectedCourseId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.details ?? data.error);
+      const removed = new Set(ids);
+      setResult((prev) => {
+        if (!prev) return prev;
+        const records = prev.records.filter((r) => r.id && !removed.has(r.id));
+        return { ...prev, records, saved_drafts: records.length };
+      });
+      setSelectedIds(new Set());
+      setResultActionMsg({ ok: `Eliminados ${data.deleted ?? ids.length} borrador(es).` });
+      void refreshCoursesQuiet();
+    } catch (err) {
+      setResultActionMsg({ err: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBulkWorking(false);
+    }
+  }
+
+  async function publishSelectedFromResult() {
+    if (!result || !selectedCourseId) return;
+    const ids = Array.from(selectedIds).filter((id) =>
+      result.records.some((r) => r.id === id),
+    );
+    if (!ids.length) return;
+    setBulkWorking(true);
+    setResultActionMsg({});
+    try {
+      const res = await fetch('/api/blog/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, courseId: selectedCourseId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.details ?? data.error);
+      const published = (data.posts ?? []) as { id?: string }[];
+      const pubIds = new Set(
+        published.map((p) => p.id).filter((id): id is string => typeof id === 'string' && id.length > 0),
+      );
+      setResult((prev) => {
+        if (!prev) return prev;
+        const records = prev.records.filter((r) => !r.id || !pubIds.has(r.id));
+        return { ...prev, records, saved_drafts: records.length };
+      });
+      setSelectedIds(new Set());
+      setResultActionMsg({
+        ok: `Publicados ${data.published ?? published.length} artículo(s). Ya están visibles en el blog público.`,
+      });
+      void refreshCoursesQuiet();
+    } catch (err) {
+      setResultActionMsg({ err: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBulkWorking(false);
     }
   }
 
@@ -189,6 +267,7 @@ export default function SeoPostsPage() {
                     setSelectedCourseId(e.target.value);
                     setResult(null);
                     setError('');
+                    setResultActionMsg({});
                   }}
                   disabled={generating}
                 >
@@ -245,25 +324,102 @@ export default function SeoPostsPage() {
           <h2 className={styles.logTitle}>
             Resultado: {result.saved_drafts} posts guardados como borrador en Supabase
           </h2>
-          <ul className={styles.logList}>
-            {result.records.map((r, idx) => (
-              <li key={r.id ?? r.slug ?? `row-${idx}`} className={styles.logItem}>
-                <span className={styles.logCheck}>✓</span>
-                <span className={styles.logTitle2}>{r.title}</span>
-                <span className={styles.logBadge}>
-                  {POST_TYPE_LABELS[r.post_type] ?? r.post_type}
-                </span>
-              </li>
-            ))}
+          {result.records.some((r) => r.id) ? (
+            <div className={styles.multiBar}>
+              <span className={styles.multiMuted}>{selectedIds.size} seleccionado(s)</span>
+              <button
+                type="button"
+                className={styles.btnPlain}
+                disabled={generating || bulkWorking}
+                onClick={() =>
+                  setSelectedIds(
+                    new Set(
+                      result.records
+                        .map((r) => r.id)
+                        .filter((id): id is string => Boolean(id)),
+                    ),
+                  )
+                }
+              >
+                Marcar todos
+              </button>
+              <button
+                type="button"
+                className={styles.btnPlain}
+                disabled={generating || bulkWorking}
+                onClick={() => setSelectedIds(new Set())}
+              >
+                Desmarcar
+              </button>
+              <button
+                type="button"
+                className={styles.btnToolbarPrimary}
+                disabled={generating || bulkWorking || selectedIds.size === 0}
+                onClick={() => void publishSelectedFromResult()}
+              >
+                Publicar seleccionados
+              </button>
+              <button
+                type="button"
+                className={styles.btnToolbarDanger}
+                disabled={generating || bulkWorking || selectedIds.size === 0}
+                onClick={() => void deleteSelectedFromResult()}
+              >
+                Eliminar seleccionados
+              </button>
+            </div>
+          ) : null}
+          {resultActionMsg.ok && (
+            <p className={styles.resultFeedbackOk}>{resultActionMsg.ok}</p>
+          )}
+          {resultActionMsg.err && (
+            <p className={styles.resultFeedbackErr}>{resultActionMsg.err}</p>
+          )}
+          {result.records.length === 0 ? (
+            <p className={styles.listEmptyNote}>
+              Ningún post en esta lista: los has publicado, eliminado o mueve de curso/recarga si quieres
+              ver sólo datos actuales.
+            </p>
+          ) : (
+            <ul className={styles.logList}>
+              {result.records.map((r, idx) => {
+              const hasId = Boolean(r.id);
+              return (
+                <li key={r.id ?? r.slug ?? `row-${idx}`} className={styles.logItem}>
+                  <input
+                    type="checkbox"
+                    className={styles.rowChk}
+                    disabled={!hasId || generating || bulkWorking}
+                    checked={hasId && selectedIds.has(r.id as string)}
+                    onChange={() => {
+                      if (!r.id) return;
+                      setSelectedIds((prev) => {
+                        const next = new Set(Array.from(prev));
+                        if (next.has(r.id as string)) next.delete(r.id as string);
+                        else next.add(r.id as string);
+                        return next;
+                      });
+                    }}
+                    aria-label={`Seleccionar: ${r.title}`}
+                  />
+                  <span className={styles.logTitle2}>{r.title}</span>
+                  <span className={styles.logBadge}>
+                    {POST_TYPE_LABELS[r.post_type] ?? r.post_type}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
+          )}
           <div className={styles.publishCta}>
             <p className={styles.publishCtaText}>
               Hasta aquí solo son <strong>borradores</strong>: la web solo muestra entradas con estado{' '}
-              <strong>publicado</strong>. Ve al panel Blog para revisar y publicarlos todos, de uno en uno,
-              o en cola.
+              <strong>publicado</strong>. Puedes{' '}
+              <strong>publicar o eliminar</strong> varios usando la selección arriba, o ir al{' '}
+              <strong>Blog del panel</strong> para revisar SEO (slug, meta) con más detalle.
             </p>
             <Link href="/dashboard/blog" className={styles.publishCtaBtn}>
-              Abrir Blog y publicar
+              Abrir Blog (panel SEO)
             </Link>
           </div>
           {result.errors && result.errors.length > 0 && (
