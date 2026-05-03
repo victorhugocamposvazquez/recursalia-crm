@@ -1,18 +1,20 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './course-detail.module.css';
 import type {
   CourseRecord,
-  CourseVertical,
   GeneratedCourseStructure,
 } from '@/types';
 import type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
 import { REVIEWS_RATING_PRESET_OPTIONS } from '@/lib/reviewsRatingPreset';
-import { COURSE_VERTICAL_OPTIONS } from '@/lib/courseVerticalOptions';
-import { resolveCatalogCategory } from '@/lib/catalogCategory';
+import {
+  PUBLIC_CATALOG_CATEGORIES_FALLBACK,
+  resolveCourseCatalogSlug,
+  type CatalogCategoryPublic,
+} from '@/lib/catalogCategory';
 import { PublishChecklist } from './PublishChecklist';
 
 export default function CourseDetailPage() {
@@ -42,8 +44,10 @@ export default function CourseDetailPage() {
   const [republishRegenReviews, setRepublishRegenReviews] = useState(false);
   const [seoPublishPriority, setSeoPublishPriority] = useState(0);
   const [seoPrioritySaving, setSeoPrioritySaving] = useState(false);
-  const [catalogPublicCategory, setCatalogPublicCategory] =
-    useState<CourseVertical>('general');
+  const [catalogOptions, setCatalogOptions] = useState<CatalogCategoryPublic[]>(
+    PUBLIC_CATALOG_CATEGORIES_FALLBACK,
+  );
+  const [catalogPublicCategory, setCatalogPublicCategory] = useState<string>('general');
   const [catalogSaving, setCatalogSaving] = useState(false);
   const [socialPosting, setSocialPosting] = useState<'facebook' | 'instagram' | null>(null);
   const [socialMessage, setSocialMessage] = useState('');
@@ -51,6 +55,20 @@ export default function CourseDetailPage() {
   const [socialError, setSocialError] = useState<string | null>(null);
   const publishPollRef = useRef<number | null>(null);
   const pdfAbortRef = useRef<AbortController | null>(null);
+
+  const catalogSelectOptions = useMemo(() => {
+    const rows = [...catalogOptions];
+    if (
+      catalogPublicCategory &&
+      !rows.some((o) => o.slug === catalogPublicCategory)
+    ) {
+      rows.unshift({
+        slug: catalogPublicCategory,
+        label: `${catalogPublicCategory} (añadir etiqueta en Categorías /cursos)`,
+      });
+    }
+    return rows;
+  }, [catalogOptions, catalogPublicCategory]);
 
   const fetchCourse = useCallback(
     async (syncEditContent: boolean = false) => {
@@ -68,7 +86,7 @@ export default function CourseDetailPage() {
           typeof data.seo_publish_priority === 'number' ? data.seo_publish_priority : 0,
         );
         setCatalogPublicCategory(
-          resolveCatalogCategory(
+          resolveCourseCatalogSlug(
             typeof data.catalog_category === 'string' ? data.catalog_category : null,
             data.input_payload,
           ),
@@ -83,6 +101,32 @@ export default function CourseDetailPage() {
     },
     [id]
   );
+
+  useEffect(() => {
+    let cancel = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/dashboard/catalog-categories');
+        const j = await res.json();
+        if (cancel || !res.ok) return;
+        if (Array.isArray(j.items) && j.items.length > 0) {
+          setCatalogOptions(
+            j.items.map(
+              (row: { slug: string; label: string }) => ({
+                slug: row.slug,
+                label: row.label,
+              }),
+            ),
+          );
+        }
+      } catch {
+        /* mantener PUBLIC_CATALOG_CATEGORIES_FALLBACK */
+      }
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, []);
 
   useEffect(() => {
     fetchCourse(true);
@@ -132,7 +176,7 @@ export default function CourseDetailPage() {
       if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al guardar categoría');
       setCourse(data);
       setCatalogPublicCategory(
-        resolveCatalogCategory(
+        resolveCourseCatalogSlug(
           typeof data.catalog_category === 'string' ? data.catalog_category : null,
           data.input_payload,
         ),
@@ -426,19 +470,21 @@ export default function CourseDetailPage() {
         <div className={styles.seoPriorityCard}>
           <h4 className={styles.seoPriorityTitle}>Categoría en el catálogo web</h4>
           <p className={styles.seoPriorityLead}>
-            Aparece en <code className={styles.inlineCode}>/cursos</code> para filtrar por bloque
-            (General, Profesional, etc.). Si tus cursos solo salían en «General», asígnalos aquí;
-            no hace falta regenerar el contenido. «Heredar tono» usa la vertical del formulario de
-            creación (solo referencia).
+            Aparece en <code className={styles.inlineCode}>/cursos</code> para filtrar. Las
+            categorías nuevas se añaden en el panel:{' '}
+            <Link href="/dashboard/catalog-categories">Categorías /cursos</Link>. «Heredar tono»
+            usa la vertical del generador de cursos (<code className={styles.inlineCode}>
+              courseVertical
+            </code>) solo como referencia.
           </p>
           <div className={styles.seoPriorityRow}>
             <select
               className={styles.selectInput}
               value={catalogPublicCategory}
-              onChange={(e) => setCatalogPublicCategory(e.target.value as CourseVertical)}
+              onChange={(e) => setCatalogPublicCategory(e.target.value)}
             >
-              {COURSE_VERTICAL_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
+              {catalogSelectOptions.map((o) => (
+                <option key={o.slug} value={o.slug}>
                   {o.label}
                 </option>
               ))}

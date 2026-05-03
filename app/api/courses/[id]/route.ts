@@ -2,8 +2,7 @@ import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
-import type { CourseVertical, GeneratedCourseStructure } from '@/types';
-import { COURSE_VERTICAL_VALUES } from '@/lib/courseVerticalOptions';
+import type { GeneratedCourseStructure } from '@/types';
 import { writeAudit } from '@/services/auditLogService';
 export async function GET(
   req: NextRequest,
@@ -46,7 +45,7 @@ export async function PATCH(
       topic?: string;
       input_payload?: Record<string, unknown>;
       seo_publish_priority?: number;
-      catalog_category?: CourseVertical | null;
+      catalog_category?: string | null;
     };
 
     const updates: Record<string, unknown> = {};
@@ -66,10 +65,26 @@ export async function PATCH(
     if (body.catalog_category !== undefined) {
       if (body.catalog_category === null) {
         updates.catalog_category = null;
-      } else if (
-        COURSE_VERTICAL_VALUES.includes(body.catalog_category as CourseVertical)
-      ) {
-        updates.catalog_category = body.catalog_category;
+      } else {
+        const slug = String(body.catalog_category).trim().toLowerCase();
+        if (!slug) {
+          return errorResponse('catalog_category inválido', 400);
+        }
+        const supabase = getSupabase();
+        const { data: catRow, error: catErr } = await supabase
+          .from('catalog_categories')
+          .select('slug')
+          .eq('slug', slug)
+          .maybeSingle();
+        if (catErr) throw new Error(catErr.message);
+        if (!catRow) {
+          return errorResponse(
+            'Esa categoría no existe. Créala primero en «Categorías /cursos».',
+            400,
+            slug
+          );
+        }
+        updates.catalog_category = slug;
       }
     }
 

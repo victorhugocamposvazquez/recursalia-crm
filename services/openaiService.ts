@@ -17,6 +17,8 @@ function verticalToneBlock(vertical: CourseVertical | undefined): string {
       'Tonos inspiradores para diseno, arte, marca personal, contenido; vocabulario vivo sin ser informal en exceso.',
     technical_skills:
       'Rigor practico paso a paso, nomenclatura precisa cuando toque herramientas o codigo (sin datos inventados de APIs), errores habituales y checks.',
+    photography:
+      'Enfoque en composicion luz equipo y workflow real de fotografo/autor visual; ejemplo practicos de encuadre exposicion color y proyecto creativo sin humo tecnico ilegible.',
   };
   return `PERFIL VERTICAL "${v}" (tono guia, no texto legal):\n${tones[v]}\n`;
 }

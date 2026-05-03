@@ -1,5 +1,9 @@
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
-import { resolveCatalogCategory } from '@/lib/catalogCategory';
+import {
+  PUBLIC_CATALOG_CATEGORIES_FALLBACK,
+  resolveCourseCatalogSlug,
+  type CatalogCategoryPublic,
+} from '@/lib/catalogCategory';
 import styles from '../marketing.module.css';
 import {
   CursosCatalogClient,
@@ -7,7 +11,6 @@ import {
 } from './CursosCatalogClient';
 import type {
   CourseInputPayload,
-  CourseVertical,
   GeneratedCourseStructure,
 } from '@/types';
 
@@ -29,20 +32,17 @@ type ReviewDbRow = {
   rating: number;
 };
 
-function normalizeCat(raw: string | undefined): CourseVertical | 'all' {
-  if (
-    raw === 'general' ||
-    raw === 'professional_soft' ||
-    raw === 'creative' ||
-    raw === 'technical_skills'
-  ) {
-    return raw;
-  }
-  return 'all';
+function normalizeCatParam(
+  raw: string | undefined,
+  activeSlugs: Set<string>
+): string | 'all' {
+  if (!raw?.trim()) return 'all';
+  const s = raw.trim().toLowerCase();
+  return activeSlugs.has(s) ? s : 'all';
 }
 
-function categoryOfCourse(c: CourseRow): CourseVertical {
-  return resolveCatalogCategory(c.catalog_category, c.input_payload);
+function categoryOfCourse(c: CourseRow): string {
+  return resolveCourseCatalogSlug(c.catalog_category, c.input_payload);
 }
 
 /** Etiqueta de bestseller igual criterio que la ficha (`input.bestSeller !== false`). */
@@ -85,7 +85,24 @@ export default async function CursosIndexPage({
   const rawQ = sp.q;
   const qParam = typeof rawQ === 'string' ? rawQ.trim() : '';
   const rawCat = typeof sp.cat === 'string' ? sp.cat.trim() : '';
-  const catFilter = normalizeCat(rawCat);
+
+  let catalogOptions: CatalogCategoryPublic[] = PUBLIC_CATALOG_CATEGORIES_FALLBACK;
+  try {
+    const supabase = createPublicSupabaseClient();
+    const { data: cats } = await supabase
+      .from('catalog_categories')
+      .select('slug, label')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true });
+    if (cats && cats.length > 0) {
+      catalogOptions = cats as CatalogCategoryPublic[];
+    }
+  } catch {
+    catalogOptions = PUBLIC_CATALOG_CATEGORIES_FALLBACK;
+  }
+
+  const activeSlugSet = new Set(catalogOptions.map((c) => c.slug));
+  const catFilter = normalizeCatParam(rawCat, activeSlugSet);
 
   let allCourses: CourseRow[] = [];
 
@@ -104,10 +121,6 @@ export default async function CursosIndexPage({
   } catch {
     allCourses = [];
   }
-
-  const usedCategoriesList = Array.from(
-    new Set(allCourses.map((c) => categoryOfCourse(c))),
-  );
 
   let reviewStats = new Map<string, { avg: number | null; count: number }>();
   if (allCourses.length > 0) {
@@ -154,9 +167,9 @@ export default async function CursosIndexPage({
         <CursosCatalogClient
           key={`${catFilter}|${encodeURIComponent(qParam)}`}
           courses={catalogEntries}
+          catalogOptions={catalogOptions}
           initialCategory={catFilter}
           initialQuery={qParam}
-          usedCategories={usedCategoriesList}
         />
       </div>
     </section>

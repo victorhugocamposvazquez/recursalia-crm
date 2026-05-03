@@ -6,7 +6,8 @@ export type CourseVertical =
   | 'general'
   | 'professional_soft'
   | 'creative'
-  | 'technical_skills';
+  | 'technical_skills'
+  | 'photography';
 
 export interface CourseInputPayload {
   topic: string;
@@ -102,7 +103,7 @@ export interface CourseRecord {
    * Categoría en el listado público /cursos.
    * null = heredar `input_payload.courseVertical`.
    */
-  catalog_category?: CourseVertical | null;
+  catalog_category?: string | null;
   /** Copia ligera del JSON generado la primera vez que pasó a publicado */
   published_content_snapshot?: GeneratedCourseStructure | null;
 }

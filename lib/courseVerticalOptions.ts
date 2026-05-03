@@ -5,6 +5,7 @@ export const COURSE_VERTICAL_VALUES: CourseVertical[] = [
   'professional_soft',
   'creative',
   'technical_skills',
+  'photography',
 ];
 
 export const COURSE_VERTICAL_OPTIONS: { value: CourseVertical; label: string }[] = [
@@ -12,4 +13,5 @@ export const COURSE_VERTICAL_OPTIONS: { value: CourseVertical; label: string }[]
   { value: 'professional_soft', label: 'Habilidades profesionales (liderazgo, equipo…)' },
   { value: 'creative', label: 'Creativo (diseno, marca, contenidos)' },
   { value: 'technical_skills', label: 'Tecnico práctico (herramientas, desarrollo)' },
+  { value: 'photography', label: 'Fotografía y audiovisual' },
 ];

@@ -10,22 +10,11 @@ import {
 } from 'react';
 import styles from '../marketing.module.css';
 import cursosStyles from './cursos-index.module.css';
-import type { CourseVertical } from '@/types';
+import {
+  categoryLabel,
+  type CatalogCategoryPublic,
+} from '@/lib/catalogCategory';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
-
-const VERTICAL_LABELS: Record<CourseVertical, string> = {
-  general: 'General',
-  professional_soft: 'Profesional',
-  creative: 'Creativo',
-  technical_skills: 'Técnico',
-};
-
-const VERTICAL_ORDER: CourseVertical[] = [
-  'general',
-  'professional_soft',
-  'creative',
-  'technical_skills',
-];
 
 export type CourseCatalogEntry = {
   id: string;
@@ -33,7 +22,7 @@ export type CourseCatalogEntry = {
   title: string;
   desc: string;
   imageUrl: string | null;
-  category: CourseVertical;
+  category: string;
   showBestseller: boolean;
   bestsellerLabel: string;
   original?: number | null;
@@ -42,7 +31,7 @@ export type CourseCatalogEntry = {
   reviewCount: number;
 };
 
-export type CatalogCategoryOption = CourseVertical | 'all';
+export type CatalogCategoryFilter = string | 'all';
 
 function formatMoney(n: number | undefined) {
   if (n == null || Number.isNaN(n)) return '—';
@@ -53,7 +42,7 @@ function formatMoney(n: number | undefined) {
   }).format(n);
 }
 
-function syncSearchParams(cat: CatalogCategoryOption, q: string) {
+function syncSearchParams(cat: CatalogCategoryFilter, q: string) {
   const sp = new URLSearchParams();
   const qt = q.trim();
   if (qt) sp.set('q', qt);
@@ -65,35 +54,47 @@ function syncSearchParams(cat: CatalogCategoryOption, q: string) {
   }
 }
 
+function normalizeCatValue(
+  raw: string,
+  slugSet: ReadonlySet<string>
+): CatalogCategoryFilter {
+  if (raw === 'all') return 'all';
+  if (slugSet.has(raw)) return raw;
+  return 'all';
+}
+
 type Props = {
   courses: CourseCatalogEntry[];
-  initialCategory: CatalogCategoryOption;
+  /** Categorías activas del catálogo (desde Supabase `catalog_categories`). */
+  catalogOptions: CatalogCategoryPublic[];
+  initialCategory: CatalogCategoryFilter;
   initialQuery: string;
-  /** Verticales con al menos un curso (vacío ⇒ mostrar todas en el selector). */
-  usedCategories: CourseVertical[];
 };
 
 export function CursosCatalogClient({
   courses,
+  catalogOptions,
   initialCategory,
   initialQuery,
-  usedCategories,
 }: Props) {
-  const [category, setCategory] =
-    useState<CatalogCategoryOption>(initialCategory);
-  const [query, setQuery] = useState(initialQuery);
+  const slugSet = useMemo(
+    () => new Set(catalogOptions.map((o) => o.slug)),
+    [catalogOptions],
+  );
 
-  const categoryOptions = useMemo(() => {
-    const bases =
-      usedCategories.length > 0
-        ? VERTICAL_ORDER.filter((v) => usedCategories.includes(v))
-        : VERTICAL_ORDER;
-    return bases;
-  }, [usedCategories]);
+  const [category, setCategory] =
+    useState<CatalogCategoryFilter>(initialCategory);
+  const [query, setQuery] = useState(initialQuery);
 
   useEffect(() => {
     syncSearchParams(category, query);
   }, [category, query]);
+
+  useEffect(() => {
+    setCategory((prev) =>
+      prev === 'all' || slugSet.has(prev) ? prev : 'all'
+    );
+  }, [slugSet]);
 
   const qLower = query.trim().toLowerCase();
 
@@ -123,6 +124,9 @@ export function CursosCatalogClient({
 
   const totalCatalog = courses.length;
 
+  const selectValue =
+    category === 'all' || slugSet.has(category) ? category : 'all';
+
   return (
     <>
       <h2 className={cursosStyles.catalogH2}>Cursos</h2>
@@ -135,16 +139,18 @@ export function CursosCatalogClient({
           <select
             id="curso-categoria"
             className={cursosStyles.select}
-            value={category}
+            value={selectValue}
             onChange={(e) =>
-              setCategory(normalizeCatValue(e.target.value))
+              setCategory(
+                normalizeCatValue(e.target.value, slugSet),
+              )
             }
             aria-controls="catalogo-resultados"
           >
             <option value="all">Todas</option>
-            {categoryOptions.map((v) => (
-              <option key={v} value={v}>
-                {VERTICAL_LABELS[v]}
+            {catalogOptions.map((o) => (
+              <option key={o.slug} value={o.slug}>
+                {o.label}
               </option>
             ))}
           </select>
@@ -170,6 +176,9 @@ export function CursosCatalogClient({
 
       <div className={cursosStyles.filterSummarySlot}>
         <p className={cursosStyles.filterSummary}>
+          {activeFilters && category !== 'all' ? (
+            <span>{categoryLabel(category, catalogOptions)} · </span>
+          ) : null}
           <span>{filtered.length} resultado{filtered.length === 1 ? '' : 's'}</span>
           {totalCatalog > 0 ? (
             <span>{' · '}{totalCatalog} en catálogo</span>
@@ -189,11 +198,15 @@ export function CursosCatalogClient({
       <div className={cursosStyles.resultsZone}>
         {filtered.length === 0 ? (
           <p className={styles.empty}>
-            {activeFilters
-              ? 'No hay cursos que coincidan con estos filtros.'
-              : courses.length === 0
-                ? 'Aún no hay cursos publicados. Ejecuta la migración SQL en Supabase y publica desde el panel.'
-                : 'Sin resultados.'}
+            {courses.length === 0 ? (
+              'Aún no hay cursos publicados. Ejecuta la migración SQL en Supabase y publica desde el panel.'
+            ) : category !== 'all' && !query.trim() ? (
+              'No hay cursos publicados en esta categoría. Puedes asignar categoría desde la ficha del curso en el panel.'
+            ) : activeFilters ? (
+              'No hay cursos que coincidan con estos filtros.'
+            ) : (
+              'Sin resultados.'
+            )}
           </p>
         ) : (
           <div id="catalogo-resultados" className={cursosStyles.gridTight}>
@@ -285,16 +298,4 @@ export function CursosCatalogClient({
       </div>
     </>
   );
-}
-
-function normalizeCatValue(raw: string): CatalogCategoryOption {
-  if (
-    raw === 'general' ||
-    raw === 'professional_soft' ||
-    raw === 'creative' ||
-    raw === 'technical_skills'
-  ) {
-    return raw;
-  }
-  return 'all';
 }
