@@ -188,7 +188,6 @@ export default async function CursoLandingPage({
             ) : null}
           </div>
           <div className={styles.heroBody}>
-            {bestSeller && <span className={styles.badge}>Bestseller</span>}
             <h1 className={styles.title}>{title}</h1>
             <a
               href="#opiniones"
@@ -214,6 +213,18 @@ export default async function CursoLandingPage({
                 <span className={styles.original}>{formatMoney(original)}</span>
               )}
               <span className={styles.sale}>{displayPrice}</span>
+              {bestSeller && (
+                <span className={styles.heroBestseller}>
+                  <Image
+                    src="/images/card-icon-1.webp"
+                    alt=""
+                    width={26}
+                    height={26}
+                    className={styles.heroBestsellerSeal}
+                  />
+                  <span className={styles.heroBestsellerLabel}>Bestseller</span>
+                </span>
+              )}
             </div>
             <p className={styles.lead}>{content.short_description}</p>
           </div>
