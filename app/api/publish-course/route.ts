@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
       regenerateFeaturedImage?: boolean;
       regenerateReviews?: boolean;
       reviewsCount?: number;
-      reviewsAvgRating?: 'high' | 'mixed';
+      reviewsAvgRating?: string;
       reviewsPrompt?: string;
     };
     const courseId = body?.courseId;

@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './course-detail.module.css';
 import type { CourseRecord, GeneratedCourseStructure } from '@/types';
+import type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
+import { REVIEWS_RATING_PRESET_OPTIONS } from '@/lib/reviewsRatingPreset';
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -26,9 +28,9 @@ export default function CourseDetailPage() {
   const [pdfLesson, setPdfLesson] = useState('');
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [reviewsCount, setReviewsCount] = useState(50);
-  const [reviewsAvgRating, setReviewsAvgRating] = useState<'high' | 'mixed'>('high');
+  const [reviewsAvgRating, setReviewsAvgRating] =
+    useState<ReviewsRatingPreset>('high');
   const [reviewsPrompt, setReviewsPrompt] = useState('');
-  const [showReviewsConfig, setShowReviewsConfig] = useState(false);
   const [republishRegenImage, setRepublishRegenImage] = useState(false);
   const [republishRegenReviews, setRepublishRegenReviews] = useState(false);
   const [socialPosting, setSocialPosting] = useState<'facebook' | 'instagram' | null>(null);
@@ -294,12 +296,6 @@ export default function CourseDetailPage() {
               </button>
               {course.status !== 'published' && (
                 <>
-                  <button
-                    onClick={() => setShowReviewsConfig((v) => !v)}
-                    className={styles.btnSecondary}
-                  >
-                    Config reseñas
-                  </button>
                   <button onClick={handlePublish} disabled={saving} className={styles.btnPrimary}>
                     {saving ? 'Publicando...' : 'Publicar'}
                   </button>
@@ -313,9 +309,26 @@ export default function CourseDetailPage() {
         </div>
       </div>
 
-      {showReviewsConfig && course.status !== 'published' && (
+      {!editMode && (
         <div className={styles.reviewsConfig}>
-          <h4 className={styles.reviewsConfigTitle}>Configuración de reseñas</h4>
+          <h4 className={styles.reviewsConfigTitle}>
+            {course.status !== 'published'
+              ? 'Reseñas al publicar'
+              : 'Opciones de reseñas (IA)'}
+          </h4>
+          <p className={styles.reviewsConfigLead}>
+            {course.status !== 'published' ? (
+              <>
+                Al pulsar <strong>Publicar</strong> se generan las reseñas con IA, se guardan en
+                Supabase y aparecen en la ficha pública junto al slug y la portada.
+              </>
+            ) : (
+              <>
+                Sirven cuando marcas <strong>Regenerar todas las reseñas</strong> más abajo, para
+                sustituir el lote actual en Supabase con la misma configuración.
+              </>
+            )}
+          </p>
           <div className={styles.reviewsConfigGrid}>
             <div className={styles.field}>
               <label>Cantidad de reseñas</label>
@@ -328,14 +341,19 @@ export default function CourseDetailPage() {
               />
             </div>
             <div className={styles.field}>
-              <label>Valoración media</label>
+              <label>Valoración (perfil de estrellas)</label>
               <select
                 value={reviewsAvgRating}
-                onChange={(e) => setReviewsAvgRating(e.target.value as 'high' | 'mixed')}
+                onChange={(e) =>
+                  setReviewsAvgRating(e.target.value as ReviewsRatingPreset)
+                }
                 className={styles.selectInput}
               >
-                <option value="high">Alta (4-5 estrellas, mayoría 5)</option>
-                <option value="mixed">Mixta (3-5 estrellas, más variedad)</option>
+                {REVIEWS_RATING_PRESET_OPTIONS.map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -392,7 +410,7 @@ export default function CourseDetailPage() {
                 checked={republishRegenReviews}
                 onChange={(e) => setRepublishRegenReviews(e.target.checked)}
               />
-              Regenerar todas las reseñas en Supabase (IA); usa cantidad/media de Config reseñas si está definida antes de republicar.
+              Regenerar todas las reseñas (usa cantidad y perfil de «Opciones de reseñas» arriba)
             </label>
           </div>
         </section>

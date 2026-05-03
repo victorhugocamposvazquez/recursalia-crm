@@ -4,12 +4,16 @@ import { useEffect, useState } from 'react';
 import styles from './reviews.module.css';
 import type { CourseRecord } from '@/types';
 import type { GeneratedReview } from '@/types';
+import type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
+import { REVIEWS_RATING_PRESET_OPTIONS } from '@/lib/reviewsRatingPreset';
 
 export default function ReviewsPage() {
   const [courses, setCourses] = useState<CourseRecord[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [prompt, setPrompt] = useState('');
   const [count, setCount] = useState(50);
+  const [reviewsAvgRating, setReviewsAvgRating] =
+    useState<ReviewsRatingPreset>('high');
   const [loading, setLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [reviews, setReviews] = useState<GeneratedReview[]>([]);
@@ -45,6 +49,7 @@ export default function ReviewsPage() {
           courseId: selectedCourseId,
           prompt: prompt || undefined,
           count,
+          reviewsAvgRating,
         }),
       });
       const data = await res.json();
@@ -117,6 +122,22 @@ export default function ReviewsPage() {
             value={count}
             onChange={(e) => setCount(Number(e.target.value) || 50)}
           />
+        </div>
+
+        <div className={styles.field}>
+          <label>Valoración (perfil de estrellas)</label>
+          <select
+            value={reviewsAvgRating}
+            onChange={(e) =>
+              setReviewsAvgRating(e.target.value as ReviewsRatingPreset)
+            }
+          >
+            {REVIEWS_RATING_PRESET_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className={styles.field}>

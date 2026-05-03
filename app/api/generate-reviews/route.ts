@@ -1,6 +1,10 @@
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
+import {
+  buildReviewsRatingInstruction,
+  normalizeReviewsRatingPreset,
+} from '@/lib/reviewsRatingPreset';
 import { generateReviews } from '@/services/openaiReviewsService';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 
@@ -13,6 +17,7 @@ export async function POST(req: NextRequest) {
       courseId?: string;
       prompt?: string;
       count?: number;
+      reviewsAvgRating?: string;
     };
 
     const courseId = body.courseId?.trim();
@@ -35,11 +40,14 @@ export async function POST(req: NextRequest) {
       (course.generated_content as { title?: string })?.title ?? courseId;
     const count = Math.min(Math.max(1, body.count ?? 50), 200);
 
-    const reviews = await generateReviews(
-      courseTitle,
-      count,
-      body.prompt?.trim() || undefined
-    );
+    const preset = normalizeReviewsRatingPreset(body.reviewsAvgRating);
+    const ratingInstruction = buildReviewsRatingInstruction(preset);
+    const custom = body.prompt?.trim();
+    const composedPrompt = custom
+      ? `${custom}\n\n${ratingInstruction}`
+      : ratingInstruction;
+
+    const reviews = await generateReviews(courseTitle, count, composedPrompt);
 
     return jsonResponse({ reviews, count: reviews.length });
   } catch (err) {

@@ -62,6 +62,9 @@ export interface GeneratedReview {
   date: string; // YYYY-MM-DD
 }
 
+/** Perfil de estrellas para IA (reseñas al publicar / regenerar). */
+export type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
+
 // Entidad en Supabase
 export type CourseStatus = 'draft' | 'published' | 'error';
 

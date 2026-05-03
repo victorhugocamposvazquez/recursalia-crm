@@ -7,6 +7,10 @@ import {
   resolveUniquePublicSlug,
   replaceCourseReviews,
 } from './coursePublicService';
+import {
+  buildReviewsRatingInstruction,
+  normalizeReviewsRatingPreset,
+} from '@/lib/reviewsRatingPreset';
 import type {
   CourseInputPayload,
   CourseRecord,
@@ -16,7 +20,8 @@ import type {
 
 export interface ReviewsConfig {
   reviewsCount?: number;
-  reviewsAvgRating?: 'high' | 'mixed';
+  /** Perfil de distribución de estrellas (stellar, high, good, mixed, critical). */
+  reviewsAvgRating?: string;
   reviewsPrompt?: string;
 }
 
@@ -133,19 +138,16 @@ export async function publishCourse(
   }
 
   const revCount = reviewsCfg?.reviewsCount ?? DEFAULT_REVIEWS_COUNT;
-  const revRating = reviewsCfg?.reviewsAvgRating ?? 'high';
-  let revPrompt = reviewsCfg?.reviewsPrompt;
-  if (revRating === 'high') {
-    revPrompt =
-      (revPrompt ? revPrompt + '\n' : '') +
-      'Valoraciones altas: la gran mayoria (80%) deben ser 5 estrellas, el resto 4 estrellas. Alguna de 3 estrellas aislada para credibilidad.';
-  } else {
-    revPrompt =
-      (revPrompt ? revPrompt + '\n' : '') +
-      'Valoraciones mixtas: 40% de 5 estrellas, 30% de 4, 20% de 3 y 10% de 2. Variedad para credibilidad.';
-  }
+  const preset = normalizeReviewsRatingPreset(reviewsCfg?.reviewsAvgRating);
+  const ratingInstruction = buildReviewsRatingInstruction(preset);
+  let revPrompt = reviewsCfg?.reviewsPrompt?.trim();
+  revPrompt = revPrompt
+    ? `${revPrompt}\n\n${ratingInstruction}`
+    : ratingInstruction;
 
-  await setProgress(`Generando ${revCount} resenas (valoracion: ${revRating})...`);
+  await setProgress(
+    `Generando ${revCount} resenas (perfil: ${preset})...`
+  );
   try {
     const reviews = await generateReviews(content.title, revCount, revPrompt);
     await replaceCourseReviews(courseId, reviews);
@@ -206,7 +208,7 @@ export type RepublishPublicOptions = {
   regenerateFeaturedImage?: boolean;
   regenerateReviews?: boolean;
   reviewsCount?: number;
-  reviewsAvgRating?: 'high' | 'mixed';
+  reviewsAvgRating?: string;
   reviewsPrompt?: string;
 };
 
@@ -260,18 +262,13 @@ export async function republishPublicSnapshot(
   if (opts?.regenerateReviews) {
     const revCount =
       opts.reviewsCount ?? parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
-    const revRating = opts.reviewsAvgRating ?? 'high';
+    const preset = normalizeReviewsRatingPreset(opts.reviewsAvgRating);
+    const ratingInstruction = buildReviewsRatingInstruction(preset);
     let revPrompt = opts.reviewsPrompt?.trim();
-    if (revRating === 'high') {
-      revPrompt =
-        (revPrompt ? `${revPrompt}\n` : '') +
-        'Valoraciones altas: la gran mayoría (80%) deben ser 5 estrellas, el resto 4 estrellas. Alguna de 3 estrellas aislada para credibilidad.';
-    } else {
-      revPrompt =
-        (revPrompt ? `${revPrompt}\n` : '') +
-        'Valoraciones mixtas: 40% de 5 estrellas, 30% de 4, 20% de 3 y 10% de 2. Variedad para credibilidad.';
-    }
-    logBits.push(`${stamp()} Regenerando ${revCount} reseñas (IA)...`);
+    revPrompt = revPrompt
+      ? `${revPrompt}\n\n${ratingInstruction}`
+      : ratingInstruction;
+    logBits.push(`${stamp()} Regenerando ${revCount} resenas (perfil ${preset})...`);
     try {
       const reviews = await generateReviews(content.title, revCount, revPrompt);
       await replaceCourseReviews(courseId, reviews);

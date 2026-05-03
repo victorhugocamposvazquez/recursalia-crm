@@ -61,7 +61,7 @@ const FEATURES: Feature[] = [
     details: [
       'Numero de resenas configurable (por defecto lo que indiques en el formulario de generacion)',
       'Generacion en lotes de 25 para optimizar llamadas a OpenAI',
-      'Distribucion de ratings configurable (alta o mixta)',
+      'Distribucion de valoracion configurable (varios perfiles de 1 a 5 estrellas)',
       'Publicacion opcional desde "Generar resenas" tras previsualizar',
     ],
     tech: ['OpenAI GPT-4o-mini', 'Supabase'],
