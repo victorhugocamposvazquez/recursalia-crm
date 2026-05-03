@@ -152,16 +152,6 @@ export default async function CursoLandingPage({
   const hotmartUrl = course.hotmart_product_id?.trim() || null;
   const displayPrice = formatMoney(sale ?? original);
   const updatedLabel = formatUpdatedAt(course.published_at);
-  const tagParts = (() => {
-    const parts = input.topic
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean)
-      .slice(0, 6);
-    if (parts.length > 0) return parts;
-    const single = input.topic.trim();
-    return single ? [single] : ['Curso online'];
-  })();
 
   const levelEs: Record<string, string> = {
     beginner: 'Principiante',
@@ -401,17 +391,6 @@ export default async function CursoLandingPage({
             </span>
           </li>
         </ul>
-
-        <div className={styles.tagsBlock}>
-          <span className={styles.tagsTitle}>Temas</span>
-          <div className={styles.tagsRow}>
-            {tagParts.map((t, i) => (
-              <span key={`${i}-${t}`} className={styles.tagChip}>
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
 
         <div className={styles.backLink}>
           <Link href="#opiniones">Ver todas las opiniones</Link>
