@@ -1,5 +1,66 @@
 import OpenAI from 'openai';
-import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
+import type {
+  CourseInputPayload,
+  CourseVertical,
+  GeneratedCourseStructure,
+} from '@/types';
+
+function verticalToneBlock(vertical: CourseVertical | undefined): string {
+  const v = vertical ?? 'general';
+  const tones: Record<CourseVertical, string> = {
+    general:
+      'Publico amplio LATAM/Espana, lenguaje claro, ejemplos variados entre sectores.',
+    professional_soft:
+      'Enfasis en trabajo en equipo, liderazgo, comunicacion, productividad; escenarios corporativos y carrera profesional.',
+    creative:
+      'Tonos inspiradores para diseno, arte, marca personal, contenido; vocabulario vivo sin ser informal en exceso.',
+    technical_skills:
+      'Rigor practico paso a paso, nomenclatura precisa cuando toque herramientas o codigo (sin datos inventados de APIs), errores habituales y checks.',
+  };
+  return `PERFIL VERTICAL "${v}" (tono guia, no texto legal):\n${tones[v]}\n`;
+}
+
+function validateStructuredCourseOrThrow(
+  parsed: GeneratedCourseStructure,
+  payload: CourseInputPayload
+): void {
+  const tc = payload.topicsCount ?? 6;
+  const lp = payload.lessonsPerTopic ?? 4;
+  if (!Array.isArray(parsed.topics)) {
+    throw new Error('Estructura invalida: modulos ausentes');
+  }
+  if (parsed.topics.length !== tc) {
+    throw new Error(
+      `Estructura invalida: se pidieron ${tc} modulos, el modelo devolvio ${parsed.topics.length}`
+    );
+  }
+  for (let i = 0; i < parsed.topics.length; i++) {
+    const n = parsed.topics[i]?.lessons?.length ?? 0;
+    if (n !== lp) {
+      throw new Error(
+        `Estructura invalida: modulo ${i + 1} debe tener ${lp} lecciones, tiene ${n}`
+      );
+    }
+    for (let j = 0; j < lp; j++) {
+      const L = parsed.topics[i].lessons[j];
+      if (
+        !L?.title?.trim() ||
+        !L?.content ||
+        !(L.content.length > 80)
+      ) {
+        throw new Error(
+          `Modulo ${i + 1} leccion ${j + 1}: titulo/contenido insuficiente`
+        );
+      }
+    }
+  }
+  const short = parsed.short_description?.trim() ?? '';
+  if (short.length < 100) {
+    throw new Error(
+      'Descripcion corta demasiado breve despues del post-procesado; reintenta o ajusta el prompt'
+    );
+  }
+}
 
 function getOpenAI(): OpenAI {
   const key = process.env.OPENAI_API_KEY;
@@ -22,6 +83,7 @@ function buildPrompt(payload: CourseInputPayload): string {
 - Avatar/Persona objetivo: ${payload.avatar}
 - Enfoque: ${payload.focus}
 - Estructura: ${topicsCount} modulos con ${lessonsPerTopic} lecciones cada uno (${totalLessons} lecciones totales)
+${verticalToneBlock(payload.courseVertical)}
 - Precio original: ${priceOriginal}$${discountPct > 0 ? ` | Precio con descuento: ${priceSale}$ (-${discountPct}%)` : ' (sin descuento)'}
 
 Devuelve UNICAMENTE un JSON valido con esta estructura exacta (sin markdown ni texto adicional):
@@ -121,6 +183,8 @@ export async function generateCourseStructure(
       .slice(0, 300)
       .trim() ?? parsed.title;
   }
+
+  validateStructuredCourseOrThrow(parsed, payload);
 
   return parsed;
 }

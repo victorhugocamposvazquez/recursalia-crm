@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import type { ProductType } from '@/types';
+import type { ProductType, CourseVertical } from '@/types';
+import { COURSE_VERTICAL_OPTIONS } from '@/lib/courseVerticalOptions';
 import styles from './dashboard.module.css';
 
 export default function DashboardPage() {
@@ -17,6 +18,7 @@ export default function DashboardPage() {
   const [price, setPrice] = useState(120);
   const [hasDiscount, setHasDiscount] = useState(true);
   const [discountPercent, setDiscountPercent] = useState(50);
+  const [courseVertical, setCourseVertical] = useState<CourseVertical>('general');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; status: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +40,7 @@ export default function DashboardPage() {
           topic, level, avatar, focus, reviewsCount, bestSeller, productType,
           topicsCount, lessonsPerTopic, price,
           discountPercent: hasDiscount ? discountPercent : 0,
+          courseVertical,
         }),
       });
       const data = await res.json();
@@ -113,6 +116,25 @@ export default function DashboardPage() {
               placeholder="Ej: Enfoque práctico con proyectos reales, sin teoría innecesaria"
               rows={3}
             />
+          </div>
+        </div>
+
+        {/* ── Perfil de contenido ── */}
+        <div className={styles.card}>
+          <h4 className={styles.cardTitle}>Perfil del curso (IA)</h4>
+          <div className={styles.field}>
+            <label htmlFor="courseVertical">Vertical / tono</label>
+            <select
+              id="courseVertical"
+              value={courseVertical}
+              onChange={(e) => setCourseVertical(e.target.value as CourseVertical)}
+            >
+              {COURSE_VERTICAL_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

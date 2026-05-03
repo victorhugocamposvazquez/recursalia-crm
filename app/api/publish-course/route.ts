@@ -2,10 +2,11 @@ import { NextRequest } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { requireAuthApi } from '@/lib/auth-api';
 import { publishCourse, republishPublicSnapshot } from '@/services/courseOrchestrator';
+import { writeAudit } from '@/services/auditLogService';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 
 export async function POST(req: NextRequest) {
-  const { error: authError } = await requireAuthApi();
+  const { error: authError, user } = await requireAuthApi();
   if (authError) return authError;
 
   try {
@@ -43,6 +44,19 @@ export async function POST(req: NextRequest) {
       revalidatePath('/');
       revalidatePath('/cursos');
       revalidatePath(`/cursos/${course.public_slug}`);
+    }
+
+    if (user?.email) {
+      await writeAudit({
+        action: body.republish ? 'course_republish_web' : 'course_publish',
+        entityId: courseId.trim(),
+        actorEmail: user.email,
+        meta: {
+          public_slug: course.public_slug,
+          status: course.status,
+          republish: Boolean(body.republish),
+        },
+      });
     }
 
     return jsonResponse(course);

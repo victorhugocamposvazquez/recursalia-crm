@@ -3,7 +3,7 @@ import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 import type { GeneratedCourseStructure } from '@/types';
-
+import { writeAudit } from '@/services/auditLogService';
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -44,6 +44,7 @@ export async function PATCH(
       generated_content?: GeneratedCourseStructure;
       topic?: string;
       input_payload?: Record<string, unknown>;
+      seo_publish_priority?: number;
     };
 
     const updates: Record<string, unknown> = {};
@@ -52,6 +53,14 @@ export async function PATCH(
     if (body.topic !== undefined) updates.topic = body.topic;
     if (body.input_payload !== undefined)
       updates.input_payload = body.input_payload;
+    if (
+      typeof body.seo_publish_priority === 'number' &&
+      Number.isFinite(body.seo_publish_priority)
+    ) {
+      updates.seo_publish_priority = Math.round(
+        Math.min(1e6, Math.max(-1000, body.seo_publish_priority))
+      );
+    }
 
     if (Object.keys(updates).length === 0) {
       return errorResponse('No valid fields to update', 400);
@@ -76,11 +85,20 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { error: authError } = await requireAuthApi();
+  const { error: authError, user } = await requireAuthApi();
   if (authError) return authError;
 
   try {
     const { id } = await params;
+
+    if (user?.email) {
+      await writeAudit({
+        action: 'course_delete',
+        entityId: id,
+        actorEmail: user.email,
+        meta: {},
+      });
+    }
 
     const { error } = await getSupabase()
       .from('courses')

@@ -7,6 +7,7 @@ import {
   buildInstagramCaption,
 } from '@/services/metaSocialService';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
+import { appendUtm } from '@/lib/urlTracking';
 import type { GeneratedCourseStructure } from '@/types';
 
 export async function POST(
@@ -39,11 +40,14 @@ export async function POST(
       courseUrl = `${siteBase}/cursos/${course.public_slug}`;
     }
 
+    const facebookLink =
+      courseUrl !== undefined ? appendUtm(courseUrl, 'social_facebook') : undefined;
+
     const imageUrl = course.featured_image_url?.trim() || undefined;
 
     const facebookMessage =
       body.message?.trim() ||
-      buildFacebookMessage(content.title, content.short_description, courseUrl);
+      buildFacebookMessage(content.title, content.short_description, facebookLink);
 
     const instagramCaption =
       body.message?.trim() ||
@@ -56,7 +60,7 @@ export async function POST(
     const result = await postToBoth({
       facebookMessage,
       instagramCaption,
-      link: courseUrl,
+      link: facebookLink,
       imageUrl,
     });
 

@@ -2,14 +2,16 @@ import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { generateAndSaveCourse } from '@/services/courseOrchestrator';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
-import type { CourseInputPayload } from '@/types';
+import type { CourseInputPayload, CourseVertical } from '@/types';
+import { COURSE_VERTICAL_VALUES } from '@/lib/courseVerticalOptions';
 
 export async function POST(req: NextRequest) {
   const { error: authError } = await requireAuthApi();
   if (authError) return authError;
 
   try {
-    const body = (await req.json()) as CourseInputPayload;
+    const body = (await req.json()) as Partial<CourseInputPayload> &
+      Record<string, unknown>;
 
     if (!body.topic?.trim()) {
       return errorResponse('topic is required', 400);
@@ -42,6 +44,9 @@ export async function POST(req: NextRequest) {
         typeof body.discountPercent === 'number'
           ? Math.max(0, Math.min(80, body.discountPercent))
           : 0,
+      courseVertical: COURSE_VERTICAL_VALUES.includes(body.courseVertical as CourseVertical)
+        ? (body.courseVertical as CourseVertical)
+        : undefined,
     };
 
     const course = await generateAndSaveCourse(payload);

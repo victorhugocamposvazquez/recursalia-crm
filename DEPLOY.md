@@ -14,7 +14,7 @@ SUPABASE_SERVICE_ROLE_KEY=placeholder
 
 1. Cuenta Vercel
 2. Repo Git (GitHub/GitLab/Bitbucket)
-3. Supabase con migraciones 001 + 002 (`public_slug`, RLS, reseñas, blog)
+3. Supabase con migraciones **001**–**004** aplicadas en orden (`public_slug`, RLS, reseñas, blog; contenido editable del sitio; prioridad SEO, snapshot al publicar, `audit_log`)
 4. `OPENAI_API_KEY`; Hotmart si usas checkout manual (sin API en CRM)
 
 ## Pasos
@@ -25,11 +25,15 @@ SUPABASE_SERVICE_ROLE_KEY=placeholder
 # En Supabase SQL Editor, ejecutar en orden:
 # supabase/migrations/001_create_courses_table.sql
 # supabase/migrations/002_public_site_blog_reviews.sql
+# supabase/migrations/003_front_site_content.sql
+# supabase/migrations/004_ops_seo_audit.sql
 ```
 
 La migración **002** añade: `public_slug`, reseñas en `course_reviews`, blog `blog_posts`, bucket público `course_media`, y **RLS** para que el anon key solo lea cursos publicados y posts publicados. El panel sigue usando la **service role** (sin restricción RLS).
 
 Si al publicar ves **«Could not find the 'featured_image_url' column»**, **«Slug check failed: column courses.public_slug does not exist»**, **«Failed to clear reviews»** o **«relation course_reviews does not exist»**, la migración **002 no está aplicada** en ese proyecto (o PostgREST tiene caché vieja).
+
+**Migración 004:** `seo_publish_priority`, `published_content_snapshot`, `publish_priority` en borradores de blog y tabla `audit_log`. Sin ella fallan PATCH de prioridad, auditorías y el orden del cron hasta ejecutar `004_ops_seo_audit.sql`.
 
 **Qué hacer:** en Supabase → **SQL** → pega y ejecuta el archivo `supabase/migrations/002_public_site_blog_reviews.sql` completo (es idempotente: `IF NOT EXISTS`, etc.). Al final del script se ejecuta `NOTIFY pgrst, 'reload schema'` para refrescar la caché. Si tras aplicar el SQL el error de “schema cache” continúa unos minutos, en **Project Settings → API** a veces ayuda esperar o revisar la [guía oficial de refresh](https://supabase.com/docs/guides/troubleshooting/postgrest-not-recognizing-new-columns-or-functions-bd75f5).
 
@@ -61,6 +65,9 @@ En **Project Settings → Environment Variables** añadir:
 | `GOOGLE_GEMINI_API_KEY` | API key de Google AI (imagen destacada, opcional) | All |
 | `GEMINI_IMAGE_MODEL` | Opcional. Por defecto `gemini-2.5-flash-image` | All |
 | `CRON_SECRET` | Secreto para `/api/cron/publish-posts` | All |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | GA4 (opcional; sin valor = sin script) | All |
+| `TRACK_UTM_DISABLED` | `true` para no añadir UTM a enlaces | All |
+| `TRACK_UTM_SOURCE` | Origen utm_source (por defecto `recursalia`) | All |
 
 Opcionales según uso: tokens Meta (`META_*`) para redes; `CRON_SECRET` solo si activas cron de blog.
 

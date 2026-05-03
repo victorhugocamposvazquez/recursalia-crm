@@ -3,9 +3,11 @@ import type { GeneratedSeoPost, SeoPostRecord } from '@/types';
 
 export async function insertBlogPostDraft(
   post: GeneratedSeoPost,
-  courseId: string
+  courseId: string,
+  opts?: { publishPriority?: number }
 ): Promise<SeoPostRecord> {
   const supabase = getSupabase();
+  const priority = opts?.publishPriority ?? 0;
   const { data, error } = await supabase
     .from('blog_posts')
     .insert({
@@ -17,6 +19,7 @@ export async function insertBlogPostDraft(
       post_type: post.post_type,
       status: 'draft',
       tags: post.tags,
+      publish_priority: priority,
     })
     .select('id, slug')
     .single();
@@ -40,6 +43,7 @@ export async function publishDraftBlogPosts(limit: number): Promise<
     .from('blog_posts')
     .select('id, slug')
     .eq('status', 'draft')
+    .order('publish_priority', { ascending: false })
     .order('created_at', { ascending: true })
     .limit(limit);
 

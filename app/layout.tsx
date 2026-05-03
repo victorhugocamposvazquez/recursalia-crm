@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { Inter_Tight, Poppins } from 'next/font/google';
 import './globals.css';
+
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
 
 const interTight = Inter_Tight({
   subsets: ['latin'],
@@ -29,7 +32,20 @@ export default function RootLayout({
       lang="es"
       className={`${interTight.variable} ${poppinsDisplay.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        {children}
+        {GA_MEASUREMENT_ID ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config',${JSON.stringify(GA_MEASUREMENT_ID)});`}
+            </Script>
+          </>
+        ) : null}
+      </body>
     </html>
   );
 }

@@ -9,6 +9,7 @@ import { CourseStickyCheckoutBar } from '@/components/marketing/CourseStickyChec
 import { SalaryMoneyBagIcon } from '@/components/marketing/SalaryMoneyBagIcon';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
+import { appendUtm } from '@/lib/urlTracking';
 import styles from './courseLanding.module.css';
 
 export const revalidate = 60;
@@ -149,7 +150,8 @@ export default async function CursoLandingPage({
       ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
       : null;
 
-  const hotmartUrl = course.hotmart_product_id?.trim() || null;
+  const hotmartRaw = course.hotmart_product_id?.trim() || null;
+  const hotmartUrl = hotmartRaw ? appendUtm(hotmartRaw, 'course_landing') : null;
   const displayPrice = formatMoney(sale ?? original);
   const updatedLabel = formatUpdatedAt(course.published_at);
 

@@ -7,6 +7,7 @@ import styles from './course-detail.module.css';
 import type { CourseRecord, GeneratedCourseStructure } from '@/types';
 import type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
 import { REVIEWS_RATING_PRESET_OPTIONS } from '@/lib/reviewsRatingPreset';
+import { PublishChecklist } from './PublishChecklist';
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -33,6 +34,8 @@ export default function CourseDetailPage() {
   const [reviewsPrompt, setReviewsPrompt] = useState('');
   const [republishRegenImage, setRepublishRegenImage] = useState(false);
   const [republishRegenReviews, setRepublishRegenReviews] = useState(false);
+  const [seoPublishPriority, setSeoPublishPriority] = useState(0);
+  const [seoPrioritySaving, setSeoPrioritySaving] = useState(false);
   const [socialPosting, setSocialPosting] = useState<'facebook' | 'instagram' | null>(null);
   const [socialMessage, setSocialMessage] = useState('');
   const [socialResult, setSocialResult] = useState<string | null>(null);
@@ -52,6 +55,9 @@ export default function CourseDetailPage() {
         if (typeof count === 'number' && count >= 5 && count <= 200) {
           setReviewsCount(count);
         }
+        setSeoPublishPriority(
+          typeof data.seo_publish_priority === 'number' ? data.seo_publish_priority : 0,
+        );
         if (syncEditContent) {
           setEditContent(data.generated_content);
         }
@@ -90,6 +96,25 @@ export default function CourseDetailPage() {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleSaveSeoPriority() {
+    setSeoPrioritySaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/courses/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ seo_publish_priority: seoPublishPriority }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al guardar prioridad');
+      setCourse(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSeoPrioritySaving(false);
     }
   }
 
@@ -308,6 +333,38 @@ export default function CourseDetailPage() {
           )}
         </div>
       </div>
+
+      {!editMode && <PublishChecklist course={course} courseId={id} />}
+
+      {!editMode && (
+        <div className={styles.seoPriorityCard}>
+          <h4 className={styles.seoPriorityTitle}>Prioridad cron del blog SEO</h4>
+          <p className={styles.seoPriorityLead}>
+            Número mayor = los próximos borradores SEO de este curso saldrán antes cuando el cron
+            publique. Afecta sólo a posts generados después de cambiar esta prioridad y guardar.
+          </p>
+          <div className={styles.seoPriorityRow}>
+            <input
+              type="number"
+              className={styles.hotmartInput}
+              value={seoPublishPriority}
+              onChange={(e) =>
+                setSeoPublishPriority(
+                  Math.min(10000, Math.max(-500, Number(e.target.value) || 0)),
+                )
+              }
+            />
+            <button
+              type="button"
+              className={styles.btnSecondary}
+              disabled={seoPrioritySaving}
+              onClick={() => handleSaveSeoPriority()}
+            >
+              {seoPrioritySaving ? 'Guardando...' : 'Guardar prioridad'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {!editMode && (
         <div className={styles.reviewsConfig}>

@@ -1,6 +1,13 @@
 // Input para generación de curso
 export type ProductType = 'course' | 'guide';
 
+/** Plantillas de prompt por tipo de contenido (no legal / claims — solo tono y estructura). */
+export type CourseVertical =
+  | 'general'
+  | 'professional_soft'
+  | 'creative'
+  | 'technical_skills';
+
 export interface CourseInputPayload {
   topic: string;
   level: 'beginner' | 'intermediate' | 'advanced';
@@ -13,6 +20,8 @@ export interface CourseInputPayload {
   lessonsPerTopic?: number;
   price?: number;
   discountPercent?: number;
+  /** Ajuste de tono y profundidad en el prompt OpenAI */
+  courseVertical?: CourseVertical;
 }
 
 // Estructura generada por OpenAI
@@ -87,6 +96,10 @@ export interface CourseRecord {
   featured_image_url?: string | null;
   seo_posts_count?: number | null;
   seo_posts_generated_at?: string | null;
+  /** Mayor número = antes en el cron de publicación de borradores de blog */
+  seo_publish_priority?: number | null;
+  /** Copia ligera del JSON generado la primera vez que pasó a publicado */
+  published_content_snapshot?: GeneratedCourseStructure | null;
 }
 
 // SEO Blog Posts

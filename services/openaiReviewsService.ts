@@ -14,7 +14,7 @@ const DEFAULT_PROMPT = `REGLAS:
 - content: 1-3 oraciones en tono coloquial, como si lo escribiera alguien real despues de hacer el curso. Usa lenguaje informal, cercano, con expresiones naturales. Algunos pueden tener faltas leves o frases cortas. Evita un tono corporativo o demasiado perfecto.
 - rating: Mayoria 4-5, algunas 3 para credibilidad.
 - author_name: Nombres espanoles y latinoamericanos realistas y variados (hombres y mujeres).
-- date: Fechas variadas en los ultimos 6 meses (formato YYYY-MM-DD).
+- date: Fechas variadas mayormente en los ultimos 3 meses con algo mas concentrado en las ultimas 6-8 semanas (formato YYYY-MM-DD), y algunas hacia el limite del trimestre anterior para variedad.
 - Variedad: no repitas estructuras, algunos cortos ("Genial, muy recomendable"), otros mas detallados. Mezcla opiniones sobre el contenido, el profesor, la relacion calidad-precio, lo practico, etc.
 - Sin emojis.`;
 
@@ -36,7 +36,7 @@ Devuelve ÚNICAMENTE un objeto JSON (sin markdown) con esta forma exacta:
   }
 ]}
 
-Cada "date" debe ser string YYYY-MM-DD (fecha en los últimos 6 meses). "rating" entero 1-5.`;
+Cada "date" debe ser string YYYY-MM-DD (prioriza fechas en los ultimos 3 meses como arriba). "rating" entero 1-5.`;
   return customPrompt?.trim()
     ? `${base}\n\nINSTRUCCIONES ADICIONALES:\n${customPrompt}`
     : `${base}\n\n${DEFAULT_PROMPT}`;

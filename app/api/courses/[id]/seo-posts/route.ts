@@ -26,7 +26,9 @@ export async function POST(
 
     const { data: course, error: fetchError } = await getSupabase()
       .from('courses')
-      .select('topic, generated_content, public_slug, status')
+      .select(
+        'topic, generated_content, public_slug, status, seo_publish_priority',
+      )
       .eq('id', id)
       .single();
 
@@ -43,6 +45,11 @@ export async function POST(
 
     const content = course.generated_content as GeneratedCourseStructure;
     const courseUrl = publicCourseUrl(course.public_slug);
+    const publishPriority =
+      typeof (course as { seo_publish_priority?: number }).seo_publish_priority ===
+      'number'
+        ? (course as { seo_publish_priority: number }).seo_publish_priority
+        : 0;
 
     console.log(`[seo-posts] Generating 17 posts for course "${content.title}"`);
 
@@ -62,7 +69,9 @@ export async function POST(
 
     for (const post of posts) {
       try {
-        const record = await insertBlogPostDraft(post, id);
+        const record = await insertBlogPostDraft(post, id, {
+          publishPriority,
+        });
         records.push(record);
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);

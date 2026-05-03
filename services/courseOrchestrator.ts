@@ -183,6 +183,10 @@ export async function publishCourse(
 
   const metaDesc = (content.short_description || content.description || '').slice(0, 320);
 
+  const freezeSnapshot =
+    status === 'published' &&
+    !(course as { published_content_snapshot?: unknown }).published_content_snapshot;
+
   const { data: updated, error: updateError } = await supabase
     .from('courses')
     .update({
@@ -192,6 +196,7 @@ export async function publishCourse(
       meta_title: content.title,
       meta_description: metaDesc || null,
       featured_image_url: featuredImageUrl,
+      ...(freezeSnapshot ? { published_content_snapshot: content } : {}),
       status,
       error_log: finalLog,
     })

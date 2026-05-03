@@ -126,7 +126,8 @@ export default function SeoPostsPage() {
       <div className={styles.header}>
         <h1 className={styles.title}>Posts SEO</h1>
         <p className={styles.subtitle}>
-          Genera 17 posts de blog SEO por curso para captar trafico organico
+          Genera 17 posts de blog SEO por curso para captar trafico organico. El cron ordena borradores
+          por la prioridad que configuras en la ficha del curso (valor más alto antes).
         </p>
       </div>
 
