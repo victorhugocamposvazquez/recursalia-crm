@@ -2,13 +2,14 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
+import { singularEmbed } from '@/lib/blog-embed-normalize';
 import { siteCanonicalBase } from '@/lib/blog-seo';
 import styles from '../../marketing.module.css';
 import blogStyles from '../blog.module.css';
 
 export const revalidate = 120;
 
-async function ogImageForPost(courseId: string | null): Promise<string | undefined> {
+async function ogImageForPost(courseId: string): Promise<string | undefined> {
   if (!courseId) return undefined;
   try {
     const supabase = createPublicSupabaseClient();
@@ -49,7 +50,7 @@ export async function generateMetadata({
       data.meta_description?.slice(0, 320)?.trim() || undefined;
 
     let ogImages: Array<{ url: string }> = [];
-    const imgUrl = await ogImageForPost(data.course_id);
+    const imgUrl = await ogImageForPost(String(data.course_id));
     if (imgUrl) ogImages = [{ url: imgUrl }];
 
     return {
@@ -89,7 +90,9 @@ export default async function BlogPostPage({
     const supabase = createPublicSupabaseClient();
     const { data: post } = await supabase
       .from('blog_posts')
-      .select('title, content, published_at')
+      .select(
+        'title, content, published_at, course_id, courses(public_slug, published_title, topic)'
+      )
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle();
@@ -98,7 +101,22 @@ export default async function BlogPostPage({
       notFound();
     }
 
+    const crRaw = post.courses as unknown;
+    type CourseBrief = {
+      public_slug: string | null;
+      published_title: string | null;
+      topic: string | null;
+    };
+    const cr = singularEmbed(crRaw as CourseBrief | CourseBrief[] | null | undefined);
+
     const url = `${base}/blog/${encodeURIComponent(slug)}`;
+    const courseUrl =
+      cr?.public_slug && base ? `${base}/cursos/${cr.public_slug}` : null;
+    const courseTitle =
+      (cr?.published_title && cr.published_title.trim()) ||
+      (cr?.topic && cr.topic.trim()) ||
+      '';
+
     const jsonLd = {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -112,6 +130,15 @@ export default async function BlogPostPage({
         '@type': 'Organization',
         name: 'Recursalia',
       },
+      ...(courseUrl && courseTitle
+        ? {
+            about: {
+              '@type': 'Course',
+              name: courseTitle,
+              url: courseUrl,
+            },
+          }
+        : {}),
     };
 
     return (
@@ -136,6 +163,12 @@ export default async function BlogPostPage({
               )}
             </p>
             <h1 className={blogStyles.title}>{post.title}</h1>
+            {courseUrl && courseTitle && cr?.public_slug && (
+              <p className={blogStyles.courseLink}>
+                <span className={blogStyles.courseLinkLabel}>Formación relacionada: </span>
+                <Link href={`/cursos/${encodeURIComponent(cr.public_slug)}`}>{courseTitle}</Link>
+              </p>
+            )}
             <div
               className={blogStyles.prose}
               dangerouslySetInnerHTML={{ __html: post.content }}

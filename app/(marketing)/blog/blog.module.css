@@ -55,6 +55,26 @@
   letter-spacing: -0.02em;
 }
 
+.courseLink {
+  margin: -0.5rem 0 1.5rem;
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.courseLinkLabel {
+  color: var(--ch-text-muted, #6b7280);
+}
+
+.courseLink a {
+  color: #1b38c4;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.courseLink a:hover {
+  text-decoration: underline;
+}
+
 .prose {
   font-size: 1.05rem;
   line-height: 1.75;

@@ -1,10 +1,19 @@
 import { getSupabase } from '@/lib/supabase';
+import { singularEmbed } from '@/lib/blog-embed-normalize';
 import { sanitizeSlugForUrl } from '@/lib/blog-seo';
 import type { GeneratedSeoPost, SeoPostRecord } from '@/types';
 
+/** Curso relacionado según FK (Supabase nested select `courses (...)` ). */
+export type BlogPostCourseJoin = {
+  topic: string;
+  published_title: string | null;
+  public_slug: string | null;
+  status: string;
+};
+
 export type BlogPostRow = {
   id: string;
-  course_id: string | null;
+  course_id: string;
   title: string;
   slug: string;
   meta_description: string | null;
@@ -15,13 +24,29 @@ export type BlogPostRow = {
   created_at: string;
   published_at: string | null;
   publish_priority?: number | null;
+  courses?: BlogPostCourseJoin | null;
 };
+
+function normalizeListedRow(row: BlogPostRow & { courses?: unknown }): BlogPostRow {
+  return {
+    ...row,
+    courses: singularEmbed(row.courses as BlogPostCourseJoin | BlogPostCourseJoin[]),
+  };
+}
+
+export function normalizeBlogPostApiRow(row: unknown): BlogPostRow {
+  const r = row as BlogPostRow & { courses?: unknown };
+  return normalizeListedRow(r);
+}
 
 export async function insertBlogPostDraft(
   post: GeneratedSeoPost,
   courseId: string,
   opts?: { publishPriority?: number }
 ): Promise<SeoPostRecord> {
+  if (!courseId?.trim()) {
+    throw new Error('courseId es obligatorio para crear un post SEO');
+  }
   const supabase = getSupabase();
   const priority = opts?.publishPriority ?? 0;
   const { data, error } = await supabase
@@ -91,7 +116,7 @@ export async function listBlogPosts(opts: {
   let q = supabase
     .from('blog_posts')
     .select(
-      'id, course_id, title, slug, meta_description, content, post_type, status, tags, created_at, published_at, publish_priority'
+      'id, course_id, title, slug, meta_description, content, post_type, status, tags, created_at, published_at, publish_priority, courses(topic, published_title, public_slug, status)'
     )
     .order('created_at', { ascending: false })
     .limit(lim);
@@ -101,7 +126,9 @@ export async function listBlogPosts(opts: {
 
   const { data, error } = await q;
   if (error) throw new Error(error.message);
-  return (data ?? []) as BlogPostRow[];
+  return ((data ?? []) as unknown as (BlogPostRow & { courses?: unknown })[]).map(
+    normalizeListedRow
+  );
 }
 
 export async function updateBlogPost(

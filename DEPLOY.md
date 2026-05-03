@@ -14,7 +14,7 @@ SUPABASE_SERVICE_ROLE_KEY=placeholder
 
 1. Cuenta Vercel
 2. Repo Git (GitHub/GitLab/Bitbucket)
-3. Supabase con migraciones **001**–**004** aplicadas en orden (`public_slug`, RLS, reseñas, blog; contenido editable del sitio; prioridad SEO, snapshot al publicar, `audit_log`)
+3. Supabase con migraciones **001**–**005** aplicadas en orden (`public_slug`, RLS, reseñas, blog; contenido editable del sitio; prioridad SEO / `audit_log`; blog siempre enlazado a curso `NOT NULL` + `ON DELETE CASCADE`)
 4. `OPENAI_API_KEY`; Hotmart si usas checkout manual (sin API en CRM)
 
 ## Pasos
@@ -27,7 +27,10 @@ SUPABASE_SERVICE_ROLE_KEY=placeholder
 # supabase/migrations/002_public_site_blog_reviews.sql
 # supabase/migrations/003_front_site_content.sql
 # supabase/migrations/004_ops_seo_audit.sql
+# supabase/migrations/005_blog_posts_course_required.sql
 ```
+
+La migración **005** fuerza que todo `blog_posts.course_id` apunte siempre a un curso (borra borradores sin curso antes de `NOT NULL`) y al eliminar el curso se borran los artículos asociados. La política pública de lectura solo expone posts cuyo curso está publicado con slug.
 
 La migración **002** añade: `public_slug`, reseñas en `course_reviews`, blog `blog_posts`, bucket público `course_media`, y **RLS** para que el anon key solo lea cursos publicados y posts publicados. El panel sigue usando la **service role** (sin restricción RLS).
 

@@ -6,8 +6,16 @@ import styles from './blog-dashboard.module.css';
 
 type Tab = 'draft' | 'published';
 
+interface BlogCourseJoin {
+  topic: string;
+  published_title: string | null;
+  public_slug: string | null;
+  status?: string;
+}
+
 interface BlogPostRow {
   id: string;
+  course_id: string;
   title: string;
   slug: string;
   meta_description: string | null;
@@ -18,6 +26,7 @@ interface BlogPostRow {
   created_at: string;
   published_at: string | null;
   publish_priority?: number | null;
+  courses?: BlogCourseJoin | null;
 }
 
 type FormFields = {
@@ -27,6 +36,27 @@ type FormFields = {
   content: string;
   tagsComma: string;
 };
+
+function courseDisplayName(
+  cr: BlogCourseJoin | null | undefined,
+  courseId: string
+): {
+  label: string;
+  dashboardHref: string;
+  pubHref: string | null;
+} {
+  const label =
+    cr == null
+      ? `Curso ${courseId.slice(0, 8)}…`
+      : (cr.published_title && cr.published_title.trim()) ||
+        (cr.topic && cr.topic.trim()) ||
+        'Curso';
+  return {
+    label,
+    dashboardHref: `/dashboard/courses/${courseId}`,
+    pubHref: cr?.public_slug ? `/cursos/${cr.public_slug}` : null,
+  };
+}
 
 function toForm(p: BlogPostRow): FormFields {
   return {
@@ -150,9 +180,10 @@ export default function DashboardBlogPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Blog y SEO técnico</h1>
       <p className={styles.sub}>
-        Ajusta título, slug (URL), meta descripción y HTML antes de publicar. Una URL estable y meta
-        alineadas con la intención de búsqueda son las palancas con más impacto. El cron sigue sirviendo
-        para automatizar la cola; aquí tienes control fino cuando quieras publicar ya.
+        Ajusta título, slug (URL), meta descripción y HTML antes de publicar. Cada artículo está
+        vinculado a un curso concreto (origen Posts SEO): las URLs públicas enlazan ese curso y el
+        enlace aparece también en la ficha del blog. El cron automatiza la cola; desde aquí
+        controlas borradores a demanda cuando quieras.
       </p>
 
       <div className={styles.tabs}>
@@ -208,12 +239,24 @@ export default function DashboardBlogPage() {
             const open = expanded === p.id;
             const previewPath = `/blog/${p.slug}`;
             const previewAbs = siteOrigin ? `${siteOrigin}${previewPath}` : previewPath;
+            const cv = courseDisplayName(p.courses, p.course_id);
+
             return (
               <article key={p.id} className={styles.card}>
                 <div className={styles.cardHead}>
                   <div>
                     <p className={styles.cardTitle}>{p.title}</p>
                     <p className={styles.slug}>/{p.slug}</p>
+                    <p className={styles.courseLinked}>
+                      <span className={styles.courseLinkedLbl}>Curso: </span>
+                      <Link href={cv.dashboardHref}>{cv.label}</Link>
+                      {cv.pubHref && (
+                        <>
+                          {' · '}
+                          <Link href={cv.pubHref}>Landing pública</Link>
+                        </>
+                      )}
+                    </p>
                   </div>
                   <div className={styles.rowActions}>
                     <button

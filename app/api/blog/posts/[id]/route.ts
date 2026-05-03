@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
-import { updateBlogPost } from '@/services/blogPostService';
+import { updateBlogPost, normalizeBlogPostApiRow } from '@/services/blogPostService';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 
 export async function PATCH(
@@ -43,9 +43,19 @@ export async function PATCH(
     }
 
     await updateBlogPost(id, body);
-    const { data: fresh } = await supabase.from('blog_posts').select('*').eq('id', id).single();
+    const { data: fresh, error: freshErr } = await supabase
+      .from('blog_posts')
+      .select(
+        'id, course_id, title, slug, meta_description, content, post_type, status, tags, created_at, published_at, publish_priority, courses(topic, published_title, public_slug, status)'
+      )
+      .eq('id', id)
+      .single();
 
-    return jsonResponse({ post: fresh });
+    if (freshErr || !fresh) {
+      return errorResponse('Post not found after update', 404);
+    }
+
+    return jsonResponse({ post: normalizeBlogPostApiRow(fresh) });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (msg === 'SLUG_EXISTS') {
