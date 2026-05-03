@@ -56,3 +56,13 @@
   background: var(--ch-blue, #1b38c4) !important;
   box-shadow: 0 4px 16px rgb(27 56 196 / 24%);
 }
+
+@media (min-width: 960px) {
+  .stickyWrap {
+    justify-content: flex-start;
+  }
+
+  .tray {
+    justify-content: flex-start;
+  }
+}
