@@ -337,10 +337,8 @@
 
 .beneficiosSheet {
   margin-bottom: 2rem;
-  padding: 1.25rem 1.35rem 1.4rem;
+  padding: 0.25rem 0.35rem 0.4rem;
   background: var(--ch-surface, #ffffff);
-  border-radius: var(--ch-radius, 16px);
-  box-shadow: var(--ch-shadow);
 }
 
 .sheetTitle {
