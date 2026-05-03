@@ -9,12 +9,16 @@ function getClient(): GoogleGenAI {
 
 function buildImagePrompt(content: GeneratedCourseStructure): string {
   const { title, short_description } = content;
-  return `Generate a professional featured image for an online course titled "${title}".
+  return `Create a single professional hero image that visually evokes the TOPIC of an online course. Use the following only as semantic context for subject matter — do NOT write, spell, render, or suggest any words, titles, captions, typography, logos, brand marks, or readable characters anywhere in the image.
 
-Context: ${short_description || title}
+Course context (ideas only): ${short_description || title}
 
-Style: Modern, clean, professional. Suitable for an educational platform. High quality, no text overlay. 
-Aspect: Wide/banner style (16:9) for course hero image.`;
+Requirements:
+- Purely illustrative: objects, scenes, atmosphere, metaphors related to learning that topic. Abstract or concrete is fine.
+- Absolutely NO text on the image (no headings, subtitles, badges, fake UI panels with letters).
+- Modern, clean, professional; suitable as a generic education/catalog thumbnail.
+- High quality photorealistic or crisp illustration — not a cluttered collage.
+Aspect: Wide banner 16:9 for a course hero.`;
 }
 
 export async function generateCourseFeaturedImage(
