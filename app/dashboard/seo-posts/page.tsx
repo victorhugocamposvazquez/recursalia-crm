@@ -104,11 +104,15 @@ export default function SeoPostsPage() {
     setPublishing(true);
     setPublishResult('');
     try {
-      const res = await fetch('/api/cron/publish-posts');
+      const res = await fetch('/api/blog/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ limit: 3 }),
+      });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.details ?? data.error ?? 'Publish');
       setPublishResult(
-        `Publicados ${data.published} posts${data.errors?.length ? ` (${data.errors.length} errores)` : ''}`,
+        `Publicados ${data.published} posts (${(data.posts ?? []).length} slugs)`
       );
     } catch (err) {
       setPublishResult(`Error: ${err instanceof Error ? err.message : 'desconocido'}`);
@@ -128,6 +132,10 @@ export default function SeoPostsPage() {
         <p className={styles.subtitle}>
           Genera 17 posts de blog SEO por curso para captar trafico organico. El cron ordena borradores
           por la prioridad que configuras en la ficha del curso (valor más alto antes).
+        </p>
+        <p className={styles.note}>
+          Gestiona borradores, URLs, meta y publicacion bajo demanda en{' '}
+          <Link href="/dashboard/blog" className={styles.noteLink}>Blog (panel SEO)</Link>.
         </p>
       </div>
 
@@ -255,7 +263,13 @@ export default function SeoPostsPage() {
         <div className={styles.cronInfo}>
           <span className={styles.cronDot} />
           <p className={styles.cronText}>
-            El cron publica <strong>3 borradores</strong> cada <strong>lunes, miercoles y viernes</strong> a las 9:00 UTC.
+            El cron puede publicar hasta <strong>3 borradores</strong> cada{' '}
+            <strong>lunes, miercoles y viernes</strong> a las 9:00 UTC (<code>/api/cron/publish-posts</code>). Desde{' '}
+            <Link href="/dashboard/blog" className={styles.noteLink}>
+              Blog (panel)
+            </Link>{' '}
+            publicas a demanda los que elijas (o una cola por prioridad como el cron) sin esperar al
+            schedule.
           </p>
           <button
             type="button"

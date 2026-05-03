@@ -20,6 +20,22 @@
   margin: 0;
 }
 
+.note {
+  font-size: 0.8125rem;
+  color: rgb(36 35 32 / 58%);
+  margin: 0.5rem 0 0;
+  line-height: 1.45;
+}
+
+.noteLink {
+  color: #1b38c4;
+  font-weight: 500;
+}
+
+.noteLink:hover {
+  text-decoration: underline;
+}
+
 /* Stats row */
 .statsRow {
   display: grid;

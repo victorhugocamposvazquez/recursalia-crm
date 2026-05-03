@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { revalidatePath } from 'next/cache';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 import { publishDraftBlogPosts } from '@/services/blogPostService';
+import { revalidatePublishedBlogPosts } from '@/lib/blog-revalidate';
 
 const POSTS_PER_RUN = 3;
 
@@ -23,10 +23,7 @@ export async function GET(req: NextRequest) {
 
     console.log(`[cron] Publishing ${published.length} blog posts...`);
 
-    revalidatePath('/blog');
-    for (const p of published) {
-      revalidatePath(`/blog/${p.slug}`);
-    }
+    revalidatePublishedBlogPosts(published.map((p) => p.slug));
 
     return jsonResponse({
       published: published.length,
