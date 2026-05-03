@@ -21,6 +21,33 @@ Requirements:
 Aspect: Wide banner 16:9 for a course hero.`;
 }
 
+type GenContentPart = {
+  text?: string;
+  inlineData?: { data?: string; mimeType?: string };
+  /** Algunas respuestas REST/SDK devuelven snake_case */
+  inline_data?: { data?: string; mime_type?: string };
+};
+
+function extractImageBuffer(response: unknown): Buffer | null {
+  const resp = response as {
+    promptFeedback?: { blockReason?: string; block_reason?: string };
+    candidates?: Array<{ content?: { parts?: GenContentPart[] } }>;
+  };
+  const block =
+    resp.promptFeedback?.blockReason ?? resp.promptFeedback?.block_reason;
+  if (block) {
+    throw new Error(`Gemini bloqueo la solicitud (${block}). Prueba otro modelo o revisa políticas de la API.`);
+  }
+
+  for (const cand of resp.candidates ?? []) {
+    for (const part of cand.content?.parts ?? []) {
+      const b64 = part.inlineData?.data ?? part.inline_data?.data;
+      if (b64) return Buffer.from(b64, 'base64');
+    }
+  }
+  return null;
+}
+
 export async function generateCourseFeaturedImage(
   content: GeneratedCourseStructure
 ): Promise<Buffer> {
@@ -30,29 +57,28 @@ export async function generateCourseFeaturedImage(
   const modelId =
     process.env.GEMINI_IMAGE_MODEL ?? 'gemini-2.5-flash-image';
 
+  /**
+   * Documentación oficial gemini-2.5-flash-image (JS): solo `imageConfig`, sin responseModalities.
+   * Pasar responseModalities con TEXT+IMAGE en 2.5 a veces deja respuesta solo texto → "no regenerate".
+   */
   const response = await ai.models.generateContent({
     model: modelId,
     contents: prompt,
     config: {
-      responseModalities: ['TEXT', 'IMAGE'],
       imageConfig: { aspectRatio: '16:9' },
     },
   });
 
-  const resp = response as {
-    candidates?: Array<{
-      content?: {
-        parts?: Array<{ inlineData?: { data?: string; mimeType?: string } }>;
-      };
-    }>;
-  };
-  const parts = resp.candidates?.[0]?.content?.parts ?? [];
+  const buf = extractImageBuffer(response);
+  if (buf && buf.length > 0) return buf;
 
-  for (const part of parts) {
-    if (part.inlineData?.data) {
-      return Buffer.from(part.inlineData.data, 'base64');
-    }
-  }
-
-  throw new Error('No image data in Gemini response');
+  const parts = (
+    response as { candidates?: Array<{ content?: { parts?: GenContentPart[] } }> }
+  ).candidates?.[0]?.content?.parts ?? [];
+  const firstText = parts.map((p) => p.text).filter(Boolean)[0];
+  throw new Error(
+    firstText
+      ? `Gemini no devolvio imagen (solo texto): ${String(firstText).slice(0, 200)}…`
+      : 'No image data in Gemini response. Comprueba el modelo en AI Studio y que soporte generacion nativa.',
+  );
 }

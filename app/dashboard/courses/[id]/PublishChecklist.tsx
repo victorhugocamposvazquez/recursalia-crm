@@ -68,7 +68,9 @@ export function PublishChecklist({ course, courseId }: { course: CourseRecord; c
       ok: published ? hasImage : true,
       label: published ? 'Portada en Storage' : 'Portada opcional antes de lanzar campañas Meta',
       hint:
-        published && !hasImage ? 'Instagram requiere imagen para publicar.' : undefined,
+        published && !hasImage
+          ? 'Instagram requiere imagen. En esta misma ficha, sección Web pública (#web-publica), marca «Regenerar portada con Gemini» y pulsa Actualizar página pública (sal del modo Editar si no ves esa sección).'
+          : undefined,
     },
     {
       ok: published ? minReviewsOk : true,

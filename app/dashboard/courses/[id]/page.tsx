@@ -161,6 +161,7 @@ export default function CourseDetailPage() {
     if (!course?.generated_content) return;
     setSaving(true);
     setError(null);
+    const didRequestImageRegen = republishRegenImage;
     try {
       const res = await fetch('/api/publish-course', {
         method: 'POST',
@@ -186,6 +187,16 @@ export default function CourseDetailPage() {
       await fetchCourse(false);
       setRepublishRegenImage(false);
       setRepublishRegenReviews(false);
+
+      if (didRequestImageRegen && !data.featured_image_url?.trim()) {
+        const log = typeof data.error_log === 'string' ? data.error_log : '';
+        const line = log.split('\n').find((ln: string) => ln.includes('Portada fall'));
+        setError(
+          line
+            ? `Portada: ${line.replace(/.*Portada falló:\s*/i, '').trim()}`
+            : 'Pediste regenerar la portada pero no hay imagen en Storage. Revisa el log de publicación al final de la ficha y la clave GOOGLE_GEMINI_API_KEY en Vercel.',
+        );
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -427,7 +438,11 @@ export default function CourseDetailPage() {
       )}
 
       {course.generated_content && !editMode && (
-        <section className={styles.republishPanel} aria-label="Página pública Recursalia">
+        <section
+          id="web-publica"
+          className={styles.republishPanel}
+          aria-label="Página pública Recursalia"
+        >
           <h4 className={styles.republishTitle}>Web pública (/cursos/…)</h4>
           <p className={styles.republishHint}>
             Republicar sincroniza título y metadescripciones desde el contenido generado o editado
@@ -436,22 +451,11 @@ export default function CourseDetailPage() {
               ? ' Si estás en borrador, también se activa estado publicado y se asigna el slug.'
               : ''}
           </p>
-          <div className={styles.republishActions}>
-            <button
-              type="button"
-              onClick={() => handleRepublishWeb()}
-              disabled={saving}
-              className={styles.btnPrimary}
-            >
-              {course.status === 'published'
-                ? saving
-                  ? 'Actualizando…'
-                  : 'Actualizar página pública'
-                : saving
-                  ? 'Activando…'
-                  : 'Activar página pública'}
-            </button>
-          </div>
+          <p className={styles.republishHint}>
+            <strong>Opciones:</strong> marca lo que quieras regenerar y después pulsa el botón.
+            La portada con IA <strong>solo</strong> se genera si marcas la casilla (o en la primera
+            publicación desde borrador, al pulsar Publicar arriba).
+          </p>
           <div className={styles.republishChecks}>
             <label>
               <input
@@ -469,6 +473,22 @@ export default function CourseDetailPage() {
               />
               Regenerar todas las reseñas (usa cantidad y perfil de «Opciones de reseñas» arriba)
             </label>
+          </div>
+          <div className={styles.republishActions}>
+            <button
+              type="button"
+              onClick={() => handleRepublishWeb()}
+              disabled={saving}
+              className={styles.btnPrimary}
+            >
+              {course.status === 'published'
+                ? saving
+                  ? 'Actualizando…'
+                  : 'Actualizar página pública'
+                : saving
+                  ? 'Activando…'
+                  : 'Activar página pública'}
+            </button>
           </div>
         </section>
       )}
