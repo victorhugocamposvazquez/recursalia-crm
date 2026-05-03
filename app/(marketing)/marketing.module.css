@@ -86,6 +86,19 @@
   }
 }
 
+/* Índice /cursos: aún menos aire bajo cabecera (además de mainBlog en MarketingMain). */
+.section.sectionBlogCompact.sectionCursosCatalog {
+  padding-top: clamp(0.2rem, 1vw, 0.65rem);
+  padding-bottom: clamp(1.25rem, 2.8vw, 2.35rem);
+}
+
+@media (min-width: 1024px) {
+  .section.sectionBlogCompact.sectionCursosCatalog {
+    padding-top: clamp(0.35rem, 1vw, 0.85rem);
+    padding-bottom: clamp(1.45rem, 2.5vw, 2.65rem);
+  }
+}
+
 .section h2 {
   margin: 0 0 2rem;
   font-size: clamp(1.75rem, 3.5vw, 2.75rem);
