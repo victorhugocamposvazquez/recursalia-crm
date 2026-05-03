@@ -1,6 +1,6 @@
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
+import { resolveCatalogCategory } from '@/lib/catalogCategory';
 import styles from '../marketing.module.css';
-import cursosStyles from './cursos-index.module.css';
 import {
   CursosCatalogClient,
   type CourseCatalogEntry,
@@ -21,6 +21,7 @@ type CourseRow = {
   featured_image_url: string | null;
   generated_content: GeneratedCourseStructure | null;
   input_payload: CourseInputPayload | null;
+  catalog_category: string | null;
 };
 
 type ReviewDbRow = {
@@ -41,7 +42,7 @@ function normalizeCat(raw: string | undefined): CourseVertical | 'all' {
 }
 
 function categoryOfCourse(c: CourseRow): CourseVertical {
-  return c.input_payload?.courseVertical ?? 'general';
+  return resolveCatalogCategory(c.catalog_category, c.input_payload);
 }
 
 /** Etiqueta de bestseller igual criterio que la ficha (`input.bestSeller !== false`). */
@@ -93,7 +94,7 @@ export default async function CursosIndexPage({
     const { data } = await supabase
       .from('courses')
       .select(
-        'id, public_slug, published_title, topic, featured_image_url, generated_content, input_payload'
+        'id, public_slug, published_title, topic, featured_image_url, generated_content, input_payload, catalog_category'
       )
       .eq('status', 'published')
       .not('public_slug', 'is', null)

@@ -2,7 +2,8 @@ import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
-import type { GeneratedCourseStructure } from '@/types';
+import type { CourseVertical, GeneratedCourseStructure } from '@/types';
+import { COURSE_VERTICAL_VALUES } from '@/lib/courseVerticalOptions';
 import { writeAudit } from '@/services/auditLogService';
 export async function GET(
   req: NextRequest,
@@ -45,6 +46,7 @@ export async function PATCH(
       topic?: string;
       input_payload?: Record<string, unknown>;
       seo_publish_priority?: number;
+      catalog_category?: CourseVertical | null;
     };
 
     const updates: Record<string, unknown> = {};
@@ -60,6 +62,15 @@ export async function PATCH(
       updates.seo_publish_priority = Math.round(
         Math.min(1e6, Math.max(-1000, body.seo_publish_priority))
       );
+    }
+    if (body.catalog_category !== undefined) {
+      if (body.catalog_category === null) {
+        updates.catalog_category = null;
+      } else if (
+        COURSE_VERTICAL_VALUES.includes(body.catalog_category as CourseVertical)
+      ) {
+        updates.catalog_category = body.catalog_category;
+      }
     }
 
     if (Object.keys(updates).length === 0) {

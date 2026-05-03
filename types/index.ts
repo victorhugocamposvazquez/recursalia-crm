@@ -98,6 +98,11 @@ export interface CourseRecord {
   seo_posts_generated_at?: string | null;
   /** Mayor número = antes en el cron de publicación de borradores de blog */
   seo_publish_priority?: number | null;
+  /**
+   * Categoría en el listado público /cursos.
+   * null = heredar `input_payload.courseVertical`.
+   */
+  catalog_category?: CourseVertical | null;
   /** Copia ligera del JSON generado la primera vez que pasó a publicado */
   published_content_snapshot?: GeneratedCourseStructure | null;
 }

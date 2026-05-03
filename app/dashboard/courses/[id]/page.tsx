@@ -4,9 +4,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './course-detail.module.css';
-import type { CourseRecord, GeneratedCourseStructure } from '@/types';
+import type {
+  CourseRecord,
+  CourseVertical,
+  GeneratedCourseStructure,
+} from '@/types';
 import type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
 import { REVIEWS_RATING_PRESET_OPTIONS } from '@/lib/reviewsRatingPreset';
+import { COURSE_VERTICAL_OPTIONS } from '@/lib/courseVerticalOptions';
+import { resolveCatalogCategory } from '@/lib/catalogCategory';
 import { PublishChecklist } from './PublishChecklist';
 
 export default function CourseDetailPage() {
@@ -36,6 +42,9 @@ export default function CourseDetailPage() {
   const [republishRegenReviews, setRepublishRegenReviews] = useState(false);
   const [seoPublishPriority, setSeoPublishPriority] = useState(0);
   const [seoPrioritySaving, setSeoPrioritySaving] = useState(false);
+  const [catalogPublicCategory, setCatalogPublicCategory] =
+    useState<CourseVertical>('general');
+  const [catalogSaving, setCatalogSaving] = useState(false);
   const [socialPosting, setSocialPosting] = useState<'facebook' | 'instagram' | null>(null);
   const [socialMessage, setSocialMessage] = useState('');
   const [socialResult, setSocialResult] = useState<string | null>(null);
@@ -57,6 +66,12 @@ export default function CourseDetailPage() {
         }
         setSeoPublishPriority(
           typeof data.seo_publish_priority === 'number' ? data.seo_publish_priority : 0,
+        );
+        setCatalogPublicCategory(
+          resolveCatalogCategory(
+            typeof data.catalog_category === 'string' ? data.catalog_category : null,
+            data.input_payload,
+          ),
         );
         if (syncEditContent) {
           setEditContent(data.generated_content);
@@ -96,6 +111,36 @@ export default function CourseDetailPage() {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleSaveCatalogCategory(opts?: { inherit: boolean }) {
+    if (!course) return;
+    setCatalogSaving(true);
+    setError(null);
+    try {
+      const inherit = opts?.inherit === true;
+      const body = inherit
+        ? { catalog_category: null }
+        : { catalog_category: catalogPublicCategory };
+      const res = await fetch(`/api/courses/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al guardar categoría');
+      setCourse(data);
+      setCatalogPublicCategory(
+        resolveCatalogCategory(
+          typeof data.catalog_category === 'string' ? data.catalog_category : null,
+          data.input_payload,
+        ),
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setCatalogSaving(false);
     }
   }
 
@@ -372,6 +417,47 @@ export default function CourseDetailPage() {
               onClick={() => handleSaveSeoPriority()}
             >
               {seoPrioritySaving ? 'Guardando...' : 'Guardar prioridad'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!editMode && (
+        <div className={styles.seoPriorityCard}>
+          <h4 className={styles.seoPriorityTitle}>Categoría en el catálogo web</h4>
+          <p className={styles.seoPriorityLead}>
+            Aparece en <code className={styles.inlineCode}>/cursos</code> para filtrar por bloque
+            (General, Profesional, etc.). Si tus cursos solo salían en «General», asígnalos aquí;
+            no hace falta regenerar el contenido. «Heredar tono» usa la vertical del formulario de
+            creación (solo referencia).
+          </p>
+          <div className={styles.seoPriorityRow}>
+            <select
+              className={styles.selectInput}
+              value={catalogPublicCategory}
+              onChange={(e) => setCatalogPublicCategory(e.target.value as CourseVertical)}
+            >
+              {COURSE_VERTICAL_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              className={styles.btnSecondary}
+              disabled={catalogSaving}
+              onClick={() => handleSaveCatalogCategory()}
+            >
+              {catalogSaving ? 'Guardando…' : 'Guardar categoría'}
+            </button>
+            <button
+              type="button"
+              className={styles.btnSecondary}
+              disabled={catalogSaving}
+              onClick={() => handleSaveCatalogCategory({ inherit: true })}
+            >
+              Heredar del tono
             </button>
           </div>
         </div>

@@ -121,9 +121,7 @@ export function CursosCatalogClient({
     syncSearchParams('all', '');
   }, []);
 
-  const onCategoryChange = (v: CatalogCategoryOption) => {
-    setCategory(v);
-  };
+  const totalCatalog = courses.length;
 
   return (
     <>
@@ -139,7 +137,7 @@ export function CursosCatalogClient({
             className={cursosStyles.select}
             value={category}
             onChange={(e) =>
-              onCategoryChange(normalizeCatValue(e.target.value))
+              setCategory(normalizeCatValue(e.target.value))
             }
             aria-controls="catalogo-resultados"
           >
@@ -152,7 +150,7 @@ export function CursosCatalogClient({
           </select>
         </div>
 
-        <div className={cursosStyles.searchForm}>
+        <div className={cursosStyles.searchBeside}>
           <label htmlFor="curso-busqueda" className={cursosStyles.fieldLabel}>
             Buscar
           </label>
@@ -170,123 +168,121 @@ export function CursosCatalogClient({
         </div>
       </div>
 
-      {activeFilters ? (
+      <div className={cursosStyles.filterSummarySlot}>
         <p className={cursosStyles.filterSummary}>
-          {[category !== 'all' ? VERTICAL_LABELS[category] : null,
-            query.trim() ? `«${query.trim()}»` : null]
-            .filter(Boolean)
-            .join(' · ')}
-          {' · '}
-          {filtered.length} resultado{filtered.length === 1 ? '' : 's'}
+          <span>{filtered.length} resultado{filtered.length === 1 ? '' : 's'}</span>
+          {totalCatalog > 0 ? (
+            <span>{' · '}{totalCatalog} en catálogo</span>
+          ) : null}
           {' · '}
           <button
             type="button"
             className={cursosStyles.clearBtn}
+            disabled={!activeFilters}
             onClick={clearFilters}
           >
             Quitar filtros
           </button>
         </p>
-      ) : null}
+      </div>
 
-      {filtered.length === 0 ? (
-        <p className={styles.empty}>
-          {activeFilters
-            ? 'No hay cursos que coincidan con estos filtros.'
-            : courses.length === 0
-              ? 'Aún no hay cursos publicados. Ejecuta la migración SQL en Supabase y publica desde el panel.'
-              : 'Sin resultados.'}
-        </p>
-      ) : (
-        <div
-          id="catalogo-resultados"
-          className={cursosStyles.gridTight}
-        >
-          {filtered.map((c) => {
-            const sale = c.sale ?? undefined;
-            const original = c.original ?? undefined;
-            const showStrike =
-              original != null &&
-              sale != null &&
-              sale < original;
-            const avg = c.avgRating;
-            const n = c.reviewCount;
+      <div className={cursosStyles.resultsZone}>
+        {filtered.length === 0 ? (
+          <p className={styles.empty}>
+            {activeFilters
+              ? 'No hay cursos que coincidan con estos filtros.'
+              : courses.length === 0
+                ? 'Aún no hay cursos publicados. Ejecuta la migración SQL en Supabase y publica desde el panel.'
+                : 'Sin resultados.'}
+          </p>
+        ) : (
+          <div id="catalogo-resultados" className={cursosStyles.gridTight}>
+            {filtered.map((c) => {
+              const sale = c.sale ?? undefined;
+              const original = c.original ?? undefined;
+              const showStrike =
+                original != null &&
+                sale != null &&
+                sale < original;
+              const avg = c.avgRating;
+              const n = c.reviewCount;
 
-            return (
-              <article key={c.id} className={cursosStyles.card}>
-                <Link href={`/cursos/${c.publicSlug}`}>
-                  <div className={cursosStyles.cardImage}>
-                    {c.imageUrl ? (
-                      <Image
-                        src={c.imageUrl}
-                        alt=""
-                        fill
-                        sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 25vw"
-                        style={{ objectFit: 'cover' }}
-                      />
-                    ) : null}
-                  </div>
-                  <div className={cursosStyles.cardBody}>
-                    {c.showBestseller ? (
-                      <div className={cursosStyles.badgesRow}>
-                        <span className={cursosStyles.bestseller}>
-                          <Image
-                            src="/images/card-icon-1.webp"
-                            alt=""
-                            width={17}
-                            height={17}
-                            className={cursosStyles.bestsellerIcon}
-                          />
-                          {c.bestsellerLabel}
+              return (
+                <article key={c.id} className={cursosStyles.card}>
+                  <Link href={`/cursos/${c.publicSlug}`}>
+                    <div className={cursosStyles.cardImage}>
+                      {c.imageUrl ? (
+                        <Image
+                          src={c.imageUrl}
+                          alt=""
+                          fill
+                          sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 25vw"
+                          style={{ objectFit: 'cover' }}
+                        />
+                      ) : null}
+                    </div>
+                    <div className={cursosStyles.cardBody}>
+                      <div className={cursosStyles.topMetaRow}>
+                        <div className={cursosStyles.reviewsTop}>
+                          {avg != null && n > 0 ? (
+                            <>
+                              <span className={cursosStyles.score}>
+                                {avg.toFixed(1).replace('.', ',')}
+                              </span>
+                              <span
+                                className={cursosStyles.starsWrap}
+                                aria-label={`${avg.toFixed(1).replace('.', ',')} de 5 estrellas`}
+                              >
+                                <StarRatingDisplay value={avg} ariaHidden />
+                              </span>
+                              <span className={cursosStyles.revNum} aria-label={`${n} valoraciones`}>
+                                {n}
+                              </span>
+                            </>
+                          ) : (
+                            <span className={cursosStyles.ratingMuted}>—</span>
+                          )}
+                        </div>
+                        <div className={cursosStyles.badgeTop}>
+                          {c.showBestseller ? (
+                            <span className={cursosStyles.bestseller}>
+                              <Image
+                                src="/images/card-icon-1.webp"
+                                alt=""
+                                width={17}
+                                height={17}
+                                className={cursosStyles.bestsellerIcon}
+                              />
+                              {c.bestsellerLabel}
+                            </span>
+                          ) : (
+                            <span className={cursosStyles.badgePlaceholder} aria-hidden />
+                          )}
+                        </div>
+                      </div>
+
+                      <h3 className={cursosStyles.title}>{c.title}</h3>
+
+                      {c.desc ? <p className={cursosStyles.desc}>{c.desc}</p> : null}
+
+                      <div className={cursosStyles.priceRow}>
+                        {showStrike ? (
+                          <span className={cursosStyles.original}>
+                            {formatMoney(original)}
+                          </span>
+                        ) : null}
+                        <span className={cursosStyles.sale}>
+                          {formatMoney(sale ?? original)}
                         </span>
                       </div>
-                    ) : null}
-
-                    <h3 className={cursosStyles.title}>{c.title}</h3>
-
-                    {c.desc ? <p className={cursosStyles.desc}>{c.desc}</p> : null}
-
-                    <div className={cursosStyles.priceRow}>
-                      {showStrike ? (
-                        <span className={cursosStyles.original}>
-                          {formatMoney(original)}
-                        </span>
-                      ) : null}
-                      <span className={cursosStyles.sale}>
-                        {formatMoney(sale ?? original)}
-                      </span>
                     </div>
-
-                    <div className={cursosStyles.reviewsBlockCompact}>
-                      {avg != null && n > 0 ? (
-                        <div className={cursosStyles.ratingRowCompact}>
-                          <span className={cursosStyles.score}>
-                            {avg.toFixed(1).replace('.', ',')}
-                          </span>
-                          <span
-                            className={cursosStyles.starsWrap}
-                            aria-label={`${avg.toFixed(1).replace('.', ',')} de 5 estrellas`}
-                          >
-                            <StarRatingDisplay value={avg} ariaHidden />
-                          </span>
-                          <span
-                            className={cursosStyles.revNum}
-                            aria-label={`${n} valoraciones`}
-                          >
-                            {n}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className={cursosStyles.ratingMuted}>—</span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              </article>
-            );
-          })}
-        </div>
-      )}
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </>
   );
 }
