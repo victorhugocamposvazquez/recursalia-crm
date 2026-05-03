@@ -233,3 +233,33 @@ export async function publishBlogDraftsSelective(opts: {
 
   return published;
 }
+
+/** Borrado masivo (panel). Opcionalmente restringido a un curso por seguridad. */
+export async function deleteBlogPostsBulk(opts: {
+  ids: string[];
+  courseId?: string;
+}): Promise<{ deleted: number; publishedSlugs: string[] }> {
+  const supabase = getSupabase();
+  const unique = Array.from(new Set(opts.ids.map((id) => id?.trim()).filter(Boolean)));
+  if (!unique.length) return { deleted: 0, publishedSlugs: [] };
+
+  let q = supabase.from('blog_posts').select('id, slug, status').in('id', unique);
+  if (opts.courseId?.trim()) {
+    q = q.eq('course_id', opts.courseId.trim());
+  }
+
+  const { data: rows, error: fetchErr } = await q;
+  if (fetchErr) throw new Error(fetchErr.message);
+
+  const toDrop = (rows ?? []).map((r) => r.id);
+  if (!toDrop.length) return { deleted: 0, publishedSlugs: [] };
+
+  const publishedSlugs = (rows ?? [])
+    .filter((r) => r.status === 'published' && r.slug)
+    .map((r) => r.slug as string);
+
+  const { error: delErr } = await supabase.from('blog_posts').delete().in('id', toDrop);
+  if (delErr) throw new Error(delErr.message);
+
+  return { deleted: toDrop.length, publishedSlugs };
+}

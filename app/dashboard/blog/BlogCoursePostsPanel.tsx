@@ -60,6 +60,11 @@ export function BlogCoursePostsPanel({ courseId }: BlogCoursePostsPanelProps) {
   const [courseBrief, setCourseBrief] = useState<CourseBrief | null>(null);
   const [courseMissing, setCourseMissing] = useState(false);
   const [headPending, setHeadPending] = useState(true);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    setSelected(new Set());
+  }, [tab]);
 
   const loadCourse = useCallback(async () => {
     setHeadPending(true);
@@ -103,6 +108,10 @@ export function BlogCoursePostsPanel({ courseId }: BlogCoursePostsPanelProps) {
       const init: Record<string, FormFields> = {};
       for (const p of list) init[p.id] = toForm(p);
       setForms(init);
+      setSelected((prev) => {
+        const ids = new Set(list.map((p) => p.id));
+        return new Set(Array.from(prev).filter((id) => ids.has(id)));
+      });
     } catch (e) {
       setPosts([]);
       setForms({});
@@ -163,14 +172,38 @@ export function BlogCoursePostsPanel({ courseId }: BlogCoursePostsPanelProps) {
       const res = await fetch('/api/blog/publish', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids }),
+        body: JSON.stringify({ ids, courseId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.details ?? data.error);
       setFlash({ ok: `Publicados ${data.published ?? 0} artículo(s).` });
+      setSelected(new Set());
       await load();
       await loadCourse();
       setExpanded(null);
+    } catch (e) {
+      setFlash({ err: e instanceof Error ? e.message : String(e) });
+    }
+  }
+
+  async function deleteSelected() {
+    const ids = Array.from(selected);
+    if (!ids.length) return;
+    if (!confirm(`¿Eliminar ${ids.length} entrada(s)? Esta acción no se puede deshacer.`)) return;
+    setFlash({});
+    try {
+      const res = await fetch('/api/blog/posts', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, courseId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.details ?? data.error);
+      setFlash({ ok: `Eliminadas ${data.deleted ?? 0} entrada(s).` });
+      setSelected(new Set());
+      setExpanded(null);
+      await load();
+      await loadCourse();
     } catch (e) {
       setFlash({ err: e instanceof Error ? e.message : String(e) });
     }
@@ -279,6 +312,40 @@ export function BlogCoursePostsPanel({ courseId }: BlogCoursePostsPanelProps) {
         </div>
       )}
 
+      {!loading && posts.length > 0 && (
+        <div className={styles.multiBar}>
+          <span className={styles.multiMuted}>{selected.size} seleccionada(s)</span>
+          <button
+            type="button"
+            className={styles.btnGhost}
+            onClick={() => setSelected(new Set(posts.map((p) => p.id)))}
+          >
+            Marcar visibles
+          </button>
+          <button type="button" className={styles.btnGhost} onClick={() => setSelected(new Set())}>
+            Desmarcar
+          </button>
+          {tab === 'draft' && (
+            <button
+              type="button"
+              className={styles.btnPrimary}
+              disabled={selected.size === 0}
+              onClick={() => void publishIds(Array.from(selected))}
+            >
+              Publicar seleccionados
+            </button>
+          )}
+          <button
+            type="button"
+            className={styles.btnDanger}
+            disabled={selected.size === 0}
+            onClick={() => void deleteSelected()}
+          >
+            Eliminar seleccionadas
+          </button>
+        </div>
+      )}
+
       {flash.ok && <p className={styles.msgOk}>{flash.ok}</p>}
       {flash.err && <p className={styles.msgErr}>{flash.err}</p>}
 
@@ -300,7 +367,21 @@ export function BlogCoursePostsPanel({ courseId }: BlogCoursePostsPanelProps) {
             return (
               <article key={p.id} className={styles.card}>
                 <div className={styles.cardHead}>
-                  <div>
+                  <input
+                    type="checkbox"
+                    className={styles.rowChk}
+                    checked={selected.has(p.id)}
+                    onChange={() =>
+                      setSelected((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(p.id)) next.delete(p.id);
+                        else next.add(p.id);
+                        return next;
+                      })
+                    }
+                    aria-label={`Seleccionar: ${p.title}`}
+                  />
+                  <div className={styles.cardHeadMain}>
                     <p className={styles.cardTitle}>{p.title}</p>
                     <p className={styles.slug}>/{p.slug}</p>
                   </div>

@@ -35,7 +35,7 @@
   border-right: 1px solid var(--db-line);
   display: flex;
   flex-direction: column;
-  padding: 0.9rem 0 0.85rem;
+  padding: 0.55rem 0 0.75rem;
 }
 
 @media (max-width: 767px) {
@@ -173,8 +173,8 @@
 }
 
 .brand {
-  padding: 0.25rem 0.9rem 0.75rem;
-  margin-bottom: 0.15rem;
+  padding: 0.15rem 0.85rem 0.55rem;
+  margin-bottom: 0.1rem;
   border-bottom: 1px solid rgb(28 27 25 / 9%);
   display: flex;
   align-items: center;
@@ -289,18 +289,18 @@
 .main {
   flex: 1;
   min-width: 0;
-  padding: 1.25rem 1.35rem;
-  padding-bottom: calc(52px + 1.25rem);
+  padding: 0.7rem 1.35rem 1.05rem;
+  padding-bottom: calc(52px + 0.95rem);
   overflow: auto;
   background: var(--db-surface);
 }
 
 @media (max-width: 767px) {
   .main {
-    padding-top: calc(46px + 1rem);
+    padding-top: calc(46px + 0.55rem);
     padding-left: 0.85rem;
     padding-right: 0.85rem;
-    padding-bottom: calc(52px + 1rem);
+    padding-bottom: calc(52px + 0.75rem);
   }
 }
 

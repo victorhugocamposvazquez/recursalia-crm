@@ -10,6 +10,12 @@
   padding-top: clamp(3.25rem, 6vw, 4.75rem);
 }
 
+/* Blog (índice y artículos): encajar con contenido menos "aire" inicial */
+.mainBlog {
+  flex: 1 1 auto;
+  padding-top: clamp(0.5rem, 1.5vw, 0.95rem);
+}
+
 /* /inspiracion: sin cabecera global; solo respetar notch */
 .mainInspiracionFull {
   flex: 1 1 auto;

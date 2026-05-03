@@ -78,9 +78,9 @@ Devuelve UNICAMENTE un JSON valido (sin markdown ni texto adicional) con esta es
 }
 
 REGLAS OBLIGATORIAS:
-1. "content" debe tener entre 1200 y 1800 palabras.
+1. "content" debe tener entre 2600 y 3600 palabras (desarrolla cada apartado con ejemplo, consecuencias practicas y transiciones naturales entre secciones).
 2. Usar HTML semantico: h2, h3, p, ul, li, strong. NO usar h1 (la plantilla del blog ya pone titulo principal).
-3. Incluir entre 4-6 subtitulos h2 con keywords secundarias.
+3. Incluir entre 7 y 10 subtitulos h2 con keywords secundarias; bajo algunos h2 usa h3 donde aporte claridad sin inflar artificialmente la jerarquia.
 4. Escribir en espanol neutro (usar "tu", evitar "vosotros" y "vos", vocabulario universal).
 5. Tono profesional pero cercano. Sin emojis en el texto.
 6. Incluir AL FINAL del contenido un parrafo CTA con enlace al curso: <p><strong>Si quieres dominar ${courseTopic}, te recomendamos el <a href="${courseUrl}">${courseTitle}</a> en Recursalia.</strong></p>
@@ -124,6 +124,7 @@ export async function generateSeoPosts(
         { role: 'user', content: prompt },
       ],
       temperature: 0.8,
+      max_completion_tokens: 16000,
     });
 
     const raw = response.choices[0]?.message?.content?.trim();

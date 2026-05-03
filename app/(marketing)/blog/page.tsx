@@ -49,7 +49,7 @@ export default async function BlogIndexPage() {
   }
 
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} ${styles.sectionBlogCompact}`}>
       <div className={styles.inner}>
         <h2>Blog</h2>
         {posts.length === 0 ? (

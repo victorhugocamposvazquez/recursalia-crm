@@ -147,7 +147,7 @@ export default async function BlogPostPage({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <article className={styles.section}>
+        <article className={`${styles.section} ${styles.sectionBlogCompact}`}>
           <div className={styles.inner} style={{ maxWidth: '720px' }}>
             <p className={blogStyles.breadcrumb}>
               <Link href="/blog">← Blog</Link>
