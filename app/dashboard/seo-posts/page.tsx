@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import styles from './seo-posts.module.css';
 import type { CourseRecord, SeoPostRecord } from '@/types';
+import { SEO_POST_SPECS_TOTAL } from '@/services/openaiSeoPostService';
 
 interface GenerateResult {
   generated: number;
@@ -30,7 +31,6 @@ export default function SeoPostsPage() {
   const [selectedCourseId, setSelectedCourseId] = useState('');
   const [generating, setGenerating] = useState(false);
   const [progressCurrent, setProgressCurrent] = useState(0);
-  const [progressTotal, setProgressTotal] = useState(17);
   const [progressTitle, setProgressTitle] = useState('');
   const [result, setResult] = useState<GenerateResult | null>(null);
   const [error, setError] = useState('');
@@ -49,6 +49,17 @@ export default function SeoPostsPage() {
       // silent
     }
     setLoading(false);
+  }, []);
+
+  /** Refresca KPIs tras generar/postear sin pantalla completa “Cargando”. */
+  const refreshCoursesQuiet = useCallback(async () => {
+    try {
+      const res = await fetch('/api/courses?status=published');
+      const data = await res.json();
+      if (res.ok) setCourses(data.courses ?? []);
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   useEffect(() => {
@@ -72,7 +83,7 @@ export default function SeoPostsPage() {
 
     const progressInterval = setInterval(() => {
       setProgressCurrent((prev) => {
-        if (prev >= 16) return prev;
+        if (prev >= SEO_POST_SPECS_TOTAL - 1) return prev;
         return prev + 1;
       });
     }, 6000);
@@ -89,9 +100,10 @@ export default function SeoPostsPage() {
         throw new Error(data.details ?? data.error ?? 'Error generando posts');
       }
 
-      setProgressCurrent(17);
+      setProgressCurrent(SEO_POST_SPECS_TOTAL);
       setProgressTitle('Completado');
       setResult(data as GenerateResult);
+      void refreshCoursesQuiet();
     } catch (err) {
       clearInterval(progressInterval);
       setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -114,6 +126,7 @@ export default function SeoPostsPage() {
       setPublishResult(
         `Publicados ${data.published} posts (${(data.posts ?? []).length} slugs)`
       );
+      void refreshCoursesQuiet();
     } catch (err) {
       setPublishResult(`Error: ${err instanceof Error ? err.message : 'desconocido'}`);
     } finally {
@@ -130,8 +143,7 @@ export default function SeoPostsPage() {
       <div className={styles.header}>
         <h1 className={styles.title}>Posts SEO</h1>
         <p className={styles.subtitle}>
-          Genera 17 posts de blog SEO por curso para captar trafico organico. El cron ordena borradores
-          por la prioridad que configuras en la ficha del curso (valor más alto antes).
+          Genera <strong>{SEO_POST_SPECS_TOTAL}</strong> posts de blog SEO por curso para captar tráfico orgánico. El cron ordena borradores por la prioridad que configuras en la ficha del curso (valor más alto antes).
         </p>
         <p className={styles.note}>
           Gestiona borradores, URLs, meta y publicacion bajo demanda en{' '}
@@ -146,12 +158,12 @@ export default function SeoPostsPage() {
           <p className={styles.statValue}>{courses.length}</p>
         </div>
         <div className={styles.statCard}>
-          <p className={styles.statLabel}>Posts generados</p>
+          <p className={styles.statLabel}>Entradas de blog ligadas</p>
           <p className={styles.statValueAccent}>{totalDrafts}</p>
         </div>
         <div className={styles.statCard}>
-          <p className={styles.statLabel}>Posts por curso</p>
-          <p className={styles.statValue}>17</p>
+          <p className={styles.statLabel}>Pack por curso</p>
+          <p className={styles.statValue}>{SEO_POST_SPECS_TOTAL}</p>
         </div>
       </div>
 
@@ -194,7 +206,7 @@ export default function SeoPostsPage() {
                 onClick={handleGenerate}
                 disabled={!selectedCourseId || generating}
               >
-                {generating ? 'Generando...' : 'Generar 17 posts'}
+                {generating ? 'Generando...' : `Generar ${SEO_POST_SPECS_TOTAL} posts`}
               </button>
             </div>
 
@@ -210,11 +222,11 @@ export default function SeoPostsPage() {
                 <div className={styles.progressBar}>
                   <div
                     className={styles.progressFill}
-                    style={{ width: `${(progressCurrent / progressTotal) * 100}%` }}
+                    style={{ width: `${(progressCurrent / SEO_POST_SPECS_TOTAL) * 100}%` }}
                   />
                 </div>
                 <p className={styles.progressText}>
-                  {progressCurrent}/{progressTotal} — {progressTitle}
+                  {progressCurrent}/{SEO_POST_SPECS_TOTAL} — {progressTitle}
                 </p>
               </div>
             )}
@@ -234,8 +246,8 @@ export default function SeoPostsPage() {
             Resultado: {result.saved_drafts} posts guardados como borrador en Supabase
           </h2>
           <ul className={styles.logList}>
-            {result.records.map((r) => (
-              <li key={r.wp_post_id} className={styles.logItem}>
+            {result.records.map((r, idx) => (
+              <li key={r.id ?? r.slug ?? `row-${idx}`} className={styles.logItem}>
                 <span className={styles.logCheck}>✓</span>
                 <span className={styles.logTitle2}>{r.title}</span>
                 <span className={styles.logBadge}>
@@ -244,6 +256,16 @@ export default function SeoPostsPage() {
               </li>
             ))}
           </ul>
+          <div className={styles.publishCta}>
+            <p className={styles.publishCtaText}>
+              Hasta aquí solo son <strong>borradores</strong>: la web solo muestra entradas con estado{' '}
+              <strong>publicado</strong>. Ve al panel Blog para revisar y publicarlos todos, de uno en uno,
+              o en cola.
+            </p>
+            <Link href="/dashboard/blog" className={styles.publishCtaBtn}>
+              Abrir Blog y publicar
+            </Link>
+          </div>
           {result.errors && result.errors.length > 0 && (
             <div className={styles.alertError} style={{ marginTop: '1rem' }}>
               <strong>Errores:</strong>
@@ -264,12 +286,10 @@ export default function SeoPostsPage() {
           <span className={styles.cronDot} />
           <p className={styles.cronText}>
             El cron puede publicar hasta <strong>3 borradores</strong> cada{' '}
-            <strong>lunes, miercoles y viernes</strong> a las 9:00 UTC (<code>/api/cron/publish-posts</code>). Desde{' '}
-            <Link href="/dashboard/blog" className={styles.noteLink}>
-              Blog (panel)
-            </Link>{' '}
-            publicas a demanda los que elijas (o una cola por prioridad como el cron) sin esperar al
-            schedule.
+            <strong>lunes, miercoles y viernes</strong> a las 9:00 UTC. El botón inferior hace{' '}
+            <strong>lo mismo en miniatura</strong> (solo 3 de la cola por prioridad). Para ver todos tus
+            borradores y publicar las <strong>{SEO_POST_SPECS_TOTAL} entradas generadas</strong> cuando quieras, usa{' '}
+            <Link href="/dashboard/blog" className={styles.noteLink}>Blog</Link>.
           </p>
           <button
             type="button"
@@ -277,7 +297,7 @@ export default function SeoPostsPage() {
             onClick={handlePublishNow}
             disabled={publishing}
           >
-            {publishing ? 'Publicando...' : 'Publicar ahora'}
+            {publishing ? 'Publicando...' : 'Publicar 3 (cola cron)'}
           </button>
         </div>
         {publishResult && (

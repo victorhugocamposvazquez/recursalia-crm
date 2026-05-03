@@ -172,3 +172,6 @@ export async function generateSeoPosts(
 
   return results.filter((r): r is GeneratedSeoPost => r !== null);
 }
+
+/** Número fijo de plantillas SEO por curso (intro, tutoriales, geo, etc.). */
+export const SEO_POST_SPECS_TOTAL = getPostSpecs('').length;

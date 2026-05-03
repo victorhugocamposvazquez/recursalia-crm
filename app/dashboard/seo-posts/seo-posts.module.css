@@ -351,3 +351,33 @@
   border: 1px solid rgb(248 113 113 / 28%);
   color: #9b1c1c;
 }
+
+.publishCta {
+  margin-top: 1.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: 10px;
+  border: 1px solid rgb(36 35 32 / 12%);
+  background: rgb(251 250 247);
+}
+
+.publishCtaText {
+  margin: 0 0 0.85rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgb(36 35 32 / 76%);
+}
+
+.publishCtaBtn {
+  display: inline-block;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  background: #242320;
+  color: #fbfaf7 !important;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.publishCtaBtn:hover {
+  opacity: 0.92;
+}

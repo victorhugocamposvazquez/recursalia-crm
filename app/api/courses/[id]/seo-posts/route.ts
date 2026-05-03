@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
-import { generateSeoPosts } from '@/services/openaiSeoPostService';
+import { generateSeoPosts, SEO_POST_SPECS_TOTAL } from '@/services/openaiSeoPostService';
 import { insertBlogPostDraft } from '@/services/blogPostService';
 import type { GeneratedCourseStructure, SeoPostRecord } from '@/types';
 
@@ -51,7 +51,9 @@ export async function POST(
         ? (course as { seo_publish_priority: number }).seo_publish_priority
         : 0;
 
-    console.log(`[seo-posts] Generating 17 posts for course "${content.title}"`);
+    console.log(
+      `[seo-posts] Generating ${SEO_POST_SPECS_TOTAL} posts for course "${content.title}"`
+    );
 
     const posts = await generateSeoPosts(
       course.topic,
@@ -80,10 +82,16 @@ export async function POST(
       }
     }
 
-    const { error: updateError } = await getSupabase()
+    const supabaseAdmin = getSupabase();
+    const { count: postsForCourse } = await supabaseAdmin
+      .from('blog_posts')
+      .select('*', { count: 'exact', head: true })
+      .eq('course_id', id);
+
+    const { error: updateError } = await supabaseAdmin
       .from('courses')
       .update({
-        seo_posts_count: records.length,
+        seo_posts_count: postsForCourse ?? 0,
         seo_posts_generated_at: new Date().toISOString(),
       })
       .eq('id', id);
