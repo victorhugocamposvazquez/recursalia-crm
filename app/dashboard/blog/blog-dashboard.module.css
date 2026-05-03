@@ -225,3 +225,106 @@
 .previewLink a {
   color: var(--color-accent, #1b38c4);
 }
+
+.backRow {
+  margin: 0 0 0.85rem;
+  font-size: 0.9rem;
+}
+
+.backRow a {
+  color: var(--color-accent, #1b38c4);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.backRow a:hover {
+  text-decoration: underline;
+}
+
+.courseHeaderMeta {
+  font-size: 0.86rem;
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  margin: -0.25rem 0 0.85rem;
+  line-height: 1.5;
+}
+
+.courseHeaderMeta a {
+  color: var(--color-accent, #1b38c4);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.courseHeaderMeta a:hover {
+  text-decoration: underline;
+}
+
+.courseGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.85rem;
+}
+
+.courseCard {
+  border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.courseCardLink {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.95rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  flex: 1;
+  transition: background 0.12s ease;
+}
+
+.courseCardLink:hover {
+  background: color-mix(in srgb, var(--color-accent, #1b38c4) 6%, transparent);
+}
+
+.courseCardTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.courseCardTopic {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+  line-height: 1.4;
+}
+
+.courseCardCounts {
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  margin-top: 0.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.courseCardActions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.45rem 1rem 0.65rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+  background: color-mix(in srgb, var(--color-text) 3%, transparent);
+}
+
+.courseCardTinyLink {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-accent, #1b38c4);
+  text-decoration: none;
+}
+
+.courseCardTinyLink:hover {
+  text-decoration: underline;
+}

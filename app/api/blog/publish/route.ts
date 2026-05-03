@@ -16,6 +16,8 @@ export async function POST(req: NextRequest) {
       ids?: string[];
       slugs?: string[];
       limit?: number;
+      /** Con `limit`, limita la cola a borradores de este curso. */
+      courseId?: string;
     };
 
     const hasIds = Array.isArray(body.ids) && body.ids.length > 0;
@@ -29,6 +31,7 @@ export async function POST(req: NextRequest) {
       ids: hasIds ? body.ids : undefined,
       slugs: hasSlugs ? body.slugs : undefined,
       limit: !hasIds && !hasSlugs ? body.limit ?? 10 : undefined,
+      courseId: body.courseId?.trim() || undefined,
     });
 
     revalidatePublishedBlogPosts(published.map((p) => p.slug));

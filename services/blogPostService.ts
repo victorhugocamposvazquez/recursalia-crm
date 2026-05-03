@@ -76,17 +76,25 @@ export async function insertBlogPostDraft(
   };
 }
 
-export async function publishDraftBlogPosts(limit: number): Promise<
-  { id: string; slug: string }[]
-> {
+export async function publishDraftBlogPosts(
+  limit: number,
+  filters?: { courseId?: string }
+): Promise<{ id: string; slug: string }[]> {
   const supabase = getSupabase();
-  const { data: drafts, error: fetchErr } = await supabase
+  const lim = Math.min(Math.max(limit, 1), 50);
+  let q = supabase
     .from('blog_posts')
     .select('id, slug')
     .eq('status', 'draft')
     .order('publish_priority', { ascending: false })
     .order('created_at', { ascending: true })
-    .limit(limit);
+    .limit(lim);
+
+  if (filters?.courseId?.trim()) {
+    q = q.eq('course_id', filters.courseId.trim());
+  }
+
+  const { data: drafts, error: fetchErr } = await q;
 
   if (fetchErr) throw new Error(fetchErr.message);
 
@@ -169,31 +177,40 @@ export async function publishBlogDraftsSelective(opts: {
   ids?: string[];
   slugs?: string[];
   limit?: number;
+  /** Solo con `limit`: publica esa cola restringida a un curso. */
+  courseId?: string;
 }): Promise<{ id: string; slug: string }[]> {
   const supabase = getSupabase();
 
   let rows: { id: string; slug: string }[] = [];
 
   if (opts.ids?.length) {
-    const { data, error } = await supabase
+    let q = supabase
       .from('blog_posts')
       .select('id, slug')
       .eq('status', 'draft')
       .in('id', opts.ids);
+    if (opts.courseId?.trim()) q = q.eq('course_id', opts.courseId.trim());
+    const { data, error } = await q;
     if (error) throw new Error(error.message);
     rows = data ?? [];
   } else if (opts.slugs?.length) {
     const normalized = opts.slugs.map((s) => sanitizeSlugForUrl(s));
-    const { data, error } = await supabase
+    let q = supabase
       .from('blog_posts')
       .select('id, slug')
       .eq('status', 'draft')
       .in('slug', normalized);
+    if (opts.courseId?.trim()) q = q.eq('course_id', opts.courseId.trim());
+    const { data, error } = await q;
     if (error) throw new Error(error.message);
     rows = data ?? [];
   } else {
     const lim = Math.min(Math.max(opts.limit ?? 3, 1), 50);
-    return publishDraftBlogPosts(lim);
+    return publishDraftBlogPosts(
+      lim,
+      opts.courseId?.trim() ? { courseId: opts.courseId.trim() } : undefined
+    );
   }
 
   const published: { id: string; slug: string }[] = [];
