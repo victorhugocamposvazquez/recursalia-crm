@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "data:merge-normalize": "node scripts/data-merge-normalize.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.43.0",
