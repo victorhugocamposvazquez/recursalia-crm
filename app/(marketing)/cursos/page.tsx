@@ -7,6 +7,7 @@ import {
 import styles from '../marketing.module.css';
 import {
   CursosCatalogClient,
+  type CatalogSort,
   type CourseCatalogEntry,
 } from './CursosCatalogClient';
 import type {
@@ -25,7 +26,22 @@ type CourseRow = {
   generated_content: GeneratedCourseStructure | null;
   input_payload: CourseInputPayload | null;
   catalog_category: string | null;
+  published_at: string | null;
 };
+
+const VALID_SORTS: ReadonlyArray<CatalogSort> = [
+  'popular',
+  'rating',
+  'recent',
+  'price_asc',
+  'price_desc',
+];
+
+function normalizeSortParam(raw: string | undefined): CatalogSort {
+  if (!raw) return 'popular';
+  const v = raw.trim().toLowerCase() as CatalogSort;
+  return VALID_SORTS.includes(v) ? v : 'popular';
+}
 
 type ReviewDbRow = {
   course_id: string;
@@ -85,6 +101,9 @@ export default async function CursosIndexPage({
   const rawQ = sp.q;
   const qParam = typeof rawQ === 'string' ? rawQ.trim() : '';
   const rawCat = typeof sp.cat === 'string' ? sp.cat.trim() : '';
+  const sortParam = normalizeSortParam(
+    typeof sp.sort === 'string' ? sp.sort : undefined
+  );
 
   let catalogOptions: CatalogCategoryPublic[] = PUBLIC_CATALOG_CATEGORIES_FALLBACK;
   try {
@@ -111,7 +130,7 @@ export default async function CursosIndexPage({
     const { data } = await supabase
       .from('courses')
       .select(
-        'id, public_slug, published_title, topic, featured_image_url, generated_content, input_payload, catalog_category'
+        'id, public_slug, published_title, topic, featured_image_url, generated_content, input_payload, catalog_category, published_at'
       )
       .eq('status', 'published')
       .not('public_slug', 'is', null)
@@ -156,6 +175,7 @@ export default async function CursosIndexPage({
       sale: gc?.price_sale ?? null,
       avgRating: rv?.avg ?? null,
       reviewCount: rv?.count ?? 0,
+      publishedAt: c.published_at ?? null,
     };
   });
 
@@ -165,11 +185,12 @@ export default async function CursosIndexPage({
     >
       <div className={styles.inner}>
         <CursosCatalogClient
-          key={`${catFilter}|${encodeURIComponent(qParam)}`}
+          key={`${catFilter}|${encodeURIComponent(qParam)}|${sortParam}`}
           courses={catalogEntries}
           catalogOptions={catalogOptions}
           initialCategory={catFilter}
           initialQuery={qParam}
+          initialSort={sortParam}
         />
       </div>
     </section>

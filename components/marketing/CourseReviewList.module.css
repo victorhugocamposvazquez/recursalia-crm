@@ -33,6 +33,111 @@
   font-size: 0.95em;
 }
 
+.controlsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.filterChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.42rem;
+}
+
+.starChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--ch-border, rgb(27 29 30 / 12%));
+  background: var(--ch-surface, #fff);
+  color: var(--ch-text, #1b1d1e);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    color 0.16s ease,
+    background 0.16s ease;
+}
+
+.starChip:hover:not(:disabled) {
+  border-color: rgb(27 56 196 / 35%);
+  color: var(--ch-blue, #1b38c4);
+}
+
+.starChip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.starChip:focus-visible {
+  outline: 2px solid rgb(27 56 196 / 35%);
+  outline-offset: 2px;
+}
+
+.starChipActive {
+  background: var(--ch-blue, #1b38c4);
+  border-color: var(--ch-blue, #1b38c4);
+  color: #fff;
+}
+
+.starChipActive:hover {
+  color: #fff;
+}
+
+.starChipCount {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0 0.42rem;
+  height: 1.18rem;
+  border-radius: 999px;
+  background: rgb(27 56 196 / 14%);
+  color: var(--ch-blue, #1b38c4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.starChipActive .starChipCount {
+  background: rgb(255 255 255 / 22%);
+  color: #fff;
+}
+
+.sortLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--ch-text-muted, rgb(27 29 30 / 60%));
+}
+
+.sortText {
+  font-weight: 600;
+}
+
+.sortSelect {
+  padding: 0.32rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--ch-border, rgb(27 29 30 / 12%));
+  background: var(--ch-surface, #fff);
+  color: var(--ch-text, #1b1d1e);
+  font: inherit;
+  font-size: 0.82rem;
+}
+
+.sortSelect:focus-visible {
+  outline: 2px solid rgb(27 56 196 / 35%);
+  outline-offset: 0;
+}
+
 .list {
   margin: 0;
   padding: 0;

@@ -7,13 +7,102 @@
   line-height: 1.1;
 }
 
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.42rem;
+  margin: 0 0 0.95rem;
+}
+
+.chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.42rem 0.72rem;
+  border-radius: 999px;
+  border: 1px solid var(--ch-border);
+  background: var(--ch-surface);
+  color: var(--ch-text);
+  font-size: 0.86rem;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.1;
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.chip:hover {
+  border-color: rgb(27 56 196 / 35%);
+  color: var(--ch-blue);
+}
+
+.chip:focus-visible {
+  outline: 2px solid rgb(27 56 196 / 35%);
+  outline-offset: 2px;
+}
+
+.chipActive {
+  background: var(--ch-blue);
+  border-color: var(--ch-blue);
+  color: #fff;
+  box-shadow: 0 4px 14px rgb(27 56 196 / 22%);
+}
+
+.chipActive:hover {
+  color: #fff;
+}
+
+.chipCount {
+  display: inline-flex;
+  min-width: 1.4rem;
+  height: 1.25rem;
+  padding: 0 0.42rem;
+  border-radius: 999px;
+  background: rgb(27 56 196 / 12%);
+  color: var(--ch-blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.chipActive .chipCount {
+  background: rgb(255 255 255 / 22%);
+  color: #fff;
+}
+
 .toolbar {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: flex-end;
   gap: 0.75rem;
   margin-bottom: 0.72rem;
+}
+
+@media (max-width: 640px) {
+  .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 calc(var(--marketing-gutter-x, 1.25rem) * -1) 0.95rem;
+    padding: 0.15rem var(--marketing-gutter-x, 1.25rem) 0.45rem;
+    scrollbar-width: none;
+  }
+
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    flex: 0 0 auto;
+  }
 }
 
 .fieldLabel {
@@ -203,6 +292,88 @@
   align-items: center;
   gap: 0.26rem 0.38rem;
   min-width: 0;
+}
+
+.imageBadgesLeft {
+  position: absolute;
+  top: 0.42rem;
+  left: 0.42rem;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+  align-items: flex-start;
+}
+
+.imageBadge {
+  display: inline-flex;
+  align-items: center;
+  height: 1.42rem;
+  padding: 0 0.5rem;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: #fff;
+  background: var(--ch-navy);
+  box-shadow: 0 1px 5px rgb(17 24 39 / 18%);
+}
+
+.imageBadgeNew {
+  background: #059669;
+}
+
+.imageBadgeDiscount {
+  background: #dc2626;
+  font-variant-numeric: tabular-nums;
+}
+
+.markHit {
+  background: rgb(27 56 196 / 14%);
+  color: var(--ch-navy);
+  border-radius: 3px;
+  padding: 0 0.12em;
+}
+
+.emptyBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+}
+
+.linkBtn {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--ch-border);
+  color: var(--ch-blue);
+  font: inherit;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 0.42rem 0.85rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.linkBtn:hover {
+  background: var(--ch-blue-light, #eaefff);
+  border-color: rgb(27 56 196 / 30%);
+}
+
+.linkBtn:focus-visible {
+  outline: 2px solid rgb(27 56 196 / 35%);
+  outline-offset: 2px;
 }
 
 .bestsellerOnImage {

@@ -25,5 +25,9 @@ export function MarketingMain({ children }: { children: React.ReactNode }) {
             ? styles.mainBlog
             : styles.mainBelowHeader;
 
-  return <main className={mainClass}>{children}</main>;
+  return (
+    <main id="main-content" className={mainClass}>
+      {children}
+    </main>
+  );
 }

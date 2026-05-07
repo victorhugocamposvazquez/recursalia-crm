@@ -55,6 +55,31 @@
   overflow: hidden;
 }
 
+.headRating {
+  display: none;
+  align-items: center;
+  gap: 0.32rem;
+  margin-top: 0.32rem;
+  font-size: 0.8125rem;
+  color: var(--ch-navy, #1b1d1e);
+}
+
+.headScore {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.headCount {
+  color: rgb(27 29 30 / 55%);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 960px) {
+  .headRating {
+    display: inline-flex;
+  }
+}
+
 .priceCluster {
   display: flex;
   flex-direction: column;

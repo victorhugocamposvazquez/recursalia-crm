@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StarRatingDisplay } from './StarRatingDisplay';
 import styles from './CourseReviewList.module.css';
 
@@ -14,6 +14,14 @@ export type ReviewRow = {
 };
 
 const PAGE = 8;
+
+type SortKey = 'recent' | 'highest' | 'lowest';
+
+const SORT_OPTIONS: { id: SortKey; label: string }[] = [
+  { id: 'recent', label: 'Más recientes' },
+  { id: 'highest', label: 'Mejor puntuadas' },
+  { id: 'lowest', label: 'Peor puntuadas' },
+];
 
 function formatReviewDate(iso: string): string {
   try {
@@ -40,8 +48,40 @@ type Props = {
 
 export function CourseReviewList({ reviews, average }: Props) {
   const [n, setN] = useState(PAGE);
-  const visible = reviews.slice(0, n);
-  const hasMore = n < reviews.length;
+  const [filterStars, setFilterStars] = useState<number | 'all'>('all');
+  const [sort, setSort] = useState<SortKey>('recent');
+
+  const distribution = useMemo(() => {
+    const out = [0, 0, 0, 0, 0];
+    for (const r of reviews) {
+      const idx = Math.round(r.rating);
+      if (idx >= 1 && idx <= 5) out[5 - idx] += 1;
+    }
+    return out;
+  }, [reviews]);
+
+  const filtered = useMemo(() => {
+    let list = reviews;
+    if (filterStars !== 'all') {
+      list = list.filter((r) => Math.round(r.rating) === filterStars);
+    }
+    const arr = list.slice();
+    switch (sort) {
+      case 'highest':
+        arr.sort((a, b) => b.rating - a.rating || a.review_date.localeCompare(b.review_date));
+        break;
+      case 'lowest':
+        arr.sort((a, b) => a.rating - b.rating || a.review_date.localeCompare(b.review_date));
+        break;
+      case 'recent':
+      default:
+        arr.sort((a, b) => (b.review_date ?? '').localeCompare(a.review_date ?? ''));
+    }
+    return arr;
+  }, [reviews, filterStars, sort]);
+
+  const visible = filtered.slice(0, n);
+  const hasMore = n < filtered.length;
 
   if (reviews.length === 0) {
     return (
@@ -71,23 +111,88 @@ export function CourseReviewList({ reviews, average }: Props) {
         <span className={styles.headingCount}>({reviews.length})</span>
       </h2>
 
-      <div className={styles.list} role="list">
-        {visible.map((r) => (
-          <article key={r.id} className={styles.item} role="listitem">
-            <h3 className={styles.itemTitle}>{r.title}</h3>
-            <div className={styles.itemMeta}>
-              <StarRatingDisplay
-                value={r.rating}
-                ariaHidden
-                className={styles.compactStars}
-              />
-              <span className={styles.itemDate}>{formatReviewDate(r.review_date)}</span>
-            </div>
-            <p className={styles.itemBody}>{r.content}</p>
-            <p className={styles.itemAuthor}>{r.author_name}</p>
-          </article>
-        ))}
+      <div className={styles.controlsRow}>
+        <div
+          className={styles.filterChips}
+          role="group"
+          aria-label="Filtrar opiniones por puntuación"
+        >
+          <button
+            type="button"
+            className={`${styles.starChip} ${filterStars === 'all' ? styles.starChipActive : ''}`}
+            aria-pressed={filterStars === 'all'}
+            onClick={() => {
+              setFilterStars('all');
+              setN(PAGE);
+            }}
+          >
+            Todas <span className={styles.starChipCount}>{reviews.length}</span>
+          </button>
+          {[5, 4, 3, 2, 1].map((star, idx) => {
+            const count = distribution[idx];
+            const active = filterStars === star;
+            return (
+              <button
+                key={star}
+                type="button"
+                className={`${styles.starChip} ${active ? styles.starChipActive : ''}`}
+                aria-pressed={active}
+                disabled={count === 0}
+                onClick={() => {
+                  setFilterStars(star);
+                  setN(PAGE);
+                }}
+              >
+                {star} ★ <span className={styles.starChipCount}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+        <label className={styles.sortLabel}>
+          <span className={styles.sortText}>Ordenar:</span>
+          <select
+            className={styles.sortSelect}
+            value={sort}
+            onChange={(e) => {
+              setSort(e.target.value as SortKey);
+              setN(PAGE);
+            }}
+            aria-label="Ordenar opiniones"
+          >
+            {SORT_OPTIONS.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
+
+      {visible.length === 0 ? (
+        <p className={styles.empty} role="status" aria-live="polite">
+          No hay opiniones con este filtro.
+        </p>
+      ) : (
+        <div className={styles.list} role="list">
+          {visible.map((r) => (
+            <article key={r.id} className={styles.item} role="listitem">
+              <h3 className={styles.itemTitle}>{r.title}</h3>
+              <div className={styles.itemMeta}>
+                <StarRatingDisplay
+                  value={r.rating}
+                  ariaHidden
+                  className={styles.compactStars}
+                />
+                <span className={styles.itemDate}>
+                  {formatReviewDate(r.review_date)}
+                </span>
+              </div>
+              <p className={styles.itemBody}>{r.content}</p>
+              <p className={styles.itemAuthor}>{r.author_name}</p>
+            </article>
+          ))}
+        </div>
+      )}
 
       {hasMore && (
         <button

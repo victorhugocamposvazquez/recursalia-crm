@@ -1,3 +1,31 @@
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.45rem;
+}
+
+.toolbarBtn {
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--ch-blue, #1b38c4);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+}
+
+.toolbarBtn:hover {
+  background: var(--ch-blue-light, #eaefff);
+}
+
+.toolbarBtn:focus-visible {
+  outline: 2px solid rgb(27 56 196 / 35%);
+  outline-offset: 2px;
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -48,6 +76,14 @@
   min-width: 0;
 }
 
+.triggerMeta {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  color: var(--ch-text-muted, #6b7280);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
 .chevron {
   flex-shrink: 0;
   color: var(--ch-text-muted, #6b7280);
@@ -95,6 +131,14 @@
 .lessonTitle {
   flex: 1;
   min-width: 0;
+}
+
+.lessonTime {
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  color: var(--ch-text-muted, #6b7280);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }
 
 .empty {

@@ -431,13 +431,133 @@
   line-height: 1.58;
 }
 
-.programaHeading {
+.programaHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem 1rem;
   margin: 0 0 0.85rem;
+}
+
+.programaHeading {
+  margin: 0;
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--ch-blue, #1b38c4);
+}
+
+.programaMeta {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--ch-text-muted, rgb(27 29 30 / 60%));
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.heroFacts {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0.95rem 0 0;
+  gap: 0.42rem 1.15rem;
+  font-size: 0.86rem;
+  color: var(--ch-text-muted, rgb(27 29 30 / 60%));
+}
+
+.heroFacts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.heroFacts strong {
+  color: var(--ch-navy);
+  font-weight: 700;
+}
+
+.heroFactSub {
+  color: rgb(27 29 30 / 55%);
+}
+
+.learnSection {
+  background: var(--ch-surface, #fff);
+  border: 1px solid var(--ch-border, rgb(27 29 30 / 10%));
+  border-radius: 16px;
+  padding: 1.25rem 1.35rem 1.4rem;
+  margin: 0 0 2rem;
+}
+
+.learnList {
+  list-style: none;
+  padding: 0;
+  margin: 0.85rem 0 0;
+  display: grid;
+  gap: 0.5rem 1.2rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .learnList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.learnItem {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  font-size: 0.94rem;
+  color: var(--ch-text, #1b1d1e);
+  line-height: 1.45;
+}
+
+.learnCheck {
+  flex-shrink: 0;
+  margin-top: 0.16rem;
+  color: #059669;
+}
+
+.sidebarPriceHint {
+  font-size: 0.78rem;
+  color: var(--ch-text-muted, rgb(27 29 30 / 55%));
+  font-weight: 500;
+}
+
+.notifyCopy {
+  margin: 0 0 1rem;
+  padding: 0.78rem 0.85rem;
+  background: var(--ch-blue-light, #eaefff);
+  border-radius: 12px;
+  font-size: 0.82rem;
+  color: var(--ch-text, #1b1d1e);
+  line-height: 1.5;
+}
+
+.trustList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+}
+
+.trustList li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--ch-text, #1b1d1e);
+  line-height: 1.4;
+}
+
+.trustList li svg {
+  color: #059669;
+  flex-shrink: 0;
 }
 
 /* Opiniones */

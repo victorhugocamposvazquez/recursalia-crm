@@ -67,3 +67,48 @@ a {
   background: rgb(27 56 196 / 18%);
   color: #1b1d1e;
 }
+
+/* Foco visible consistente para teclado en toda la app pública. */
+:where(a, button, input, select, textarea, [role='button'], [tabindex]):focus-visible {
+  outline: 2px solid rgb(27 56 196 / 55%);
+  outline-offset: 2px;
+}
+
+/* Skip-link para navegación por teclado: salta directamente al contenido. */
+.skip-to-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0.6rem 1rem;
+  background: var(--ch-purple-blue);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 0 0 12px 0;
+  text-decoration: none;
+  transform: translateY(-120%);
+  transition: transform 0.18s ease;
+}
+
+.skip-to-content:focus,
+.skip-to-content:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Respeta usuarios con preferencia de movimiento reducido. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

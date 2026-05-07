@@ -33,6 +33,9 @@ export default function RootLayout({
       className={`${interTight.variable} ${poppinsDisplay.variable}`}
     >
       <body>
+        <a href="#main-content" className="skip-to-content">
+          Saltar al contenido
+        </a>
         {children}
         {GA_MEASUREMENT_ID ? (
           <>

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { StarRatingDisplay } from './StarRatingDisplay';
 import styles from './CourseStickyCheckoutBar.module.css';
 
 function CartIcon({ className }: { className?: string }) {
@@ -57,6 +58,9 @@ export type CourseStickyCheckoutBarProps = {
   displayPriceLabel: string;
   originalPriceLabel?: string | null;
   showStrike: boolean;
+  /** Si hay opiniones, mostramos resumen en la barra (refuerza CTA). */
+  ratingAverage?: number | null;
+  reviewCount?: number;
 };
 
 export function CourseStickyCheckoutBar({
@@ -65,6 +69,8 @@ export function CourseStickyCheckoutBar({
   displayPriceLabel,
   originalPriceLabel,
   showStrike,
+  ratingAverage,
+  reviewCount = 0,
 }: CourseStickyCheckoutBarProps) {
   const [revealed, setRevealed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -94,6 +100,15 @@ export function CourseStickyCheckoutBar({
       <div className={styles.inner}>
         <div className={styles.desktopHead}>
           <p className={styles.courseTitle}>{title}</p>
+          {ratingAverage != null && reviewCount > 0 ? (
+            <div className={styles.headRating} aria-label="Valoración del curso">
+              <span className={styles.headScore}>
+                {ratingAverage.toFixed(1).replace('.', ',')}
+              </span>
+              <StarRatingDisplay value={ratingAverage} ariaHidden />
+              <span className={styles.headCount}>({reviewCount})</span>
+            </div>
+          ) : null}
         </div>
 
         <div className={styles.desktopActions}>
