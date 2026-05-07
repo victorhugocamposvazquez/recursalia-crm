@@ -7,17 +7,10 @@ import { CourseProgramAccordion } from '@/components/marketing/CourseProgramAcco
 import { CourseReviewList, type ReviewRow } from '@/components/marketing/CourseReviewList';
 import { CourseSectionNav } from '@/components/marketing/CourseSectionNav';
 import { CourseStickyCheckoutBar } from '@/components/marketing/CourseStickyCheckoutBar';
-import { CourseRelated, type RelatedCourse } from '@/components/marketing/CourseRelated';
 import { SalaryMoneyBagIcon } from '@/components/marketing/SalaryMoneyBagIcon';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
 import { resolveCourseAuthorDisplay } from '@/lib/courseAuthorDefaults';
-import {
-  PUBLIC_CATALOG_CATEGORIES_FALLBACK,
-  categoryLabel,
-  resolveCourseCatalogSlug,
-  type CatalogCategoryPublic,
-} from '@/lib/catalogCategory';
 import { breadcrumbJsonLd, courseJsonLd } from '@/lib/courseJsonLd';
 import { COURSE_IMAGE_BLUR_DATA_URL } from '@/lib/imagePlaceholder';
 import { siteCanonicalBase } from '@/lib/blog-seo';
@@ -38,17 +31,6 @@ type CourseRow = {
   catalog_category: string | null;
   meta_title?: string | null;
   meta_description?: string | null;
-};
-
-type RelatedRow = {
-  id: string;
-  public_slug: string;
-  published_title: string | null;
-  topic: string;
-  featured_image_url: string | null;
-  generated_content: GeneratedCourseStructure | null;
-  catalog_category: string | null;
-  input_payload: CourseInputPayload | null;
 };
 
 export async function generateMetadata({
@@ -228,25 +210,9 @@ export default async function CursoLandingPage({
 
   let course: CourseRow | null = null;
   let reviews: ReviewRow[] = [];
-  let relatedRaw: RelatedRow[] = [];
-  let relatedReviewStats: Map<string, { avg: number | null; count: number }> = new Map();
-  let catalogOptions: CatalogCategoryPublic[] = PUBLIC_CATALOG_CATEGORIES_FALLBACK;
 
   try {
     const supabase = createPublicSupabaseClient();
-    try {
-      const { data: cats } = await supabase
-        .from('catalog_categories')
-        .select('slug, label')
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
-      if (cats && cats.length > 0) {
-        catalogOptions = cats as CatalogCategoryPublic[];
-      }
-    } catch {
-      /* fallback */
-    }
-
     const { data: c } = await supabase
       .from('courses')
       .select(
@@ -265,60 +231,6 @@ export default async function CursoLandingPage({
         .eq('course_id', course.id)
         .order('review_date', { ascending: false });
       reviews = (rev ?? []) as ReviewRow[];
-
-      const cat = resolveCourseCatalogSlug(
-        course.catalog_category,
-        course.input_payload
-      );
-      const { data: relData } = await supabase
-        .from('courses')
-        .select(
-          'id, public_slug, published_title, topic, featured_image_url, generated_content, catalog_category, input_payload'
-        )
-        .eq('status', 'published')
-        .neq('id', course.id)
-        .not('public_slug', 'is', null)
-        .order('published_at', { ascending: false })
-        .limit(12);
-      const all = (relData ?? []) as RelatedRow[];
-      relatedRaw = all.filter(
-        (r) =>
-          resolveCourseCatalogSlug(r.catalog_category, r.input_payload) === cat
-      );
-      if (relatedRaw.length < 3) {
-        relatedRaw = [
-          ...relatedRaw,
-          ...all.filter((r) => !relatedRaw.some((x) => x.id === r.id)),
-        ];
-      }
-      relatedRaw = relatedRaw.slice(0, 3);
-
-      if (relatedRaw.length > 0) {
-        const { data: relRevs } = await supabase
-          .from('course_reviews')
-          .select('course_id, rating')
-          .in(
-            'course_id',
-            relatedRaw.map((r) => r.id)
-          );
-        const map = new Map<string, number[]>();
-        for (const r of relRevs ?? []) {
-          const arr = map.get(r.course_id) ?? [];
-          if (typeof r.rating === 'number' && r.rating >= 1 && r.rating <= 5) {
-            arr.push(r.rating);
-          }
-          map.set(r.course_id, arr);
-        }
-        relatedReviewStats = new Map(
-          Array.from(map.entries()).map(([cid, ratings]) => {
-            const avg =
-              ratings.length > 0
-                ? ratings.reduce((a, b) => a + b, 0) / ratings.length
-                : null;
-            return [cid, { avg, count: ratings.length }];
-          })
-        );
-      }
     }
   } catch {
     course = null;
@@ -385,21 +297,6 @@ export default async function CursoLandingPage({
     { name: 'Cursos', url: '/cursos' },
     { name: title, url: courseUrl },
   ]);
-
-  const relatedItems: RelatedCourse[] = relatedRaw.map((r) => {
-    const gc = r.generated_content;
-    const stat = relatedReviewStats.get(r.id);
-    return {
-      id: r.id,
-      publicSlug: r.public_slug,
-      title: r.published_title || gc?.title || r.topic,
-      imageUrl: r.featured_image_url,
-      sale: gc?.price_sale ?? null,
-      original: gc?.price_original ?? null,
-      avgRating: stat?.avg ?? null,
-      reviewCount: stat?.count ?? 0,
-    };
-  });
 
   return (
     <div className={`${styles.layout} ${styles.layoutStickyCheckout}`}>
@@ -626,19 +523,6 @@ export default async function CursoLandingPage({
         >
           <CourseReviewList reviews={reviews} average={avg} />
         </section>
-
-        {relatedItems.length > 0 ? (
-          <CourseRelated
-            heading={`Otros cursos en ${categoryLabel(
-              resolveCourseCatalogSlug(
-                course.catalog_category,
-                course.input_payload
-              ),
-              catalogOptions
-            )}`}
-            items={relatedItems}
-          />
-        ) : null}
       </article>
 
       <aside className={styles.sidebar} aria-label="Comprar curso">
