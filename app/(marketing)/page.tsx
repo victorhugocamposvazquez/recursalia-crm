@@ -1,461 +1,490 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
-import { CourseCardGrid, type CourseCardItem } from '@/components/marketing/CourseCardGrid';
-import { TextGenerateEffect } from '@/components/marketing/TextGenerateEffect';
-import { ResourceMarquee } from '@/components/marketing/ResourceMarquee';
 import { HomeCategoryGrid } from '@/components/marketing/HomeCategoryGrid';
-import { HOME_TESTIMONIALS } from '@/lib/homeContent';
+import { HomeFaq } from '@/components/marketing/HomeFaq';
+import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
+import { COURSE_IMAGE_BLUR_DATA_URL } from '@/lib/imagePlaceholder';
+import type { GeneratedCourseStructure } from '@/types';
 import homeStyles from './home.module.css';
 
 export const revalidate = 60;
 
-const TRUSTED_TEAMS = ['Cofoco', 'Bones', 'OLIOLI', 'Madklubben', 'Fårup', 'Dyreparken'];
+type FeaturedCourseRow = {
+  id: string;
+  public_slug: string;
+  published_title: string | null;
+  topic: string;
+  featured_image_url: string | null;
+  generated_content: GeneratedCourseStructure | null;
+};
 
-const HERO_AVATARS = [
-  { src: '/images/home/avatar_1.jpg', alt: 'Sarah Johnson' },
-  { src: '/images/home/avatar_2.jpg', alt: 'Olivia Miller' },
-  { src: '/images/home/avatar_3.jpg', alt: 'Sophia Roberts' },
-  { src: '/images/home/avatar_4.jpg', alt: 'Isabella Clark' },
-];
+type ReviewStatRow = {
+  course_id: string;
+  rating: number;
+};
 
-const HERO_LOGOS = [
-  { src: '/images/home/brand/brand-icon-1.svg', alt: 'Adobe' },
-  { src: '/images/home/brand/brand-icon-2.svg', alt: 'Figma' },
-  { src: '/images/home/brand/brand-icon-3.svg', alt: 'Shopify' },
-  { src: '/images/home/brand/brand-icon-4.svg', alt: 'Dribbble' },
-  { src: '/images/home/brand/brand-icon-5.svg', alt: 'Webflow' },
-];
+type HighlightedReviewRow = {
+  id: string;
+  title: string;
+  content: string;
+  rating: number;
+  author_name: string;
+  course_id: string;
+  review_date: string;
+};
 
-const SAAS_FEATURES = [
-  {
-    title: 'Contenido segmentado por equipos',
-    body: 'Publica manuales, cursos y comunicaciones para cada departamento con reglas claras de acceso.',
-  },
-  {
-    title: 'Adopción medible en tiempo real',
-    body: 'Sigue actividad, progreso y consumo del contenido para mejorar onboarding y operaciones diarias.',
-  },
-  {
-    title: 'Experiencia clara para toda la empresa',
-    body: 'Una interfaz pensada para que cualquier persona encuentre rápido lo que necesita y actúe al momento.',
-  },
-];
+function formatMoney(n?: number | null) {
+  if (n == null || Number.isNaN(n)) return null;
+  return new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+  }).format(n);
+}
 
-const SOLUTION_PILLS = [
-  'Gestión de Personas',
-  'Gestión de Reclutamiento',
-  'Gestión de Capacitación',
-  'Gestión de Desempeño',
-  'Gestión de Clima',
-];
+function formatScoreEs(n: number): string {
+  return n.toFixed(1).replace('.', ',');
+}
 
-const SOLUTION_BLOCKS = [
+function formatThousands(n: number): string {
+  return new Intl.NumberFormat('es-ES').format(n);
+}
+
+const HOW_IT_WORKS = [
   {
-    title: 'Centraliza la información clave de tu organización',
-    body: 'Gestiona documentos, políticas, organigramas y tareas en una sola experiencia clara para RRHH y operaciones.',
-    points: ['Onboarding y offboarding guiado', 'Políticas y permisos por roles', 'Firma y trazabilidad documental'],
+    step: '01',
+    title: 'Elige el curso',
+    body: 'Más de un centenar de cursos prácticos en categorías como salud, marketing, idiomas, finanzas o fotografía.',
   },
   {
-    title: 'Optimiza tu proceso de reclutamiento',
-    body: 'Desde la vacante hasta la contratación, automatiza seguimiento, comunicación y evaluación de candidatos.',
-    points: ['Pipeline visual de selección', 'Scorecards por perfil', 'Automatizaciones de comunicación'],
+    step: '02',
+    title: 'Aprende a tu ritmo',
+    body: 'Acceso de por vida a vídeos, lecciones y material descargable. Empieza hoy y avanza cuando quieras.',
   },
   {
-    title: 'Capacita y acelera la evolución del equipo',
-    body: 'Publica rutas de aprendizaje, módulos y academias internas con seguimiento de progreso en tiempo real.',
-    points: ['LMS/LXP en una sola vista', 'Evaluaciones automáticas', 'Aprendizaje social colaborativo'],
-  },
-  {
-    title: 'Alinea desempeño con objetivos de negocio',
-    body: 'Gestiona metas, feedback, competencias y planes de desarrollo sin cambiar de plataforma.',
-    points: ['OKRs y metas por área', 'Feedback continuo', 'Planes individuales de desarrollo'],
-  },
-  {
-    title: 'Mide clima y compromiso con datos accionables',
-    body: 'Monitorea eNPS, pulsos y reconocimiento para tomar decisiones de cultura con mayor rapidez.',
-    points: ['Encuestas y pulsos automatizados', 'Insights por equipo', 'Seguimiento histórico'],
+    step: '03',
+    title: 'Demuéstralo',
+    body: 'Recibe diploma de aprovechamiento al completar el curso y suma puntos para nuestra bolsa de empleo.',
   },
 ];
 
-const ANALYTICS_ITEMS = [
+const TRUST_PILLARS = [
   {
-    title: 'Análisis de sentimiento en comentarios',
-    body: 'Extrae patrones de feedback abierto para priorizar mejoras en cultura, formación y operaciones.',
+    title: 'Pago 100 % seguro con Hotmart',
+    body: 'Compras procesadas por Hotmart, plataforma de referencia con 8 millones de usuarios en todo el mundo.',
   },
   {
-    title: 'Reportes por usuario, equipo o área',
-    body: 'Consulta información accionable por nivel organizacional sin depender de procesos manuales.',
+    title: 'Garantía de devolución de 7 días',
+    body: 'Si el curso no es para ti, te devolvemos el dinero. Sin preguntas, sin trámites complicados.',
   },
   {
-    title: 'Seguimiento continuo de aprendizaje y performance',
-    body: 'Visualiza avances de rutas, objetivos y actividad en paneles claros para líderes y RRHH.',
-  },
-];
-
-const IMPLEMENTATION_STEPS = [
-  {
-    title: 'Implementación guiada desde el inicio',
-    body: 'Te acompañamos en la configuración inicial para que el equipo use la plataforma con confianza desde el día uno.',
+    title: 'Acceso de por vida y desde cualquier dispositivo',
+    body: 'Accede al contenido desde móvil, tablet u ordenador, las veces que quieras. Tu compra no caduca.',
   },
   {
-    title: 'Estrategia para acelerar resultados',
-    body: 'Revisamos periódicamente métricas de adopción y te proponemos mejoras concretas de uso.',
+    title: 'Diploma incluido en cada curso',
+    body: 'Al finalizar recibes un diploma personalizado con código de verificación que puedes compartir.',
   },
   {
-    title: 'Atención personalizada y adaptativa',
-    body: 'Alineamos el producto a tus procesos reales y resolvemos necesidades específicas por operación.',
+    title: 'Bolsa de empleo activa',
+    body: 'Cursos con bolsa de trabajo incluyen acceso a oportunidades reales con empresas colaboradoras.',
   },
   {
-    title: 'Soporte técnico ágil',
-    body: 'Respondemos rápido para mantener continuidad y evitar fricción en los flujos críticos del negocio.',
+    title: 'Soporte humano en español',
+    body: 'Equipo de atención al alumno por correo electrónico para resolver dudas técnicas o de contenido.',
   },
 ];
 
-const RESOURCE_CARDS = [
-  {
-    type: 'Blog destacado',
-    title: 'Cómo construir una cultura de aprendizaje continuo',
-    body: 'Buenas prácticas para transformar la formación interna en resultados de negocio medibles.',
-    cta: 'Leer artículo',
-  },
-  {
-    type: 'Guía descargable',
-    title: 'Reporte de tendencias en formación corporativa',
-    body: 'Insights y marcos de trabajo para definir una estrategia de capacitación moderna.',
-    cta: 'Descargar guía',
-  },
-  {
-    type: 'Podcast',
-    title: 'Operaciones y people: cómo alinear equipos de alto rendimiento',
-    body: 'Conversaciones con líderes sobre escalabilidad, cultura y adopción tecnológica.',
-    cta: 'Escuchar episodio',
-  },
-];
+function pickHighlightedReviews(rows: HighlightedReviewRow[]): HighlightedReviewRow[] {
+  return rows
+    .filter((r) => r.rating >= 4 && r.content && r.content.length >= 80)
+    .sort((a, b) => {
+      if (b.rating !== a.rating) return b.rating - a.rating;
+      return (b.content?.length ?? 0) - (a.content?.length ?? 0);
+    })
+    .slice(0, 3);
+}
 
 export default async function MarketingHomePage() {
-  let courses: CourseCardItem[] = [];
+  let featuredRaw: FeaturedCourseRow[] = [];
+  let reviewStats: ReviewStatRow[] = [];
+  let highlightedReviews: HighlightedReviewRow[] = [];
+  let publishedCourses = 0;
 
   try {
     const supabase = createPublicSupabaseClient();
-    const { data } = await supabase
-      .from('courses')
-      .select(
-        'id, public_slug, published_title, topic, featured_image_url, generated_content'
-      )
-      .eq('status', 'published')
-      .not('public_slug', 'is', null)
-      .order('published_at', { ascending: false });
 
-    courses = (data ?? []) as CourseCardItem[];
+    const [coursesRes, statsRes, reviewsRes] = await Promise.all([
+      supabase
+        .from('courses')
+        .select(
+          'id, public_slug, published_title, topic, featured_image_url, generated_content'
+        )
+        .eq('status', 'published')
+        .not('public_slug', 'is', null)
+        .order('published_at', { ascending: false })
+        .limit(8),
+      supabase.from('course_reviews').select('course_id, rating'),
+      supabase
+        .from('course_reviews')
+        .select('id, title, content, rating, author_name, course_id, review_date')
+        .gte('rating', 4)
+        .order('review_date', { ascending: false })
+        .limit(60),
+    ]);
+
+    featuredRaw = (coursesRes.data ?? []) as FeaturedCourseRow[];
+    reviewStats = (statsRes.data ?? []) as ReviewStatRow[];
+    highlightedReviews = pickHighlightedReviews(
+      (reviewsRes.data ?? []) as HighlightedReviewRow[]
+    );
   } catch {
-    courses = [];
+    /* fallback silencioso */
   }
 
-  const trending = courses.slice(0, 6);
+  try {
+    const supabase = createPublicSupabaseClient();
+    const { count } = await supabase
+      .from('courses')
+      .select('id', { head: true, count: 'exact' })
+      .eq('status', 'published')
+      .not('public_slug', 'is', null);
+    publishedCourses = count ?? featuredRaw.length;
+  } catch {
+    publishedCourses = featuredRaw.length;
+  }
+
+  const totalReviews = reviewStats.length;
+  const averageRating =
+    totalReviews > 0
+      ? reviewStats.reduce((sum, r) => sum + (r.rating ?? 0), 0) / totalReviews
+      : null;
+
+  const reviewsByCourse = new Map<string, number>();
+  for (const r of reviewStats) {
+    reviewsByCourse.set(r.course_id, (reviewsByCourse.get(r.course_id) ?? 0) + 1);
+  }
+
+  const courseTitleById = new Map<string, string>();
+  for (const c of featuredRaw) {
+    courseTitleById.set(
+      c.id,
+      c.published_title || c.generated_content?.title || c.topic
+    );
+  }
+
+  const featured = featuredRaw.slice(0, 6);
 
   return (
     <>
-      <section className={homeStyles.heroSplit}>
-        <div className={homeStyles.heroGrid}>
-          <div className={homeStyles.heroCenter}>
-            <h1 className={homeStyles.heroTitle}>
-              <TextGenerateEffect words="Formación para tu" className={homeStyles.heroTitleLead} />
-              <br />
-              <TextGenerateEffect
-                words="próximo empleo"
-                delay={0.8}
-                className={homeStyles.heroAccent}
-              />
-            </h1>
+      <section className={homeStyles.hero} aria-labelledby="hero-heading">
+        <div className={homeStyles.heroInner}>
+          <p className={homeStyles.heroEyebrow}>
+            Aprende algo nuevo. Cambia tu próxima decisión.
+          </p>
+          <h1 id="hero-heading" className={homeStyles.heroTitle}>
+            Cursos online claros y aplicables, creados por expertos.
+          </h1>
+          <p className={homeStyles.heroSubtitle}>
+            Diploma incluido, acceso de por vida y 7 días de garantía. Empieza hoy
+            y avanza a tu ritmo, sin compromisos.
+          </p>
 
-            <div className={homeStyles.heroSearchWrap}>
-              <HomeHeroSearch />
-            </div>
-
-            <div className={homeStyles.heroSocialProof}>
-              <ul className={homeStyles.heroAvatars} aria-label="Clientes satisfechos">
-                {HERO_AVATARS.map((avatar) => (
-                  <li key={avatar.alt}>
-                    <Image
-                      src={avatar.src}
-                      alt={avatar.alt}
-                      width={44}
-                      height={44}
-                      quality={100}
-                    />
-                  </li>
-                ))}
-              </ul>
-              <div className={homeStyles.heroReviewBlock}>
-                <div className={homeStyles.heroStars} aria-hidden>
-                  {[0, 1, 2, 3].map((index) => (
-                    <svg
-                      key={`star-${index}`}
-                      className={homeStyles.heroStar}
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden
-                    >
-                      <path
-                        fill="#f5a623"
-                        d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
-                      />
-                    </svg>
-                  ))}
-                  <svg
-                    className={homeStyles.heroStar}
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden
-                  >
-                    <defs>
-                      <linearGradient id="heroStarPartial" x1="0" x2="1" y1="0" y2="0">
-                        <stop offset="85%" stopColor="#f5a623" />
-                        <stop offset="85%" stopColor="#f5a623" stopOpacity="0.22" />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      fill="url(#heroStarPartial)"
-                      d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
-                    />
-                  </svg>
-                </div>
-                <p>más de 1000+ alumnos</p>
-              </div>
-            </div>
+          <div className={homeStyles.heroSearchWrap}>
+            <HomeHeroSearch />
           </div>
-        </div>
 
-        <div className={homeStyles.heroMarqueeWrap}>
-          <ResourceMarquee />
-        </div>
-      </section>
-
-      <section className={homeStyles.sectionShell}>
-        <div className={homeStyles.panel}>
-          <div className={homeStyles.sectionHeadCenter}>
-            <p className={homeStyles.kicker}>Soluciones</p>
-            <h2 className={homeStyles.sectionTitle}>
-              <TextGenerateEffect words="Activa el potencial de tu organización" />
-            </h2>
-            <div className={homeStyles.solutionPills}>
-              {SOLUTION_PILLS.map((pill) => (
-                <span key={pill} className={homeStyles.solutionPill}>
-                  {pill}
+          <div className={homeStyles.heroProof}>
+            {averageRating != null && totalReviews > 0 ? (
+              <div className={homeStyles.heroProofBlock}>
+                <span className={homeStyles.heroProofScore}>
+                  {formatScoreEs(averageRating)}
                 </span>
-              ))}
-            </div>
-          </div>
-          <div className={homeStyles.solutionGrid}>
-            {SOLUTION_BLOCKS.map((block) => (
-              <article key={block.title} className={homeStyles.solutionCard}>
-                <h3>{block.title}</h3>
-                <p>{block.body}</p>
-                <ul>
-                  {block.points.map((point) => (
-                    <li key={point}>{point}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className={homeStyles.sectionShellMuted}>
-        <div className={homeStyles.panel}>
-          <div className={homeStyles.sectionHeadCenter}>
-            <p className={homeStyles.kicker}>People Analytics</p>
-            <h2 className={homeStyles.sectionTitle}>
-              <TextGenerateEffect words="Toma decisiones con inteligencia, no con intuición" />
-            </h2>
-          </div>
-          <div className={homeStyles.analyticsGrid}>
-            {ANALYTICS_ITEMS.map((item) => (
-              <article key={item.title} className={homeStyles.analyticsCard}>
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className={homeStyles.sectionShell}>
-        <div className={homeStyles.panel}>
-          <div className={homeStyles.cardShell}>
-            <p className={homeStyles.kicker}>Cursos destacados</p>
-            <h2 className={homeStyles.sectionTitle}>
-              <TextGenerateEffect words="Formación práctica para cada perfil" />
-            </h2>
-            <CourseCardGrid courses={trending} />
-            <div className={homeStyles.moreWrap}>
-              <Link href="/cursos" className={homeStyles.moreLink}>
-                Ver catálogo completo →
-              </Link>
+                <StarRatingDisplay value={averageRating} ariaHidden />
+                <span className={homeStyles.heroProofMeta}>
+                  {formatThousands(totalReviews)} valoraciones
+                </span>
+              </div>
+            ) : null}
+            {publishedCourses > 0 ? (
+              <div className={homeStyles.heroProofBlock}>
+                <strong>{formatThousands(publishedCourses)}</strong> cursos
+                publicados
+              </div>
+            ) : null}
+            <div className={homeStyles.heroProofBlock}>
+              <strong>7 días</strong> de garantía Hotmart
             </div>
           </div>
         </div>
       </section>
 
-      <section className={homeStyles.sectionShellMuted}>
-        <div className={homeStyles.panel}>
-          <div className={homeStyles.sectionHeadCenter}>
-            <p className={homeStyles.kicker}>Categorías</p>
-            <h2 className={homeStyles.sectionTitle}>
-              <TextGenerateEffect words="Explora por áreas y necesidades" />
-            </h2>
+      <section className={homeStyles.metricsBand} aria-label="Recursalia en cifras">
+        <div className={homeStyles.metricsInner}>
+          <div className={homeStyles.metric}>
+            <span className={homeStyles.metricValue}>
+              {publishedCourses > 0 ? formatThousands(publishedCourses) : '—'}
+            </span>
+            <span className={homeStyles.metricLabel}>Cursos publicados</span>
           </div>
+          <div className={homeStyles.metric}>
+            <span className={homeStyles.metricValue}>
+              {averageRating != null ? formatScoreEs(averageRating) : '—'}
+              <span className={homeStyles.metricUnit}>/5</span>
+            </span>
+            <span className={homeStyles.metricLabel}>Valoración media</span>
+          </div>
+          <div className={homeStyles.metric}>
+            <span className={homeStyles.metricValue}>
+              {totalReviews > 0 ? formatThousands(totalReviews) : '—'}
+            </span>
+            <span className={homeStyles.metricLabel}>Opiniones de alumnos</span>
+          </div>
+          <div className={homeStyles.metric}>
+            <span className={homeStyles.metricValue}>7 días</span>
+            <span className={homeStyles.metricLabel}>Garantía de devolución</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={homeStyles.section}
+        aria-labelledby="categorias-heading"
+      >
+        <div className={homeStyles.sectionInner}>
+          <header className={homeStyles.sectionHead}>
+            <p className={homeStyles.kicker}>Explora</p>
+            <h2 id="categorias-heading" className={homeStyles.sectionTitle}>
+              Encuentra el área que quieres dominar
+            </h2>
+          </header>
           <HomeCategoryGrid />
         </div>
       </section>
 
-      <section className={homeStyles.sectionShell}>
-        <div className={homeStyles.panel}>
-          <div className={homeStyles.sectionHeadCenter}>
-            <p className={homeStyles.kicker}>Por qué Recursalia</p>
-            <h2 className={homeStyles.sectionTitle}>
-              <TextGenerateEffect words="Diseñada para escalar cultura y operaciones" />
-            </h2>
-          </div>
-          <div className={homeStyles.featureGrid}>
-            {SAAS_FEATURES.map((feature) => (
-              <article key={feature.title} className={homeStyles.featureCard}>
-                <h3>{feature.title}</h3>
-                <p>{feature.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      {featured.length > 0 ? (
+        <section
+          className={homeStyles.sectionAlt}
+          aria-labelledby="destacados-heading"
+        >
+          <div className={homeStyles.sectionInner}>
+            <header className={homeStyles.sectionHead}>
+              <p className={homeStyles.kicker}>Destacados</p>
+              <h2 id="destacados-heading" className={homeStyles.sectionTitle}>
+                Cursos populares ahora mismo
+              </h2>
+            </header>
 
-      <section className={homeStyles.sectionShellMuted}>
-        <div className={homeStyles.panel}>
-          <div className={homeStyles.sectionHeadCenter}>
-            <p className={homeStyles.kicker}>Casos reales</p>
-            <h2 className={homeStyles.sectionTitle}>
-              <TextGenerateEffect words="Equipos que ya aprenden con Recursalia" />
-            </h2>
-          </div>
-          <div className={homeStyles.caseShowcase}>
-            <div className={homeStyles.caseMedia}>
-              <div className={homeStyles.caseMediaBadge}>Caso cliente</div>
-            </div>
-            <article className={homeStyles.caseBody}>
-              <p className={homeStyles.caseTag}>Gestión de Capacitación</p>
-              <p className={homeStyles.caseQuote}>“{HOME_TESTIMONIALS[0]?.quote}”</p>
-              <h3 className={homeStyles.caseAuthor}>{HOME_TESTIMONIALS[0]?.name}</h3>
-              <p className={homeStyles.caseRole}>{HOME_TESTIMONIALS[0]?.role}</p>
-              <Link href="/blog" className={homeStyles.caseLink}>
-                Leer la historia →
+            <ul className={homeStyles.courseGrid}>
+              {featured.map((c) => {
+                const gc = c.generated_content;
+                const title = c.published_title || gc?.title || c.topic;
+                const desc = gc?.short_description ?? '';
+                const original = formatMoney(gc?.price_original);
+                const sale = formatMoney(gc?.price_sale);
+                const showStrike =
+                  gc?.price_original != null &&
+                  gc?.price_sale != null &&
+                  gc.price_sale < gc.price_original;
+                const reviewCount = reviewsByCourse.get(c.id) ?? 0;
+                return (
+                  <li key={c.id} className={homeStyles.courseCard}>
+                    <Link
+                      href={`/cursos/${c.public_slug}`}
+                      className={homeStyles.courseCardLink}
+                    >
+                      <div className={homeStyles.courseImage}>
+                        {c.featured_image_url ? (
+                          <Image
+                            src={c.featured_image_url}
+                            alt=""
+                            fill
+                            sizes="(max-width: 520px) 100vw, (max-width: 900px) 50vw, 33vw"
+                            placeholder="blur"
+                            blurDataURL={COURSE_IMAGE_BLUR_DATA_URL}
+                            style={{ objectFit: 'cover' }}
+                          />
+                        ) : null}
+                      </div>
+                      <div className={homeStyles.courseBody}>
+                        <h3 className={homeStyles.courseTitle}>{title}</h3>
+                        {desc ? (
+                          <p className={homeStyles.courseDesc}>{desc}</p>
+                        ) : null}
+                        {reviewCount > 0 ? (
+                          <p className={homeStyles.courseMeta}>
+                            {formatThousands(reviewCount)} valoración
+                            {reviewCount === 1 ? '' : 'es'}
+                          </p>
+                        ) : null}
+                        <div className={homeStyles.coursePrice}>
+                          {showStrike ? (
+                            <span className={homeStyles.coursePriceOld}>
+                              {original}
+                            </span>
+                          ) : null}
+                          <span className={homeStyles.coursePriceNow}>
+                            {sale ?? original ?? ''}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className={homeStyles.sectionFootCenter}>
+              <Link href="/cursos" className={homeStyles.btnPrimary}>
+                Ver catálogo completo
               </Link>
-            </article>
-          </div>
-          <div className={homeStyles.caseBrands}>
-            {TRUSTED_TEAMS.slice(0, 4).map((brand) => (
-              <span key={brand}>{brand}</span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className={homeStyles.sectionShell}>
-        <div className={homeStyles.panel}>
-          <p className={homeStyles.kicker}>Plataforma</p>
-          <h2 className={homeStyles.sectionTitle}>
-            <TextGenerateEffect words="Todo tu aprendizaje interno en un solo lugar" />
-          </h2>
-          <div className={homeStyles.valueGrid}>
-            <div>
-              <p className={homeStyles.valueText}>
-                Diseñada para operaciones, people y formación: publica contenido accionable,
-                ordénalo por equipos y mantén a cada persona alineada con procesos y conocimiento
-                actualizado.
-              </p>
-              <p className={homeStyles.valueHighlight}>Menos fricción. Más adopción.</p>
-            </div>
-            <div className={homeStyles.stats}>
-              <div className={homeStyles.statCard}>
-                <div className={homeStyles.statNum}>+10k</div>
-                <div className={homeStyles.statLabel}>Personas formándose</div>
-                <div className={homeStyles.statSub}>Genialmente valorados</div>
-              </div>
-              <div className={homeStyles.statCard}>
-                <div className={homeStyles.statNum}>+50</div>
-                <div className={homeStyles.statLabel}>Recursos publicados</div>
-                <div className={homeStyles.statSub}>En constante actualización</div>
-              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
-      <section className={homeStyles.sectionShellMuted}>
-        <div className={homeStyles.panel}>
-          <div className={homeStyles.sectionHeadCenter}>
-            <p className={homeStyles.kicker}>Acompañamiento</p>
-            <h2 className={homeStyles.sectionTitle}>
-              <TextGenerateEffect words="Un equipo dedicado para alcanzar tus objetivos" />
+      <section
+        className={homeStyles.section}
+        aria-labelledby="comofunciona-heading"
+      >
+        <div className={homeStyles.sectionInner}>
+          <header className={homeStyles.sectionHead}>
+            <p className={homeStyles.kicker}>Cómo funciona</p>
+            <h2 id="comofunciona-heading" className={homeStyles.sectionTitle}>
+              Aprender en Recursalia es así de simple
             </h2>
-          </div>
-          <div className={homeStyles.supportLayout}>
-            <div className={homeStyles.supportVisual} aria-hidden>
-              <div className={homeStyles.supportFloatTop} />
-              <div className={homeStyles.supportFloatBottom} />
-            </div>
-            <ol className={homeStyles.stepsGrid}>
-              {IMPLEMENTATION_STEPS.map((step, index) => (
-                <li key={step.title} className={homeStyles.stepCard}>
-                  <span className={homeStyles.stepNum}>{index + 1}</span>
-                  <h3>{step.title}</h3>
-                  <p>{step.body}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      <section className={homeStyles.sectionShell}>
-        <div className={homeStyles.panel}>
-          <div className={homeStyles.sectionHeadCenter}>
-            <p className={homeStyles.kicker}>Recursos</p>
-            <h2 className={homeStyles.sectionTitle}>
-              <TextGenerateEffect words="Contenido útil para tu día a día" />
-            </h2>
-          </div>
-          <div className={homeStyles.resourceGrid}>
-            {RESOURCE_CARDS.map((resource) => (
-              <article key={resource.title} className={homeStyles.resourceCard}>
-                <p className={homeStyles.resourceType}>{resource.type}</p>
-                <h3>{resource.title}</h3>
-                <p>{resource.body}</p>
-                <Link href="/blog">{resource.cta} →</Link>
-              </article>
+          </header>
+          <ol className={homeStyles.steps}>
+            {HOW_IT_WORKS.map((item) => (
+              <li key={item.step} className={homeStyles.stepCard}>
+                <span className={homeStyles.stepNumber}>{item.step}</span>
+                <h3 className={homeStyles.stepTitle}>{item.title}</h3>
+                <p className={homeStyles.stepBody}>{item.body}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      <section className={homeStyles.sectionShell}>
-        <div className={homeStyles.panel}>
+      <section
+        className={homeStyles.sectionAlt}
+        aria-labelledby="confianza-heading"
+      >
+        <div className={homeStyles.sectionInner}>
+          <header className={homeStyles.sectionHead}>
+            <p className={homeStyles.kicker}>Por qué Recursalia</p>
+            <h2 id="confianza-heading" className={homeStyles.sectionTitle}>
+              Compras seguras y sin sorpresas
+            </h2>
+            <p className={homeStyles.sectionLead}>
+              Trabajamos con Hotmart, líder mundial en cursos digitales, para que
+              tu compra sea sencilla, segura y con garantía real.
+            </p>
+          </header>
+          <ul className={homeStyles.trustGrid}>
+            {TRUST_PILLARS.map((item) => (
+              <li key={item.title} className={homeStyles.trustCard}>
+                <svg
+                  className={homeStyles.trustIcon}
+                  viewBox="0 0 24 24"
+                  width="22"
+                  height="22"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <path d="M5 12l5 5L20 7" />
+                </svg>
+                <h3 className={homeStyles.trustTitle}>{item.title}</h3>
+                <p className={homeStyles.trustBody}>{item.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {highlightedReviews.length > 0 ? (
+        <section
+          className={homeStyles.section}
+          aria-labelledby="opiniones-heading"
+        >
+          <div className={homeStyles.sectionInner}>
+            <header className={homeStyles.sectionHead}>
+              <p className={homeStyles.kicker}>Opiniones reales</p>
+              <h2 id="opiniones-heading" className={homeStyles.sectionTitle}>
+                Lo que dicen los alumnos
+              </h2>
+              {averageRating != null ? (
+                <div className={homeStyles.opinionsAverage}>
+                  <span className={homeStyles.opinionsScore}>
+                    {formatScoreEs(averageRating)}
+                  </span>
+                  <StarRatingDisplay value={averageRating} ariaHidden />
+                  <span className={homeStyles.opinionsCount}>
+                    Sobre {formatThousands(totalReviews)} valoraciones
+                  </span>
+                </div>
+              ) : null}
+            </header>
+
+            <ul className={homeStyles.reviewGrid}>
+              {highlightedReviews.map((r) => {
+                const courseTitle = courseTitleById.get(r.course_id);
+                return (
+                  <li key={r.id} className={homeStyles.reviewCard}>
+                    <StarRatingDisplay value={r.rating} ariaHidden />
+                    <h3 className={homeStyles.reviewTitle}>{r.title}</h3>
+                    <p className={homeStyles.reviewBody}>“{r.content}”</p>
+                    <p className={homeStyles.reviewAuthor}>
+                      <strong>{r.author_name}</strong>
+                      {courseTitle ? (
+                        <span className={homeStyles.reviewCourse}>
+                          {' · '}
+                          {courseTitle}
+                        </span>
+                      ) : null}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
+      <section className={homeStyles.sectionAlt} aria-labelledby="faq-heading">
+        <div className={homeStyles.sectionInner}>
+          <header className={homeStyles.sectionHead}>
+            <p className={homeStyles.kicker}>Preguntas frecuentes</p>
+            <h2 id="faq-heading" className={homeStyles.sectionTitle}>
+              Lo que conviene saber antes de empezar
+            </h2>
+          </header>
+          <HomeFaq />
+        </div>
+      </section>
+
+      <section className={homeStyles.section} aria-labelledby="cta-heading">
+        <div className={homeStyles.sectionInner}>
           <div className={homeStyles.finalCta}>
-            <p className={homeStyles.finalKicker}>Listo para dar el salto</p>
-            <h2>
-              <TextGenerateEffect words="Convierte la formación interna en una ventaja competitiva" />
+            <h2 id="cta-heading" className={homeStyles.finalTitle}>
+              ¿Empezamos? Tu próximo curso te está esperando.
             </h2>
-            <p>
-              Lanza en días una experiencia moderna para equipos, managers y operaciones con
-              contenido útil desde el primer acceso.
+            <p className={homeStyles.finalLead}>
+              Cientos de horas de contenido aplicado, equipos de expertos y la
+              tranquilidad de Hotmart en cada compra.
             </p>
             <div className={homeStyles.finalActions}>
               <Link href="/cursos" className={homeStyles.btnPrimary}>
-                Explorar catálogo
+                Ver el catálogo
               </Link>
-              <Link href="/login" className={homeStyles.btnGhost}>
-                Entrar al panel
+              <Link href="/blog" className={homeStyles.btnGhost}>
+                Leer el blog
               </Link>
             </div>
           </div>
