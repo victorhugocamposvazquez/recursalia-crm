@@ -463,9 +463,24 @@
   background: rgb(255 255 255 / 10%);
 }
 
-/* —— Landing curso (/cursos/[slug]): móvil; misma “columna” que .layout curso —— */
+/* —— Mobile: arriba del todo header al ras de la columna (sin caja, sin pill). Al hacer scroll, vuelve al pill flotante. —— */
 @media (max-width: 1023px) {
-  /* Gutter dentro de max-width (como `.layout`), no en outer → el blanco mismo ancho que hero */
+  /*
+    Estado inicial común a todas las secciones del marketing (home, cursos,
+    catálogo, blog, etc.): logo y menú al borde útil de la columna, sin caja
+    blanca ni sombra ni radio. Mismo look que la ficha de curso.
+    La página de Inspiración mantiene su override (.headerInspiracion .bar).
+  */
+  .bar:not(.barSticky) {
+    justify-content: space-between;
+    border-radius: 0;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    padding: 0.62rem 0;
+  }
+
+  /* Ficha de curso: gutter dentro del max-width (como `.layout`), no en outer → el blanco al hacer scroll mantiene el mismo ancho que el hero */
   .outer.outerCourseLanding {
     padding-left: 0;
     padding-right: 0;
@@ -476,19 +491,6 @@
   .inner.innerCourseLanding {
     padding-left: max(var(--marketing-gutter-x, 1.25rem), env(safe-area-inset-left, 0px));
     padding-right: max(var(--marketing-gutter-x, 1.25rem), env(safe-area-inset-right, 0px));
-  }
-
-  /*
-    Estado inicial (referencia “bien”): sin caja blanca ni sombra; mismo ancho que breadcrumb/hero vía gutter en .inner.
-    Logo y menú al borde útil de la columna — no “hueco extra” dentro de la barra.
-  */
-  .bar.barCourseLanding:not(.barSticky) {
-    justify-content: space-between;
-    border-radius: 0;
-    background: transparent;
-    border-color: transparent;
-    box-shadow: none;
-    padding: 0.62rem 0;
   }
 
   /* Al hacer scroll recuperamos el pill habitual (.barSticky + radios base del .bar) */
