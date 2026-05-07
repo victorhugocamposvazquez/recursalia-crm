@@ -5,6 +5,10 @@ import type {
   GeneratedCourseStructure,
 } from '@/types';
 import { logOpenAiChatUsage } from '@/services/aiUsageLogService';
+import {
+  COURSE_AUTHOR_BIO_DEFAULT,
+  COURSE_AUTHOR_NAME_DEFAULT,
+} from '@/lib/courseAuthorDefaults';
 
 function verticalToneBlock(vertical: CourseVertical | undefined): string {
   const v = vertical ?? 'general';
@@ -109,8 +113,8 @@ Devuelve UNICAMENTE un JSON valido con esta estructura exacta (sin markdown ni t
   "certificate": true,
   "job_bank": true,
   "language": "Espanol",
-  "author_name": "John Alex",
-  "author_bio": "Biografia corta del autor (1-2 oraciones)",
+  "author_name": "${COURSE_AUTHOR_NAME_DEFAULT}",
+  "author_bio": "${COURSE_AUTHOR_BIO_DEFAULT}",
   "topics": [
     {
       "title": "Modulo 1: [Nombre del modulo]",
@@ -135,7 +139,9 @@ REGLAS OBLIGATORIAS:
 10. Contenido de lecciones: HTML semantico (p, h3, ul, li). 2-4 parrafos. Sin markdown.
 11. Precios: price_original DEBE ser exactamente ${priceOriginal}. price_sale DEBE ser exactamente ${priceSale}. No cambies estos valores.
 12. "certificate": siempre true.
-13. "job_bank": siempre true.`;
+13. "job_bank": siempre true.
+14. "author_name" SIEMPRE exactamente "${COURSE_AUTHOR_NAME_DEFAULT}" (equipo institucional, no inventes personas).
+15. "author_bio" SIEMPRE exactamente "${COURSE_AUTHOR_BIO_DEFAULT}".`;
 }
 
 export async function generateCourseStructure(
@@ -186,6 +192,9 @@ export async function generateCourseStructure(
   parsed.price_sale = userDiscount > 0
     ? Math.round(userPrice * (1 - userDiscount / 100))
     : userPrice;
+
+  parsed.author_name = COURSE_AUTHOR_NAME_DEFAULT;
+  parsed.author_bio = COURSE_AUTHOR_BIO_DEFAULT;
 
   if (!parsed.short_description || parsed.short_description.length < 50) {
     parsed.short_description = parsed.description

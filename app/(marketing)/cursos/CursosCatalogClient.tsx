@@ -233,6 +233,18 @@ export function CursosCatalogClient({
                           style={{ objectFit: 'cover' }}
                         />
                       ) : null}
+                      {c.showBestseller ? (
+                        <span className={cursosStyles.bestsellerOnImage}>
+                          <Image
+                            src="/images/card-icon-1.webp"
+                            alt=""
+                            width={17}
+                            height={17}
+                            className={cursosStyles.bestsellerIcon}
+                          />
+                          {c.bestsellerLabel}
+                        </span>
+                      ) : null}
                     </div>
                     <div className={cursosStyles.cardBody}>
                       <div className={cursosStyles.topMetaRow}>
@@ -254,22 +266,6 @@ export function CursosCatalogClient({
                             </>
                           ) : (
                             <span className={cursosStyles.ratingMuted}>—</span>
-                          )}
-                        </div>
-                        <div className={cursosStyles.badgeTop}>
-                          {c.showBestseller ? (
-                            <span className={cursosStyles.bestseller}>
-                              <Image
-                                src="/images/card-icon-1.webp"
-                                alt=""
-                                width={17}
-                                height={17}
-                                className={cursosStyles.bestsellerIcon}
-                              />
-                              {c.bestsellerLabel}
-                            </span>
-                          ) : (
-                            <span className={cursosStyles.badgePlaceholder} aria-hidden />
                           )}
                         </div>
                       </div>

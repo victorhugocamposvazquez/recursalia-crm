@@ -9,6 +9,7 @@ import { CourseStickyCheckoutBar } from '@/components/marketing/CourseStickyChec
 import { SalaryMoneyBagIcon } from '@/components/marketing/SalaryMoneyBagIcon';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import type { CourseInputPayload, GeneratedCourseStructure } from '@/types';
+import { resolveCourseAuthorDisplay } from '@/lib/courseAuthorDefaults';
 import { appendUtm } from '@/lib/urlTracking';
 import styles from './courseLanding.module.css';
 
@@ -165,6 +166,11 @@ export default async function CursoLandingPage({
     levelEs[input.level] ||
     input.level;
 
+  const authorDisplay = resolveCourseAuthorDisplay(
+    content.author_name,
+    content.author_bio
+  );
+
   return (
     <div className={`${styles.layout} ${styles.layoutStickyCheckout}`}>
       <article className={styles.main}>
@@ -283,19 +289,40 @@ export default async function CursoLandingPage({
                   __html: content.description.replace(/\n/g, '<br/>'),
                 }}
               />
-              {(content.author_name || content.author_bio) && (
-                <>
-                  <h4 className={styles.authorHeading}>Autor</h4>
-                  {content.author_name && (
+              <>
+                <h4 className={styles.authorHeading}>Autor</h4>
+                <div className={styles.authorIdentity}>
+                  <span className={styles.authorLogoWrap} aria-hidden>
+                    <svg
+                      className={styles.authorLogoSvg}
+                      viewBox="0 0 24 24"
+                      width={44}
+                      height={44}
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 2L21 7V17L12 22L3 17V7L12 2Z"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M7 10L12 12.5L17 10"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <div className={styles.authorText}>
                     <p className={styles.authorName}>
-                      <strong>{content.author_name}</strong>
+                      <strong>{authorDisplay.name}</strong>
                     </p>
-                  )}
-                  {content.author_bio && (
-                    <p className={styles.authorBio}>{content.author_bio}</p>
-                  )}
-                </>
-              )}
+                    <p className={styles.authorBio}>{authorDisplay.bio}</p>
+                  </div>
+                </div>
+              </>
             </div>
           </div>
         </section>

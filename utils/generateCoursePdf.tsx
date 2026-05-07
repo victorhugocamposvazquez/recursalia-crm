@@ -9,6 +9,7 @@ import {
   renderToBuffer,
 } from '@react-pdf/renderer';
 import type { ExpandedCourseContent } from '@/services/openaiEbookService';
+import { resolveCourseAuthorDisplay } from '@/lib/courseAuthorDefaults';
 
 export interface PdfLogos {
   recursalia?: Uint8Array;
@@ -127,7 +128,7 @@ const s = StyleSheet.create({
   coverAuthor: {
     fontSize: 13,
     fontFamily: 'Helvetica-Bold',
-    color: C.primary,
+    color: C.accentLight,
   },
   coverAuthorSub: {
     fontSize: 9,
@@ -320,6 +321,10 @@ function CoverPage({
   hotLogoUri?: string;
   year: number;
 }) {
+  const { name: coverAuthor } = resolveCourseAuthorDisplay(
+    content.author_name,
+    content.author_bio
+  );
   return (
     <Page size="A4" style={s.coverPage}>
       <View style={s.coverTop}>
@@ -331,9 +336,7 @@ function CoverPage({
       </View>
       <View style={s.coverBottom}>
         <View>
-          {content.author_name && (
-            <Text style={s.coverAuthor}>{safe(content.author_name)}</Text>
-          )}
+          <Text style={s.coverAuthor}>{safe(coverAuthor)}</Text>
           <Text style={s.coverAuthorSub}>Curso completo</Text>
         </View>
         <View style={s.coverLogos}>

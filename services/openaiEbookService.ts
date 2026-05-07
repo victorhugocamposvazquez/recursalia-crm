@@ -30,6 +30,7 @@ export interface ExpandedCourseContent {
   short_description: string;
   description: string;
   author_name?: string;
+  author_bio?: string;
   topics: ExpandedTopic[];
 }
 
@@ -165,6 +166,7 @@ export async function expandCourseForEbook(
     short_description: content.short_description,
     description: content.description,
     author_name: content.author_name,
+    author_bio: content.author_bio,
     topics: expandedTopics,
   };
 }

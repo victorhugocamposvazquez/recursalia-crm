@@ -191,7 +191,7 @@
   display: flex;
   flex-wrap: nowrap;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 0.35rem 0.6rem;
   margin-bottom: 0.42rem;
   min-height: 1.6rem;
@@ -205,33 +205,26 @@
   min-width: 0;
 }
 
-.badgeTop {
-  flex-shrink: 0;
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  max-width: 58%;
-}
-
-.badgeTop .bestseller {
-  text-align: right;
-}
-
-.badgePlaceholder {
-  display: block;
-  min-height: 1.35rem;
-  min-width: 0.25rem;
-}
-
-.bestseller {
+.bestsellerOnImage {
+  position: absolute;
+  top: 0.42rem;
+  right: 0.42rem;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 0.28rem;
+  padding: 0.26rem 0.42rem 0.26rem 0.32rem;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.92);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 1px 8px rgb(17 24 39 / 10%);
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #1b38c4;
+  max-width: calc(100% - 1.4rem);
+  line-height: 1.15;
 }
 
 .bestsellerIcon {
