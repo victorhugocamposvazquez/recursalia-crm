@@ -35,6 +35,13 @@ type HighlightedReviewRow = {
   review_date: string;
 };
 
+const HERO_AVATARS = [
+  { src: '/images/home/avatar_1.jpg', alt: 'Alumna satisfecha 1' },
+  { src: '/images/home/avatar_2.jpg', alt: 'Alumna satisfecha 2' },
+  { src: '/images/home/avatar_3.jpg', alt: 'Alumna satisfecha 3' },
+  { src: '/images/home/avatar_4.jpg', alt: 'Alumna satisfecha 4' },
+];
+
 function formatMoney(n?: number | null) {
   if (n == null || Number.isNaN(n)) return null;
   return new Intl.NumberFormat('es-ES', {
@@ -57,16 +64,35 @@ const HOW_IT_WORKS = [
     step: '01',
     title: 'Elige el curso',
     body: 'Más de un centenar de cursos prácticos en categorías como salud, marketing, idiomas, finanzas o fotografía.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" />
+      </svg>
+    ),
   },
   {
     step: '02',
     title: 'Aprende a tu ritmo',
     body: 'Acceso de por vida a vídeos, lecciones y material descargable. Empieza hoy y avanza cuando quieras.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="3" y="5" width="18" height="13" rx="2" />
+        <path d="M10 9.5v5l4-2.5z" fill="currentColor" stroke="none" />
+        <path d="M8 22h8" />
+      </svg>
+    ),
   },
   {
     step: '03',
     title: 'Demuéstralo',
     body: 'Recibe diploma de aprovechamiento al completar el curso y suma puntos para nuestra bolsa de empleo.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <circle cx="12" cy="9" r="5" />
+        <path d="m8.5 13-1.5 8 5-2.5L17 21l-1.5-8" />
+      </svg>
+    ),
   },
 ];
 
@@ -74,26 +100,62 @@ const TRUST_PILLARS = [
   {
     title: 'Pago 100 % seguro con Hotmart',
     body: 'Compras procesadas por Hotmart, plataforma de referencia con 8 millones de usuarios en todo el mundo.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6z" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+    ),
   },
   {
     title: 'Garantía de devolución de 7 días',
     body: 'Si el curso no es para ti, te devolvemos el dinero. Sin preguntas, sin trámites complicados.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M3 12a9 9 0 1 0 3-6.7" />
+        <path d="M3 4v5h5" />
+      </svg>
+    ),
   },
   {
     title: 'Acceso de por vida y desde cualquier dispositivo',
     body: 'Accede al contenido desde móvil, tablet u ordenador, las veces que quieras. Tu compra no caduca.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M18.5 12c2 0 3.5-1.6 3.5-3.5S20.5 5 18.5 5s-3.5 1.6-3.9 3.4C14 11 11 13 9 13s-3.5 1.6-3.5 3.5S7 20 9 20s3.5-1.6 3.9-3.4C14 14 16 12 18.5 12Z" />
+      </svg>
+    ),
   },
   {
     title: 'Diploma incluido en cada curso',
     body: 'Al finalizar recibes un diploma personalizado con código de verificación que puedes compartir.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="3" y="4" width="18" height="13" rx="2" />
+        <path d="M3 9h18" />
+        <path d="m9 21 3-2 3 2v-4" />
+      </svg>
+    ),
   },
   {
     title: 'Bolsa de empleo activa',
     body: 'Cursos con bolsa de trabajo incluyen acceso a oportunidades reales con empresas colaboradoras.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="3" y="7" width="18" height="13" rx="2" />
+        <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+        <path d="M3 13h18" />
+      </svg>
+    ),
   },
   {
     title: 'Soporte humano en español',
     body: 'Equipo de atención al alumno por correo electrónico para resolver dudas técnicas o de contenido.',
+    icon: (
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M21 15a4 4 0 0 1-4 4h-1l-4 3v-3H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h9a4 4 0 0 1 4 4z" />
+      </svg>
+    ),
   },
 ];
 
@@ -180,9 +242,32 @@ export default async function MarketingHomePage() {
   return (
     <>
       <section className={homeStyles.hero} aria-labelledby="hero-heading">
+        <div className={homeStyles.heroBlobs} aria-hidden>
+          <span className={homeStyles.heroBlobBlue} />
+          <span className={homeStyles.heroBlobAmber} />
+          <svg
+            className={homeStyles.heroGrid}
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden
+          >
+            <defs>
+              <pattern
+                id="hero-dotgrid"
+                width="22"
+                height="22"
+                patternUnits="userSpaceOnUse"
+              >
+                <circle cx="1" cy="1" r="1" fill="#cbd5e1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hero-dotgrid)" />
+          </svg>
+        </div>
+
         <div className={homeStyles.heroInner}>
           <p className={homeStyles.heroEyebrow}>
-            Aprende algo nuevo. Cambia tu próxima decisión.
+            <span className={homeStyles.heroEyebrowDot} aria-hidden /> Aprende algo
+            nuevo. Cambia tu próxima decisión.
           </p>
           <h1 id="hero-heading" className={homeStyles.heroTitle}>
             Cursos online claros y aplicables, creados por expertos.
@@ -196,32 +281,95 @@ export default async function MarketingHomePage() {
             <HomeHeroSearch />
           </div>
 
-          <div className={homeStyles.heroProof}>
-            {averageRating != null && totalReviews > 0 ? (
-              <div className={homeStyles.heroProofBlock}>
-                <span className={homeStyles.heroProofScore}>
-                  {formatScoreEs(averageRating)}
-                </span>
-                <StarRatingDisplay value={averageRating} ariaHidden />
-                <span className={homeStyles.heroProofMeta}>
-                  {formatThousands(totalReviews)} valoraciones
-                </span>
+          <div className={homeStyles.heroSocialProof}>
+            <ul className={homeStyles.heroAvatars} aria-label="Alumnos satisfechos">
+              {HERO_AVATARS.map((avatar) => (
+                <li key={avatar.alt}>
+                  <Image
+                    src={avatar.src}
+                    alt={avatar.alt}
+                    width={44}
+                    height={44}
+                    quality={90}
+                  />
+                </li>
+              ))}
+            </ul>
+            <div className={homeStyles.heroReviewBlock}>
+              <div className={homeStyles.heroStars} aria-hidden>
+                {[0, 1, 2, 3].map((index) => (
+                  <svg
+                    key={`star-${index}`}
+                    className={homeStyles.heroStar}
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <path
+                      fill="#f5a623"
+                      d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
+                    />
+                  </svg>
+                ))}
+                <svg
+                  className={homeStyles.heroStar}
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <defs>
+                    <linearGradient id="heroStarPartial" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="85%" stopColor="#f5a623" />
+                      <stop offset="85%" stopColor="#f5a623" stopOpacity="0.22" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    fill="url(#heroStarPartial)"
+                    d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
+                  />
+                </svg>
               </div>
-            ) : null}
-            {publishedCourses > 0 ? (
-              <div className={homeStyles.heroProofBlock}>
-                <strong>{formatThousands(publishedCourses)}</strong> cursos
-                publicados
-              </div>
-            ) : null}
-            <div className={homeStyles.heroProofBlock}>
-              <strong>7 días</strong> de garantía Hotmart
+              <p>
+                <strong>+1000 alumnos</strong>
+                {averageRating != null && totalReviews > 0 ? (
+                  <>
+                    {' · '}
+                    {formatScoreEs(averageRating)} sobre {formatThousands(totalReviews)} valoraciones
+                  </>
+                ) : null}
+              </p>
             </div>
+          </div>
+        </div>
+
+        <div className={homeStyles.heroFloatTopRight} aria-hidden>
+          <span className={homeStyles.heroFloatIcon}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          </span>
+          <div>
+            <p className={homeStyles.heroFloatTitle}>Garantía 7 días</p>
+            <p className={homeStyles.heroFloatBody}>Devolución sin preguntas</p>
+          </div>
+        </div>
+
+        <div className={homeStyles.heroFloatBottomLeft} aria-hidden>
+          <span className={`${homeStyles.heroFloatIcon} ${homeStyles.heroFloatIconAmber}`}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="13" rx="2" />
+              <path d="M3 9h18" />
+              <path d="m9 21 3-2 3 2v-4" />
+            </svg>
+          </span>
+          <div>
+            <p className={homeStyles.heroFloatTitle}>Diploma incluido</p>
+            <p className={homeStyles.heroFloatBody}>Verificable y compartible</p>
           </div>
         </div>
       </section>
 
       <section className={homeStyles.metricsBand} aria-label="Recursalia en cifras">
+        <div className={homeStyles.metricsPattern} aria-hidden />
         <div className={homeStyles.metricsInner}>
           <div className={homeStyles.metric}>
             <span className={homeStyles.metricValue}>
@@ -229,6 +377,7 @@ export default async function MarketingHomePage() {
             </span>
             <span className={homeStyles.metricLabel}>Cursos publicados</span>
           </div>
+          <span className={homeStyles.metricDivider} aria-hidden />
           <div className={homeStyles.metric}>
             <span className={homeStyles.metricValue}>
               {averageRating != null ? formatScoreEs(averageRating) : '—'}
@@ -236,12 +385,14 @@ export default async function MarketingHomePage() {
             </span>
             <span className={homeStyles.metricLabel}>Valoración media</span>
           </div>
+          <span className={homeStyles.metricDivider} aria-hidden />
           <div className={homeStyles.metric}>
             <span className={homeStyles.metricValue}>
               {totalReviews > 0 ? formatThousands(totalReviews) : '—'}
             </span>
             <span className={homeStyles.metricLabel}>Opiniones de alumnos</span>
           </div>
+          <span className={homeStyles.metricDivider} aria-hidden />
           <div className={homeStyles.metric}>
             <span className={homeStyles.metricValue}>7 días</span>
             <span className={homeStyles.metricLabel}>Garantía de devolución</span>
@@ -359,7 +510,12 @@ export default async function MarketingHomePage() {
           <ol className={homeStyles.steps}>
             {HOW_IT_WORKS.map((item) => (
               <li key={item.step} className={homeStyles.stepCard}>
-                <span className={homeStyles.stepNumber}>{item.step}</span>
+                <div className={homeStyles.stepHead}>
+                  <span className={homeStyles.stepIconWrap} aria-hidden>
+                    {item.icon}
+                  </span>
+                  <span className={homeStyles.stepNumber}>{item.step}</span>
+                </div>
                 <h3 className={homeStyles.stepTitle}>{item.title}</h3>
                 <p className={homeStyles.stepBody}>{item.body}</p>
               </li>
@@ -386,20 +542,9 @@ export default async function MarketingHomePage() {
           <ul className={homeStyles.trustGrid}>
             {TRUST_PILLARS.map((item) => (
               <li key={item.title} className={homeStyles.trustCard}>
-                <svg
-                  className={homeStyles.trustIcon}
-                  viewBox="0 0 24 24"
-                  width="22"
-                  height="22"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden
-                >
-                  <path d="M5 12l5 5L20 7" />
-                </svg>
+                <span className={homeStyles.trustIconWrap} aria-hidden>
+                  {item.icon}
+                </span>
                 <h3 className={homeStyles.trustTitle}>{item.title}</h3>
                 <p className={homeStyles.trustBody}>{item.body}</p>
               </li>
@@ -437,9 +582,12 @@ export default async function MarketingHomePage() {
                 const courseTitle = courseTitleById.get(r.course_id);
                 return (
                   <li key={r.id} className={homeStyles.reviewCard}>
+                    <span className={homeStyles.reviewQuote} aria-hidden>
+                      “
+                    </span>
                     <StarRatingDisplay value={r.rating} ariaHidden />
                     <h3 className={homeStyles.reviewTitle}>{r.title}</h3>
-                    <p className={homeStyles.reviewBody}>“{r.content}”</p>
+                    <p className={homeStyles.reviewBody}>{r.content}</p>
                     <p className={homeStyles.reviewAuthor}>
                       <strong>{r.author_name}</strong>
                       {courseTitle ? (
@@ -472,6 +620,32 @@ export default async function MarketingHomePage() {
       <section className={homeStyles.section} aria-labelledby="cta-heading">
         <div className={homeStyles.sectionInner}>
           <div className={homeStyles.finalCta}>
+            <svg
+              className={homeStyles.finalMesh}
+              viewBox="0 0 600 320"
+              preserveAspectRatio="none"
+              aria-hidden
+            >
+              <defs>
+                <pattern
+                  id="cta-grid"
+                  x="0"
+                  y="0"
+                  width="40"
+                  height="40"
+                  patternUnits="userSpaceOnUse"
+                >
+                  <path
+                    d="M 40 0 L 0 0 0 40"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.18)"
+                    strokeWidth="1"
+                  />
+                </pattern>
+              </defs>
+              <rect width="600" height="320" fill="url(#cta-grid)" />
+            </svg>
+            <span className={homeStyles.finalGlow} aria-hidden />
             <h2 id="cta-heading" className={homeStyles.finalTitle}>
               ¿Empezamos? Tu próximo curso te está esperando.
             </h2>
