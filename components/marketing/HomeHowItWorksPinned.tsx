@@ -245,17 +245,12 @@ const STEPS: Step[] = [
   },
 ];
 
-function JourneyConnector({
-  active,
-  flipped,
-}: {
-  active: boolean;
-  flipped?: boolean;
-}) {
-  // Path en S, dibujado en dos trazados:
-  //  - Guides (dashed, siempre visibles, sutiles)
-  //  - Trail (sólido, se va dibujando con el scroll cuando entra el step siguiente)
-  //  Truco pathLength="1" → animamos stroke-dashoffset de 1 → 0.
+function JourneyConnector({ active }: { active: boolean }) {
+  // Línea estirable + flecha de tamaño fijo:
+  //   - "guides" (dashed) y "trail" (sólido fluor) usan pathLength=1
+  //     → animamos stroke-dashoffset de 1 → 0.
+  //   - La flecha vive en su propio SVG no estirable, anclada al final
+  //     del wrap, así no se deforma cuando el conector es muy alto.
   const trailStyle = {
     strokeDasharray: 1,
     strokeDashoffset: active ? 0 : 1,
@@ -269,36 +264,43 @@ function JourneyConnector({
   } as const;
 
   return (
-    <svg
-      className={homeStyles.journeyConnector}
-      viewBox="0 0 60 110"
-      preserveAspectRatio="none"
-      aria-hidden
-      style={flipped ? { transform: 'scaleX(-1)' } : undefined}
-    >
-      <path
-        className={homeStyles.journeyConnectorGuides}
-        d="M30 4 C 10 28, 50 72, 30 104"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path
-        className={homeStyles.journeyConnectorTrail}
-        d="M30 4 C 10 28, 50 72, 30 104"
-        fill="none"
-        strokeLinecap="round"
-        pathLength={1}
-        style={trailStyle}
-      />
-      <path
-        className={homeStyles.journeyConnectorArrow}
-        d="M22 96 L30 104 L38 96"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={arrowStyle}
-      />
-    </svg>
+    <>
+      <svg
+        className={homeStyles.journeyConnectorLine}
+        viewBox="0 0 10 100"
+        preserveAspectRatio="none"
+        aria-hidden
+      >
+        <path
+          className={homeStyles.journeyConnectorGuides}
+          d="M5 0 L5 100"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <path
+          className={homeStyles.journeyConnectorTrail}
+          d="M5 0 L5 100"
+          fill="none"
+          strokeLinecap="round"
+          pathLength={1}
+          style={trailStyle}
+        />
+      </svg>
+      <svg
+        className={homeStyles.journeyConnectorArrowSvg}
+        viewBox="0 0 24 14"
+        aria-hidden
+      >
+        <path
+          className={homeStyles.journeyConnectorArrow}
+          d="M5 3 L12 12 L19 3"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={arrowStyle}
+        />
+      </svg>
+    </>
   );
 }
 
@@ -394,7 +396,7 @@ export function HomeHowItWorksPinned() {
             </div>
             {i < STEPS.length - 1 ? (
               <div className={homeStyles.journeyConnectorWrap} aria-hidden>
-                <JourneyConnector active={!!nextRevealed} flipped={flipped} />
+                <JourneyConnector active={!!nextRevealed} />
               </div>
             ) : null}
           </li>
