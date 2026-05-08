@@ -19,14 +19,6 @@
   pointer-events: none;
 }
 
-.outerBlogArticle {
-  padding-top: max(0.48rem, env(safe-area-inset-top));
-}
-
-.innerBlogArticle {
-  max-width: 45rem; /* 720px, misma columna que el artículo */
-}
-
 .bar {
   pointer-events: auto;
   display: flex;
@@ -576,10 +568,5 @@
   .bar.barCourseLanding.barSticky .actions {
     margin-right: -0.5rem;
     padding-right: 0.08rem;
-  }
-
-  /* Ficha blog: mismo criterio de aire superior reducido en móvil */
-  .outer.outerBlogArticle {
-    padding-bottom: 0.35rem;
   }
 }

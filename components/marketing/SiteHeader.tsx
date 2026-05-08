@@ -13,8 +13,6 @@ export function SiteHeader() {
   const { searchCopy } = useMarketingContent();
   const pathname = usePathname();
   const courseLanding = isMarketingCourseLandingPath(pathname);
-  /** Ficha de artículo: barra alineada ~720px como el cuerpo del post. */
-  const blogArticleChrome = /^\/blog\/[^/]+$/.test(pathname);
   const [sticky, setSticky] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -43,10 +41,10 @@ export function SiteHeader() {
   return (
     <header className={styles.header}>
       <div
-        className={`${styles.outer} ${courseLanding ? styles.outerCourseLanding : ''} ${blogArticleChrome ? styles.outerBlogArticle : ''}`.trim()}
+        className={`${styles.outer} ${courseLanding ? styles.outerCourseLanding : ''}`.trim()}
       >
         <div
-          className={`${styles.inner} ${courseLanding ? styles.innerCourseLanding : ''} ${blogArticleChrome ? styles.innerBlogArticle : ''}`.trim()}
+          className={`${styles.inner} ${courseLanding ? styles.innerCourseLanding : ''}`.trim()}
         >
           <nav
             className={`${styles.bar} ${sticky ? styles.barSticky : ''} ${courseLanding ? styles.barCourseLanding : ''}`}
