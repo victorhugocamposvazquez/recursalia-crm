@@ -294,12 +294,6 @@ export default async function MarketingHomePage() {
               </div>
               <p>
                 <strong>+1000 alumnos</strong>
-                {averageRating != null && totalReviews > 0 ? (
-                  <>
-                    {' · '}
-                    {formatScoreEs(averageRating)} sobre {formatThousands(totalReviews)} valoraciones
-                  </>
-                ) : null}
               </p>
             </div>
           </div>
