@@ -1,13 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   categoryLabel,
   type CatalogCategoryPublic,
 } from '@/lib/catalogCategory';
-import { COURSE_IMAGE_BLUR_DATA_URL } from '@/lib/imagePlaceholder';
 import marketingStyles from '@/app/(marketing)/marketing.module.css';
 import styles from '@/app/(marketing)/blog/blog.module.css';
 
@@ -21,6 +19,9 @@ export type BlogIndexEntry = {
   coursePublicSlug: string | null;
   imageUrl: string | null;
 };
+
+const UNCATEGORIZED_KEY = '__uncat__';
+const UNCATEGORIZED_LABEL = 'Sin categoría';
 
 type Props = {
   posts: BlogIndexEntry[];
@@ -147,6 +148,39 @@ export function BlogIndexClient({
     }
     return list;
   }, [posts, category, qLower]);
+
+  /**
+   * Agrupa los posts filtrados por categoría, respetando el orden definido en
+   * `categories` (sort_order de BD). Los posts sin categoría caen al final.
+   */
+  const grouped = useMemo(() => {
+    const byCat = new Map<string, BlogIndexEntry[]>();
+    for (const p of filtered) {
+      const key = p.category ?? UNCATEGORIZED_KEY;
+      const arr = byCat.get(key) ?? [];
+      arr.push(p);
+      byCat.set(key, arr);
+    }
+    const ordered: { slug: string; label: string; items: BlogIndexEntry[] }[] = [];
+    for (const c of categories) {
+      const items = byCat.get(c.slug);
+      if (items && items.length > 0) {
+        ordered.push({ slug: c.slug, label: c.label, items });
+      }
+    }
+    const uncats = byCat.get(UNCATEGORIZED_KEY);
+    if (uncats && uncats.length > 0) {
+      ordered.push({
+        slug: UNCATEGORIZED_KEY,
+        label: UNCATEGORIZED_LABEL,
+        items: uncats,
+      });
+    }
+    return ordered;
+  }, [filtered, categories]);
+
+  /** Cuando hay categoría activa, ocultamos el heading del grupo (ya está en el chip + summary). */
+  const showGroupHeadings = category === 'all';
 
   const activeFilters = Boolean(query.trim()) || category !== 'all';
 
@@ -321,69 +355,45 @@ export function BlogIndexClient({
           ) : null}
         </div>
       ) : (
-        <ul id="blog-results" className={styles.grid}>
-          {filtered.map((p, idx) => {
-            const dateLabel = formatDate(p.publishedAt);
-            const catLabel = p.category
-              ? categoryLabel(p.category, categories)
-              : null;
-            return (
-              <li key={p.slug} className={styles.card}>
-                <Link href={`/blog/${p.slug}`} className={styles.cardLink}>
-                  <div className={styles.cardImage}>
-                    {p.imageUrl ? (
-                      <Image
-                        src={p.imageUrl}
-                        alt=""
-                        fill
-                        loading={idx < 3 ? 'eager' : 'lazy'}
-                        placeholder="blur"
-                        blurDataURL={COURSE_IMAGE_BLUR_DATA_URL}
-                        sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        style={{ objectFit: 'cover' }}
-                      />
-                    ) : null}
-                    {catLabel ? (
-                      <span className={styles.cardCategory}>{catLabel}</span>
-                    ) : null}
-                  </div>
-                  <div className={styles.cardBody}>
-                    {dateLabel ? (
-                      <p className={styles.cardMeta}>{dateLabel}</p>
-                    ) : null}
-                    <h2 className={styles.cardTitle}>
-                      {qLower
-                        ? highlightTerm(p.title, query.trim())
-                        : p.title}
-                    </h2>
-                    {p.description ? (
-                      <p className={styles.cardDesc}>
+        <div id="blog-results" className={styles.groups}>
+          {grouped.map((group) => (
+            <section key={group.slug} className={styles.group}>
+              {showGroupHeadings ? (
+                <header className={styles.groupHeader}>
+                  <h2 className={styles.groupHeading}>{group.label}</h2>
+                  <span className={styles.groupCount}>
+                    {group.items.length} artículo
+                    {group.items.length === 1 ? '' : 's'}
+                  </span>
+                </header>
+              ) : null}
+              <ul className={styles.list}>
+                {group.items.map((p) => {
+                  const dateLabel = formatDate(p.publishedAt);
+                  return (
+                    <li key={p.slug} className={styles.item}>
+                      {dateLabel ? (
+                        <p className={styles.itemMeta}>{dateLabel}</p>
+                      ) : null}
+                      <Link href={`/blog/${p.slug}`} className={styles.link}>
                         {qLower
-                          ? highlightTerm(p.description, query.trim())
-                          : p.description}
-                      </p>
-                    ) : null}
-                    <span className={styles.cardArrow} aria-hidden>
-                      Leer artículo
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M5 12h14M13 5l7 7-7 7" />
-                      </svg>
-                    </span>
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                          ? highlightTerm(p.title, query.trim())
+                          : p.title}
+                      </Link>
+                      {p.description ? (
+                        <p className={styles.desc}>
+                          {qLower
+                            ? highlightTerm(p.description, query.trim())
+                            : p.description}
+                        </p>
+                      ) : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
       )}
     </>
   );
