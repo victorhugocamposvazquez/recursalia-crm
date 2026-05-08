@@ -230,8 +230,7 @@ export default async function MarketingHomePage() {
 
         <div className={homeStyles.heroInner}>
           <p className={homeStyles.heroEyebrow}>
-            <span className={homeStyles.heroEyebrowDot} aria-hidden /> Aprende algo
-            nuevo. Cambia tu próxima decisión.
+            <span className={homeStyles.heroEyebrowDot} aria-hidden />Mejora tu presente. Decide tu futuro
           </p>
           <h1 id="hero-heading" className={homeStyles.heroTitle}>
             Cursos online claros y aplicables, creados por{' '}
