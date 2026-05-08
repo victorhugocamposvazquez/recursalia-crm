@@ -124,8 +124,9 @@
 
 .hero {
   position: relative;
-  padding: 5.25rem var(--marketing-gutter-x, 1.25rem) 4rem;
-  margin-top: -4rem;
+  /* Margin negativo: el fondo sube hasta el borde inferior del header transparente */
+  padding: 6.25rem var(--marketing-gutter-x, 1.25rem) 4rem;
+  margin-top: -5rem;
   background:
     radial-gradient(circle at 18% 22%, rgb(216 255 92 / 14%) 0, transparent 30%),
     radial-gradient(circle at 82% 28%, rgb(103 232 249 / 12%) 0, transparent 32%),
@@ -136,7 +137,9 @@
 
 @media (min-width: 1024px) {
   .hero {
-    padding: 7.5rem var(--marketing-gutter-x, 1.25rem) 6rem;
+    /* Desktop: cabecera más alta (buscador) — más solapamiento + mismo repunte de padding */
+    padding: 10.5rem var(--marketing-gutter-x, 1.25rem) 6rem;
+    margin-top: -7rem;
   }
 }
 
