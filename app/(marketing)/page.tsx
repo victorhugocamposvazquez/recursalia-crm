@@ -2,7 +2,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
-import { HomeCategoryGrid } from '@/components/marketing/HomeCategoryGrid';
+import { HomeCategoryCarousel } from '@/components/marketing/HomeCategoryCarousel';
+import { HomeHowItWorksPinned } from '@/components/marketing/HomeHowItWorksPinned';
 import { HomeFaq } from '@/components/marketing/HomeFaq';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import { COURSE_IMAGE_BLUR_DATA_URL } from '@/lib/imagePlaceholder';
@@ -58,43 +59,6 @@ function formatScoreEs(n: number): string {
 function formatThousands(n: number): string {
   return new Intl.NumberFormat('es-ES').format(n);
 }
-
-const HOW_IT_WORKS = [
-  {
-    step: '01',
-    title: 'Elige el curso',
-    body: 'Más de un centenar de cursos prácticos en categorías como salud, marketing, idiomas, finanzas o fotografía.',
-    icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <circle cx="11" cy="11" r="7" />
-        <path d="m20 20-3.5-3.5" />
-      </svg>
-    ),
-  },
-  {
-    step: '02',
-    title: 'Aprende a tu ritmo',
-    body: 'Acceso de por vida a vídeos, lecciones y material descargable. Empieza hoy y avanza cuando quieras.',
-    icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <rect x="3" y="5" width="18" height="13" rx="2" />
-        <path d="M10 9.5v5l4-2.5z" fill="currentColor" stroke="none" />
-        <path d="M8 22h8" />
-      </svg>
-    ),
-  },
-  {
-    step: '03',
-    title: 'Demuéstralo',
-    body: 'Recibe diploma de aprovechamiento al completar el curso y suma puntos para nuestra bolsa de empleo.',
-    icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <circle cx="12" cy="9" r="5" />
-        <path d="m8.5 13-1.5 8 5-2.5L17 21l-1.5-8" />
-      </svg>
-    ),
-  },
-];
 
 const TRUST_PILLARS = [
   {
@@ -362,7 +326,10 @@ export default async function MarketingHomePage() {
             </svg>
           </span>
           <div>
-            <p className={homeStyles.heroFloatTitle}>Diploma incluido</p>
+            <p className={homeStyles.heroFloatTitle}>
+              Diploma incluido
+              <span className={homeStyles.heroFloatBadge}>Nuevo</span>
+            </p>
             <p className={homeStyles.heroFloatBody}>Verificable y compartible</p>
           </div>
         </div>
@@ -411,7 +378,7 @@ export default async function MarketingHomePage() {
               Encuentra el área que quieres dominar
             </h2>
           </header>
-          <HomeCategoryGrid />
+          <HomeCategoryCarousel />
         </div>
       </section>
 
@@ -507,20 +474,7 @@ export default async function MarketingHomePage() {
               Aprender en Recursalia es así de simple
             </h2>
           </header>
-          <ol className={homeStyles.steps}>
-            {HOW_IT_WORKS.map((item) => (
-              <li key={item.step} className={homeStyles.stepCard}>
-                <div className={homeStyles.stepHead}>
-                  <span className={homeStyles.stepIconWrap} aria-hidden>
-                    {item.icon}
-                  </span>
-                  <span className={homeStyles.stepNumber}>{item.step}</span>
-                </div>
-                <h3 className={homeStyles.stepTitle}>{item.title}</h3>
-                <p className={homeStyles.stepBody}>{item.body}</p>
-              </li>
-            ))}
-          </ol>
+          <HomeHowItWorksPinned />
         </div>
       </section>
 
