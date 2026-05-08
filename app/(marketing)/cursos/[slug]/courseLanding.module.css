@@ -244,7 +244,7 @@
   gap: 0.85rem;
   margin-bottom: 2rem;
   padding: 1.35rem 1.2rem 1.5rem;
-  background: #fffdf6;
+  background: #f2ffe8;
   border: 1px solid rgb(15 23 42 / 8%);
   border-radius: 18px;
 }
@@ -560,7 +560,7 @@
 .notifyCopy {
   margin: 0 0 1rem;
   padding: 0.85rem 0.95rem;
-  background: #fffdf6;
+  background: #f2ffe8;
   border: 1px solid rgb(15 23 42 / 10%);
   border-radius: 14px;
   font-size: 0.82rem;

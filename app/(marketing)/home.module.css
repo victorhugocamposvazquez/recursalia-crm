@@ -422,7 +422,7 @@
 .metricsBand {
   position: relative;
   overflow: hidden;
-  background: #fffdf6;
+  background: #f2ffe8;
   color: var(--ink, #0f172a);
   padding: 2rem var(--marketing-gutter-x, 1.25rem) 2.2rem;
   isolation: isolate;
@@ -1248,7 +1248,7 @@
   position: relative;
   width: clamp(15rem, 22vw, 19rem);
   aspect-ratio: 3 / 4;
-  background: linear-gradient(180deg, #ffffff 0%, #fffdf6 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f2ffe8 100%);
   border: 1px solid rgb(15 23 42 / 10%);
   border-radius: 18px;
   box-shadow: 0 22px 50px rgb(15 23 42 / 14%);
@@ -1338,7 +1338,7 @@
 .howStaticVisual {
   width: 100%;
   border-radius: 14px;
-  background: #fffdf6;
+  background: #f2ffe8;
   border: 1px solid rgb(15 23 42 / 8%);
   padding: 1rem;
   display: flex;
@@ -1649,7 +1649,7 @@
 
 .finalCta {
   position: relative;
-  background: #fffdf6;
+  background: #f2ffe8;
   color: var(--ink, #0f172a);
   border: 1px solid rgb(15 23 42 / 12%);
   border-radius: 24px;
