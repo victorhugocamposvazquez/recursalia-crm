@@ -4,6 +4,11 @@ import Link from 'next/link';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { singularEmbed } from '@/lib/blog-embed-normalize';
 import { siteCanonicalBase } from '@/lib/blog-seo';
+import {
+  PUBLIC_CATALOG_CATEGORIES_FALLBACK,
+  categoryLabel,
+  type CatalogCategoryPublic,
+} from '@/lib/catalogCategory';
 import styles from '../../marketing.module.css';
 import blogStyles from '../blog.module.css';
 
@@ -78,6 +83,15 @@ export async function generateMetadata({
   }
 }
 
+/** Estima minutos de lectura a 220 palabras/min, mínimo 1 minuto. */
+function estimateReadMinutes(html: string): number {
+  if (!html) return 1;
+  const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!text) return 1;
+  const words = text.split(' ').filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
+}
+
 export default async function BlogPostPage({
   params,
 }: {
@@ -91,7 +105,7 @@ export default async function BlogPostPage({
     const { data: post } = await supabase
       .from('blog_posts')
       .select(
-        'title, content, published_at, course_id, courses(public_slug, published_title, topic)'
+        'title, content, published_at, course_id, courses(public_slug, published_title, topic, catalog_category)'
       )
       .eq('slug', slug)
       .eq('status', 'published')
@@ -106,6 +120,7 @@ export default async function BlogPostPage({
       public_slug: string | null;
       published_title: string | null;
       topic: string | null;
+      catalog_category: string | null;
     };
     const cr = singularEmbed(crRaw as CourseBrief | CourseBrief[] | null | undefined);
 
@@ -116,6 +131,25 @@ export default async function BlogPostPage({
       (cr?.published_title && cr.published_title.trim()) ||
       (cr?.topic && cr.topic.trim()) ||
       '';
+
+    let categories: CatalogCategoryPublic[] = PUBLIC_CATALOG_CATEGORIES_FALLBACK;
+    try {
+      const { data: catData } = await supabase
+        .from('catalog_categories')
+        .select('slug, label')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+      if (catData && catData.length > 0) {
+        categories = catData as CatalogCategoryPublic[];
+      }
+    } catch {
+      categories = PUBLIC_CATALOG_CATEGORIES_FALLBACK;
+    }
+
+    const catSlug = cr?.catalog_category?.trim().toLowerCase() ?? null;
+    const catLabel = catSlug ? categoryLabel(catSlug, categories) : null;
+
+    const readMin = estimateReadMinutes(post.content);
 
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -141,6 +175,14 @@ export default async function BlogPostPage({
         : {}),
     };
 
+    const dateLabel = post.published_at
+      ? new Date(post.published_at).toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      : null;
+
     return (
       <>
         <script
@@ -151,30 +193,52 @@ export default async function BlogPostPage({
           <div className={styles.inner} style={{ maxWidth: '720px' }}>
             <p className={blogStyles.breadcrumb}>
               <Link href="/blog">← Blog</Link>
-              {post.published_at && (
+              {catLabel && catSlug ? (
                 <>
                   <span aria-hidden>·</span>
-                  <span>
-                    {new Date(post.published_at).toLocaleDateString('es-ES', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </span>
+                  <Link href={`/blog?cat=${encodeURIComponent(catSlug)}`}>
+                    {catLabel}
+                  </Link>
                 </>
-              )}
+              ) : null}
             </p>
+
+            <div className={blogStyles.articleMeta}>
+              {dateLabel ? <span>{dateLabel}</span> : null}
+              {dateLabel ? <span aria-hidden>·</span> : null}
+              <span>{readMin} min de lectura</span>
+            </div>
+
             <h1 className={blogStyles.title}>{post.title}</h1>
+
             {courseUrl && courseTitle && cr?.public_slug && (
               <p className={blogStyles.courseLink}>
-                <span className={blogStyles.courseLinkLabel}>Formación relacionada: </span>
-                <Link href={`/cursos/${encodeURIComponent(cr.public_slug)}`}>{courseTitle}</Link>
+                <span className={blogStyles.courseLinkLabel}>
+                  Formación relacionada:{' '}
+                </span>
+                <Link href={`/cursos/${encodeURIComponent(cr.public_slug)}`}>
+                  {courseTitle}
+                </Link>
               </p>
             )}
             <div
               className={blogStyles.prose}
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
+
+            <div className={blogStyles.articleFooter}>
+              <Link href="/blog" className={blogStyles.linkBtn}>
+                ← Todos los artículos
+              </Link>
+              {catLabel && catSlug ? (
+                <Link
+                  href={`/blog?cat=${encodeURIComponent(catSlug)}`}
+                  className={blogStyles.linkBtn}
+                >
+                  Más en {catLabel}
+                </Link>
+              ) : null}
+            </div>
           </div>
         </article>
       </>

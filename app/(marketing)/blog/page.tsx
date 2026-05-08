@@ -1,9 +1,16 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import styles from '../marketing.module.css';
-import blogStyles from './blog.module.css';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
 import { siteCanonicalBase } from '@/lib/blog-seo';
+import {
+  PUBLIC_CATALOG_CATEGORIES_FALLBACK,
+  type CatalogCategoryPublic,
+} from '@/lib/catalogCategory';
+import { singularEmbed } from '@/lib/blog-embed-normalize';
+import {
+  BlogIndexClient,
+  type BlogIndexEntry,
+} from '@/components/marketing/BlogIndexClient';
 
 export const revalidate = 120;
 
@@ -31,22 +38,87 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function BlogIndexPage() {
-  let posts: { slug: string; title: string; meta_description: string | null; published_at: string | null }[] =
-    [];
+type RawPostRow = {
+  slug: string;
+  title: string;
+  meta_description: string | null;
+  published_at: string | null;
+  courses: {
+    public_slug: string | null;
+    catalog_category: string | null;
+    featured_image_url: string | null;
+  } | Array<{
+    public_slug: string | null;
+    catalog_category: string | null;
+    featured_image_url: string | null;
+  }> | null;
+};
+
+function normalizeCatParam(
+  raw: string | string[] | undefined,
+  validSlugs: ReadonlySet<string>
+): string | 'all' {
+  const v = typeof raw === 'string' ? raw.trim().toLowerCase() : '';
+  if (!v) return 'all';
+  return validSlugs.has(v) ? v : 'all';
+}
+
+export default async function BlogIndexPage({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
+  const sp = searchParams ?? {};
+  const initialQuery =
+    typeof sp.q === 'string' ? sp.q.trim() : '';
+
+  let categories: CatalogCategoryPublic[] = PUBLIC_CATALOG_CATEGORIES_FALLBACK;
+  let posts: BlogIndexEntry[] = [];
+
+  try {
+    const supabase = createPublicSupabaseClient();
+    const { data: catData } = await supabase
+      .from('catalog_categories')
+      .select('slug, label')
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true });
+    if (catData && catData.length > 0) {
+      categories = catData as CatalogCategoryPublic[];
+    }
+  } catch {
+    categories = PUBLIC_CATALOG_CATEGORIES_FALLBACK;
+  }
 
   try {
     const supabase = createPublicSupabaseClient();
     const { data } = await supabase
       .from('blog_posts')
-      .select('slug, title, meta_description, published_at')
+      .select(
+        'slug, title, meta_description, published_at, courses(public_slug, catalog_category, featured_image_url)'
+      )
       .eq('status', 'published')
       .order('published_at', { ascending: false });
 
-    posts = (data ?? []) as typeof posts;
+    const rows = (data ?? []) as RawPostRow[];
+    posts = rows.map((p) => {
+      const cr = singularEmbed(p.courses);
+      const cat = cr?.catalog_category?.trim().toLowerCase() ?? null;
+      return {
+        slug: p.slug,
+        title: p.title,
+        description: p.meta_description ?? '',
+        publishedAt: p.published_at,
+        category: cat,
+        coursePublicSlug: cr?.public_slug ?? null,
+        imageUrl: cr?.featured_image_url ?? null,
+      };
+    });
   } catch {
     posts = [];
   }
+
+  const validSlugs = new Set(categories.map((c) => c.slug));
+  const initialCategory = normalizeCatParam(sp.cat, validSlugs);
 
   return (
     <section className={`${styles.section} ${styles.sectionBlogCompact}`}>
@@ -61,37 +133,13 @@ export default async function BlogIndexPage() {
             habilidades digitales y aprendizajes que conectan con nuestros cursos.
           </p>
         </header>
-        {posts.length === 0 ? (
-          <p className={styles.empty}>
-            No hay artículos publicados. Genera borradores desde un curso en el panel y el cron
-            los publicará.
-          </p>
-        ) : (
-          <ul className={blogStyles.list}>
-            {posts.map((p) => {
-              const dateLabel = p.published_at
-                ? new Date(p.published_at).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })
-                : null;
-              return (
-                <li key={p.slug} className={blogStyles.item}>
-                  {dateLabel ? (
-                    <p className={blogStyles.itemMeta}>{dateLabel}</p>
-                  ) : null}
-                  <Link href={`/blog/${p.slug}`} className={blogStyles.link}>
-                    {p.title}
-                  </Link>
-                  {p.meta_description && (
-                    <p className={blogStyles.desc}>{p.meta_description}</p>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
+
+        <BlogIndexClient
+          posts={posts}
+          categories={categories}
+          initialCategory={initialCategory}
+          initialQuery={initialQuery}
+        />
       </div>
     </section>
   );
