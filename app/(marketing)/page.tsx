@@ -139,14 +139,54 @@ const TRUST_PILLARS = [
   },
 ];
 
-function pickHighlightedReviews(rows: HighlightedReviewRow[]): HighlightedReviewRow[] {
-  return rows
-    .filter((r) => r.rating >= 4 && r.content && r.content.length >= 80)
-    .sort((a, b) => {
+function pickHighlightedReviews(
+  rows: HighlightedReviewRow[],
+  limit = 10
+): HighlightedReviewRow[] {
+  const eligible = rows.filter(
+    (r) => r.rating >= 4 && r.content && r.content.length >= 80
+  );
+
+  // Agrupamos por curso y ordenamos cada grupo por calidad (rating, longitud, fecha)
+  const byCourse = new Map<string, HighlightedReviewRow[]>();
+  for (const r of eligible) {
+    const list = byCourse.get(r.course_id) ?? [];
+    list.push(r);
+    byCourse.set(r.course_id, list);
+  }
+  for (const list of Array.from(byCourse.values())) {
+    list.sort((a: HighlightedReviewRow, b: HighlightedReviewRow) => {
       if (b.rating !== a.rating) return b.rating - a.rating;
-      return (b.content?.length ?? 0) - (a.content?.length ?? 0);
-    })
-    .slice(0, 3);
+      const lenDiff = (b.content?.length ?? 0) - (a.content?.length ?? 0);
+      if (lenDiff !== 0) return lenDiff;
+      return (b.review_date || '').localeCompare(a.review_date || '');
+    });
+  }
+
+  // Round-robin entre cursos para que las reseñas estén "mezcladas"
+  const courses = Array.from(byCourse.keys());
+  const result: HighlightedReviewRow[] = [];
+  let idx = 0;
+  while (result.length < limit && courses.length > 0) {
+    const courseId = courses[idx % courses.length];
+    const list = byCourse.get(courseId);
+    if (list && list.length > 0) {
+      result.push(list.shift() as HighlightedReviewRow);
+      idx += 1;
+    } else {
+      // curso sin más reseñas, lo retiramos del round-robin
+      courses.splice(idx % courses.length, 1);
+    }
+  }
+
+  // Fallback si quedaran huecos por algún motivo (no debería)
+  if (result.length < limit) {
+    const remaining = eligible.filter((r) => !result.includes(r));
+    remaining.sort((a, b) => b.rating - a.rating);
+    result.push(...remaining.slice(0, limit - result.length));
+  }
+
+  return result;
 }
 
 export default async function MarketingHomePage() {
@@ -174,13 +214,14 @@ export default async function MarketingHomePage() {
         .select('id, title, content, rating, author_name, course_id, review_date')
         .gte('rating', 4)
         .order('review_date', { ascending: false })
-        .limit(60),
+        .limit(300),
     ]);
 
     featuredRaw = (coursesRes.data ?? []) as FeaturedCourseRow[];
     reviewStats = (statsRes.data ?? []) as ReviewStatRow[];
     highlightedReviews = pickHighlightedReviews(
-      (reviewsRes.data ?? []) as HighlightedReviewRow[]
+      (reviewsRes.data ?? []) as HighlightedReviewRow[],
+      10
     );
   } catch {
     /* fallback silencioso */
@@ -215,6 +256,34 @@ export default async function MarketingHomePage() {
       c.id,
       c.published_title || c.generated_content?.title || c.topic
     );
+  }
+
+  // Aseguramos tener título para cualquier curso referenciado por las reseñas
+  // destacadas (pueden ser distintos de los 8 cursos destacados).
+  const missingCourseIds = Array.from(
+    new Set(
+      highlightedReviews
+        .map((r) => r.course_id)
+        .filter((id) => id && !courseTitleById.has(id))
+    )
+  );
+  if (missingCourseIds.length > 0) {
+    try {
+      const supabase = createPublicSupabaseClient();
+      const { data } = await supabase
+        .from('courses')
+        .select('id, published_title, topic')
+        .in('id', missingCourseIds);
+      for (const c of (data ?? []) as Array<{
+        id: string;
+        published_title: string | null;
+        topic: string | null;
+      }>) {
+        courseTitleById.set(c.id, c.published_title || c.topic || 'Curso');
+      }
+    } catch {
+      /* ignoramos: simplemente no mostramos el título */
+    }
   }
 
   const featured = featuredRaw.slice(0, 6);
@@ -520,65 +589,64 @@ export default async function MarketingHomePage() {
               <h2 id="opiniones-heading" className={homeStyles.sectionTitle}>
                 Lo que dicen los alumnos
               </h2>
-              {averageRating != null ? (
-                <div className={homeStyles.opinionsAverage}>
-                  <span className={homeStyles.opinionsScore}>
-                    {formatScoreEs(averageRating)}
-                  </span>
-                  <StarRatingDisplay value={averageRating} ariaHidden />
-                  <span className={homeStyles.opinionsCount}>
-                    Sobre {formatThousands(totalReviews)} valoraciones
-                  </span>
-                </div>
-              ) : null}
             </header>
 
-            <ul className={homeStyles.reviewGrid}>
-              {highlightedReviews.map((r) => {
-                const courseTitle = courseTitleById.get(r.course_id);
-                const initials = (r.author_name || '?')
-                  .split(/\s+/)
-                  .filter(Boolean)
-                  .slice(0, 2)
-                  .map((p) => p[0]?.toUpperCase() ?? '')
-                  .join('');
-                return (
-                  <li key={r.id} className={homeStyles.reviewCard}>
-                    <svg
-                      className={homeStyles.reviewQuote}
-                      viewBox="0 0 60 48"
-                      width="46"
-                      height="36"
-                      aria-hidden
-                    >
-                      <path
-                        fill="#d8ff5c"
-                        d="M14 4c-7 4-12 12-12 22 0 10 6 18 14 18 6 0 10-4 10-10 0-5-4-9-9-9-1 0-2 0-3 1 1-7 5-13 11-17zm32 0c-7 4-12 12-12 22 0 10 6 18 14 18 6 0 10-4 10-10 0-5-4-9-9-9-1 0-2 0-3 1 1-7 5-13 11-17z"
-                      />
-                    </svg>
-                    <StarRatingDisplay value={r.rating} ariaHidden />
-                    <h3 className={homeStyles.reviewTitle}>
-                      <span>{r.title}</span>
-                    </h3>
-                    <p className={homeStyles.reviewBody}>{r.content}</p>
-                    <p className={homeStyles.reviewAuthor}>
-                      <span className={homeStyles.reviewAvatar} aria-hidden>
-                        {initials}
-                      </span>
-                      <span>
-                        <strong>{r.author_name}</strong>
-                        {courseTitle ? (
-                          <span className={homeStyles.reviewCourse}>
-                            {' · '}
-                            {courseTitle}
-                          </span>
-                        ) : null}
-                      </span>
-                    </p>
-                  </li>
-                );
-              })}
-            </ul>
+            <div className={homeStyles.reviewScroller}>
+              <ul
+                className={homeStyles.reviewGrid}
+                role="list"
+                aria-label="Opiniones de alumnos"
+                tabIndex={0}
+              >
+                {highlightedReviews.map((r) => {
+                  const courseTitle = courseTitleById.get(r.course_id);
+                  const initials = (r.author_name || '?')
+                    .split(/\s+/)
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((p) => p[0]?.toUpperCase() ?? '')
+                    .join('');
+                  return (
+                    <li key={r.id} className={homeStyles.reviewCard}>
+                      <svg
+                        className={homeStyles.reviewQuote}
+                        viewBox="0 0 60 48"
+                        width="46"
+                        height="36"
+                        aria-hidden
+                      >
+                        <path
+                          fill="#d8ff5c"
+                          d="M14 4c-7 4-12 12-12 22 0 10 6 18 14 18 6 0 10-4 10-10 0-5-4-9-9-9-1 0-2 0-3 1 1-7 5-13 11-17zm32 0c-7 4-12 12-12 22 0 10 6 18 14 18 6 0 10-4 10-10 0-5-4-9-9-9-1 0-2 0-3 1 1-7 5-13 11-17z"
+                        />
+                      </svg>
+                      <StarRatingDisplay value={r.rating} ariaHidden />
+                      <h3 className={homeStyles.reviewTitle}>
+                        <span>{r.title}</span>
+                      </h3>
+                      <p className={homeStyles.reviewBody}>{r.content}</p>
+                      <p className={homeStyles.reviewAuthor}>
+                        <span className={homeStyles.reviewAvatar} aria-hidden>
+                          {initials}
+                        </span>
+                        <span>
+                          <strong>{r.author_name}</strong>
+                          {courseTitle ? (
+                            <span className={homeStyles.reviewCourse}>
+                              {' · '}
+                              {courseTitle}
+                            </span>
+                          ) : null}
+                        </span>
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className={homeStyles.reviewScrollHint} aria-hidden>
+                Desliza para ver más
+              </p>
+            </div>
           </div>
         </section>
       ) : null}

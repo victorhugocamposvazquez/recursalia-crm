@@ -1519,23 +1519,68 @@
   font-weight: 600;
 }
 
+/* Carrusel horizontal de reseñas con scroll-snap.
+   Extendemos el carrusel hasta los bordes del section padre para
+   permitir un peek lateral que invite a deslizar. */
+.reviewScroller {
+  position: relative;
+  margin: 0 calc(-1 * var(--marketing-gutter-x, 1.25rem));
+}
+
 .reviewGrid {
   list-style: none;
   margin: 0;
-  padding: 0;
-  display: grid;
+  padding: 0.5rem var(--marketing-gutter-x, 1.25rem) 1.25rem;
+  display: flex;
   gap: 1rem;
-  grid-template-columns: 1fr;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--marketing-gutter-x, 1.25rem);
+  scrollbar-width: thin;
+  scrollbar-color: rgb(15 23 42 / 18%) transparent;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.reviewGrid:focus-visible {
+  outline: 2px solid #2f6bff;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.reviewGrid::-webkit-scrollbar {
+  height: 6px;
+}
+
+.reviewGrid::-webkit-scrollbar-thumb {
+  background: rgb(15 23 42 / 18%);
+  border-radius: 999px;
+}
+
+.reviewGrid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.reviewScrollHint {
+  margin: 0.25rem var(--marketing-gutter-x, 1.25rem) 0;
+  text-align: right;
+  font-size: 0.78rem;
+  color: #64748b;
+  letter-spacing: 0.01em;
 }
 
 @media (min-width: 720px) {
-  .reviewGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .reviewScrollHint {
+    display: none;
   }
 }
 
 .reviewCard {
   position: relative;
+  flex: 0 0 auto;
+  width: min(86vw, 320px);
+  scroll-snap-align: start;
   background: #ffffff;
   border: 1px solid rgb(15 23 42 / 10%);
   border-radius: 18px;
@@ -1545,6 +1590,18 @@
   gap: 0.6rem;
   box-shadow: 0 6px 20px rgb(15 23 42 / 5%);
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+@media (min-width: 720px) {
+  .reviewCard {
+    width: 320px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .reviewCard {
+    width: 340px;
+  }
 }
 
 .reviewCard:hover {
