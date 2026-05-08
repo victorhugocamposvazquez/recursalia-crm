@@ -974,19 +974,21 @@
 }
 
 .journeyConnectorGuides {
-  stroke: rgb(15 23 42 / 22%);
+  stroke: rgb(190 242 100 / 55%);
   stroke-width: 1.4;
   stroke-dasharray: 4 5;
 }
 
 .journeyConnectorTrail {
-  stroke: var(--ink, #0f172a);
-  stroke-width: 1.6;
+  stroke: var(--doodle-fluor, #d8ff5c);
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 1px rgb(132 204 22 / 35%));
 }
 
 .journeyConnectorArrow {
-  stroke: var(--ink, #0f172a);
-  stroke-width: 1.8;
+  stroke: var(--doodle-fluor, #d8ff5c);
+  stroke-width: 2.6;
+  filter: drop-shadow(0 0 1px rgb(132 204 22 / 35%));
 }
 
 /* Layout en escritorio: zig-zag en 2 columnas ---------------------- */
@@ -1177,113 +1179,174 @@
   }
 }
 
-/* Mocks: player ----------------------------------------------------- */
+/* Mocks: multi-dispositivo (PDF en portátil + móvil) ---------------- */
 
-.mockPlayer {
+.mockMulti {
   position: relative;
   width: 100%;
-  max-width: 30rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
+  max-width: 24rem;
+  aspect-ratio: 5 / 4;
 }
 
-.mockPlayerScreen {
+.mockMultiLaptop {
+  position: relative;
+  width: 78%;
+  margin-top: 0.4rem;
+}
+
+.mockMultiLaptopBezel {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #1d3aa8 0%, #2b47c6 60%, #4f74ff 100%);
-  overflow: hidden;
-  isolation: isolate;
-  box-shadow: 0 18px 40px rgb(15 23 42 / 22%);
+  background: #1e293b;
+  border-radius: 12px 12px 4px 4px;
+  padding: 0.5rem;
+  box-shadow: 0 18px 38px rgb(15 23 42 / 22%);
 }
 
-.mockPlayerGlow {
+.mockMultiLaptopBezel::before {
+  content: '';
   position: absolute;
-  inset: -20%;
-  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.45), transparent 55%);
-  pointer-events: none;
-}
-
-.mockPlayBtn {
-  position: absolute;
-  top: 50%;
+  top: 0.18rem;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 3.4rem;
-  height: 3.4rem;
+  transform: translateX(-50%);
+  width: 14%;
+  height: 3px;
   border-radius: 999px;
-  background: rgb(255 255 255 / 92%);
-  color: #1d3aa8;
-  border: none;
-  box-shadow: 0 12px 24px rgb(15 23 42 / 28%);
+  background: rgb(255 255 255 / 12%);
+}
+
+.mockMultiLaptopBase {
+  position: relative;
+  width: 112%;
+  height: 0.55rem;
+  margin: 2px -6% 0;
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+  border-radius: 0 0 18px 18px;
+  box-shadow: 0 8px 14px rgb(15 23 42 / 18%);
+}
+
+.mockMultiLaptopBase::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16%;
+  height: 4px;
+  border-radius: 0 0 6px 6px;
+  background: #0f172a;
+}
+
+.mockMultiPhone {
+  position: absolute;
+  right: 0.2rem;
+  bottom: 0.4rem;
+  width: 30%;
+  aspect-ratio: 9 / 17;
+  background: #0f172a;
+  border-radius: 18px;
+  padding: 0.55rem 0.32rem 0.45rem;
+  box-shadow: 0 16px 28px rgb(15 23 42 / 28%);
+  display: flex;
+  flex-direction: column;
+}
+
+.mockMultiPhoneNotch {
+  position: absolute;
+  top: 0.22rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 18%);
+}
+
+.mockMultiPhoneScreen {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0.55rem 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* Documento PDF (compartido entre laptop y móvil) ------------------ */
+
+.mockPdfDoc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mockPdfBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0.5rem;
+  background: #f1f5f9;
+  border-bottom: 1px solid rgb(15 23 42 / 6%);
+}
+
+.mockPdfTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #475569;
+}
+
+.mockPdfTabIcon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  cursor: default;
-  animation: mockPlayPulse 2.6s ease-in-out infinite;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  background: rgb(220 38 38 / 12%);
+  color: #b91c1c;
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
 }
 
-@keyframes mockPlayPulse {
-  0%,
-  100% {
-    box-shadow: 0 12px 24px rgb(15 23 42 / 28%), 0 0 0 0 rgb(255 255 255 / 60%);
-  }
-
-  50% {
-    box-shadow: 0 12px 24px rgb(15 23 42 / 28%), 0 0 0 14px rgb(255 255 255 / 0%);
-  }
+.mockPdfPageNum {
+  font-size: 0.5rem;
+  color: #94a3b8;
+  font-weight: 600;
 }
 
-.mockPlayerControls {
-  position: absolute;
-  bottom: 0.7rem;
-  left: 0.85rem;
-  right: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
-
-.mockPlayerTime {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: rgb(255 255 255 / 88%);
-  letter-spacing: 0.04em;
-}
-
-.mockPlayerBar {
+.mockPdfBody {
   flex: 1;
-  height: 4px;
-  border-radius: 4px;
-  background: rgb(255 255 255 / 24%);
-  overflow: hidden;
-}
-
-.mockPlayerProgress {
-  display: block;
-  height: 100%;
-  width: 38%;
-  background: linear-gradient(90deg, #ffffff 0%, #f5d27e 100%);
-  animation: mockProgressGrow 4s ease-in-out infinite alternate;
-}
-
-@keyframes mockProgressGrow {
-  from {
-    width: 28%;
-  }
-
-  to {
-    width: 62%;
-  }
-}
-
-.mockPlayerCaption {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 0.4rem 0.6rem;
+  gap: 0.3rem;
+  padding: 0.55rem 0.6rem 0.5rem;
+}
+
+.mockPdfH1 {
+  display: block;
+  height: 8px;
+  width: 60%;
+  border-radius: 2px;
+  background: rgb(43 71 198 / 80%);
+}
+
+.mockPdfH2 {
+  display: block;
+  height: 6px;
+  width: 42%;
+  border-radius: 2px;
+  background: rgb(15 23 42 / 60%);
+  margin-top: 0.18rem;
 }
 
 /* Mocks: diploma ---------------------------------------------------- */
@@ -2230,8 +2293,6 @@
   .catSwipeHint,
   .catSwipeHint svg,
   .mockCursor,
-  .mockPlayBtn,
-  .mockPlayerProgress,
   .mockDiplomaSeal {
     animation: none !important;
     transition: none !important;

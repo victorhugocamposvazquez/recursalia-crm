@@ -42,27 +42,43 @@ function CatalogMock() {
   );
 }
 
-function PlayerMock() {
+function MultiDeviceMock() {
   return (
-    <div className={homeStyles.mockPlayer} aria-hidden>
-      <div className={homeStyles.mockPlayerScreen}>
-        <span className={homeStyles.mockPlayerGlow} />
-        <button type="button" className={homeStyles.mockPlayBtn} tabIndex={-1} aria-hidden>
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden>
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        </button>
-        <div className={homeStyles.mockPlayerControls}>
-          <span className={homeStyles.mockPlayerTime}>04:12</span>
-          <div className={homeStyles.mockPlayerBar}>
-            <span className={homeStyles.mockPlayerProgress} />
+    <div className={homeStyles.mockMulti} aria-hidden>
+      <div className={homeStyles.mockMultiLaptop}>
+        <div className={homeStyles.mockMultiLaptopBezel}>
+          <div className={homeStyles.mockPdfDoc}>
+            <div className={homeStyles.mockPdfBar}>
+              <span className={homeStyles.mockPdfTab}>
+                <span className={homeStyles.mockPdfTabIcon} aria-hidden>
+                  PDF
+                </span>
+                <span>Recurso · Tema 3</span>
+              </span>
+              <span className={homeStyles.mockPdfPageNum}>3 / 12</span>
+            </div>
+            <div className={homeStyles.mockPdfBody}>
+              <span className={homeStyles.mockPdfH1} />
+              <span className={`${homeStyles.mockLine} ${homeStyles.mockLineFull}`} />
+              <span className={homeStyles.mockLine} />
+              <span className={`${homeStyles.mockLine} ${homeStyles.mockLineFull}`} />
+              <span className={homeStyles.mockPdfH2} />
+              <span className={homeStyles.mockLine} />
+              <span className={`${homeStyles.mockLine} ${homeStyles.mockLineFull}`} />
+            </div>
           </div>
-          <span className={homeStyles.mockPlayerTime}>11:08</span>
         </div>
+        <div className={homeStyles.mockMultiLaptopBase} aria-hidden />
       </div>
-      <div className={homeStyles.mockPlayerCaption}>
-        <span className={`${homeStyles.mockLine} ${homeStyles.mockLineFull}`} />
-        <span className={homeStyles.mockLine} />
+      <div className={homeStyles.mockMultiPhone}>
+        <span className={homeStyles.mockMultiPhoneNotch} aria-hidden />
+        <div className={homeStyles.mockMultiPhoneScreen}>
+          <span className={homeStyles.mockPdfH1} />
+          <span className={`${homeStyles.mockLine} ${homeStyles.mockLineFull}`} />
+          <span className={homeStyles.mockLine} />
+          <span className={homeStyles.mockPdfH2} />
+          <span className={homeStyles.mockLine} />
+        </div>
       </div>
     </div>
   );
@@ -142,8 +158,8 @@ const STEPS: Step[] = [
     id: 'learn',
     step: '02',
     title: 'Aprende a tu ritmo',
-    body: 'Acceso de por vida a vídeos, lecciones y material descargable. Empieza hoy y avanza cuando quieras desde cualquier dispositivo, sin fechas límite ni clases en directo.',
-    visual: <PlayerMock />,
+    body: 'Lecciones y material descargable en PDF que abres en el ordenador, la tablet o el móvil. Empieza hoy y avanza cuando quieras, sin fechas límite ni clases en directo.',
+    visual: <MultiDeviceMock />,
   },
   {
     id: 'diploma',
@@ -245,8 +261,23 @@ export function HomeHowItWorksPinned() {
             const idxAttr = (entry.target as HTMLElement).dataset.idx;
             if (!idxAttr) continue;
             const idx = Number(idxAttr);
-            if (entry.isIntersecting && !next[idx]) {
-              next[idx] = true;
+            const top = entry.boundingClientRect.top;
+            // Mientras está intersectando el viewport, queda revelado.
+            // Si dejó de intersectar y está por debajo (top > 0), significa
+            // que el usuario scrolleó hacia arriba y dejó atrás el paso →
+            // se "desrellena". Si dejó de intersectar y está por encima
+            // (top < 0), el usuario lo ha pasado scrolleando hacia abajo
+            // y conservamos el estado revelado.
+            let nextValue: boolean;
+            if (entry.isIntersecting) {
+              nextValue = true;
+            } else if (top > 0) {
+              nextValue = false;
+            } else {
+              nextValue = next[idx];
+            }
+            if (next[idx] !== nextValue) {
+              next[idx] = nextValue;
               changed = true;
             }
           }
