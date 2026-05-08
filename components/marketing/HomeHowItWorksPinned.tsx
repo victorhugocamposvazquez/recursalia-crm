@@ -87,26 +87,94 @@ function MultiDeviceMock() {
 function DiplomaMock() {
   return (
     <div className={homeStyles.mockDiploma} aria-hidden>
-      <span className={homeStyles.mockDiplomaFrame} aria-hidden />
-      <span className={homeStyles.mockDiplomaKicker}>Recursalia</span>
-      <h3 className={homeStyles.mockDiplomaTitle}>Diploma de aprovechamiento</h3>
-      <p className={homeStyles.mockDiplomaName}>Hugo C.</p>
-      <p className={homeStyles.mockDiplomaCourse}>Marketing digital aplicado</p>
-      <div className={homeStyles.mockDiplomaSeal} aria-hidden>
-        <svg viewBox="0 0 48 48" width="56" height="56" aria-hidden>
-          <defs>
-            <linearGradient id="sealGrad" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stopColor="#f59e0b" />
-              <stop offset="1" stopColor="#b45309" />
-            </linearGradient>
-          </defs>
-          <circle cx="24" cy="24" r="14" fill="url(#sealGrad)" />
-          <path
-            d="M24 14l2.6 5.5 6 .8-4.4 4 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9-4.4-4 6-.8z"
-            fill="#fff8ec"
-          />
-          <path d="M16 36l8 4 8-4-2 8h-12z" fill="url(#sealGrad)" />
-        </svg>
+      {/* Decoraciones tipo memphis */}
+      <span className={homeStyles.mockDiplomaTriBlue} aria-hidden />
+      <svg
+        className={homeStyles.mockDiplomaDots}
+        viewBox="0 0 50 50"
+        aria-hidden
+      >
+        <circle
+          cx="25"
+          cy="25"
+          r="22"
+          fill="none"
+          stroke="#0f172a"
+          strokeWidth="0.7"
+          strokeDasharray="0.8 1.6"
+        />
+      </svg>
+      <span className={homeStyles.mockDiplomaXWhite} aria-hidden>
+        ×
+      </span>
+      <span className={homeStyles.mockDiplomaTriYellow} aria-hidden />
+      <svg
+        className={homeStyles.mockDiplomaRings}
+        viewBox="0 0 60 60"
+        aria-hidden
+      >
+        <circle cx="48" cy="48" r="20" fill="none" stroke="#f59e0b" strokeWidth="2" />
+        <circle cx="48" cy="48" r="14" fill="none" stroke="#f59e0b" strokeWidth="2" />
+        <circle cx="48" cy="48" r="8" fill="none" stroke="#f59e0b" strokeWidth="2" />
+      </svg>
+      <svg
+        className={homeStyles.mockDiplomaCube}
+        viewBox="0 0 40 30"
+        aria-hidden
+      >
+        <path d="M5 12 L20 12 L30 6 L15 6 Z" fill="none" stroke="#0f172a" strokeWidth="1" />
+        <path d="M20 12 L30 6 L30 22 L20 28 Z" fill="none" stroke="#0f172a" strokeWidth="1" />
+        <path d="M5 12 L20 12 L20 28 L5 28 Z" fill="none" stroke="#0f172a" strokeWidth="1" />
+      </svg>
+      <span className={homeStyles.mockDiplomaXBlue} aria-hidden>
+        ×
+      </span>
+
+      {/* Contenido */}
+      <div className={homeStyles.mockDiplomaContent}>
+        <h3 className={homeStyles.mockDiplomaTitle}>CERTIFICADO</h3>
+        <p className={homeStyles.mockDiplomaSubtitle}>
+          <span aria-hidden>—</span>
+          PROFESIONAL
+          <span aria-hidden>—</span>
+        </p>
+        <p className={homeStyles.mockDiplomaName}>Hugo Campos</p>
+        <span className={homeStyles.mockDiplomaUnderline} aria-hidden />
+        <p className={homeStyles.mockDiplomaFor}>
+          Por la satisfactoria realización de:
+        </p>
+        <div className={homeStyles.mockDiplomaFields}>
+          <div className={homeStyles.mockDiplomaField}>
+            <span className={homeStyles.mockDiplomaFieldLabel}>CURSO</span>
+            <span className={homeStyles.mockDiplomaFieldValue}>
+              Marketing digital
+            </span>
+          </div>
+          <div className={homeStyles.mockDiplomaField}>
+            <span className={homeStyles.mockDiplomaFieldLabel}>FECHA</span>
+            <span className={homeStyles.mockDiplomaFieldValue}>
+              13 / Junio / 2026
+            </span>
+          </div>
+        </div>
+        <div className={homeStyles.mockDiplomaSignature}>
+          <svg
+            className={homeStyles.mockDiplomaSignatureSvg}
+            viewBox="0 0 60 18"
+            aria-hidden
+          >
+            <path
+              d="M2 12 C 8 4, 14 18, 22 8 S 38 4, 50 14"
+              fill="none"
+              stroke="#0f172a"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+            />
+          </svg>
+          <span className={homeStyles.mockDiplomaSignatureName}>
+            Recursalia Elite Team
+          </span>
+        </div>
       </div>
     </div>
   );

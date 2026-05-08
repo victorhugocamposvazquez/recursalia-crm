@@ -1349,74 +1349,211 @@
   margin-top: 0.18rem;
 }
 
-/* Mocks: diploma ---------------------------------------------------- */
+/* Mocks: diploma (estilo memphis) ----------------------------------- */
 
 .mockDiploma {
   position: relative;
-  width: clamp(15rem, 22vw, 19rem);
-  aspect-ratio: 3 / 4;
-  background: linear-gradient(180deg, #ffffff 0%, #f2ffe8 100%);
-  border: 1px solid rgb(15 23 42 / 10%);
-  border-radius: 18px;
+  width: 100%;
+  max-width: 24rem;
+  aspect-ratio: 4 / 3;
+  background: #ffffff;
+  border: 1px solid rgb(15 23 42 / 8%);
+  border-radius: 14px;
   box-shadow: 0 22px 50px rgb(15 23 42 / 14%);
-  padding: 1.6rem 1.35rem 1.35rem;
-  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.mockDiplomaTriBlue {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 38%;
+  height: 100%;
+  background: #c7d8ff;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  z-index: 0;
+}
+
+.mockDiplomaDots {
+  position: absolute;
+  top: -10%;
+  left: -8%;
+  width: 22%;
+  height: auto;
+  aspect-ratio: 1;
+  z-index: 1;
+}
+
+.mockDiplomaXWhite {
+  position: absolute;
+  top: 24%;
+  left: 7%;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+  z-index: 1;
+}
+
+.mockDiplomaTriYellow {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  width: 6%;
+  aspect-ratio: 1;
+  background: #f59e0b;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  z-index: 1;
+}
+
+.mockDiplomaRings {
+  position: absolute;
+  bottom: -8%;
+  left: -6%;
+  width: 22%;
+  height: auto;
+  aspect-ratio: 1;
+  z-index: 0;
+}
+
+.mockDiplomaCube {
+  position: absolute;
+  bottom: 8%;
+  right: 4%;
+  width: 14%;
+  height: auto;
+  z-index: 1;
+}
+
+.mockDiplomaXBlue {
+  position: absolute;
+  bottom: 22%;
+  right: 22%;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #c7d8ff;
+  line-height: 1;
+  z-index: 1;
+}
+
+.mockDiplomaContent {
+  position: relative;
+  z-index: 2;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.55rem;
-  overflow: hidden;
-}
-
-.mockDiplomaFrame {
-  position: absolute;
-  inset: 0.5rem;
-  border: 1px solid rgb(15 23 42 / 12%);
-  border-radius: 14px;
-  pointer-events: none;
-}
-
-.mockDiplomaKicker {
-  position: relative;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #2b47c6;
+  text-align: center;
+  padding: 7% 11% 5%;
+  gap: 0.18rem;
 }
 
 .mockDiplomaTitle {
-  position: relative;
   margin: 0;
   font-family: 'Georgia', serif;
-  font-size: 1.05rem;
   font-weight: 600;
+  letter-spacing: 0.22em;
+  font-size: clamp(0.78rem, 1.7vw, 1rem);
   color: var(--ink, #0f172a);
-  line-height: 1.25;
+  line-height: 1;
+}
+
+.mockDiplomaSubtitle {
+  margin: 0;
+  font-family: 'Georgia', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.32em;
+  color: var(--ink, #0f172a);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .mockDiplomaName {
-  position: relative;
-  margin: 0.6rem 0 0;
-  font-family: 'Georgia', serif;
+  margin: 0.42rem 0 0.05rem;
+  font-family: var(--font-marketing), 'Inter Tight', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  font-size: clamp(0.78rem, 1.7vw, 1rem);
+  color: var(--ink, #0f172a);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.mockDiplomaUnderline {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--ink, #0f172a);
+}
+
+.mockDiplomaFor {
+  margin: 0.28rem 0 0;
+  font-size: 0.55rem;
+  color: #475569;
   font-style: italic;
-  font-size: 1.4rem;
-  color: #1d3aa8;
 }
 
-.mockDiplomaCourse {
-  position: relative;
-  margin: 0;
-  font-size: 0.8rem;
-  color: #6b7280;
+.mockDiplomaFields {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.2rem;
 }
 
-.mockDiplomaSeal {
-  position: relative;
+.mockDiplomaField {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  border-bottom: 1px solid rgb(15 23 42 / 30%);
+  padding: 0 0 0.1rem;
+  min-width: 0;
+}
+
+.mockDiplomaFieldLabel {
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--ink, #0f172a);
+  flex-shrink: 0;
+}
+
+.mockDiplomaFieldValue {
+  font-size: 0.5rem;
+  font-weight: 500;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.mockDiplomaSignature {
   margin-top: auto;
-  align-self: flex-end;
-  filter: drop-shadow(0 6px 12px rgb(245 158 11 / 30%));
-  animation: spinSlow 18s linear infinite;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.05rem;
+}
+
+.mockDiplomaSignatureSvg {
+  width: 2.2rem;
+  height: auto;
+  display: block;
+}
+
+.mockDiplomaSignatureName {
+  font-size: 0.5rem;
+  color: #475569;
+  border-top: 1px solid rgb(15 23 42 / 35%);
+  padding-top: 0.12rem;
+  margin: 0;
+  letter-spacing: 0.02em;
 }
 
 /* Mocks: bolsa de empleo ------------------------------------------- */
@@ -2292,8 +2429,7 @@
   .catNav,
   .catSwipeHint,
   .catSwipeHint svg,
-  .mockCursor,
-  .mockDiplomaSeal {
+  .mockCursor {
     animation: none !important;
     transition: none !important;
   }
