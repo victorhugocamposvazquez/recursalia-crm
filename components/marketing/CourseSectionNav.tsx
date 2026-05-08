@@ -7,8 +7,8 @@ const SECTION_IDS = ['beneficios', 'programa', 'opiniones'] as const;
 
 type SectionId = (typeof SECTION_IDS)[number];
 
-/** ms en los que ignoramos spy tras un clic — evita flicker durante scroll suave */
-const SCROLL_LOCK_MS = 900;
+/** Tope absoluto: si el scroll no termina, soltamos el lock. */
+const SCROLL_LOCK_MAX_MS = 2400;
 
 function pickActiveSection(): SectionId {
   if (typeof document === 'undefined' || typeof window === 'undefined') {
@@ -18,7 +18,6 @@ function pickActiveSection(): SectionId {
   /*
     Franja desde el viewport: misma orden que SECTION_IDS (arriba → abajo).
     La última sección con top por encima de la línea suele incluir Opiniones al final.
-    Antes IO + rootMargin -52% abajo apenas veía Opinion.
   */
   const zone = Math.min(
     Math.max(Math.round(window.innerHeight * 0.14), 88),
@@ -35,14 +34,15 @@ function pickActiveSection(): SectionId {
 
 export function CourseSectionNav() {
   const [active, setActive] = useState<SectionId>('beneficios');
-  const spyLockUntilRef = useRef<number>(0);
+  /** Cuando tiene un valor, el spy está silenciado y muestra ese ID. */
+  const lockedTargetRef = useRef<SectionId | null>(null);
 
   useEffect(() => {
     let raf = 0;
     const onScrollResize = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
-        if (Date.now() < spyLockUntilRef.current) return;
+        if (lockedTargetRef.current !== null) return;
         setActive(pickActiveSection());
       });
     };
@@ -59,16 +59,62 @@ export function CourseSectionNav() {
   }, []);
 
   const scrollTo = useCallback((id: SectionId) => {
-    spyLockUntilRef.current = Date.now() + SCROLL_LOCK_MS;
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    // Mantenemos el indicador fijo en el destino mientras dura el scroll
+    // suave; así no salta a las secciones intermedias por las que pasa.
+    lockedTargetRef.current = id;
     setActive(id);
-    document.getElementById(id)?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    });
-    window.setTimeout(() => {
-      spyLockUntilRef.current = 0;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    let cleanup = () => {};
+    const release = () => {
+      cleanup();
+      // Una vez parado el scroll, sincronizamos por si el navegador
+      // dejó la sección un poco fuera de la franja.
+      lockedTargetRef.current = null;
       setActive(pickActiveSection());
-    }, SCROLL_LOCK_MS);
+    };
+
+    // Camino preferido: evento `scrollend` (Chrome/Firefox modernos).
+    const supportsScrollEnd = 'onscrollend' in (window as object);
+    if (supportsScrollEnd) {
+      const onEnd = () => release();
+      window.addEventListener('scrollend', onEnd, { once: true });
+      const safety = window.setTimeout(release, SCROLL_LOCK_MAX_MS);
+      cleanup = () => {
+        window.removeEventListener('scrollend', onEnd);
+        window.clearTimeout(safety);
+      };
+      return;
+    }
+
+    // Fallback (Safari, etc.): detectamos cuando scrollY se estabiliza.
+    let lastY = window.scrollY;
+    let stableTicks = 0;
+    let raf = 0;
+    const start = Date.now();
+    const tick = () => {
+      const y = window.scrollY;
+      if (Math.abs(y - lastY) < 1) {
+        stableTicks += 1;
+        if (stableTicks >= 6) {
+          release();
+          return;
+        }
+      } else {
+        stableTicks = 0;
+        lastY = y;
+      }
+      if (Date.now() - start > SCROLL_LOCK_MAX_MS) {
+        release();
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    cleanup = () => cancelAnimationFrame(raf);
   }, []);
 
   return (

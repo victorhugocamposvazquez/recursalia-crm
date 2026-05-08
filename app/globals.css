@@ -48,7 +48,11 @@
 
 html {
   font-family: var(--font-sans);
-  scroll-behavior: smooth;
+  /* Importante: NO usar `scroll-behavior: smooth` global aquí. Interfiere
+     con el scroll-to-top que hace Next.js al cambiar de ruta (puede dejar
+     la página destino scrolleada a la mitad cuando su altura aumenta tras
+     un Link). Si en algún sitio quieres scroll suave, aplica
+     `scroll-behavior: smooth` solo a ese contenedor. */
   -webkit-font-smoothing: antialiased;
 }
 

@@ -28,7 +28,8 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ruta /inspiracion: sin franjas blancas; el main ocupa toda la altura (sin cabecera ni footer) */
+/* Ruta /inspiracion: fondo azul Neural a pantalla completa. El header
+   sí se muestra (en modo sticky pill blanco translúcido), el footer no. */
 .marketingInspiracion {
   --ch-bg: #081338;
   min-height: 100dvh;

@@ -13,15 +13,22 @@ export function SiteHeader() {
   const { searchCopy } = useMarketingContent();
   const pathname = usePathname();
   const courseLanding = isMarketingCourseLandingPath(pathname);
-  const [sticky, setSticky] = useState(false);
+  const isInspiracion = pathname === '/inspiracion';
+  const [sticky, setSticky] = useState(isInspiracion);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    // En Inspiración fijamos siempre el modo "pill" sticky para que el
+    // header destaque sobre el fondo azul oscuro y no quede embebido.
+    if (isInspiracion) {
+      setSticky(true);
+      return;
+    }
     const onScroll = () => setSticky(window.scrollY >= 40);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [isInspiracion]);
 
   useEffect(() => {
     setOpen(false);

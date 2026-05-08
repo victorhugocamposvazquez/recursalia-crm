@@ -205,7 +205,20 @@ export function CursosCatalogClient({
           if (parsed.sort && SORT_OPTIONS.some((s) => s.id === parsed.sort)) {
             setSort(parsed.sort);
           }
-          if (typeof parsed.scroll === 'number' && parsed.scroll > 0) {
+          // Solo restauramos el scroll cuando el usuario llega aquí por una
+          // navegación hard "back/forward" (ej. recarga + back). Para soft
+          // nav (Link / router.back) el navegador y Next.js ya conservan la
+          // posición, y restaurarla manualmente cuando el user llega fresh
+          // desde otra página (home, blog…) deja la pantalla a medio scroll.
+          const navEntry = performance.getEntriesByType(
+            'navigation'
+          )[0] as PerformanceNavigationTiming | undefined;
+          const isBackForward = navEntry?.type === 'back_forward';
+          if (
+            isBackForward &&
+            typeof parsed.scroll === 'number' &&
+            parsed.scroll > 0
+          ) {
             requestAnimationFrame(() => {
               window.scrollTo({ top: parsed.scroll!, behavior: 'auto' });
             });
