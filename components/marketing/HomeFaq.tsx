@@ -54,28 +54,37 @@ export function HomeFaq() {
       {FAQS.map((item, idx) => {
         const isOpen = openIndex === idx;
         return (
-          <li key={item.question} className={styles.item}>
+          <li
+            key={item.question}
+            className={`${styles.item} ${isOpen ? styles.itemOpen : ''}`}
+          >
             <button
               type="button"
               className={styles.trigger}
               aria-expanded={isOpen}
               onClick={() => setOpenIndex(isOpen ? null : idx)}
             >
-              <span className={styles.question}>{item.question}</span>
-              <svg
-                className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`}
-                viewBox="0 0 24 24"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              <span className={styles.question}>
+                <span>{item.question}</span>
+              </span>
+              <span
+                className={`${styles.toggle} ${isOpen ? styles.toggleOpen : ''}`}
                 aria-hidden
               >
-                <path d="M6 9l6 6 6-6" />
-              </svg>
+                <svg
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M5 12c2-1 5-1 7 0s5 1 7 0" />
+                  <path d="M12 5c-1 2-1 5 0 7s1 5 0 7" />
+                </svg>
+              </span>
             </button>
             {isOpen ? (
               <div className={styles.panel}>

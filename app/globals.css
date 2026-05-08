@@ -29,6 +29,16 @@
   --font-sans: var(--font-marketing), 'Inter Tight', system-ui, -apple-system,
     'Segoe UI', Roboto, sans-serif;
   --font-display: var(--font-marketing-display), 'Poppins', system-ui, sans-serif;
+  --font-handwritten: var(--font-doodle), 'Caveat', 'Bradley Hand', cursive;
+
+  /* Doodle palette · acentos para la home */
+  --doodle-yellow: #fef08a;
+  --doodle-lime: #bef264;
+  --doodle-coral: #fda4af;
+  --doodle-cyan: #67e8f9;
+  --doodle-pink: #f0abfc;
+  --doodle-fluor: #d8ff5c;
+  --ink: #0f172a;
 }
 
 * {

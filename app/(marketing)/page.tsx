@@ -5,6 +5,13 @@ import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
 import { HomeCategoryCarousel } from '@/components/marketing/HomeCategoryCarousel';
 import { HomeHowItWorksPinned } from '@/components/marketing/HomeHowItWorksPinned';
 import { HomeFaq } from '@/components/marketing/HomeFaq';
+import {
+  ArrowDoodle,
+  Asterisk,
+  BurstStar,
+  Spiral,
+  Star,
+} from '@/components/marketing/DoodleAccents';
 import { StarRatingDisplay } from '@/components/marketing/StarRatingDisplay';
 import { COURSE_IMAGE_BLUR_DATA_URL } from '@/lib/imagePlaceholder';
 import type { GeneratedCourseStructure } from '@/types';
@@ -65,9 +72,10 @@ const TRUST_PILLARS = [
     title: 'Pago 100 % seguro con Hotmart',
     body: 'Compras procesadas por Hotmart, plataforma de referencia con 8 millones de usuarios en todo el mundo.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6z" />
-        <path d="m9 12 2 2 4-4" />
+      // Escudo doodle con check
+      <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M16 4 6 7v8c0 6 4.5 11 10 12 5.5-1 10-6 10-12V7z" />
+        <path d="m11 16 3 3 6-7" />
       </svg>
     ),
   },
@@ -75,9 +83,12 @@ const TRUST_PILLARS = [
     title: 'Garantía de devolución de 7 días',
     body: 'Si el curso no es para ti, te devolvemos el dinero. Sin preguntas, sin trámites complicados.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M3 12a9 9 0 1 0 3-6.7" />
-        <path d="M3 4v5h5" />
+      // Refresh garabato con flecha
+      <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M27 15a11 11 0 0 1-19 7" />
+        <path d="M5 17a11 11 0 0 1 19-7" />
+        <path d="M24 4v6h-6" />
+        <path d="M8 28v-6h6" />
       </svg>
     ),
   },
@@ -85,8 +96,9 @@ const TRUST_PILLARS = [
     title: 'Acceso de por vida y desde cualquier dispositivo',
     body: 'Accede al contenido desde móvil, tablet u ordenador, las veces que quieras. Tu compra no caduca.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M18.5 12c2 0 3.5-1.6 3.5-3.5S20.5 5 18.5 5s-3.5 1.6-3.9 3.4C14 11 11 13 9 13s-3.5 1.6-3.5 3.5S7 20 9 20s3.5-1.6 3.9-3.4C14 14 16 12 18.5 12Z" />
+      // Infinito ondulado a mano
+      <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M9 16c-3 0-5-2-5-5s2-5 5-5c4 0 7 10 14 10 3 0 5-2 5-5s-2-5-5-5c-4 0-7 10-14 10z" />
       </svg>
     ),
   },
@@ -94,10 +106,12 @@ const TRUST_PILLARS = [
     title: 'Diploma incluido en cada curso',
     body: 'Al finalizar recibes un diploma personalizado con código de verificación que puedes compartir.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <rect x="3" y="4" width="18" height="13" rx="2" />
-        <path d="M3 9h18" />
-        <path d="m9 21 3-2 3 2v-4" />
+      // Diploma con cinta
+      <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="5" y="6" width="22" height="14" rx="2.5" />
+        <path d="M5 11h22" />
+        <path d="m12 28 4-3 4 3v-6" />
+        <circle cx="16" cy="16" r="2" />
       </svg>
     ),
   },
@@ -105,10 +119,12 @@ const TRUST_PILLARS = [
     title: 'Bolsa de empleo activa',
     body: 'Cursos con bolsa de trabajo incluyen acceso a oportunidades reales con empresas colaboradoras.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <rect x="3" y="7" width="18" height="13" rx="2" />
-        <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-        <path d="M3 13h18" />
+      // Maletín con asas
+      <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <rect x="4" y="9" width="24" height="17" rx="2.5" />
+        <path d="M11 9V7a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v2" />
+        <path d="M4 16h24" />
+        <path d="M14 16v3M18 16v3" />
       </svg>
     ),
   },
@@ -116,8 +132,10 @@ const TRUST_PILLARS = [
     title: 'Soporte humano en español',
     body: 'Equipo de atención al alumno por correo electrónico para resolver dudas técnicas o de contenido.',
     icon: (
-      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-        <path d="M21 15a4 4 0 0 1-4 4h-1l-4 3v-3H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h9a4 4 0 0 1 4 4z" />
+      // Burbuja chat con corazón
+      <svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="M28 18a5 5 0 0 1-5 5h-1l-5 5v-5h-3a5 5 0 0 1-5-5v-7a5 5 0 0 1 5-5h11a5 5 0 0 1 5 5z" />
+        <path d="M16 14c.7-1.4 2.4-1.4 3 0 .6-1.4 2.3-1.4 3 0s-3 4-3 4-3.6-2.6-3-4z" />
       </svg>
     ),
   },
@@ -206,26 +224,13 @@ export default async function MarketingHomePage() {
   return (
     <>
       <section className={homeStyles.hero} aria-labelledby="hero-heading">
-        <div className={homeStyles.heroBlobs} aria-hidden>
-          <span className={homeStyles.heroBlobBlue} />
-          <span className={homeStyles.heroBlobAmber} />
-          <svg
-            className={homeStyles.heroGrid}
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden
-          >
-            <defs>
-              <pattern
-                id="hero-dotgrid"
-                width="22"
-                height="22"
-                patternUnits="userSpaceOnUse"
-              >
-                <circle cx="1" cy="1" r="1" fill="#cbd5e1" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#hero-dotgrid)" />
-          </svg>
+        <div className={homeStyles.heroScribbles} aria-hidden>
+          <Star className={homeStyles.heroScribble1} width={42} height={42} color="#d8ff5c" strokeWidth={2.2} />
+          <Asterisk className={homeStyles.heroScribble2} width={32} height={32} color="#0f172a" strokeWidth={2.4} />
+          <Spiral className={homeStyles.heroScribble3} width={56} height={56} color="#67e8f9" strokeWidth={2.2} />
+          <Star className={homeStyles.heroScribble4} width={36} height={36} color="#fda4af" strokeWidth={2.2} />
+          <Asterisk className={homeStyles.heroScribble5} width={26} height={26} color="#0f172a" strokeWidth={2.4} />
+          <BurstStar className={homeStyles.heroScribble6} width={56} height={56} color="#d8ff5c" strokeWidth={2.2} />
         </div>
 
         <div className={homeStyles.heroInner}>
@@ -234,15 +239,38 @@ export default async function MarketingHomePage() {
             nuevo. Cambia tu próxima decisión.
           </p>
           <h1 id="hero-heading" className={homeStyles.heroTitle}>
-            Cursos online claros y aplicables, creados por expertos.
+            Cursos online claros y aplicables, creados por{' '}
+            <span className={homeStyles.heroAccent}>
+              <Asterisk
+                className={homeStyles.heroAccentLeft}
+                width={20}
+                height={20}
+                color="#0f172a"
+                strokeWidth={2.6}
+              />
+              expertos
+              <Asterisk
+                className={homeStyles.heroAccentRight}
+                width={20}
+                height={20}
+                color="#0f172a"
+                strokeWidth={2.6}
+              />
+            </span>
+            .
           </h1>
           <p className={homeStyles.heroSubtitle}>
-            Diploma incluido, acceso de por vida y 7 días de garantía. Empieza hoy
-            y avanza a tu ritmo, sin compromisos.
+            Diploma incluido, acceso de por vida y{' '}
+            <span className={homeStyles.markerHighlight}>7 días de garantía</span>.
+            Empieza hoy y avanza a tu ritmo, sin compromisos.
           </p>
 
           <div className={homeStyles.heroSearchWrap}>
             <HomeHeroSearch />
+            <span className={homeStyles.heroArrowHint} aria-hidden>
+              <span className={homeStyles.heroArrowHintLabel}>empieza por aquí</span>
+              <ArrowDoodle width={70} height={50} color="#0f172a" strokeWidth={2.4} />
+            </span>
           </div>
 
           <div className={homeStyles.heroSocialProof}>
@@ -270,6 +298,9 @@ export default async function MarketingHomePage() {
                   >
                     <path
                       fill="#f5a623"
+                      stroke="#0f172a"
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
                       d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
                     />
                   </svg>
@@ -287,6 +318,9 @@ export default async function MarketingHomePage() {
                   </defs>
                   <path
                     fill="url(#heroStarPartial)"
+                    stroke="#0f172a"
+                    strokeWidth="1.6"
+                    strokeLinejoin="round"
                     d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
                   />
                 </svg>
@@ -301,12 +335,19 @@ export default async function MarketingHomePage() {
                 ) : null}
               </p>
             </div>
+            <Asterisk
+              className={homeStyles.heroSocialProofAsterisk}
+              width={20}
+              height={20}
+              color="#0f172a"
+              strokeWidth={2.4}
+            />
           </div>
         </div>
 
         <div className={homeStyles.heroFloatTopRight} aria-hidden>
           <span className={homeStyles.heroFloatIcon}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6z" />
               <path d="m9 12 2 2 4-4" />
             </svg>
@@ -319,7 +360,7 @@ export default async function MarketingHomePage() {
 
         <div className={homeStyles.heroFloatBottomLeft} aria-hidden>
           <span className={`${homeStyles.heroFloatIcon} ${homeStyles.heroFloatIconAmber}`}>
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="4" width="18" height="13" rx="2" />
               <path d="M3 9h18" />
               <path d="m9 21 3-2 3 2v-4" />
@@ -425,9 +466,32 @@ export default async function MarketingHomePage() {
                             style={{ objectFit: 'cover' }}
                           />
                         ) : null}
+                        <span
+                          className={homeStyles.coursePriceSticker}
+                          aria-hidden
+                        >
+                          {showStrike ? (
+                            <span className={homeStyles.coursePriceStickerOld}>
+                              {original}
+                            </span>
+                          ) : null}
+                          <span className={homeStyles.coursePriceStickerNow}>
+                            {sale ?? original ?? ''}
+                          </span>
+                        </span>
+                        {showStrike ? (
+                          <span
+                            className={homeStyles.courseSaleSticker}
+                            aria-hidden
+                          >
+                            ¡oferta!
+                          </span>
+                        ) : null}
                       </div>
                       <div className={homeStyles.courseBody}>
-                        <h3 className={homeStyles.courseTitle}>{title}</h3>
+                        <h3 className={homeStyles.courseTitle}>
+                          <span>{title}</span>
+                        </h3>
                         {desc ? (
                           <p className={homeStyles.courseDesc}>{desc}</p>
                         ) : null}
@@ -447,6 +511,9 @@ export default async function MarketingHomePage() {
                             {sale ?? original ?? ''}
                           </span>
                         </div>
+                        <span className={homeStyles.courseSignature} aria-hidden>
+                          by Recursalia
+                        </span>
                       </div>
                     </Link>
                   </li>
@@ -494,13 +561,22 @@ export default async function MarketingHomePage() {
             </p>
           </header>
           <ul className={homeStyles.trustGrid}>
-            {TRUST_PILLARS.map((item) => (
+            {TRUST_PILLARS.map((item, idx) => (
               <li key={item.title} className={homeStyles.trustCard}>
                 <span className={homeStyles.trustIconWrap} aria-hidden>
                   {item.icon}
                 </span>
                 <h3 className={homeStyles.trustTitle}>{item.title}</h3>
                 <p className={homeStyles.trustBody}>{item.body}</p>
+                <span className={homeStyles.trustMini} aria-hidden>
+                  {idx % 3 === 0 ? (
+                    <Asterisk width={18} height={18} color="#0f172a" strokeWidth={2.4} />
+                  ) : idx % 3 === 1 ? (
+                    <Star width={18} height={18} color="#fda4af" strokeWidth={1.8} />
+                  ) : (
+                    <Star width={18} height={18} color="#67e8f9" strokeWidth={1.8} />
+                  )}
+                </span>
               </li>
             ))}
           </ul>
@@ -534,22 +610,47 @@ export default async function MarketingHomePage() {
             <ul className={homeStyles.reviewGrid}>
               {highlightedReviews.map((r) => {
                 const courseTitle = courseTitleById.get(r.course_id);
+                const initials = (r.author_name || '?')
+                  .split(/\s+/)
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((p) => p[0]?.toUpperCase() ?? '')
+                  .join('');
                 return (
                   <li key={r.id} className={homeStyles.reviewCard}>
-                    <span className={homeStyles.reviewQuote} aria-hidden>
-                      “
-                    </span>
+                    <svg
+                      className={homeStyles.reviewQuote}
+                      viewBox="0 0 60 48"
+                      width="60"
+                      height="48"
+                      aria-hidden
+                    >
+                      <path
+                        fill="#d8ff5c"
+                        stroke="#0f172a"
+                        strokeWidth="2.4"
+                        strokeLinejoin="round"
+                        d="M14 4c-7 4-12 12-12 22 0 10 6 18 14 18 6 0 10-4 10-10 0-5-4-9-9-9-1 0-2 0-3 1 1-7 5-13 11-17zm32 0c-7 4-12 12-12 22 0 10 6 18 14 18 6 0 10-4 10-10 0-5-4-9-9-9-1 0-2 0-3 1 1-7 5-13 11-17z"
+                      />
+                    </svg>
                     <StarRatingDisplay value={r.rating} ariaHidden />
-                    <h3 className={homeStyles.reviewTitle}>{r.title}</h3>
+                    <h3 className={homeStyles.reviewTitle}>
+                      <span>{r.title}</span>
+                    </h3>
                     <p className={homeStyles.reviewBody}>{r.content}</p>
                     <p className={homeStyles.reviewAuthor}>
-                      <strong>{r.author_name}</strong>
-                      {courseTitle ? (
-                        <span className={homeStyles.reviewCourse}>
-                          {' · '}
-                          {courseTitle}
-                        </span>
-                      ) : null}
+                      <span className={homeStyles.reviewAvatar} aria-hidden>
+                        {initials}
+                      </span>
+                      <span>
+                        <strong>{r.author_name}</strong>
+                        {courseTitle ? (
+                          <span className={homeStyles.reviewCourse}>
+                            {' · '}
+                            {courseTitle}
+                          </span>
+                        ) : null}
+                      </span>
                     </p>
                   </li>
                 );
@@ -574,34 +675,38 @@ export default async function MarketingHomePage() {
       <section className={homeStyles.section} aria-labelledby="cta-heading">
         <div className={homeStyles.sectionInner}>
           <div className={homeStyles.finalCta}>
-            <svg
-              className={homeStyles.finalMesh}
-              viewBox="0 0 600 320"
-              preserveAspectRatio="none"
-              aria-hidden
-            >
-              <defs>
-                <pattern
-                  id="cta-grid"
-                  x="0"
-                  y="0"
-                  width="40"
-                  height="40"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path
-                    d="M 40 0 L 0 0 0 40"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.18)"
-                    strokeWidth="1"
-                  />
-                </pattern>
-              </defs>
-              <rect width="600" height="320" fill="url(#cta-grid)" />
-            </svg>
-            <span className={homeStyles.finalGlow} aria-hidden />
+            <Star
+              className={homeStyles.finalScribble1}
+              width={36}
+              height={36}
+              color="#0f172a"
+              strokeWidth={2.2}
+            />
+            <Spiral
+              className={homeStyles.finalScribble2}
+              width={48}
+              height={48}
+              color="#0f172a"
+              strokeWidth={2.2}
+            />
+            <Asterisk
+              className={homeStyles.finalScribble3}
+              width={28}
+              height={28}
+              color="#0f172a"
+              strokeWidth={2.4}
+            />
+            <BurstStar
+              className={homeStyles.finalScribble4}
+              width={48}
+              height={48}
+              color="#fda4af"
+              strokeWidth={2}
+            />
             <h2 id="cta-heading" className={homeStyles.finalTitle}>
-              ¿Empezamos? Tu próximo curso te está esperando.
+              ¿
+              <span className={homeStyles.finalAccent}>empezamos</span>? Tu próximo
+              curso te está esperando.
             </h2>
             <p className={homeStyles.finalLead}>
               Cientos de horas de contenido aplicado, equipos de expertos y la
@@ -614,6 +719,9 @@ export default async function MarketingHomePage() {
               <Link href="/blog" className={homeStyles.btnGhost}>
                 Leer el blog
               </Link>
+              <span className={homeStyles.finalSticker} aria-hidden>
+                ¡ya casi!
+              </span>
             </div>
           </div>
         </div>

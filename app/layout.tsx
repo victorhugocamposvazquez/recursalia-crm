@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { Inter_Tight, Poppins } from 'next/font/google';
+import { Inter_Tight, Poppins, Caveat } from 'next/font/google';
 import './globals.css';
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim();
@@ -18,6 +18,13 @@ const poppinsDisplay = Poppins({
   variable: '--font-marketing-display',
 });
 
+const caveatDoodle = Caveat({
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['500', '700'],
+  variable: '--font-doodle',
+});
+
 export const metadata: Metadata = {
   title: 'Recursalia - Cursos & Recursos',
 };
@@ -30,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${interTight.variable} ${poppinsDisplay.variable}`}
+      className={`${interTight.variable} ${poppinsDisplay.variable} ${caveatDoodle.variable}`}
     >
       <body>
         <a href="#main-content" className="skip-to-content">
