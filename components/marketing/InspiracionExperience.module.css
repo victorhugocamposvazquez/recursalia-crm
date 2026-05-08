@@ -40,16 +40,13 @@
 .topBar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 0.75rem;
-  padding: max(0.5rem, env(safe-area-inset-top, 0px)) 0 0.35rem;
-  flex-shrink: 0;
-}
-
-/* Paso 0: sin atrás; mantiene el hueco del botón para alinear progreso y Salir */
-.topBarLeadSpacer {
-  width: 40px;
-  height: 40px;
+  /* Los controles "volver" y "salir" viven en el SiteHeader (a la
+     izquierda del menú hamburguesa). Aquí solo dejamos los segmentos
+     de progreso, pegados arriba del todo. */
+  padding: 0 0 0.35rem;
+  margin-top: -0.35rem;
   flex-shrink: 0;
 }
 
@@ -232,52 +229,10 @@
   }
 }
 
-.backBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid rgb(255 255 255 / 18%);
-  background: rgb(0 0 0 / 15%);
-  color: #fff;
-  cursor: pointer;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.backBtn:hover:not(:disabled) {
-  background: rgb(255 255 255 / 10%);
-  border-color: rgb(255 255 255 / 28%);
-}
-
-.backBtn:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.exitBtn {
-  padding: 0.35rem 0.5rem;
-  border: none;
-  background: none;
-  color: rgb(255 255 255 / 78%);
-  font-size: 0.82rem;
-  font-weight: 500;
-  cursor: pointer;
-  letter-spacing: 0.02em;
-}
-
-.exitBtn:hover {
-  color: #fff;
-}
-
 .progress {
-  flex: 1;
   display: flex;
   gap: 5px;
-  max-width: 140px;
+  width: min(160px, 60vw);
 }
 
 .progressSeg {

@@ -12,6 +12,7 @@ import {
   type GoalId,
   type WorldId,
 } from '@/components/marketing/inspiracion/inspiracionCopy';
+import { inspiracionControlsStore } from '@/components/marketing/inspiracion/inspiracionControlsStore';
 import styles from './InspiracionExperience.module.css';
 
 const STORAGE_KEY = 'recursalia_inspiracion_flow_v2';
@@ -122,6 +123,40 @@ export function InspiracionExperience() {
     };
   }, []);
 
+  // Sincroniza el step con el store global y registra los handlers de
+  // back/exit, que el SiteHeader invoca cuando estamos en /inspiracion.
+  useEffect(() => {
+    inspiracionControlsStore.registerHandlers({
+      back: () => {
+        const prev = flowRef.current;
+        if (prev.step <= 0) return;
+        oracleRef.current?.pulse();
+        const next = { ...prev, step: prev.step - 1 };
+        setFlow(next);
+        saveFlow(next);
+      },
+      exit: () => {
+        try {
+          sessionStorage.removeItem(STORAGE_KEY);
+        } catch {
+          /* ignore */
+        }
+        router.push('/');
+      },
+    });
+    return () => {
+      inspiracionControlsStore.unregisterHandlers();
+      inspiracionControlsStore.reset();
+    };
+  }, [router]);
+
+  useEffect(() => {
+    inspiracionControlsStore.setState({
+      step: flow.step,
+      canGoBack: flow.step > 0,
+    });
+  }, [flow.step]);
+
   const persist = useCallback((next: FlowState) => {
     setFlow(next);
     saveFlow(next);
@@ -142,15 +177,6 @@ export function InspiracionExperience() {
     if (flow.step >= 5) return 4;
     return flow.step;
   }, [flow.step]);
-
-  function exit() {
-    try {
-      sessionStorage.removeItem(STORAGE_KEY);
-    } catch {
-      /* ignore */
-    }
-    router.push('/');
-  }
 
   function goBack() {
     const prev = flowRef.current;
@@ -332,29 +358,11 @@ export function InspiracionExperience() {
     <div className={styles.shell}>
       <div className={styles.shellColumn}>
         <header className={styles.topBar}>
-          {flow.step === 0 ? (
-            <div className={styles.topBarLeadSpacer} aria-hidden />
-          ) : (
-            <button type="button" className={styles.backBtn} onClick={goBack} aria-label="Paso anterior">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
-                <path
-                  d="M15 18l-6-6 6-6"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          )}
           <div className={styles.progress} aria-hidden>
             {[0, 1, 2, 3].map((i) => (
               <div key={i} className={`${styles.progressSeg} ${i < filledSegments ? styles.progressSegOn : ''}`} />
             ))}
           </div>
-          <button type="button" className={styles.exitBtn} onClick={exit}>
-            Salir
-          </button>
         </header>
 
         <div className={styles.oracleBlock}>
