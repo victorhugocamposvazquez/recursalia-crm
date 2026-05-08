@@ -14,21 +14,15 @@ export function SiteHeader() {
   const pathname = usePathname();
   const courseLanding = isMarketingCourseLandingPath(pathname);
   const isInspiracion = pathname === '/inspiracion';
-  const [sticky, setSticky] = useState(isInspiracion);
+  const [sticky, setSticky] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // En Inspiración fijamos siempre el modo "pill" sticky para que el
-    // header destaque sobre el fondo azul oscuro y no quede embebido.
-    if (isInspiracion) {
-      setSticky(true);
-      return;
-    }
     const onScroll = () => setSticky(window.scrollY >= 40);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [isInspiracion]);
+  }, []);
 
   useEffect(() => {
     setOpen(false);
@@ -54,7 +48,7 @@ export function SiteHeader() {
           className={`${styles.inner} ${courseLanding ? styles.innerCourseLanding : ''}`.trim()}
         >
           <nav
-            className={`${styles.bar} ${sticky ? styles.barSticky : ''} ${courseLanding ? styles.barCourseLanding : ''}`}
+            className={`${styles.bar} ${sticky ? styles.barSticky : ''} ${courseLanding ? styles.barCourseLanding : ''} ${isInspiracion ? styles.barInverted : ''}`.trim()}
             aria-label="Principal"
           >
             <Link href="/" className={styles.logo}>

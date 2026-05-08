@@ -570,3 +570,54 @@
     padding-right: 0.08rem;
   }
 }
+
+/* Variante invertida: usada en /inspiracion (fondo azul Neural).
+   Mantenemos el mismo layout y el comportamiento sticky habitual; solo
+   cambiamos los colores para que el header sea legible sobre el fondo
+   oscuro. Al pasar a otra ruta, los colores vuelven a la versión normal. */
+.barInverted .logo,
+.barInverted .logoText {
+  color: #ffffff;
+}
+
+.barInverted .logoMark {
+  color: #c8f542;
+}
+
+.barInverted .inspiracionLink {
+  color: rgb(244 246 255 / 78%);
+}
+
+.barInverted .inspiracionLink:hover {
+  color: #ffffff;
+}
+
+.barInverted .inspiracionLinkActive {
+  color: #c8f542;
+}
+
+.barInverted .burger,
+.barInverted .ghost {
+  color: #ffffff;
+  border-color: rgb(255 255 255 / 35%);
+}
+
+.barInverted .burger:hover {
+  background: rgb(255 255 255 / 12%);
+}
+
+.barInverted .ghost:hover {
+  background: rgb(255 255 255 / 92%);
+  color: #0a1748 !important;
+  border-color: #ffffff;
+}
+
+/* Pill sticky sobre fondo oscuro: invertimos a un cristal azul translúcido
+   en lugar de blanco, para que conserve la sensación pero respete el tema. */
+.barInverted.barSticky {
+  background: rgb(10 23 72 / 65%);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  border-color: rgb(255 255 255 / 18%);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 28%);
+}
