@@ -2,13 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import homeStyles from '@/app/(marketing)/home.module.css';
-import {
-  Asterisk,
-  BurstStar,
-  HandPointer,
-  Spiral,
-  Star,
-} from '@/components/marketing/DoodleAccents';
+import { HandPointer } from '@/components/marketing/DoodleAccents';
 
 type Step = {
   id: string;
@@ -35,10 +29,7 @@ function CatalogMock() {
         <span className={homeStyles.mockLine} />
         <span className={homeStyles.mockTagGreen}>Yoga</span>
         <span className={homeStyles.mockCursor} aria-hidden>
-          <HandPointer width={28} height={28} color="#0f172a" strokeWidth={1.8} />
-        </span>
-        <span className={homeStyles.mockCatalogPick} aria-hidden>
-          ¡justo este!
+          <HandPointer width={26} height={26} color="#0f172a" strokeWidth={1.6} />
         </span>
       </div>
       <div className={`${homeStyles.mockCatalogCard} ${homeStyles.mockCatalogCardC}`}>
@@ -54,27 +45,6 @@ function CatalogMock() {
 function PlayerMock() {
   return (
     <div className={homeStyles.mockPlayer} aria-hidden>
-      <Asterisk
-        className={homeStyles.mockPlayerScribble1}
-        width={26}
-        height={26}
-        color="#0f172a"
-        strokeWidth={2.4}
-      />
-      <Spiral
-        className={homeStyles.mockPlayerScribble2}
-        width={32}
-        height={32}
-        color="#0f172a"
-        strokeWidth={2.2}
-      />
-      <Star
-        className={homeStyles.mockPlayerScribble3}
-        width={26}
-        height={26}
-        color="#d8ff5c"
-        strokeWidth={2}
-      />
       <div className={homeStyles.mockPlayerScreen}>
         <span className={homeStyles.mockPlayerGlow} />
         <button type="button" className={homeStyles.mockPlayBtn} tabIndex={-1} aria-hidden>
@@ -86,11 +56,6 @@ function PlayerMock() {
           <span className={homeStyles.mockPlayerTime}>04:12</span>
           <div className={homeStyles.mockPlayerBar}>
             <span className={homeStyles.mockPlayerProgress} />
-            <span className={homeStyles.mockPlayerHeart} aria-hidden>
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="#0f172a" aria-hidden>
-                <path d="M12 21s-7-4.6-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.4-7 11-7 11Z" />
-              </svg>
-            </span>
           </div>
           <span className={homeStyles.mockPlayerTime}>11:08</span>
         </div>
@@ -112,29 +77,21 @@ function DiplomaMock() {
       <p className={homeStyles.mockDiplomaName}>Hugo C.</p>
       <p className={homeStyles.mockDiplomaCourse}>Marketing digital aplicado</p>
       <div className={homeStyles.mockDiplomaSeal} aria-hidden>
-        <BurstStar width={84} height={84} color="#d8ff5c" strokeWidth={2} />
-        <span className={homeStyles.mockDiplomaSealLabel}>WOW!</span>
+        <svg viewBox="0 0 48 48" width="56" height="56" aria-hidden>
+          <defs>
+            <linearGradient id="sealGrad" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stopColor="#f59e0b" />
+              <stop offset="1" stopColor="#b45309" />
+            </linearGradient>
+          </defs>
+          <circle cx="24" cy="24" r="14" fill="url(#sealGrad)" />
+          <path
+            d="M24 14l2.6 5.5 6 .8-4.4 4 1.1 5.9-5.3-2.9-5.3 2.9 1.1-5.9-4.4-4 6-.8z"
+            fill="#fff8ec"
+          />
+          <path d="M16 36l8 4 8-4-2 8h-12z" fill="url(#sealGrad)" />
+        </svg>
       </div>
-      <span className={homeStyles.mockDiplomaSticker1} aria-hidden>
-        ¡bien hecho!
-      </span>
-      <span className={homeStyles.mockDiplomaSticker2} aria-hidden>
-        ¡lo lograste!
-      </span>
-      <Star
-        className={homeStyles.mockDiplomaStarA}
-        width={22}
-        height={22}
-        color="#fda4af"
-        strokeWidth={2}
-      />
-      <Star
-        className={homeStyles.mockDiplomaStarB}
-        width={18}
-        height={18}
-        color="#67e8f9"
-        strokeWidth={2}
-      />
     </div>
   );
 }

@@ -6,9 +6,7 @@ import { HomeCategoryCarousel } from '@/components/marketing/HomeCategoryCarouse
 import { HomeHowItWorksPinned } from '@/components/marketing/HomeHowItWorksPinned';
 import { HomeFaq } from '@/components/marketing/HomeFaq';
 import {
-  ArrowDoodle,
   Asterisk,
-  BurstStar,
   Spiral,
   Star,
 } from '@/components/marketing/DoodleAccents';
@@ -225,12 +223,9 @@ export default async function MarketingHomePage() {
     <>
       <section className={homeStyles.hero} aria-labelledby="hero-heading">
         <div className={homeStyles.heroScribbles} aria-hidden>
-          <Star className={homeStyles.heroScribble1} width={42} height={42} color="#d8ff5c" strokeWidth={2.2} />
-          <Asterisk className={homeStyles.heroScribble2} width={32} height={32} color="#0f172a" strokeWidth={2.4} />
-          <Spiral className={homeStyles.heroScribble3} width={56} height={56} color="#67e8f9" strokeWidth={2.2} />
-          <Star className={homeStyles.heroScribble4} width={36} height={36} color="#fda4af" strokeWidth={2.2} />
-          <Asterisk className={homeStyles.heroScribble5} width={26} height={26} color="#0f172a" strokeWidth={2.4} />
-          <BurstStar className={homeStyles.heroScribble6} width={56} height={56} color="#d8ff5c" strokeWidth={2.2} />
+          <Spiral className={homeStyles.heroScribble1} width={44} height={44} color="#0f172a" strokeWidth={1.6} />
+          <Asterisk className={homeStyles.heroScribble2} width={22} height={22} color="#0f172a" strokeWidth={1.8} />
+          <Star className={homeStyles.heroScribble3} width={26} height={26} color="#fda4af" strokeWidth={1.6} />
         </div>
 
         <div className={homeStyles.heroInner}>
@@ -240,24 +235,7 @@ export default async function MarketingHomePage() {
           </p>
           <h1 id="hero-heading" className={homeStyles.heroTitle}>
             Cursos online claros y aplicables, creados por{' '}
-            <span className={homeStyles.heroAccent}>
-              <Asterisk
-                className={homeStyles.heroAccentLeft}
-                width={20}
-                height={20}
-                color="#0f172a"
-                strokeWidth={2.6}
-              />
-              expertos
-              <Asterisk
-                className={homeStyles.heroAccentRight}
-                width={20}
-                height={20}
-                color="#0f172a"
-                strokeWidth={2.6}
-              />
-            </span>
-            .
+            <span className={homeStyles.heroAccent}>expertos</span>.
           </h1>
           <p className={homeStyles.heroSubtitle}>
             Diploma incluido, acceso de por vida y{' '}
@@ -267,10 +245,6 @@ export default async function MarketingHomePage() {
 
           <div className={homeStyles.heroSearchWrap}>
             <HomeHeroSearch />
-            <span className={homeStyles.heroArrowHint} aria-hidden>
-              <span className={homeStyles.heroArrowHintLabel}>empieza por aquí</span>
-              <ArrowDoodle width={70} height={50} color="#0f172a" strokeWidth={2.4} />
-            </span>
           </div>
 
           <div className={homeStyles.heroSocialProof}>
@@ -298,9 +272,6 @@ export default async function MarketingHomePage() {
                   >
                     <path
                       fill="#f5a623"
-                      stroke="#0f172a"
-                      strokeWidth="1.6"
-                      strokeLinejoin="round"
                       d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
                     />
                   </svg>
@@ -318,9 +289,6 @@ export default async function MarketingHomePage() {
                   </defs>
                   <path
                     fill="url(#heroStarPartial)"
-                    stroke="#0f172a"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
                     d="M12 17.3 5.82 21l1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73L18.18 21z"
                   />
                 </svg>
@@ -335,13 +303,6 @@ export default async function MarketingHomePage() {
                 ) : null}
               </p>
             </div>
-            <Asterisk
-              className={homeStyles.heroSocialProofAsterisk}
-              width={20}
-              height={20}
-              color="#0f172a"
-              strokeWidth={2.4}
-            />
           </div>
         </div>
 
@@ -367,10 +328,7 @@ export default async function MarketingHomePage() {
             </svg>
           </span>
           <div>
-            <p className={homeStyles.heroFloatTitle}>
-              Diploma incluido
-              <span className={homeStyles.heroFloatBadge}>Nuevo</span>
-            </p>
+            <p className={homeStyles.heroFloatTitle}>Diploma incluido</p>
             <p className={homeStyles.heroFloatBody}>Verificable y compartible</p>
           </div>
         </div>
@@ -466,25 +424,12 @@ export default async function MarketingHomePage() {
                             style={{ objectFit: 'cover' }}
                           />
                         ) : null}
-                        <span
-                          className={homeStyles.coursePriceSticker}
-                          aria-hidden
-                        >
-                          {showStrike ? (
-                            <span className={homeStyles.coursePriceStickerOld}>
-                              {original}
-                            </span>
-                          ) : null}
-                          <span className={homeStyles.coursePriceStickerNow}>
-                            {sale ?? original ?? ''}
-                          </span>
-                        </span>
                         {showStrike ? (
                           <span
-                            className={homeStyles.courseSaleSticker}
+                            className={homeStyles.courseSaleBadge}
                             aria-hidden
                           >
-                            ¡oferta!
+                            Oferta
                           </span>
                         ) : null}
                       </div>
@@ -511,9 +456,6 @@ export default async function MarketingHomePage() {
                             {sale ?? original ?? ''}
                           </span>
                         </div>
-                        <span className={homeStyles.courseSignature} aria-hidden>
-                          by Recursalia
-                        </span>
                       </div>
                     </Link>
                   </li>
@@ -561,22 +503,13 @@ export default async function MarketingHomePage() {
             </p>
           </header>
           <ul className={homeStyles.trustGrid}>
-            {TRUST_PILLARS.map((item, idx) => (
+            {TRUST_PILLARS.map((item) => (
               <li key={item.title} className={homeStyles.trustCard}>
                 <span className={homeStyles.trustIconWrap} aria-hidden>
                   {item.icon}
                 </span>
                 <h3 className={homeStyles.trustTitle}>{item.title}</h3>
                 <p className={homeStyles.trustBody}>{item.body}</p>
-                <span className={homeStyles.trustMini} aria-hidden>
-                  {idx % 3 === 0 ? (
-                    <Asterisk width={18} height={18} color="#0f172a" strokeWidth={2.4} />
-                  ) : idx % 3 === 1 ? (
-                    <Star width={18} height={18} color="#fda4af" strokeWidth={1.8} />
-                  ) : (
-                    <Star width={18} height={18} color="#67e8f9" strokeWidth={1.8} />
-                  )}
-                </span>
               </li>
             ))}
           </ul>
@@ -621,15 +554,12 @@ export default async function MarketingHomePage() {
                     <svg
                       className={homeStyles.reviewQuote}
                       viewBox="0 0 60 48"
-                      width="60"
-                      height="48"
+                      width="46"
+                      height="36"
                       aria-hidden
                     >
                       <path
                         fill="#d8ff5c"
-                        stroke="#0f172a"
-                        strokeWidth="2.4"
-                        strokeLinejoin="round"
                         d="M14 4c-7 4-12 12-12 22 0 10 6 18 14 18 6 0 10-4 10-10 0-5-4-9-9-9-1 0-2 0-3 1 1-7 5-13 11-17zm32 0c-7 4-12 12-12 22 0 10 6 18 14 18 6 0 10-4 10-10 0-5-4-9-9-9-1 0-2 0-3 1 1-7 5-13 11-17z"
                       />
                     </svg>
@@ -675,33 +605,19 @@ export default async function MarketingHomePage() {
       <section className={homeStyles.section} aria-labelledby="cta-heading">
         <div className={homeStyles.sectionInner}>
           <div className={homeStyles.finalCta}>
-            <Star
-              className={homeStyles.finalScribble1}
-              width={36}
-              height={36}
-              color="#0f172a"
-              strokeWidth={2.2}
-            />
             <Spiral
-              className={homeStyles.finalScribble2}
+              className={homeStyles.finalScribble1}
               width={48}
               height={48}
               color="#0f172a"
-              strokeWidth={2.2}
+              strokeWidth={1.6}
             />
             <Asterisk
-              className={homeStyles.finalScribble3}
-              width={28}
-              height={28}
+              className={homeStyles.finalScribble2}
+              width={24}
+              height={24}
               color="#0f172a"
-              strokeWidth={2.4}
-            />
-            <BurstStar
-              className={homeStyles.finalScribble4}
-              width={48}
-              height={48}
-              color="#fda4af"
-              strokeWidth={2}
+              strokeWidth={1.8}
             />
             <h2 id="cta-heading" className={homeStyles.finalTitle}>
               ¿
@@ -719,9 +635,6 @@ export default async function MarketingHomePage() {
               <Link href="/blog" className={homeStyles.btnGhost}>
                 Leer el blog
               </Link>
-              <span className={homeStyles.finalSticker} aria-hidden>
-                ¡ya casi!
-              </span>
             </div>
           </div>
         </div>
