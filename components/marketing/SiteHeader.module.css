@@ -480,6 +480,30 @@
     padding: 0.62rem 0;
   }
 
+  /* Estado inicial solo: marca y menú más visibles (.barSticky mantiene medidas por defecto) */
+  .bar:not(.barSticky) .logo {
+    gap: 0.65rem;
+    font-size: 1.45rem;
+  }
+
+  .bar:not(.barSticky) .logoMark svg {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
+
+  .bar:not(.barSticky) .burger {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .bar:not(.barSticky) .burger svg {
+    width: 26px;
+    height: 26px;
+  }
+
   /* Ficha de curso: gutter dentro del max-width (como `.layout`), no en outer → el blanco al hacer scroll mantiene el mismo ancho que el hero */
   .outer.outerCourseLanding {
     padding-left: 0;
