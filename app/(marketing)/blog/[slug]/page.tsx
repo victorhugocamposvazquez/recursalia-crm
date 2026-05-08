@@ -153,12 +153,14 @@ export default async function BlogPostPage({
               <Link href="/blog">← Blog</Link>
               {post.published_at && (
                 <>
-                  {' · '}
-                  {new Date(post.published_at).toLocaleDateString('es-ES', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                  <span aria-hidden>·</span>
+                  <span>
+                    {new Date(post.published_at).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </span>
                 </>
               )}
             </p>

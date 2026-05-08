@@ -181,3 +181,91 @@
   max-width: 42ch;
   line-height: 1.6;
 }
+
+/* ------------------------------------------------------------------ */
+/* Utilidades doodle sutiles · alineadas con la home                   */
+/* ------------------------------------------------------------------ */
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 0 0 1.25rem;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .pageHeader {
+    margin-bottom: 1.55rem;
+  }
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  margin: 0;
+  padding: 0.32rem 0.78rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f172a;
+  background: rgb(216 255 92 / 38%);
+  border: 1px solid rgb(15 23 42 / 18%);
+  border-radius: 999px;
+}
+
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 999px;
+  background: #0f172a;
+}
+
+.pageTitle {
+  margin: 0;
+  font-family: var(--font-marketing), 'Inter Tight', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.85rem, 4vw, 2.65rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+}
+
+.pageLead {
+  margin: 0;
+  max-width: 60ch;
+  font-size: clamp(0.98rem, 1.4vw, 1.06rem);
+  line-height: 1.6;
+  color: var(--ch-text-muted, rgb(27 29 30 / 60%));
+}
+
+/* Subrayado garabato sutil para palabra clave en h1/h2 */
+.accent {
+  position: relative;
+  display: inline-block;
+  padding: 0 0.06em;
+}
+
+.accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.04em;
+  height: 0.18em;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 14' fill='none' stroke='%23d8ff5c' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' preserveAspectRatio='none'><path d='M2 8c10-7 22-7 32 0s22 7 32 0 22-7 32 0 22 7 32 0 22-7 32 0 22 7 32 0' /></svg>");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.accentBlue::after {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 14' fill='none' stroke='%231b38c4' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' preserveAspectRatio='none'><path d='M2 8c10-7 22-7 32 0s22 7 32 0 22-7 32 0 22 7 32 0 22-7 32 0 22 7 32 0' /></svg>");
+  opacity: 0.5;
+}

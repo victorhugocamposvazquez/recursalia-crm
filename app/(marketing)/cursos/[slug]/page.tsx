@@ -334,6 +334,9 @@ export default async function CursoLandingPage({
             ) : null}
           </div>
           <div className={styles.heroBody}>
+            <span className={styles.titleEyebrow}>
+              {bestSeller ? 'Bestseller · curso destacado' : 'Curso online'}
+            </span>
             <h1 className={styles.title}>{title}</h1>
             <a
               href="#opiniones"

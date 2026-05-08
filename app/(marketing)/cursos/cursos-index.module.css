@@ -19,26 +19,28 @@
   display: inline-flex;
   align-items: center;
   gap: 0.42rem;
-  padding: 0.42rem 0.72rem;
+  padding: 0.45rem 0.85rem;
   border-radius: 999px;
-  border: 1px solid var(--ch-border);
-  background: var(--ch-surface);
-  color: var(--ch-text);
+  border: 1px solid rgb(15 23 42 / 14%);
+  background: #ffffff;
+  color: #1b1d1e;
   font-size: 0.86rem;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
   line-height: 1.1;
   cursor: pointer;
   transition:
-    border-color 0.16s ease,
-    background 0.16s ease,
-    color 0.16s ease,
-    box-shadow 0.16s ease;
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 }
 
 .chip:hover {
-  border-color: rgb(27 56 196 / 35%);
-  color: var(--ch-blue);
+  border-color: rgb(15 23 42 / 28%);
+  background: rgb(216 255 92 / 12%);
+  transform: translateY(-1px);
 }
 
 .chip:focus-visible {
@@ -47,14 +49,16 @@
 }
 
 .chipActive {
-  background: var(--ch-blue);
-  border-color: var(--ch-blue);
-  color: #fff;
-  box-shadow: 0 4px 14px rgb(27 56 196 / 22%);
+  background: #0f172a;
+  border-color: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 14%);
 }
 
 .chipActive:hover {
-  color: #fff;
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
 }
 
 .chipCount {
@@ -63,7 +67,7 @@
   height: 1.25rem;
   padding: 0 0.42rem;
   border-radius: 999px;
-  background: rgb(27 56 196 / 12%);
+  background: rgb(27 56 196 / 10%);
   color: var(--ch-blue);
   font-size: 0.72rem;
   font-weight: 700;
@@ -73,8 +77,8 @@
 }
 
 .chipActive .chipCount {
-  background: rgb(255 255 255 / 22%);
-  color: #fff;
+  background: rgb(216 255 92 / 90%);
+  color: #0f172a;
 }
 
 .toolbar {
@@ -240,9 +244,10 @@
 
 .card {
   background: var(--ch-surface);
-  border-radius: 14px;
+  border-radius: 18px;
   overflow: hidden;
-  border: 1px solid var(--ch-border);
+  border: 1px solid rgb(15 23 42 / 10%);
+  box-shadow: 0 4px 14px rgb(15 23 42 / 4%);
   transition:
     box-shadow 0.22s ease,
     transform 0.22s ease,
@@ -250,7 +255,7 @@
 }
 
 .card:hover {
-  border-color: rgb(27 29 30 / 16%);
+  border-color: rgb(15 23 42 / 18%);
   box-shadow: 0 14px 32px rgb(17 24 39 / 8%);
   transform: translateY(-2px);
 }
@@ -308,24 +313,31 @@
 .imageBadge {
   display: inline-flex;
   align-items: center;
-  height: 1.42rem;
-  padding: 0 0.5rem;
-  border-radius: 8px;
+  height: 1.5rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
   font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   line-height: 1;
-  color: #fff;
-  background: var(--ch-navy);
-  box-shadow: 0 1px 5px rgb(17 24 39 / 18%);
+  color: #0f172a;
+  background: rgb(255 255 255 / 92%);
+  border: 1px solid rgb(15 23 42 / 14%);
+  box-shadow: 0 2px 8px rgb(17 24 39 / 8%);
+  backdrop-filter: blur(6px);
 }
 
 .imageBadgeNew {
-  background: #059669;
+  background: rgb(216 255 92 / 95%);
+  border-color: rgb(15 23 42 / 16%);
+  color: #0f172a;
 }
 
 .imageBadgeDiscount {
-  background: #dc2626;
+  background: rgb(255 255 255 / 95%);
+  color: #be123c;
+  border-color: rgb(190 18 60 / 22%);
   font-variant-numeric: tabular-nums;
 }
 
@@ -351,24 +363,27 @@
 
 .linkBtn {
   appearance: none;
-  background: none;
-  border: 1px solid var(--ch-border);
-  color: var(--ch-blue);
+  background: #ffffff;
+  border: 1px solid rgb(15 23 42 / 16%);
+  color: #1b38c4;
   font: inherit;
   font-weight: 600;
   border-radius: 999px;
-  padding: 0.42rem 0.85rem;
+  padding: 0.5rem 1.05rem;
   text-decoration: none;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
   transition:
-    background 0.16s ease,
-    color 0.16s ease,
-    border-color 0.16s ease;
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
 }
 
 .linkBtn:hover {
-  background: var(--ch-blue-light, #eaefff);
-  border-color: rgb(27 56 196 / 30%);
+  background: rgb(216 255 92 / 18%);
+  border-color: rgb(15 23 42 / 28%);
+  transform: translateY(-1px);
 }
 
 .linkBtn:focus-visible {
@@ -378,17 +393,18 @@
 
 .bestsellerOnImage {
   position: absolute;
-  top: 0.42rem;
-  right: 0.42rem;
+  top: 0.5rem;
+  right: 0.5rem;
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 0.28rem;
-  padding: 0.26rem 0.42rem 0.26rem 0.32rem;
-  border-radius: 10px;
-  background: rgb(255 255 255 / 0.92);
+  gap: 0.32rem;
+  padding: 0.32rem 0.62rem 0.32rem 0.42rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 95%);
+  border: 1px solid rgb(15 23 42 / 14%);
   backdrop-filter: blur(6px);
-  box-shadow: 0 1px 8px rgb(17 24 39 / 10%);
+  box-shadow: 0 2px 10px rgb(17 24 39 / 8%);
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;

@@ -51,7 +51,16 @@ export default async function BlogIndexPage() {
   return (
     <section className={`${styles.section} ${styles.sectionBlogCompact}`}>
       <div className={styles.inner}>
-        <h2>Blog</h2>
+        <header className={styles.pageHeader}>
+          <span className={styles.eyebrow}>Blog Recursalia</span>
+          <h1 className={styles.pageTitle}>
+            Ideas, guías y <span className={styles.accent}>buenas prácticas</span>.
+          </h1>
+          <p className={styles.pageLead}>
+            Artículos breves para aplicar en tu día a día: formación, productividad,
+            habilidades digitales y aprendizajes que conectan con nuestros cursos.
+          </p>
+        </header>
         {posts.length === 0 ? (
           <p className={styles.empty}>
             No hay artículos publicados. Genera borradores desde un curso en el panel y el cron
@@ -59,16 +68,28 @@ export default async function BlogIndexPage() {
           </p>
         ) : (
           <ul className={blogStyles.list}>
-            {posts.map((p) => (
-              <li key={p.slug} className={blogStyles.item}>
-                <Link href={`/blog/${p.slug}`} className={blogStyles.link}>
-                  {p.title}
-                </Link>
-                {p.meta_description && (
-                  <p className={blogStyles.desc}>{p.meta_description}</p>
-                )}
-              </li>
-            ))}
+            {posts.map((p) => {
+              const dateLabel = p.published_at
+                ? new Date(p.published_at).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })
+                : null;
+              return (
+                <li key={p.slug} className={blogStyles.item}>
+                  {dateLabel ? (
+                    <p className={blogStyles.itemMeta}>{dateLabel}</p>
+                  ) : null}
+                  <Link href={`/blog/${p.slug}`} className={blogStyles.link}>
+                    {p.title}
+                  </Link>
+                  {p.meta_description && (
+                    <p className={blogStyles.desc}>{p.meta_description}</p>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>

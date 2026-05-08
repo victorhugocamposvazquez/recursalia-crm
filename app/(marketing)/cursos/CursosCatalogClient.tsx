@@ -316,7 +316,16 @@ export function CursosCatalogClient({
 
   return (
     <>
-      <h2 className={cursosStyles.catalogH2}>Cursos</h2>
+      <header className={styles.pageHeader}>
+        <span className={styles.eyebrow}>Catálogo</span>
+        <h1 className={styles.pageTitle}>
+          Cursos para <span className={styles.accent}>aprender de verdad</span>.
+        </h1>
+        <p className={styles.pageLead}>
+          Cursos online claros, prácticos y aplicables. Filtra por categoría o
+          busca por título para llegar antes a lo que necesitas.
+        </p>
+      </header>
 
       <div
         className={cursosStyles.chips}

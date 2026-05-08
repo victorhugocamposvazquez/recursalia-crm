@@ -13,16 +13,27 @@
 
 .drawerBlock {
   padding: 0 1rem 1rem;
-  border-bottom: 1px solid #ebe9f8;
+  border-bottom: 1px solid rgb(15 23 42 / 8%);
 }
 
 .drawerTitle {
   margin: 0 0 0.65rem;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: rgb(15 23 42 / 50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.drawerTitle::before {
+  content: '';
+  display: inline-block;
+  width: 0.85rem;
+  height: 1px;
+  background: rgb(15 23 42 / 30%);
 }
 
 .drawerList {
@@ -31,40 +42,73 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.2rem;
   max-height: 40vh;
   overflow-y: auto;
 }
 
 .drawerLink {
-  display: block;
-  padding: 0.55rem 0.65rem;
-  border-radius: 10px;
-  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.62rem 0.7rem;
+  border-radius: 12px;
+  color: #1b1d1e;
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.drawerLink::after {
+  content: '→';
+  font-size: 0.85rem;
+  color: rgb(15 23 42 / 35%);
+  transition: transform 0.18s ease, color 0.18s ease;
 }
 
 .drawerLink:hover {
-  background: #eaefff;
-  color: #1b38c4;
+  background: rgb(216 255 92 / 24%);
+  color: #0f172a;
+  border-color: rgb(15 23 42 / 14%);
+}
+
+.drawerLink:hover::after {
+  color: #0f172a;
+  transform: translateX(2px);
 }
 
 .drawerAll {
-  display: block;
-  margin-top: 0.65rem;
-  padding: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+  padding: 0.55rem 0.85rem;
+  width: 100%;
   text-align: center;
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 0.86rem;
+  font-weight: 700;
   color: #1b38c4;
   text-decoration: none;
-  border-radius: 10px;
+  border: 1px solid rgb(27 56 196 / 22%);
+  border-radius: 12px;
+  background: rgb(27 56 196 / 6%);
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.drawerAll::after {
+  content: '↗';
+  font-size: 0.8rem;
 }
 
 .drawerAll:hover {
-  background: #eaefff;
+  background: rgb(27 56 196 / 12%);
+  border-color: rgb(27 56 196 / 35%);
 }
 
 .trigger {

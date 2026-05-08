@@ -2,21 +2,74 @@
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .item {
-  margin-bottom: 1.35rem;
-  padding-bottom: 1.35rem;
-  border-bottom: 1px solid var(--ch-border, #e5e7eb);
+  position: relative;
+  margin: 0;
+  padding: 1rem 1.1rem 1.1rem;
+  background: #ffffff;
+  border: 1px solid rgb(15 23 42 / 10%);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 3%);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.item:hover {
+  border-color: rgb(15 23 42 / 18%);
+  box-shadow: 0 10px 26px rgb(17 24 39 / 7%);
+  transform: translateY(-1px);
+}
+
+@media (min-width: 720px) {
+  .item {
+    padding: 1.15rem 1.35rem 1.25rem;
+  }
+}
+
+.itemMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgb(27 29 30 / 55%);
+}
+
+.itemMeta::before {
+  content: '';
+  display: inline-block;
+  width: 0.32rem;
+  height: 0.32rem;
+  border-radius: 999px;
+  background: #1b38c4;
 }
 
 .link {
   font-size: 1.12rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--ch-navy, #1b1d1e);
   text-decoration: none;
   letter-spacing: -0.01em;
+  line-height: 1.32;
   transition: color 0.15s ease;
+  display: inline-block;
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
 }
 
 .link:hover {
@@ -25,21 +78,31 @@
 
 .desc {
   margin: 0.4rem 0 0;
-  font-size: 0.92rem;
+  font-size: 0.93rem;
   color: var(--ch-text-muted, #6b7280);
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .breadcrumb {
-  font-size: 0.88rem;
-  color: var(--ch-text-muted, #6b7280);
-  margin-bottom: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.75rem;
+  padding: 0.32rem 0.85rem 0.32rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(27 29 30 / 60%);
+  background: rgb(255 255 255 / 80%);
+  border: 1px solid rgb(15 23 42 / 14%);
+  border-radius: 999px;
 }
 
 .breadcrumb a {
   color: #1b38c4;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .breadcrumb a:hover {
@@ -47,27 +110,36 @@
 }
 
 .title {
-  margin: 0 0 1.5rem;
-  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
-  color: var(--ch-navy, #1b1d1e);
+  margin: 0 0 1.25rem;
+  font-family: var(--font-marketing), 'Inter Tight', system-ui, sans-serif;
+  font-size: clamp(1.85rem, 3.8vw, 2.85rem);
+  color: #0f172a;
   line-height: 1.12;
-  font-weight: 500;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 .courseLink {
-  margin: -0.5rem 0 1.5rem;
-  font-size: 0.96rem;
-  line-height: 1.55;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+  padding: 0.7rem 0.95rem;
+  font-size: 0.94rem;
+  line-height: 1.45;
+  background: #fffdf6;
+  border: 1px solid rgb(15 23 42 / 10%);
+  border-radius: 14px;
 }
 
 .courseLinkLabel {
   color: var(--ch-text-muted, #6b7280);
+  font-weight: 500;
 }
 
 .courseLink a {
   color: #1b38c4;
-  font-weight: 500;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -77,19 +149,58 @@
 
 .prose {
   font-size: 1.05rem;
-  line-height: 1.75;
-  color: rgb(27 29 30 / 78%);
+  line-height: 1.78;
+  color: rgb(27 29 30 / 82%);
 }
 
 .prose :global(h2),
 .prose :global(h3) {
-  color: var(--ch-navy, #1b1d1e);
-  margin-top: 1.75rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  color: #0f172a;
+  margin-top: 2rem;
+  margin-bottom: 0.65rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.prose :global(h2) {
+  font-size: clamp(1.25rem, 2.4vw, 1.5rem);
+}
+
+.prose :global(h3) {
+  font-size: clamp(1.08rem, 2vw, 1.2rem);
+}
+
+.prose :global(p) {
+  margin: 0 0 1.05rem;
 }
 
 .prose :global(a) {
   color: #1b38c4;
-  font-weight: 500;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgb(27 56 196 / 35%);
+  text-underline-offset: 0.18em;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.prose :global(a:hover) {
+  text-decoration-color: #1b38c4;
+}
+
+.prose :global(blockquote) {
+  margin: 1.25rem 0;
+  padding: 0.45rem 0 0.45rem 1rem;
+  border-left: 3px solid rgb(216 255 92 / 90%);
+  color: rgb(27 29 30 / 70%);
+  font-style: italic;
+}
+
+.prose :global(ul),
+.prose :global(ol) {
+  margin: 0.5rem 0 1.05rem;
+  padding-left: 1.35rem;
+}
+
+.prose :global(li) {
+  margin-bottom: 0.4rem;
 }
