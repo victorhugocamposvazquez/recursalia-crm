@@ -96,6 +96,40 @@ function DiplomaMock() {
   );
 }
 
+function JobMock() {
+  return (
+    <div className={homeStyles.mockJob} aria-hidden>
+      <div className={homeStyles.mockJobHeader}>
+        <span className={homeStyles.mockJobLogo} aria-hidden>
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden>
+            <path
+              d="M4 8h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8zm5-3h6a1 1 0 0 1 1 1v2H8V6a1 1 0 0 1 1-1z"
+              fill="#0f172a"
+              opacity="0.85"
+            />
+            <rect x="4" y="11" width="16" height="2" fill="#d8ff5c" />
+          </svg>
+        </span>
+        <div className={homeStyles.mockJobMeta}>
+          <span className={`${homeStyles.mockLine} ${homeStyles.mockLineFull}`} />
+          <span className={homeStyles.mockLine} />
+        </div>
+        <span className={homeStyles.mockJobBadge}>Nuevo</span>
+      </div>
+      <p className={homeStyles.mockJobTitle}>
+        Te invitan a una entrevista
+      </p>
+      <p className={homeStyles.mockJobCompany}>Studio Norte · Marketing</p>
+      <div className={homeStyles.mockJobActions}>
+        <span className={homeStyles.mockJobBtn}>Aceptar</span>
+        <span className={`${homeStyles.mockJobBtn} ${homeStyles.mockJobBtnGhost}`}>
+          Más tarde
+        </span>
+      </div>
+    </div>
+  );
+}
+
 const STEPS: Step[] = [
   {
     id: 'pick',
@@ -112,151 +146,161 @@ const STEPS: Step[] = [
     visual: <PlayerMock />,
   },
   {
-    id: 'prove',
+    id: 'diploma',
     step: '03',
-    title: 'Demuéstralo',
-    body: 'Recibe diploma de aprovechamiento al completar el curso, con código de verificación que puedes compartir en LinkedIn, y suma puntos para nuestra bolsa de empleo.',
+    title: 'Obtén tu diploma',
+    body: 'Al completar el curso recibes un diploma de aprovechamiento con código de verificación que puedes compartir en LinkedIn y sumar a tu CV.',
     visual: <DiplomaMock />,
+  },
+  {
+    id: 'job',
+    step: '04',
+    title: 'Encuentra trabajo',
+    body: 'Suma puntos para nuestra bolsa de empleo y conecta con empresas que buscan talento como el tuyo. Tu próximo paso profesional empieza aquí.',
+    visual: <JobMock />,
   },
 ];
 
+function JourneyConnector({
+  active,
+  flipped,
+}: {
+  active: boolean;
+  flipped?: boolean;
+}) {
+  // Path en S, dibujado en dos trazados:
+  //  - Guides (dashed, siempre visibles, sutiles)
+  //  - Trail (sólido, se va dibujando con el scroll cuando entra el step siguiente)
+  //  Truco pathLength="1" → animamos stroke-dashoffset de 1 → 0.
+  const trailStyle = {
+    strokeDasharray: 1,
+    strokeDashoffset: active ? 0 : 1,
+    transition: 'stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1)',
+  } as const;
+  const arrowStyle = {
+    opacity: active ? 1 : 0,
+    transform: active ? 'translateY(0)' : 'translateY(-4px)',
+    transition: 'opacity 0.4s ease 0.45s, transform 0.4s ease 0.45s',
+    transformOrigin: 'center',
+  } as const;
+
+  return (
+    <svg
+      className={homeStyles.journeyConnector}
+      viewBox="0 0 60 110"
+      preserveAspectRatio="none"
+      aria-hidden
+      style={flipped ? { transform: 'scaleX(-1)' } : undefined}
+    >
+      <path
+        className={homeStyles.journeyConnectorGuides}
+        d="M30 4 C 10 28, 50 72, 30 104"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <path
+        className={homeStyles.journeyConnectorTrail}
+        d="M30 4 C 10 28, 50 72, 30 104"
+        fill="none"
+        strokeLinecap="round"
+        pathLength={1}
+        style={trailStyle}
+      />
+      <path
+        className={homeStyles.journeyConnectorArrow}
+        d="M22 96 L30 104 L38 96"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={arrowStyle}
+      />
+    </svg>
+  );
+}
+
 export function HomeHowItWorksPinned() {
-  const [activeStep, setActiveStep] = useState(0);
-  const [staticMode, setStaticMode] = useState(true);
-  const markersRef = useRef<(HTMLDivElement | null)[]>([]);
+  const [revealed, setRevealed] = useState<boolean[]>(() =>
+    STEPS.map(() => false)
+  );
+  const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   useEffect(() => {
-    const desktopQ = window.matchMedia('(min-width: 768px)');
     const motionQ = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const compute = () => setStaticMode(!desktopQ.matches || motionQ.matches);
-    compute();
-    desktopQ.addEventListener('change', compute);
-    motionQ.addEventListener('change', compute);
-    return () => {
-      desktopQ.removeEventListener('change', compute);
-      motionQ.removeEventListener('change', compute);
-    };
-  }, []);
+    if (motionQ.matches) {
+      setRevealed(STEPS.map(() => true));
+      return;
+    }
 
-  useEffect(() => {
-    if (staticMode) return;
-    const markers = markersRef.current.filter(
-      (el): el is HTMLDivElement => el !== null
+    const items = stepRefs.current.filter(
+      (el): el is HTMLLIElement => el !== null
     );
-    if (markers.length !== STEPS.length) return;
+    if (items.length !== STEPS.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        let bestIndex: number | null = null;
-        let bestRatio = 0;
-        for (const entry of entries) {
-          const idxAttr = (entry.target as HTMLElement).dataset.idx;
-          if (!idxAttr) continue;
-          if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
-            bestRatio = entry.intersectionRatio;
-            bestIndex = Number(idxAttr);
+        setRevealed((prev) => {
+          let changed = false;
+          const next = prev.slice();
+          for (const entry of entries) {
+            const idxAttr = (entry.target as HTMLElement).dataset.idx;
+            if (!idxAttr) continue;
+            const idx = Number(idxAttr);
+            if (entry.isIntersecting && !next[idx]) {
+              next[idx] = true;
+              changed = true;
+            }
           }
-        }
-        if (bestIndex !== null) setActiveStep(bestIndex);
+          return changed ? next : prev;
+        });
       },
       {
-        rootMargin: '-45% 0px -45% 0px',
-        threshold: [0, 0.01, 0.1],
+        rootMargin: '0px 0px -25% 0px',
+        threshold: 0.2,
       }
     );
 
-    markers.forEach((el) => observer.observe(el));
+    items.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [staticMode]);
-
-  if (staticMode) {
-    return (
-      <ol className={homeStyles.howStatic}>
-        {STEPS.map((s, i) => (
-          <li key={s.id} className={homeStyles.howStaticCard}>
-            <div className={homeStyles.howStaticVisual}>{s.visual}</div>
-            <div className={homeStyles.howStaticBody}>
-              <div className={homeStyles.howStaticHead}>
-                <span className={homeStyles.howStaticNum}>{s.step}</span>
-                <span className={homeStyles.howStaticLine} aria-hidden />
-              </div>
-              <h3 className={homeStyles.howStaticTitle}>{s.title}</h3>
-              <p className={homeStyles.howStaticText}>{s.body}</p>
-            </div>
-            {i < STEPS.length - 1 ? (
-              <span className={homeStyles.howStaticConnector} aria-hidden />
-            ) : null}
-          </li>
-        ))}
-      </ol>
-    );
-  }
+  }, []);
 
   return (
-    <div className={homeStyles.howOuter}>
-      <div className={homeStyles.howSticky}>
-        <div className={homeStyles.howCopy}>
-          <ol className={homeStyles.howRail} aria-label="Pasos para aprender en Recursalia">
-            {STEPS.map((s, i) => {
-              const isActive = activeStep === i;
-              return (
-                <li
-                  key={s.id}
-                  className={`${homeStyles.howRailItem} ${
-                    isActive ? homeStyles.howRailItemActive : ''
-                  }`}
-                >
-                  <span className={homeStyles.howRailDot} aria-hidden />
-                  <span className={homeStyles.howRailLabel}>{s.step}</span>
-                </li>
-              );
-            })}
-          </ol>
-
-          <div className={homeStyles.howCopyStack}>
-            {STEPS.map((s, i) => (
-              <div
-                key={s.id}
-                className={`${homeStyles.howCopyPanel} ${
-                  activeStep === i ? homeStyles.howCopyPanelActive : ''
-                }`}
-                aria-hidden={activeStep !== i}
-              >
-                <span className={homeStyles.howCopyKicker}>Paso {s.step}</span>
-                <h3 className={homeStyles.howCopyTitle}>{s.title}</h3>
-                <p className={homeStyles.howCopyBody}>{s.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className={homeStyles.howVisual}>
-          <span className={homeStyles.howVisualGlow} aria-hidden />
-          {STEPS.map((s, i) => (
-            <div
-              key={s.id}
-              className={`${homeStyles.howVisualSlot} ${
-                activeStep === i ? homeStyles.howVisualSlotActive : ''
-              }`}
-              aria-hidden={activeStep !== i}
-            >
+    <ol
+      className={homeStyles.journey}
+      aria-label="Pasos para aprender en Recursalia"
+    >
+      {STEPS.map((s, i) => {
+        const isRevealed = revealed[i];
+        const nextRevealed = i < STEPS.length - 1 ? revealed[i + 1] : false;
+        const flipped = i % 2 === 1; // alterna lado en desktop
+        return (
+          <li
+            key={s.id}
+            ref={(el) => {
+              stepRefs.current[i] = el;
+            }}
+            data-idx={i}
+            className={`${homeStyles.journeyStep} ${
+              flipped ? homeStyles.journeyStepFlipped : ''
+            } ${isRevealed ? homeStyles.journeyStepRevealed : ''}`}
+          >
+            <div className={homeStyles.journeyMarker} aria-hidden>
+              <span className={homeStyles.journeyNumber}>{s.step}</span>
+            </div>
+            <div className={homeStyles.journeyContent}>
+              <h3 className={homeStyles.journeyTitle}>{s.title}</h3>
+              <p className={homeStyles.journeyBody}>{s.body}</p>
+            </div>
+            <div className={homeStyles.journeyVisual} aria-hidden>
               {s.visual}
             </div>
-          ))}
-        </div>
-      </div>
-
-      {STEPS.map((_, i) => (
-        <div
-          key={`marker-${i}`}
-          ref={(el) => {
-            markersRef.current[i] = el;
-          }}
-          data-idx={i}
-          className={homeStyles.howMarker}
-          aria-hidden
-        />
-      ))}
-    </div>
+            {i < STEPS.length - 1 ? (
+              <div className={homeStyles.journeyConnectorWrap} aria-hidden>
+                <JourneyConnector active={!!nextRevealed} flipped={flipped} />
+              </div>
+            ) : null}
+          </li>
+        );
+      })}
+    </ol>
   );
 }
