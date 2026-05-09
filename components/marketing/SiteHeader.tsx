@@ -80,7 +80,7 @@ export function SiteHeader() {
             </div>
 
             <div className={styles.navCluster}>
-              <HeaderCategories />
+              <HeaderCategories onDarkNav={isInspiracion} />
               <Link
                 href="/inspiracion"
                 className={`${styles.inspiracionLink} ${pathname === '/inspiracion' ? styles.inspiracionLinkActive : ''}`}

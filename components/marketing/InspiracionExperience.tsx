@@ -139,8 +139,8 @@ export function InspiracionExperience() {
 
   const filledSegments = useMemo(() => {
     if (flow.step === 0) return 0;
-    if (flow.step >= 5) return 4;
-    return flow.step;
+    if (flow.step >= 5) return 3;
+    return Math.min(flow.step, 3);
   }, [flow.step]);
 
   function goBack() {
@@ -321,10 +321,12 @@ export function InspiracionExperience() {
 
   return (
     <div className={styles.shell}>
-      <div className={styles.shellColumn}>
+      <div
+        className={`${styles.shellColumn} ${flow.step === 0 ? styles.shellColumnIntro : ''}`.trim()}
+      >
         <header className={styles.topBar}>
           <div className={styles.progress} aria-hidden>
-            {[0, 1, 2, 3].map((i) => (
+            {[0, 1, 2].map((i) => (
               <div key={i} className={`${styles.progressSeg} ${i < filledSegments ? styles.progressSegOn : ''}`} />
             ))}
           </div>

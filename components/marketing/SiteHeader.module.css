@@ -612,6 +612,35 @@
   border-color: #ffffff;
 }
 
+.barInverted .cta {
+  background: #07142f;
+  border-color: rgb(255 255 255 / 32%);
+  color: #ffffff !important;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 45%),
+    0 4px 16px rgb(0 0 0 / 28%);
+}
+
+.barInverted .cta:hover {
+  background: #0c1f4a;
+  border-color: rgb(255 255 255 / 42%);
+  color: #ffffff !important;
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 40%),
+    0 8px 24px rgb(0 0 0 / 32%);
+  transform: translateY(-1px);
+}
+
+.barInverted .ctaBadge {
+  background: #ffffff;
+  color: #07142f;
+}
+
+.barInverted .cta:hover .ctaBadge {
+  background: rgb(255 255 255 / 96%);
+  color: #0a1748;
+}
+
 /* Pill sticky sobre fondo oscuro: invertimos a un cristal azul translúcido
    en lugar de blanco, para que conserve la sensación pero respete el tema. */
 .barInverted.barSticky {

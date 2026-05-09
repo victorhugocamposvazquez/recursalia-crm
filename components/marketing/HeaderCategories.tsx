@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useMarketingContent } from '@/components/marketing/MarketingContentProvider';
 import styles from './HeaderCategories.module.css';
 
-export function HeaderCategories() {
+export function HeaderCategories({ onDarkNav }: { onDarkNav?: boolean }) {
   const { categories } = useMarketingContent();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -34,7 +34,7 @@ export function HeaderCategories() {
     <div className={styles.wrap} ref={wrapRef}>
       <button
         type="button"
-        className={styles.trigger}
+        className={`${styles.trigger} ${onDarkNav ? styles.triggerOnDark : ''}`.trim()}
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen((v) => !v)}
