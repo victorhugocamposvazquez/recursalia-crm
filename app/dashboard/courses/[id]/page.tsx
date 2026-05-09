@@ -8,6 +8,10 @@ import type {
   CourseRecord,
   GeneratedCourseStructure,
 } from '@/types';
+import {
+  defaultLesson,
+  withTopics,
+} from '@/lib/courseEditorStructure';
 import type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
 import { REVIEWS_RATING_PRESET_OPTIONS } from '@/lib/reviewsRatingPreset';
 import {
@@ -162,15 +166,79 @@ export default function CourseDetailPage() {
     }
   }
 
+  function addModule() {
+    setEditContent((prev) => {
+      if (!prev) return prev;
+      const topics = [...(prev.topics ?? [])];
+      topics.push({
+        title: 'Nuevo módulo',
+        lessons: [defaultLesson()],
+      });
+      return withTopics(prev, topics);
+    });
+  }
+
+  function addLesson(topicIndex: number) {
+    setEditContent((prev) => {
+      if (!prev) return prev;
+      const topics = prev.topics.map((t, i) =>
+        i === topicIndex
+          ? { ...t, lessons: [...(t.lessons ?? []), defaultLesson()] }
+          : t
+      );
+      return withTopics(prev, topics);
+    });
+  }
+
+  function removeModule(topicIndex: number) {
+    setEditContent((prev) => {
+      if (!prev || (prev.topics?.length ?? 0) <= 1) return prev;
+      const topics = prev.topics.filter((_, i) => i !== topicIndex);
+      return withTopics(prev, topics);
+    });
+  }
+
+  function removeLesson(topicIndex: number, lessonIndex: number) {
+    setEditContent((prev) => {
+      if (!prev) return prev;
+      const topic = prev.topics[topicIndex];
+      if (!topic || topic.lessons.length <= 1) return prev;
+      const nextLessons = topic.lessons.filter((_, i) => i !== lessonIndex);
+      const topics = prev.topics.map((t, i) =>
+        i === topicIndex ? { ...t, lessons: nextLessons } : t
+      );
+      return withTopics(prev, topics);
+    });
+  }
+
   async function handleSave() {
     if (!editContent) return;
+    if (!editContent.topics?.length) {
+      setError('Añade al menos un módulo.');
+      return;
+    }
+    if (editContent.topics.some((t) => !(t.lessons?.length ?? 0))) {
+      setError('Cada módulo necesita al menos una lección.');
+      return;
+    }
+    const topicsNormalized = editContent.topics.map((t) => ({
+      ...t,
+      lessons: (t.lessons ?? []).map((L) => ({
+        ...L,
+        duration_minutes:
+          typeof L.duration_minutes === 'number' && L.duration_minutes > 0
+            ? Math.round(L.duration_minutes)
+            : 15,
+      })),
+    }));
+    const generated_content = withTopics(editContent, topicsNormalized);
     setSaving(true);
     setError(null);
     try {
       const res = await fetch(`/api/courses/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ generated_content: editContent }),
+        body: JSON.stringify({ generated_content }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.details ?? data.error ?? 'Error al guardar');
@@ -1010,45 +1078,113 @@ export default function CourseDetailPage() {
             />
           </div>
           <div className={styles.topicsSection}>
-            <h3>Módulos y lecciones</h3>
+            <div className={styles.topicsSectionHead}>
+              <div>
+                <h3>Módulos y lecciones</h3>
+                {editContent ? (
+                  <p className={styles.topicsDurationHint}>
+                    Duración total estimada: {editContent.total_duration_minutes ?? 0} min
+                  </p>
+                ) : null}
+              </div>
+              <button type="button" className={styles.btnTopicAdd} onClick={addModule}>
+                + Añadir módulo
+              </button>
+            </div>
+            {!editContent?.topics || editContent.topics.length === 0 ? (
+              <p className={styles.topicsEmpty}>No hay módulos. Pulsa «Añadir módulo» para crear el primero.</p>
+            ) : null}
             {editContent?.topics?.map((topic, ti) => (
               <div key={ti} className={styles.topicBlock}>
-                <input
-                  value={topic.title}
-                  onChange={(e) => {
-                    const next = [...(editContent?.topics ?? [])];
-                    next[ti] = { ...topic, title: e.target.value };
-                    setEditContent((prev) =>
-                      prev ? { ...prev, topics: next } : prev
-                    );
-                  }}
-                  className={styles.topicTitle}
-                />
-                {topic.lessons.map((lesson, li) => (
+                <div className={styles.topicHeaderRow}>
+                  <input
+                    value={topic.title}
+                    onChange={(e) => {
+                      const next = [...(editContent?.topics ?? [])];
+                      next[ti] = { ...topic, title: e.target.value };
+                      setEditContent((prev) => (prev ? withTopics(prev, next) : prev));
+                    }}
+                    className={styles.topicTitle}
+                    placeholder="Título del módulo"
+                  />
+                  <div className={styles.topicActions}>
+                    <button
+                      type="button"
+                      className={styles.btnTopicSecondary}
+                      onClick={() => addLesson(ti)}
+                    >
+                      + Lección
+                    </button>
+                    {(editContent?.topics?.length ?? 0) > 1 ? (
+                      <button
+                        type="button"
+                        className={styles.btnTopicDanger}
+                        onClick={() => removeModule(ti)}
+                      >
+                        Eliminar módulo
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+                {(topic.lessons ?? []).map((lesson, li) => (
                   <div key={li} className={styles.lessonBlock}>
-                    <input
-                      value={lesson.title}
-                      onChange={(e) => {
-                        const nextTopics = [...(editContent?.topics ?? [])];
-                        const nextLessons = [...topic.lessons];
-                        nextLessons[li] = { ...lesson, title: e.target.value };
-                        nextTopics[ti] = { ...topic, lessons: nextLessons };
-                        setEditContent((prev) =>
-                          prev ? { ...prev, topics: nextTopics } : prev
-                        );
-                      }}
-                      placeholder="Título lección"
-                      className={styles.lessonTitle}
-                    />
+                    <div className={styles.lessonTopRow}>
+                      <input
+                        value={lesson.title}
+                        onChange={(e) => {
+                          const nextTopics = [...(editContent?.topics ?? [])];
+                          const nextLessons = [...(topic.lessons ?? [])];
+                          nextLessons[li] = { ...lesson, title: e.target.value };
+                          nextTopics[ti] = { ...topic, lessons: nextLessons };
+                          setEditContent((prev) =>
+                            prev ? withTopics(prev, nextTopics) : prev
+                          );
+                        }}
+                        placeholder="Título lección"
+                        className={styles.lessonTitle}
+                      />
+                      <label className={styles.lessonDurationLabel}>
+                        Min
+                        <input
+                          type="number"
+                          min={1}
+                          max={600}
+                          value={lesson.duration_minutes ?? 15}
+                          onChange={(e) => {
+                            const v = Math.max(
+                              1,
+                              Math.min(600, parseInt(e.target.value, 10) || 15)
+                            );
+                            const nextTopics = [...(editContent?.topics ?? [])];
+                            const nextLessons = [...(topic.lessons ?? [])];
+                            nextLessons[li] = { ...lesson, duration_minutes: v };
+                            nextTopics[ti] = { ...topic, lessons: nextLessons };
+                            setEditContent((prev) =>
+                              prev ? withTopics(prev, nextTopics) : prev
+                            );
+                          }}
+                          className={styles.lessonDurationInput}
+                        />
+                      </label>
+                      {(topic.lessons ?? []).length > 1 ? (
+                        <button
+                          type="button"
+                          className={styles.btnLessonRemove}
+                          onClick={() => removeLesson(ti, li)}
+                        >
+                          Quitar lección
+                        </button>
+                      ) : null}
+                    </div>
                     <textarea
                       value={lesson.content}
                       onChange={(e) => {
                         const nextTopics = [...(editContent?.topics ?? [])];
-                        const nextLessons = [...topic.lessons];
+                        const nextLessons = [...(topic.lessons ?? [])];
                         nextLessons[li] = { ...lesson, content: e.target.value };
                         nextTopics[ti] = { ...topic, lessons: nextLessons };
                         setEditContent((prev) =>
-                          prev ? { ...prev, topics: nextTopics } : prev
+                          prev ? withTopics(prev, nextTopics) : prev
                         );
                       }}
                       placeholder="Contenido HTML"

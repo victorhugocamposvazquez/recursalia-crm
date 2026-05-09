@@ -620,11 +620,106 @@
   margin-top: 1rem;
 }
 
+.topicsSectionHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
 .topicsSection h3 {
   font-size: 0.95rem;
   color: #242320;
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.25rem;
   font-weight: 600;
+}
+
+.topicsDurationHint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgb(27 29 30 / 55%);
+}
+
+.topicsEmpty {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  background: rgb(70 67 62 / 6%);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  color: rgb(27 29 30 / 65%);
+}
+
+.btnTopicAdd {
+  padding: 0.5rem 0.95rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: #ffffff;
+  color: #1b1d1e;
+  border: 1px solid rgb(27 29 30 / 18%);
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btnTopicAdd:hover {
+  background: rgb(27 29 30 / 4%);
+  border-color: rgb(27 29 30 / 28%);
+}
+
+.topicHeaderRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
+.topicHeaderRow .topicTitle {
+  flex: 1;
+  min-width: min(100%, 14rem);
+  margin-bottom: 0;
+}
+
+.topicActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.btnTopicSecondary {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  border-radius: 6px;
+  border: 1px solid rgb(27 29 30 / 18%);
+  background: #fff;
+  color: #1b1d1e;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btnTopicSecondary:hover {
+  border-color: rgb(27 29 30 / 32%);
+  background: rgb(27 29 30 / 4%);
+}
+
+.btnTopicDanger {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  border-radius: 6px;
+  border: 1px solid rgb(185 28 28 / 35%);
+  background: rgb(254 226 226 / 25%);
+  color: #b91c1c;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btnTopicDanger:hover {
+  background: rgb(254 226 226 / 55%);
 }
 
 .topicBlock {
@@ -650,6 +745,55 @@
 .lessonBlock {
   margin-left: 1rem;
   margin-bottom: 1rem;
+}
+
+.lessonTopRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 0.65rem;
+  margin-bottom: 0.5rem;
+}
+
+.lessonTopRow .lessonTitle {
+  flex: 1;
+  min-width: min(100%, 12rem);
+  margin-bottom: 0;
+}
+
+.lessonDurationLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgb(27 29 30 / 55%);
+}
+
+.lessonDurationInput {
+  width: 4.2rem;
+  padding: 0.4rem 0.45rem;
+  border-radius: 6px;
+  border: 1px solid rgb(27 29 30 / 14%);
+  font-size: 0.85rem;
+  color: #1b1d1e;
+}
+
+.btnLessonRemove {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgb(27 29 30 / 16%);
+  background: rgb(27 29 30 / 4%);
+  color: rgb(27 29 30 / 75%);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.btnLessonRemove:hover {
+  background: rgb(248 113 113 / 15%);
+  border-color: rgb(248 113 113 / 40%);
+  color: #b91c1c;
 }
 
 .lessonTitle {
