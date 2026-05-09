@@ -133,8 +133,12 @@ export async function publishCourse(
 
   await setProgress('Publicación para la web Next + Supabase...');
 
+  const existingCover = course.featured_image_url?.trim() || null;
+
   let featuredImageBuffer: Buffer | undefined;
-  if (process.env.GOOGLE_GEMINI_API_KEY) {
+  if (existingCover) {
+    await setProgress('Portada manual ya guardada; se omite Gemini en esta publicación.');
+  } else if (process.env.GOOGLE_GEMINI_API_KEY) {
     await setProgress('Generando imagen destacada con Gemini...');
     try {
       featuredImageBuffer = await generateCourseFeaturedImage(
@@ -150,7 +154,7 @@ export async function publishCourse(
     await setProgress('Gemini omitido (GOOGLE_GEMINI_API_KEY no configurada).');
   }
 
-  let featuredImageUrl: string | null = course.featured_image_url ?? null;
+  let featuredImageUrl: string | null = existingCover ?? null;
   if (featuredImageBuffer && featuredImageBuffer.length > 0) {
     await setProgress('Subiendo portada a Supabase Storage...');
     try {

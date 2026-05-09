@@ -785,3 +785,76 @@
   line-height: 1.6;
   color: rgb(27 29 30 / 78%);
 }
+
+/* Portada manual (storage) */
+
+.coverUploadCard {
+  padding: 1rem 1.2rem;
+  background: rgb(246 251 239 / 90%);
+  border: 1px solid rgb(70 120 62 / 22%);
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+}
+
+.coverUploadTitle {
+  font-size: 0.93rem;
+  font-weight: 600;
+  margin: 0 0 0.45rem;
+  color: #46433e;
+}
+
+.coverUploadLead {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  margin: 0 0 0.85rem;
+  color: rgb(27 29 30 / 65%);
+}
+
+.coverPreviewWrap {
+  margin: 0 0 0.95rem;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgb(36 35 32 / 12%);
+  display: inline-block;
+  max-width: 100%;
+  background: rgb(255 255 255 / 80%);
+}
+
+.coverPreviewImg {
+  display: block;
+  max-height: 220px;
+  width: auto;
+  max-width: 100%;
+}
+
+.coverUploadRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.coverChooseBtn {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  margin: 0;
+  display: inline-flex;
+}
+
+.coverFileInputHidden {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.coverChooseBtn:focus-within {
+  outline: 2px solid rgb(70 67 62 / 40%);
+  outline-offset: 2px;
+}
+
+.coverUploadMuted {
+  font-size: 0.8rem;
+  color: rgb(27 29 30 / 55%);
+}

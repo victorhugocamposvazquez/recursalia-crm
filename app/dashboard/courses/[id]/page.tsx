@@ -55,6 +55,7 @@ export default function CourseDetailPage() {
   const [socialError, setSocialError] = useState<string | null>(null);
   const publishPollRef = useRef<number | null>(null);
   const pdfAbortRef = useRef<AbortController | null>(null);
+  const [coverUploading, setCoverUploading] = useState(false);
 
   const catalogSelectOptions = useMemo(() => {
     const rows = [...catalogOptions];
@@ -136,6 +137,30 @@ export default function CourseDetailPage() {
       }
     };
   }, [fetchCourse]);
+
+  async function handleFeaturedImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const input = e.currentTarget;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+
+    setCoverUploading(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch(`/api/courses/${id}/featured-image`, { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.details ?? data.error ?? 'No se pudo subir la imagen');
+      }
+      await fetchCourse(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setCoverUploading(false);
+    }
+  }
 
   async function handleSave() {
     if (!editContent) return;
@@ -434,7 +459,45 @@ export default function CourseDetailPage() {
         </div>
       </div>
 
-      {!editMode && <PublishChecklist course={course} courseId={id} />}
+      {!editMode && (
+        <>
+          <PublishChecklist course={course} courseId={id} />
+          <div className={styles.coverUploadCard}>
+            <h4 className={styles.coverUploadTitle}>Portada</h4>
+            <p className={styles.coverUploadLead}>
+              Sube JPEG, PNG o WebP (máx. 6 MB). Al publicar, esta imagen se usa en el catálogo y en
+              redes si no pides regenerar con Gemini; las <strong>reseñas</strong> siguen generándose
+              con IA. Para volver a una portada hecha por Gemini más adelante, marca{' '}
+              <strong>Regenerar portada con Gemini</strong> en «Web pública».
+            </p>
+            {course.featured_image_url ? (
+              <div className={styles.coverPreviewWrap}>
+                <img
+                  src={course.featured_image_url}
+                  alt=""
+                  className={styles.coverPreviewImg}
+                />
+              </div>
+            ) : null}
+            <div className={styles.coverUploadRow}>
+              <label className={`${styles.btnSecondary} ${styles.coverChooseBtn}`}>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  className={styles.coverFileInputHidden}
+                  disabled={coverUploading}
+                  onChange={handleFeaturedImageUpload}
+                  aria-busy={coverUploading}
+                />
+                <span>{coverUploading ? 'Subiendo…' : 'Elegir imagen'}</span>
+              </label>
+              {coverUploading ? (
+                <span className={styles.coverUploadMuted}>Actualizando ficha…</span>
+              ) : null}
+            </div>
+          </div>
+        </>
+      )}
 
       {!editMode && (
         <div className={styles.seoPriorityCard}>
@@ -519,8 +582,9 @@ export default function CourseDetailPage() {
           <p className={styles.reviewsConfigLead}>
             {course.status !== 'published' ? (
               <>
-                Al pulsar <strong>Publicar</strong> se generan las reseñas con IA, se guardan en
-                Supabase y aparecen en la ficha pública junto al slug y la portada.
+                Las <strong>reseñas</strong> siempre se generan con IA. La <strong>portada</strong>: si ya
+                subiste una imagen en «Portada» arriba, se usará esa; si no hay y Gemini está configurado,
+                se intentará generar una automática al pulsar Publicar.
               </>
             ) : (
               <>
@@ -584,9 +648,9 @@ export default function CourseDetailPage() {
               : ''}
           </p>
           <p className={styles.republishHint}>
-            <strong>Opciones:</strong> marca lo que quieras regenerar y después pulsa el botón.
-            La portada con IA <strong>solo</strong> se genera si marcas la casilla (o en la primera
-            publicación desde borrador, al pulsar Publicar arriba).
+            <strong>Opciones:</strong> marca lo que quieras regenerar y después pulsa el botón. La portada:
+            solo se genera con Gemini si la marcas <em>y</em> hay API configurada; si antes subiste una
+            imagen en «Portada», se conserva hasta que pidas regenerar.
           </p>
           <div className={styles.republishChecks}>
             <label>
@@ -595,7 +659,8 @@ export default function CourseDetailPage() {
                 checked={republishRegenImage}
                 onChange={(e) => setRepublishRegenImage(e.target.checked)}
               />
-              Regenerar portada con Gemini (sustituye imagen si hay API configurada)
+              Regenerar portada con Gemini (sustituye la imagen actual si hay API; si tienes solo
+              portada manual, conviene tenerla como copia antes)
             </label>
             <label>
               <input
