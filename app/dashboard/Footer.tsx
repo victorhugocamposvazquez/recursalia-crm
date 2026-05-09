@@ -13,16 +13,21 @@ export function Footer({ userEmail }: FooterProps) {
   const router = useRouter();
   const isGeneratePage = pathname === '/dashboard';
   const [isGenerating, setIsGenerating] = useState(false);
+  const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
-    // Escuchar eventos de carga desde la página
-    const handleLoading = (e: CustomEvent) => {
-      setIsGenerating(e.detail);
+    const handleLoading = (e: Event) => {
+      setIsGenerating((e as CustomEvent<boolean>).detail);
     };
-    window.addEventListener('course-generating' as any, handleLoading as EventListener);
+    const handleCreationMode = (e: Event) => {
+      setCreationMode((e as CustomEvent<'ai' | 'manual'>).detail);
+    };
+    window.addEventListener('course-generating', handleLoading);
+    window.addEventListener('course-creation-mode', handleCreationMode);
     return () => {
-      window.removeEventListener('course-generating' as any, handleLoading as EventListener);
+      window.removeEventListener('course-generating', handleLoading);
+      window.removeEventListener('course-creation-mode', handleCreationMode);
     };
   }, []);
 
@@ -66,7 +71,13 @@ export function Footer({ userEmail }: FooterProps) {
               disabled={isGenerating}
               className={styles.footerGenerateBtn}
             >
-              {isGenerating ? 'Generando...' : 'Generar curso'}
+              {isGenerating
+                ? creationMode === 'manual'
+                  ? 'Creando borrador...'
+                  : 'Generando...'
+                : creationMode === 'manual'
+                  ? 'Crear borrador manual'
+                  : 'Generar con IA'}
             </button>
           )}
           <button

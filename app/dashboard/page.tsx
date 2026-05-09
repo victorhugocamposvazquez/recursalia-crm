@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ProductType, CourseVertical } from '@/types';
 import { COURSE_VERTICAL_OPTIONS } from '@/lib/courseVerticalOptions';
 import styles from './dashboard.module.css';
@@ -19,11 +19,20 @@ export default function DashboardPage() {
   const [hasDiscount, setHasDiscount] = useState(true);
   const [discountPercent, setDiscountPercent] = useState(50);
   const [courseVertical, setCourseVertical] = useState<CourseVertical>('general');
+  const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ id: string; status: string } | null>(null);
+  /** Refleja cómo se creó la última entrada (evita mezclar el mensaje al cambiar de pestaña). */
+  const [completedAs, setCompletedAs] = useState<'ai' | 'manual' | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const salePrice = Math.round(price * (1 - discountPercent / 100));
+
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('course-creation-mode', { detail: creationMode })
+    );
+  }, [creationMode]);
 
   async function handleGenerate(e: React.FormEvent) {
     e.preventDefault();
@@ -32,26 +41,41 @@ export default function DashboardPage() {
     setError(null);
     window.dispatchEvent(new CustomEvent('course-generating', { detail: true }));
 
+    const body = {
+      topic,
+      level,
+      avatar,
+      focus,
+      reviewsCount,
+      bestSeller,
+      productType,
+      topicsCount,
+      lessonsPerTopic,
+      price,
+      discountPercent: hasDiscount ? discountPercent : 0,
+      courseVertical,
+    };
+
     try {
-      const res = await fetch('/api/generate-course', {
+      const endpoint =
+        creationMode === 'manual' ? '/api/create-course-manual' : '/api/generate-course';
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          topic, level, avatar, focus, reviewsCount, bestSeller, productType,
-          topicsCount, lessonsPerTopic, price,
-          discountPercent: hasDiscount ? discountPercent : 0,
-          courseVertical,
-        }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) {
-        const msg = data.details ?? data.error ?? 'Error al generar';
+        const msg = data.details ?? data.error ?? 'Error al crear el curso';
         throw new Error(msg);
       }
       setResult(data);
-      setTopic('');
-      setAvatar('');
-      setFocus('');
+      setCompletedAs(creationMode);
+      if (creationMode === 'ai') {
+        setTopic('');
+        setAvatar('');
+        setFocus('');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -62,12 +86,43 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Generar nuevo curso</h1>
+      <h1 className={styles.title}>Nuevo curso o guía</h1>
       <p className={styles.subtitle}>
-        Define las directrices y la IA generará la estructura completa.
+        {creationMode === 'ai'
+          ? 'Define las directrices y la IA generará la estructura completa.'
+          : 'Crea un borrador con módulos y lecciones vacíos y edita todo a mano en la ficha del curso.'}
       </p>
 
-      <form onSubmit={handleGenerate} className={styles.form} data-course-form>
+      <form
+        onSubmit={handleGenerate}
+        className={styles.form}
+        data-course-form
+        data-creation-mode={creationMode}
+      >
+        <div className={`${styles.card} ${styles.creationModeCard}`}>
+          <p className={styles.creationModeLegend}>Modo de creación</p>
+          <div className={styles.segmentRow} role="group" aria-label="Modo de creación">
+            <button
+              type="button"
+              className={`${styles.segmentBtn} ${creationMode === 'ai' ? styles.segmentBtnActive : ''}`}
+              onClick={() => setCreationMode('ai')}
+            >
+              Con IA
+            </button>
+            <button
+              type="button"
+              className={`${styles.segmentBtn} ${creationMode === 'manual' ? styles.segmentBtnActive : ''}`}
+              onClick={() => setCreationMode('manual')}
+            >
+              Manual
+            </button>
+          </div>
+          <p className={styles.creationModeHint}>
+            Manual no llama a OpenAI: se guarda un borrador con textos y títulos de ejemplo que puedes
+            sustituir antes de publicar.
+          </p>
+        </div>
+
         {/* ── Tema ── */}
         <div className={styles.card}>
           <div className={styles.grid2}>
@@ -121,7 +176,9 @@ export default function DashboardPage() {
 
         {/* ── Perfil de contenido ── */}
         <div className={styles.card}>
-          <h4 className={styles.cardTitle}>Perfil del curso (IA)</h4>
+          <h4 className={styles.cardTitle}>
+            {creationMode === 'ai' ? 'Perfil del curso (IA)' : 'Vertical (catálogo / tono)'}
+          </h4>
           <div className={styles.field}>
             <label htmlFor="courseVertical">Vertical / tono</label>
             <select
@@ -194,10 +251,18 @@ export default function DashboardPage() {
             </div>
           </div>
           <p className={styles.hint}>
-            {topicsCount * lessonsPerTopic} lecciones &middot; {reviewsCount} reseñas
-            {productType === 'course'
-              ? ' &middot; Se mostrarán ventajas'
-              : ' &middot; Se mostrarán beneficios'}
+            {topicsCount * lessonsPerTopic} lecciones
+            {creationMode === 'ai' ? (
+              <>
+                {' '}
+                &middot; {reviewsCount} reseñas al publicar
+                {productType === 'course'
+                  ? ' &middot; ventajas en ficha curso'
+                  : ' &middot; beneficios en la ficha'}
+              </>
+            ) : (
+              <> &middot; las reseñas se pueden generar al publicar desde la ficha.</>
+            )}
           </p>
           <label className={styles.toggle} style={{ marginTop: '0.75rem' }}>
             <input
@@ -265,9 +330,10 @@ export default function DashboardPage() {
 
         {/* ── Feedback ── */}
         {error && <p className={styles.error}>{error}</p>}
-        {result && (
+        {result && completedAs !== null && (
           <p className={styles.success}>
-            Curso generado correctamente. <a href={`/dashboard/courses/${result.id}`}>Ver curso &rarr;</a>
+            {completedAs === 'manual' ? 'Borrador listo.' : 'Curso generado correctamente.'}{' '}
+            <a href={`/dashboard/courses/${result.id}`}>Abrir ficha &rarr;</a>
           </p>
         )}
 

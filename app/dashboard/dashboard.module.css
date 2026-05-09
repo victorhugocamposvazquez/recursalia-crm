@@ -300,3 +300,60 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Modo creación: IA vs borrador manual */
+
+.creationModeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.creationModeLegend {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6b6760;
+  margin: 0;
+}
+
+.segmentRow {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.segmentBtn {
+  flex: 1;
+  min-width: 7rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  border: 1px solid rgb(36 35 32 / 16%);
+  background: #fff;
+  color: #2f2e2b;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.segmentBtn:hover {
+  border-color: rgb(36 35 32 / 28%);
+}
+
+.segmentBtnActive {
+  background: #242320;
+  color: #fbfaf7;
+  border-color: #242320;
+}
+
+.creationModeHint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgb(36 35 32 / 52%);
+  line-height: 1.45;
+}

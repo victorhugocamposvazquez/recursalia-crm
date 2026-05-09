@@ -11,6 +11,7 @@ import {
   buildReviewsRatingInstruction,
   normalizeReviewsRatingPreset,
 } from '@/lib/reviewsRatingPreset';
+import { buildManualCourseSkeleton } from '@/services/manualCourseSkeleton';
 import type {
   CourseInputPayload,
   CourseRecord,
@@ -64,6 +65,32 @@ export async function generateAndSaveCourse(
       .eq('id', courseId);
     throw err;
   }
+}
+
+/**
+ * Inserta un curso/guía en borrador con `generated_content` vacío pero
+ * estructura completa editable (sin llamar a la IA).
+ */
+export async function createManualDraftCourse(
+  payload: CourseInputPayload
+): Promise<CourseRecord> {
+  const supabase = getSupabase();
+  const enriched: CourseInputPayload = { ...payload, creationMode: 'manual' };
+  const generatedContent = buildManualCourseSkeleton(enriched);
+  const { data: insertData, error: insertError } = await supabase
+    .from('courses')
+    .insert({
+      topic: enriched.topic.trim(),
+      input_payload: enriched,
+      generated_content: generatedContent,
+      status: 'draft',
+    })
+    .select()
+    .single();
+
+  if (insertError) throw new Error(`DB insert failed: ${insertError.message}`);
+
+  return { ...insertData, generated_content: generatedContent };
 }
 
 export async function publishCourse(

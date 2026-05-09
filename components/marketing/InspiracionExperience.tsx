@@ -12,7 +12,6 @@ import {
   type GoalId,
   type WorldId,
 } from '@/components/marketing/inspiracion/inspiracionCopy';
-import { inspiracionControlsStore } from '@/components/marketing/inspiracion/inspiracionControlsStore';
 import styles from './InspiracionExperience.module.css';
 
 const STORAGE_KEY = 'recursalia_inspiracion_flow_v2';
@@ -122,40 +121,6 @@ export function InspiracionExperience() {
       if (oracleSyncTimerRef.current) clearTimeout(oracleSyncTimerRef.current);
     };
   }, []);
-
-  // Sincroniza el step con el store global y registra los handlers de
-  // back/exit, que el SiteHeader invoca cuando estamos en /inspiracion.
-  useEffect(() => {
-    inspiracionControlsStore.registerHandlers({
-      back: () => {
-        const prev = flowRef.current;
-        if (prev.step <= 0) return;
-        oracleRef.current?.pulse();
-        const next = { ...prev, step: prev.step - 1 };
-        setFlow(next);
-        saveFlow(next);
-      },
-      exit: () => {
-        try {
-          sessionStorage.removeItem(STORAGE_KEY);
-        } catch {
-          /* ignore */
-        }
-        router.push('/');
-      },
-    });
-    return () => {
-      inspiracionControlsStore.unregisterHandlers();
-      inspiracionControlsStore.reset();
-    };
-  }, [router]);
-
-  useEffect(() => {
-    inspiracionControlsStore.setState({
-      step: flow.step,
-      canGoBack: flow.step > 0,
-    });
-  }, [flow.step]);
 
   const persist = useCallback((next: FlowState) => {
     setFlow(next);

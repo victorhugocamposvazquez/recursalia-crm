@@ -1,9 +1,10 @@
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { courseInputPayloadFromBody } from '@/lib/courseCreationPayload';
-import { generateAndSaveCourse } from '@/services/courseOrchestrator';
+import { createManualDraftCourse } from '@/services/courseOrchestrator';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 
+/** Borrador con estructura placeholder editable, sin generación por IA. */
 export async function POST(req: NextRequest) {
   const { error: authError } = await requireAuthApi();
   if (authError) return authError;
@@ -18,10 +19,10 @@ export async function POST(req: NextRequest) {
       return errorResponse(msg, 400);
     }
 
-    const course = await generateAndSaveCourse(payload);
+    const course = await createManualDraftCourse(payload);
     return jsonResponse(course, 201);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    return errorResponse('Generate course failed', 500, msg);
+    return errorResponse('Create manual draft failed', 500, msg);
   }
 }

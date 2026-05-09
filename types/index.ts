@@ -23,6 +23,8 @@ export interface CourseInputPayload {
   discountPercent?: number;
   /** Ajuste de tono y profundidad en el prompt OpenAI */
   courseVertical?: CourseVertical;
+  /** `manual` cuando el borrador se creó con esqueleto vacío y sin llamar a la IA */
+  creationMode?: 'ai' | 'manual';
 }
 
 // Estructura generada por OpenAI

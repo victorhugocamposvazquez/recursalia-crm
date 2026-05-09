@@ -5,10 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CourseSearchField } from '@/components/marketing/CourseSearchField';
 import { DrawerCategoriesSection, HeaderCategories } from '@/components/marketing/HeaderCategories';
-import {
-  inspiracionControlsStore,
-  useInspiracionControls,
-} from '@/components/marketing/inspiracion/inspiracionControlsStore';
 import { useMarketingContent } from '@/components/marketing/MarketingContentProvider';
 import { isMarketingCourseLandingPath } from '@/lib/marketing-path';
 import styles from './SiteHeader.module.css';
@@ -18,7 +14,6 @@ export function SiteHeader() {
   const pathname = usePathname();
   const courseLanding = isMarketingCourseLandingPath(pathname);
   const isInspiracion = pathname === '/inspiracion';
-  const inspiracionControls = useInspiracionControls();
   const [sticky, setSticky] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -95,51 +90,21 @@ export function SiteHeader() {
             </div>
 
             <div className={styles.actions}>
-              {isInspiracion ? (
-                <div className={styles.inspiracionControls} aria-label="Controles de Neurall">
-                  <button
-                    type="button"
-                    className={styles.inspiracionExit}
-                    onClick={() => inspiracionControlsStore.triggerExit()}
-                  >
-                    Salir
-                  </button>
-                  {inspiracionControls.canGoBack ? (
-                    <button
-                      type="button"
-                      className={styles.inspiracionBack}
-                      onClick={() => inspiracionControlsStore.triggerBack()}
-                      aria-label="Paso anterior"
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                        <path
-                          d="M15 18l-6-6 6-6"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                  ) : null}
-                </div>
-              ) : (
-                <Link href="/cursos" className={styles.cta}>
-                  <span className={styles.ctaLabel}>Recursos</span>
-                  <span className={styles.ctaBadge} aria-hidden>
-                    <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
-                      <path
-                        d="M7 17L17 7M10 7h7v7"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </span>
-                </Link>
-              )}
+              <Link href="/cursos" className={styles.cta}>
+                <span className={styles.ctaLabel}>Recursos</span>
+                <span className={styles.ctaBadge} aria-hidden>
+                  <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M7 17L17 7M10 7h7v7"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </Link>
               <button
                 type="button"
                 className={styles.burger}
