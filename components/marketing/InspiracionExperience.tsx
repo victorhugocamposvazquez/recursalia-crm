@@ -324,13 +324,18 @@ export function InspiracionExperience() {
       <div
         className={`${styles.shellColumn} ${flow.step === 0 ? styles.shellColumnIntro : ''}`.trim()}
       >
-        <header className={styles.topBar}>
-          <div className={styles.progress} aria-hidden>
-            {[0, 1, 2].map((i) => (
-              <div key={i} className={`${styles.progressSeg} ${i < filledSegments ? styles.progressSegOn : ''}`} />
-            ))}
-          </div>
-        </header>
+        {flow.step > 0 ? (
+          <header className={styles.topBar}>
+            <div className={styles.progress} aria-hidden>
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`${styles.progressSeg} ${i < filledSegments ? styles.progressSegOn : ''}`}
+                />
+              ))}
+            </div>
+          </header>
+        ) : null}
 
         <div className={styles.oracleBlock}>
           <ParticleOracle

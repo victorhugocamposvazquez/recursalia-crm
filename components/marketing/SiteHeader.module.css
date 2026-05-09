@@ -613,40 +613,35 @@
 }
 
 .barInverted .cta {
-  background: #07142f;
-  border-color: rgb(255 255 255 / 32%);
+  background: rgb(255 255 255 / 11%);
+  border-color: rgb(255 255 255 / 22%);
   color: #ffffff !important;
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 45%),
-    0 4px 16px rgb(0 0 0 / 28%);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 18%);
 }
 
 .barInverted .cta:hover {
-  background: #0c1f4a;
-  border-color: rgb(255 255 255 / 42%);
+  background: rgb(255 255 255 / 18%);
+  border-color: rgb(255 255 255 / 30%);
   color: #ffffff !important;
-  box-shadow:
-    0 2px 4px rgb(0 0 0 / 40%),
-    0 8px 24px rgb(0 0 0 / 32%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 22%);
   transform: translateY(-1px);
 }
 
 .barInverted .ctaBadge {
-  background: #ffffff;
-  color: #07142f;
+  background: rgb(255 255 255 / 92%);
+  color: rgb(51 65 85);
 }
 
 .barInverted .cta:hover .ctaBadge {
-  background: rgb(255 255 255 / 96%);
-  color: #0a1748;
+  background: #ffffff;
+  color: rgb(71 85 105);
 }
 
-/* Pill sticky sobre fondo oscuro: invertimos a un cristal azul translúcido
-   en lugar de blanco, para que conserve la sensación pero respete el tema. */
+/* Pill sticky sobre fondo oscuro: cristal neutro (menos azul saturado). */
 .barInverted.barSticky {
-  background: rgb(10 23 72 / 65%);
-  backdrop-filter: saturate(160%) blur(14px);
-  -webkit-backdrop-filter: saturate(160%) blur(14px);
-  border-color: rgb(255 255 255 / 18%);
-  box-shadow: 0 6px 24px rgb(0 0 0 / 28%);
+  background: rgb(15 23 42 / 52%);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border-color: rgb(255 255 255 / 14%);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 22%);
 }
