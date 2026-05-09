@@ -31,19 +31,18 @@
   flex-direction: column;
 }
 
-/* Paso 0: menos aire entre guiones y oráculo; sin márgenes negativos que
-   acerquen el texto al borde superior (evita sensación de “tapado”). */
+/* Paso 0 presentación: oráculo más arriba y menos hueco bajo el icono. */
 .shellColumnIntro .oracleBlock {
-  margin-top: 0;
-  margin-bottom: 0.08rem;
+  margin-top: -0.65rem;
+  margin-bottom: 0;
 }
 
 .shellColumnIntro .scrollBodyIntro {
-  margin-top: 0;
+  margin-top: -0.28rem;
 }
 
 .shellColumnIntro .scrollBodyIntro .headline {
-  margin-top: 0.45rem;
+  margin-top: 0.35rem;
 }
 
 @media (min-width: 1024px) {
@@ -99,7 +98,7 @@
   padding-bottom: calc(5.9rem + env(safe-area-inset-bottom, 0px) + 12px);
 }
 
-/* Paso 0: texto intro sin margen negativo (evita solaparse con la cabecera). */
+/* Paso 0: el margen superior lo ajusta .shellColumnIntro .scrollBodyIntro */
 .scrollBodyIntro {
   margin-top: 0;
 }
@@ -109,7 +108,7 @@
 }
 
 .scrollBodyIntro .tagline {
-  margin-top: 0.25rem;
+  margin-top: 0.18rem;
 }
 
 .scrollBodyIntro .headline {
