@@ -38,11 +38,21 @@ create policy "front_copy_select_all"
   to anon, authenticated
   using (true);
 
-create policy "front_copy_write_authenticated"
-  on public.front_site_copy for insert, update, delete
+create policy "front_copy_insert_authenticated"
+  on public.front_site_copy for insert
+  to authenticated
+  with check (true);
+
+create policy "front_copy_update_authenticated"
+  on public.front_site_copy for update
   to authenticated
   using (true)
   with check (true);
+
+create policy "front_copy_delete_authenticated"
+  on public.front_site_copy for delete
+  to authenticated
+  using (true);
 
 -- Textos por defecto (buscadores)
 insert into public.front_site_copy (key, value) values
