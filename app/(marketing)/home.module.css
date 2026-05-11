@@ -124,6 +124,7 @@
 
 .hero {
   position: relative;
+  z-index: 3;
   /* Margin negativo: el fondo sube hasta el borde inferior del header transparente */
   padding: 6.25rem var(--marketing-gutter-x, 1.25rem) 4rem;
   margin-top: -5rem;
@@ -131,7 +132,8 @@
     radial-gradient(circle at 18% 22%, rgb(216 255 92 / 14%) 0, transparent 30%),
     radial-gradient(circle at 82% 28%, rgb(103 232 249 / 12%) 0, transparent 32%),
     #ffffff;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   isolation: isolate;
 }
 
@@ -263,11 +265,11 @@
   max-width: 38rem;
   margin: 0.4rem auto 0.4rem;
   position: relative;
-  z-index: 30;
+  z-index: 50;
 }
 
 
-/* Avatares + estrellas + alumnos (debajo del buscador) */
+/* Avatares + estrellas debajo del buscador — por debajo del panel de resultados */
 .heroSocialProof {
   position: relative;
   display: inline-flex;
@@ -280,8 +282,8 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  /* Pegado al buscador (compensa parte del gap del heroInner) */
-  margin-top: -0.85rem;
+  margin-top: 0;
+  z-index: 2;
 }
 
 .heroAvatars {
@@ -426,6 +428,7 @@
 
 .metricsBand {
   position: relative;
+  z-index: 1;
   overflow: hidden;
   background: #f2ffe8;
   color: var(--ink, #0f172a);
