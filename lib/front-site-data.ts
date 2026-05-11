@@ -2,18 +2,43 @@ import { getSupabase } from '@/lib/supabase';
 import { HOME_COURSE_CATEGORIES } from '@/lib/homeContent';
 import type { FrontCategoryPublic, FrontSearchCopy, FrontSitePayload } from '@/types';
 
-const COPY_KEYS = ['search_hero', 'search_header', 'search_drawer'] as const;
+const COPY_KEYS = [
+  'search_hero',
+  'search_hero_lines',
+  'search_header',
+  'search_drawer',
+] as const;
 
 export const STATIC_SEARCH_COPY: FrontSearchCopy = {
   hero: 'Encuentra tu recurso perfecto…',
+  heroLines: ['Encuentra tu recurso perfecto…'],
   header: '¿Qué quieres aprender?',
   drawer: '¿Qué quieres aprender?',
 };
 
+function parseHeroLinesJson(raw: string | undefined): string[] | null {
+  if (raw == null || raw.trim() === '') return null;
+  try {
+    const j = JSON.parse(raw) as unknown;
+    if (!Array.isArray(j)) return null;
+    const lines = j
+      .filter((x): x is string => typeof x === 'string')
+      .map((x) => x.trim())
+      .filter(Boolean);
+    return lines.length > 0 ? lines : null;
+  } catch {
+    return null;
+  }
+}
+
 function mapCopyRows(rows: { key: string; value: string }[] | null): FrontSearchCopy {
   const m = Object.fromEntries((rows ?? []).map((r) => [r.key, r.value])) as Record<string, string>;
+  const heroBase = m.search_hero ?? STATIC_SEARCH_COPY.hero;
+  const fromJson = parseHeroLinesJson(m.search_hero_lines);
+  const heroLines = fromJson ?? [heroBase];
   return {
-    hero: m.search_hero ?? STATIC_SEARCH_COPY.hero,
+    hero: heroLines[0] ?? heroBase,
+    heroLines,
     header: m.search_header ?? STATIC_SEARCH_COPY.header,
     drawer: m.search_drawer ?? STATIC_SEARCH_COPY.drawer,
   };

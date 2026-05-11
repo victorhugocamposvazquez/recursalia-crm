@@ -84,6 +84,77 @@
   display: block;
 }
 
+/* Hero home: zona del texto + overlay manuscrito (tipografía animada). */
+.inputGrow {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.inputHero {
+  font-family: var(--font-doodle), 'Caveat', cursive;
+  font-weight: 500;
+  font-size: clamp(1.06rem, 2.85vw, 1.42rem);
+  line-height: 1.28;
+}
+
+.heroTypingHint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.1em;
+  padding-right: 0.15rem;
+  pointer-events: none;
+  font-family: var(--font-doodle), 'Caveat', cursive;
+  font-weight: 500;
+  font-size: clamp(1.06rem, 2.85vw, 1.42rem);
+  line-height: 1.28;
+  color: rgb(115 133 157);
+  letter-spacing: 0.01em;
+}
+
+.heroTypingText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.heroCaret {
+  flex-shrink: 0;
+  display: inline-block;
+  width: 2px;
+  height: 0.92em;
+  margin-top: 0.05em;
+  border-radius: 1px;
+  background: rgb(139 157 178);
+  animation: heroCaretBlink 0.92s ease-in-out infinite;
+}
+
+@keyframes heroCaretBlink {
+  0%,
+  40% {
+    opacity: 1;
+  }
+  58% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroCaret {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 .input {
   flex: 1;
   min-width: 0;

@@ -160,7 +160,10 @@ export interface FrontCategoryPublic {
 }
 
 export interface FrontSearchCopy {
+  /** Primera frase del hero (accesibilidad / compat); coincide con la primera línea de `heroLines`. */
   hero: string;
+  /** Frases que rotan en el buscador del hero (manuscrito). Al menos una; si la BD es antigua, se usa solo `hero`. */
+  heroLines: string[];
   header: string;
   drawer: string;
 }

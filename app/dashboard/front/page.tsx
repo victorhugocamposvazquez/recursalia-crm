@@ -13,9 +13,11 @@ export default function FrontContentPage() {
   const [categories, setCategories] = useState<FrontCategoryRow[]>([]);
   const [searchCopy, setSearchCopy] = useState<FrontSearchCopy>({
     hero: '',
+    heroLines: [],
     header: '',
     drawer: '',
   });
+  const [heroText, setHeroText] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +30,15 @@ export default function FrontContentPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Error al cargar');
       setCategories(sortRows(data.categories ?? []));
-      setSearchCopy(data.searchCopy);
+      const sc = data.searchCopy as FrontSearchCopy;
+      setSearchCopy(sc);
+      const lines =
+        Array.isArray(sc.heroLines) && sc.heroLines.length > 0
+          ? sc.heroLines
+          : sc.hero
+            ? [sc.hero]
+            : [];
+      setHeroText(lines.join('\n'));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error al cargar');
     } finally {
@@ -86,19 +96,41 @@ export default function FrontContentPage() {
     setError(null);
     const sorted = sortRows(categories);
     const normalized = sorted.map((c, i) => ({ ...c, sort_order: i }));
+    const heroLinesParsed = heroText
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (heroLinesParsed.length === 0) {
+      setError('En «Hero»: escribe al menos una frase (una por línea).');
+      setSaving(false);
+      return;
+    }
+    const searchPayload: FrontSearchCopy = {
+      ...searchCopy,
+      heroLines: heroLinesParsed,
+      hero: heroLinesParsed[0] ?? '',
+    };
     try {
       const res = await fetch('/api/front-site', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           categories: normalized,
-          searchCopy,
+          searchCopy: searchPayload,
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Error al guardar');
       setCategories(sortRows(data.categories ?? normalized));
-      setSearchCopy(data.searchCopy ?? searchCopy);
+      const next = (data.searchCopy ?? searchPayload) as FrontSearchCopy;
+      setSearchCopy(next);
+      const nextLines =
+        Array.isArray(next.heroLines) && next.heroLines.length > 0
+          ? next.heroLines
+          : next.hero
+            ? [next.hero]
+            : [];
+      setHeroText(nextLines.join('\n'));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error al guardar');
     } finally {
@@ -132,13 +164,21 @@ export default function FrontContentPage() {
           Textos de búsqueda
         </h2>
         <div className={styles.field}>
-          <label htmlFor="ph-hero">Hero (página principal)</label>
-          <input
-            id="ph-hero"
-            value={searchCopy.hero}
-            onChange={(e) => setSearchCopy((s) => ({ ...s, hero: e.target.value }))}
+          <label htmlFor="ph-hero-lines">Hero (página principal) — frases rotativas</label>
+          <textarea
+            id="ph-hero-lines"
+            className={styles.textarea}
+            rows={8}
+            value={heroText}
+            placeholder={
+              'Una línea por frase, por ejemplo:\nCurso de ciberseguridad\nCurso de marketing digital'
+            }
+            onChange={(e) => setHeroText(e.target.value)}
           />
-          <p className={styles.fieldHint}>Buscador principal bajo el titular.</p>
+          <p className={styles.fieldHint}>
+            El buscador del hero muestra estas frases una tras otra (animación manuscrita). Una
+            frase por línea; líneas vacías se ignoran.
+          </p>
         </div>
         <div className={styles.field}>
           <label htmlFor="ph-header">Cabecera</label>

@@ -40,17 +40,36 @@ export async function PUT(req: NextRequest) {
   const supabase = getSupabase();
 
   if (body.searchCopy) {
-    const { hero, header, drawer } = body.searchCopy;
-    const rows = [
-      { key: 'search_hero', value: hero.trim() },
-      { key: 'search_header', value: header.trim() },
-      { key: 'search_drawer', value: drawer.trim() },
-    ];
-    for (const r of rows) {
-      if (!r.value) {
-        return errorResponse(`El texto "${r.key}" no puede estar vacío`, 400);
-      }
+    const { hero, header, drawer, heroLines } = body.searchCopy;
+    let heroLineList =
+      heroLines
+        ?.map((x) => (typeof x === 'string' ? x.trim() : ''))
+        .filter(Boolean) ?? [];
+
+    if (heroLineList.length === 0 && typeof hero === 'string' && hero.trim()) {
+      heroLineList = [hero.trim()];
     }
+
+    if (heroLineList.length === 0) {
+      return errorResponse('Hero: necesitas al menos una frase (una por línea).', 400);
+    }
+
+    const primaryHero = heroLineList[0]!;
+    const heroLinesPayload = JSON.stringify(heroLineList);
+
+    const headerTrim = header.trim();
+    const drawerTrim = drawer.trim();
+
+    if (!headerTrim || !drawerTrim) {
+      return errorResponse('Cabecera y drawer no pueden estar vacíos.', 400);
+    }
+
+    const rows = [
+      { key: 'search_hero', value: primaryHero },
+      { key: 'search_hero_lines', value: heroLinesPayload },
+      { key: 'search_header', value: headerTrim },
+      { key: 'search_drawer', value: drawerTrim },
+    ];
     const { error: upErr } = await supabase.from('front_site_copy').upsert(
       rows.map((r) => ({ ...r, updated_at: new Date().toISOString() })),
       { onConflict: 'key' }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './CourseSearchField.module.css';
 
@@ -16,6 +16,10 @@ export type CourseSearchVariant = 'hero' | 'header';
 type Props = {
   variant?: CourseSearchVariant;
   placeholder?: string;
+  /** Variantes de texto cuando `heroTypingAccent` y hay varias desde el CMS. */
+  typingPhrases?: string[];
+  /** Solo home hero: texto en manuscrito con animación de “tipografía”. */
+  heroTypingAccent?: boolean;
   /** id del input (accesibilidad); si no se pasa, se genera uno */
   inputId?: string;
   /** Ocupa todo el ancho del contenedor (p. ej. menú móvil) */
@@ -25,6 +29,8 @@ type Props = {
 export function CourseSearchField({
   variant = 'hero',
   placeholder = 'Encuentra tu recurso perfecto…',
+  heroTypingAccent = false,
+  typingPhrases,
   inputId: inputIdProp,
   fullWidth = false,
 }: Props) {
@@ -37,6 +43,22 @@ export function CourseSearchField({
   const [results, setResults] = useState<Result[]>([]);
   const [active, setActive] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const qRef = useRef(q);
+  qRef.current = q;
+  const [typedHint, setTypedHint] = useState('');
+  const phraseIxRef = useRef(0);
+
+  const typingJoin = (typingPhrases ?? []).join('\u0000');
+
+  const phrases = useMemo(() => {
+    const fromProp = typingJoin
+      .split('\u0000')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (fromProp.length > 0) return fromProp;
+    const p = placeholder.trim();
+    return p ? [p] : [];
+  }, [typingJoin, placeholder]);
 
   const wrapClass = [
     styles.wrap,
@@ -83,6 +105,67 @@ export function CourseSearchField({
     return () => document.removeEventListener('mousedown', onDoc);
   }, []);
 
+  useEffect(() => {
+    if (!heroTypingAccent || variant !== 'hero') {
+      setTypedHint('');
+      return undefined;
+    }
+    phraseIxRef.current = 0;
+
+    const phraseFirst = phrases[0]?.trim();
+    if (!phraseFirst || phrases.length === 0) {
+      setTypedHint('');
+      return undefined;
+    }
+    if (q.trim()) {
+      setTypedHint('');
+      return undefined;
+    }
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      setTypedHint(phraseFirst);
+      return undefined;
+    }
+
+    let active = true;
+    let tid: number | undefined;
+
+    function schedule(next: () => void, ms: number) {
+      tid = window.setTimeout(() => {
+        if (active && qRef.current.trim() === '') next();
+      }, ms);
+    }
+
+    function step(charIndex: number) {
+      if (!active || qRef.current.trim() !== '') return;
+      const list = phrases;
+      const phrase =
+        list[phraseIxRef.current % list.length] ??
+        '';
+
+      if (charIndex < phrase.length) {
+        setTypedHint(phrase.slice(0, charIndex + 1));
+        schedule(() => step(charIndex + 1), 42);
+      } else {
+        schedule(() => {
+          if (!active) return;
+          setTypedHint('');
+          phraseIxRef.current = (phraseIxRef.current + 1) % list.length;
+          schedule(() => step(0), 580);
+        }, 2550);
+      }
+    }
+
+    schedule(() => step(0), 420);
+
+    return () => {
+      active = false;
+      if (tid !== undefined) window.clearTimeout(tid);
+    };
+  }, [heroTypingAccent, variant, phrases, q]);
+
   function goSlug(slug: string) {
     setOpen(false);
     router.push(`/cursos/${slug}`);
@@ -112,6 +195,32 @@ export function CourseSearchField({
   const shellClass =
     variant === 'header' ? `${styles.inputShell} ${styles.inputShellHeader}` : styles.inputShell;
 
+  const heroHandwriting = Boolean(heroTypingAccent && variant === 'hero');
+
+  const inputCls = [
+    styles.input,
+    variant === 'header' ? styles.inputHeader : '',
+    heroHandwriting ? styles.inputHero : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  const sharedInputProps = {
+    id: inputId,
+    className: inputCls,
+    type: 'search' as const,
+    value: q,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      setQ(e.target.value);
+      setOpen(true);
+    },
+    onFocus: () => setOpen(true),
+    onKeyDown,
+    autoComplete: 'off' as const,
+    ariaAutoComplete: 'list' as const,
+    ariaExpanded: showDropdown,
+  };
+
   return (
     <div className={wrapClass} ref={wrapRef}>
       <div className={shellClass}>
@@ -125,22 +234,27 @@ export function CourseSearchField({
             />
           </svg>
         </span>
-        <input
-          id={inputId}
-          className={variant === 'header' ? `${styles.input} ${styles.inputHeader}` : styles.input}
-          type="search"
-          placeholder={placeholder}
-          value={q}
-          onChange={(e) => {
-            setQ(e.target.value);
-            setOpen(true);
-          }}
-          onFocus={() => setOpen(true)}
-          onKeyDown={onKeyDown}
-          autoComplete="off"
-          aria-autocomplete="list"
-          aria-expanded={showDropdown}
-        />
+        {heroHandwriting ? (
+          <div className={styles.inputGrow}>
+            <input
+              {...sharedInputProps}
+              placeholder=""
+              aria-label={
+                phrases.length > 1
+                  ? `Sugerencias: ${phrases.join('. ')}`
+                  : placeholder
+              }
+            />
+            {!q.trim() && typedHint ? (
+              <span className={styles.heroTypingHint} aria-hidden>
+                <span className={styles.heroTypingText}>{typedHint}</span>
+                <span className={styles.heroCaret} />
+              </span>
+            ) : null}
+          </div>
+        ) : (
+          <input {...sharedInputProps} placeholder={placeholder} />
+        )}
         <button
           type="button"
           className={variant === 'header' ? `${styles.searchBtn} ${styles.searchBtnHeader}` : styles.searchBtn}
