@@ -413,6 +413,8 @@
 }
 
 .drawerCta {
+  width: 100%;
+  box-sizing: border-box;
   background: #1b38c4;
   border-color: #1b38c4;
   color: #ffffff !important;

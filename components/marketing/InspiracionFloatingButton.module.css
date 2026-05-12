@@ -1,6 +1,4 @@
-/* Dock fijo abajo-derecha, sin fondo ni pill: solo el orbe animado.
-   Por encima del contenido pero bajo el header sticky (z-50) y debajo
-   del drawer del menú (z-70). */
+/* FAB Neurall: orbe + aro fluorescente para leer mejor sobre fondos claros y oscuros. */
 .dock {
   position: fixed;
   right: clamp(0.5rem, 1.6vw, 1rem);
@@ -9,30 +7,62 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  isolation: isolate;
   background: transparent;
   border: 0;
-  padding: 0;
+  /* Aire interior: el halo no recorta el canvas */
+  padding: 10px;
+  margin: 0 -10px -10px 0;
   border-radius: 999px;
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   text-decoration: none;
   transition: transform 0.25s ease, filter 0.25s ease;
-  filter: drop-shadow(0 12px 24px rgb(8 19 56 / 28%));
+  filter: drop-shadow(0 10px 22px rgb(8 19 56 / 32%))
+    drop-shadow(0 0 28px rgb(200 240 66 / 24%));
+}
+
+/* Disco trasero: viñeta + borde lime legible sobre blanco */
+.dock::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 42% 36%,
+    rgb(255 255 255 / 88%) 0%,
+    rgb(246 251 237 / 45%) 38%,
+    rgb(230 246 212 / 12%) 70%,
+    transparent 82%
+  );
+  box-shadow:
+    0 0 0 1.5px rgb(200 240 66 / 70%),
+    0 0 0 2.5px rgb(255 255 255 / 55%) inset,
+    0 8px 28px rgb(8 19 56 / 18%);
+}
+
+.dock canvas {
+  position: relative;
+  z-index: 1;
+  display: block;
 }
 
 .dock:hover,
 .dock:focus-visible {
-  transform: translateY(-2px);
-  filter: drop-shadow(0 18px 32px rgb(8 19 56 / 38%));
+  transform: translateY(-3px) scale(1.02);
+  filter: drop-shadow(0 16px 36px rgb(8 19 56 / 40%))
+    drop-shadow(0 0 36px rgb(200 240 66 / 32%));
 }
 
 .dock:focus-visible {
   outline: 2px solid #c8f542;
-  outline-offset: 4px;
+  outline-offset: 3px;
 }
 
 .dock:active {
-  transform: translateY(0);
+  transform: translateY(-1px) scale(1.01);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -40,6 +70,10 @@
   .dock:hover,
   .dock:focus-visible {
     transition: none;
+    transform: none;
+  }
+
+  .dock:active {
     transform: none;
   }
 }

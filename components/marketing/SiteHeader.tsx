@@ -174,9 +174,6 @@ export function SiteHeader() {
           <DrawerCategoriesSection onNavigate={() => setOpen(false)} />
         </div>
         <div className={styles.drawerActions}>
-          <Link href="/login" className={styles.drawerGhost} onClick={() => setOpen(false)}>
-            Ingresar
-          </Link>
           <Link href="/cursos" className={styles.drawerCta} onClick={() => setOpen(false)}>
             Recursos
           </Link>

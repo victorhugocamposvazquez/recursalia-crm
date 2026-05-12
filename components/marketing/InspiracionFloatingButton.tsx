@@ -25,7 +25,7 @@ export function InspiracionFloatingButton() {
     if (typeof window === 'undefined') return;
     const compute = () => {
       const w = window.innerWidth;
-      setOracleSize(w >= 768 ? 84 : 64);
+      setOracleSize(w >= 768 ? 92 : 76);
     };
     compute();
     window.addEventListener('resize', compute);
