@@ -245,12 +245,11 @@ const STEPS: Step[] = [
   },
 ];
 
+/** Trazo vertical ondulado (boceto); viewBox estirable en altura. */
+const JOURNEY_WIGGLE_D =
+  'M8 1.2 C10.5 18 5.8 32 9 48 C12.2 64 5.5 78 8.2 92 C9.4 96.5 8.6 99 8 99.5';
+
 function JourneyConnector({ active }: { active: boolean }) {
-  // Línea estirable + flecha de tamaño fijo:
-  //   - "guides" (dashed) y "trail" (sólido fluor) usan pathLength=1
-  //     → animamos stroke-dashoffset de 1 → 0.
-  //   - La flecha vive en su propio SVG no estirable, anclada al final
-  //     del wrap, así no se deforma cuando el conector es muy alto.
   const trailStyle = {
     strokeDasharray: 1,
     strokeDashoffset: active ? 0 : 1,
@@ -267,33 +266,37 @@ function JourneyConnector({ active }: { active: boolean }) {
     <>
       <svg
         className={homeStyles.journeyConnectorLine}
-        viewBox="0 0 10 100"
+        viewBox="0 0 16 100"
         preserveAspectRatio="none"
         aria-hidden
       >
         <path
           className={homeStyles.journeyConnectorGuides}
-          d="M5 0 L5 100"
+          d={JOURNEY_WIGGLE_D}
           fill="none"
           strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
         />
         <path
           className={homeStyles.journeyConnectorTrail}
-          d="M5 0 L5 100"
+          d={JOURNEY_WIGGLE_D}
           fill="none"
           strokeLinecap="round"
+          strokeLinejoin="round"
           pathLength={1}
+          vectorEffect="non-scaling-stroke"
           style={trailStyle}
         />
       </svg>
       <svg
         className={homeStyles.journeyConnectorArrowSvg}
-        viewBox="0 0 24 14"
+        viewBox="0 0 22 13"
         aria-hidden
       >
         <path
           className={homeStyles.journeyConnectorArrow}
-          d="M5 3 L12 12 L19 3"
+          d="M4 4.2 L11.3 13.6 L18.1 5.3"
           fill="none"
           strokeLinecap="round"
           strokeLinejoin="round"

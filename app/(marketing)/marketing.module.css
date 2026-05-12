@@ -28,6 +28,13 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Hueco inferior en móvil para el FAB del catálogo + Neurall (fixed) */
+@media (max-width: 1023px) {
+  .marketing:not(.marketingInspiracion) {
+    padding-bottom: clamp(5.75rem, 14vw, 7.25rem);
+  }
+}
+
 /* Ruta /inspiracion: fondo azul Neural a pantalla completa. El header
    sí se muestra (en modo sticky pill blanco translúcido), el footer no. */
 .marketingInspiracion {

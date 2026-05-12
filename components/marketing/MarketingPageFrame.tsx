@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import styles from '@/app/(marketing)/marketing.module.css';
 import { InspiracionFloatingButton } from './InspiracionFloatingButton';
+import { MarketingMobileCatalogCta } from './MarketingMobileCatalogCta';
 
 type Props = {
   className: string;
@@ -29,6 +30,7 @@ export function MarketingPageFrame({ className, header, main, footer }: Props) {
       {header}
       {main}
       {!isInspiracion ? footer : null}
+      <MarketingMobileCatalogCta />
       <InspiracionFloatingButton />
     </div>
   );

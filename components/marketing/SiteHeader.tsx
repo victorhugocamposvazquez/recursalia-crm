@@ -175,7 +175,7 @@ export function SiteHeader() {
         </div>
         <div className={styles.drawerActions}>
           <Link href="/cursos" className={styles.drawerCta} onClick={() => setOpen(false)}>
-            Recursos
+            Ver todo el catálogo
           </Link>
         </div>
       </aside>

@@ -830,8 +830,8 @@
     'marker content'
     'marker visual';
   column-gap: 1rem;
-  row-gap: 1rem;
-  padding: 0 0 1.4rem;
+  row-gap: 1.35rem;
+  padding: 0 0 2.75rem;
   opacity: 0;
   transform: translateY(14px);
   transition: opacity 0.55s ease, transform 0.55s ease;
@@ -941,12 +941,11 @@
 
 .journeyConnectorWrap {
   position: absolute;
-  /* centro de la columna del marker (3rem / 2) */
+  /* Centro del marker — el trazo no llega pegado al siguiente bloque */
   left: 1.5rem;
-  /* arranca justo debajo del círculo y baja casi hasta el siguiente */
-  top: calc(2.65rem + 0.3rem);
-  bottom: 0.25rem;
-  width: 36px;
+  top: calc(2.65rem + 0.65rem);
+  bottom: 1.85rem;
+  width: 38px;
   transform: translateX(-50%);
   pointer-events: none;
   display: flex;
@@ -963,31 +962,36 @@
 }
 
 .journeyConnectorArrowSvg {
-  width: 1.6rem;
-  height: 1rem;
+  width: 2rem;
+  height: auto;
+  min-height: 0.92rem;
   display: block;
-  margin-top: -3px;
+  margin-top: -2px;
   overflow: visible;
 }
 
 .journeyConnectorGuides {
-  stroke: rgb(190 242 100 / 60%);
-  stroke-width: 1.4;
-  stroke-dasharray: 4 5;
-  vector-effect: non-scaling-stroke;
+  stroke: rgb(15 23 42 / 18%);
+  stroke-width: 1.15;
+  /* Trazos irregulares tipo boceto */
+  stroke-dasharray: 5 9 3 11 7 13;
+  stroke-dashoffset: 0;
+  opacity: 0.55;
 }
 
 .journeyConnectorTrail {
   stroke: var(--doodle-fluor, #d8ff5c);
-  stroke-width: 2.6;
-  filter: drop-shadow(0 0 1px rgb(132 204 22 / 35%));
-  vector-effect: non-scaling-stroke;
+  stroke-width: 2.05;
+  filter: drop-shadow(0 0.5px 0 rgb(15 23 42 / 8%));
+  paint-order: stroke fill;
 }
 
 .journeyConnectorArrow {
   stroke: var(--doodle-fluor, #d8ff5c);
-  stroke-width: 2.6;
-  filter: drop-shadow(0 0 1px rgb(132 204 22 / 35%));
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0.5px 0 rgb(15 23 42 / 10%));
 }
 
 /* Layout en escritorio: zig-zag en 2 columnas ---------------------- */
@@ -996,9 +1000,10 @@
   .journeyStep {
     grid-template-columns: minmax(0, 1fr) 4rem minmax(0, 1fr);
     grid-template-areas: 'content marker visual';
-    column-gap: 2rem;
+    column-gap: 2.25rem;
     align-items: center;
-    padding-bottom: 6.5rem;
+    row-gap: 1.65rem;
+    padding-bottom: 8.75rem;
   }
 
   .journeyContent {
@@ -1052,11 +1057,9 @@
 
   .journeyConnectorWrap {
     left: 50%;
-    /* sale desde justo debajo del marker (centrado verticalmente)
-       y termina cerca del siguiente step */
-    top: calc(50% + 1.6rem);
-    bottom: 0.6rem;
-    width: 70px;
+    top: calc(50% + 2.1rem);
+    bottom: 2.15rem;
+    width: 64px;
     height: auto;
   }
 }
