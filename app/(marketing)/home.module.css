@@ -132,8 +132,9 @@
     radial-gradient(circle at 18% 22%, rgb(216 255 92 / 14%) 0, transparent 30%),
     radial-gradient(circle at 82% 28%, rgb(103 232 249 / 12%) 0, transparent 32%),
     #ffffff;
-  overflow-x: hidden;
-  overflow-y: visible;
+  /* No poner overflow-x:hidden aquí: con overflow-y:visible fuerza overflow-y:auto y
+     recorta el panel del buscador (queda oculto bajo la banda de métricas). El recorte
+     lateral va en .heroScribbles. */
   isolation: isolate;
 }
 
@@ -151,6 +152,7 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .heroScribble1,

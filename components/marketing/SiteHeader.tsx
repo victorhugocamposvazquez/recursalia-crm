@@ -174,7 +174,7 @@ export function SiteHeader() {
           <DrawerCategoriesSection onNavigate={() => setOpen(false)} />
         </div>
         <div className={styles.drawerActions}>
-          <Link href="/cursos" className={styles.drawerCta} onClick={() => setOpen(false)}>
+          <Link href="/cursos" className={styles.drawerCatalogCta} onClick={() => setOpen(false)}>
             Ver todo el catálogo
           </Link>
         </div>

@@ -28,10 +28,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Hueco inferior en móvil para el FAB del catálogo + Neurall (fixed) */
+/* Hueco inferior en móvil para el FAB Neurall (fixed) */
 @media (max-width: 1023px) {
   .marketing:not(.marketingInspiracion) {
-    padding-bottom: clamp(5.75rem, 14vw, 7.25rem);
+    padding-bottom: clamp(4rem, 11vw, 5.35rem);
   }
 }
 

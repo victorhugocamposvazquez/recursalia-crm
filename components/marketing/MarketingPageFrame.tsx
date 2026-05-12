@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import styles from '@/app/(marketing)/marketing.module.css';
 import { InspiracionFloatingButton } from './InspiracionFloatingButton';
-import { MarketingMobileCatalogCta } from './MarketingMobileCatalogCta';
 
 type Props = {
   className: string;
@@ -15,8 +14,8 @@ type Props = {
 
 /**
  * Ajustes de layout por ruta: en Inspiración el fondo es el azul Neurall a pantalla completa y se oculta el footer.
- * En las demás rutas marketing (excepto fichas de curso) montamos un
- * botón flotante con el oráculo Neurall que lleva a /inspiracion.
+ * En el resto del marketing (excepto fichas de curso) se monta el FAB Neurall hacia /inspiracion;
+ * «Ver todo el catálogo» está en el drawer móvil del header, no flotante.
  */
 export function MarketingPageFrame({ className, header, main, footer }: Props) {
   const pathname = usePathname();
@@ -30,7 +29,6 @@ export function MarketingPageFrame({ className, header, main, footer }: Props) {
       {header}
       {main}
       {!isInspiracion ? footer : null}
-      <MarketingMobileCatalogCta />
       <InspiracionFloatingButton />
     </div>
   );
