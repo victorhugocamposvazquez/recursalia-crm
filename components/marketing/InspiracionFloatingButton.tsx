@@ -10,22 +10,19 @@ import { isMarketingCourseLandingPath } from '@/lib/marketing-path';
 import styles from './InspiracionFloatingButton.module.css';
 
 /**
- * Botón flotante (fixed bottom-right) que lleva a /inspiracion.
- * Se oculta en la propia página de inspiración y en las fichas de curso
- * (donde el usuario está en el flujo de checkout y no queremos distraer).
- *
- * No lleva fondo ni pill: es solo el orbe animado de partículas.
+ * Botón flotante compacto: disco opaco detrás del canvas para que no se vea
+ * “fantasma” sobre fondos claros.
  */
 export function InspiracionFloatingButton() {
   const pathname = usePathname();
   const oracleRef = useRef<ParticleOracleHandle | null>(null);
-  const [oracleSize, setOracleSize] = useState(64);
+  const [oracleSize, setOracleSize] = useState(58);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const compute = () => {
       const w = window.innerWidth;
-      setOracleSize(w >= 768 ? 92 : 76);
+      setOracleSize(w >= 768 ? 72 : 58);
     };
     compute();
     window.addEventListener('resize', compute);
@@ -47,8 +44,8 @@ export function InspiracionFloatingButton() {
       <ParticleOracle
         ref={oracleRef}
         size={oracleSize}
-        bodyCount={520}
-        haloCount={180}
+        bodyCount={420}
+        haloCount={150}
       />
     </Link>
   );
