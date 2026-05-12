@@ -12,7 +12,9 @@
 }
 
 .drawerBlock {
-  padding: 0 1rem 1rem;
+  /* Gutters horizontales: hereda --drawer-pad-x del drawer (SiteHeader) */
+  padding: 0 0 1rem;
+  margin: 0;
   border-bottom: 1px solid rgb(15 23 42 / 8%);
 }
 

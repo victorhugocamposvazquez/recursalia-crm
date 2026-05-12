@@ -252,6 +252,9 @@
 }
 
 .drawer {
+  /* Misma columna lateral que header/footer marketing (captura menú móvil) */
+  --drawer-pad-x: var(--marketing-gutter-x, 1.25rem);
+
   position: fixed;
   top: 0;
   right: 0;
@@ -274,7 +277,7 @@
 
 .drawerSearch {
   flex-shrink: 0;
-  padding: 0 1rem 1rem;
+  padding: 0 var(--drawer-pad-x) 1rem;
   border-bottom: 1px solid rgb(15 23 42 / 8%);
 }
 
@@ -282,9 +285,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0 1rem 0.75rem;
-  padding: 0.7rem 0.85rem;
-  border-radius: 12px;
+  gap: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 0.75rem;
+  padding: 0.82rem 1.05rem 0.82rem 1.12rem;
+  border-radius: 999px;
   font-size: 0.98rem;
   font-weight: 700;
   color: #0f172a;
@@ -299,12 +305,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
   border-radius: 999px;
   background: #0f172a;
   color: #d8ff5c;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
+  line-height: 1;
   transition: transform 0.18s ease;
 }
 
@@ -322,13 +330,14 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  padding: 0.75rem var(--drawer-pad-x) 0;
 }
 
 .drawerHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
+  padding: 1rem var(--drawer-pad-x) 1rem;
   border-bottom: 1px solid rgb(15 23 42 / 8%);
 }
 
@@ -378,7 +387,7 @@
   flex-direction: column;
   gap: 0.6rem;
   flex-shrink: 0;
-  padding: 1rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  padding: 1rem var(--drawer-pad-x) calc(1.25rem + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid rgb(15 23 42 / 8%);
 }
 
@@ -415,8 +424,8 @@
   justify-content: center;
   width: 100%;
   box-sizing: border-box;
-  padding: 0.88rem 1.15rem;
-  border-radius: 14px;
+  padding: 0.92rem 1.2rem;
+  border-radius: 999px;
   font-weight: 700;
   font-size: 0.98rem;
   letter-spacing: -0.02em;
