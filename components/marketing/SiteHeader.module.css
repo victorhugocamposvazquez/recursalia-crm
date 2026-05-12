@@ -417,19 +417,20 @@
   transform: translateY(-1px);
 }
 
-/* Pie del drawer: igual que maqueta (pastilla clara + texto marca, sin icono) */
+/* Pie del drawer: un solo «Ver todo el catálogo» (flecha ↗ como el enlace anterior del listado). */
 .drawerCatalogCta {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.42rem;
   width: 100%;
   box-sizing: border-box;
-  padding: 0.92rem 1.2rem;
+  padding: 0.62rem 1.1rem;
   border-radius: 999px;
   font-weight: 700;
-  font-size: 0.98rem;
+  font-size: 0.93rem;
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: 1.2;
   text-decoration: none;
   text-align: center;
   color: #1b38c4 !important;
@@ -439,6 +440,15 @@
     background 0.18s ease,
     border-color 0.18s ease,
     transform 0.18s ease;
+}
+
+.drawerCatalogCta::after {
+  content: '↗';
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(0.06em);
+  display: inline-block;
 }
 
 .drawerCatalogCta:hover {

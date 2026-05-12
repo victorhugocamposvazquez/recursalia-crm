@@ -15,7 +15,6 @@
   /* Gutters horizontales: hereda --drawer-pad-x del drawer (SiteHeader) */
   padding: 0 0 1rem;
   margin: 0;
-  border-bottom: 1px solid rgb(15 23 42 / 8%);
 }
 
 .drawerTitle {
@@ -82,35 +81,6 @@
 .drawerLink:hover::after {
   color: #0f172a;
   transform: translateX(2px);
-}
-
-.drawerAll {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  margin-top: 0.85rem;
-  padding: 0.55rem 0.85rem;
-  width: 100%;
-  text-align: center;
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: #1b38c4;
-  text-decoration: none;
-  border: 1px solid rgb(27 56 196 / 22%);
-  border-radius: 12px;
-  background: rgb(27 56 196 / 6%);
-  transition: background 0.16s ease, border-color 0.16s ease;
-}
-
-.drawerAll::after {
-  content: '↗';
-  font-size: 0.8rem;
-}
-
-.drawerAll:hover {
-  background: rgb(27 56 196 / 12%);
-  border-color: rgb(27 56 196 / 35%);
 }
 
 .trigger {

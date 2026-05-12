@@ -104,9 +104,6 @@ export function DrawerCategoriesSection({ onNavigate }: DrawerCategoriesProps) {
           </li>
         ))}
       </ul>
-      <Link href="/cursos" className={styles.drawerAll} onClick={close}>
-        Ver todo el catálogo
-      </Link>
     </div>
   );
 }
