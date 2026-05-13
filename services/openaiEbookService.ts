@@ -54,6 +54,11 @@ export interface ExpandedTopic {
   objectives?: string[];
 }
 
+export interface GlossaryEntry {
+  term: string;
+  definition: string;
+}
+
 export interface ExpandedCourseContent {
   title: string;
   short_description: string;
@@ -65,6 +70,8 @@ export interface ExpandedCourseContent {
   editorialPlan?: EditorialPlan;
   /** Glosario candidato del plan, expuesto a nivel curso (para PDF futuro). */
   glossaryCandidates?: string[];
+  /** Glosario con definiciones resueltas (Hito 2). */
+  glossary?: GlossaryEntry[];
 }
 
 export type ProgressCallback = (
@@ -90,6 +97,53 @@ interface RichJobContext {
   previousLessonsInModule: LessonPlan[];
   /** Resumen de módulos anteriores (1-2 frases cada uno). */
   earlierModulesSummary: { title: string; summary: string }[];
+  /** Perfil sugerido para el "ejemplo" de esta lección (para diversidad). */
+  exampleProfile: ExampleProfile;
+  /** Nombres ya usados en otras lecciones del mismo curso (a evitar). */
+  forbiddenNames: string[];
+}
+
+interface ExampleProfile {
+  /** Nombre propio sugerido (el modelo puede adaptarlo si rompe la coherencia). */
+  name: string;
+  /** Edad orientativa (años). */
+  age: number;
+  /** Género o etiqueta no binaria descriptiva. */
+  gender: 'mujer' | 'hombre' | 'persona no binaria';
+  /** Ciudad de referencia (variedad geográfica). */
+  city: string;
+  /** Contexto profesional o vital. */
+  context: string;
+}
+
+/**
+ * Pool de perfiles para diversificar los ejemplos. Rotamos por índice global
+ * de la lección (curso → módulo → lección) para que los nombres no se repitan
+ * entre lecciones del mismo curso.
+ */
+const EXAMPLE_PROFILES: readonly ExampleProfile[] = [
+  { name: 'Alejandro', age: 28, gender: 'hombre', city: 'Bilbao', context: 'ingeniero de software que pasa el día sentado y entrena tres tardes a la semana' },
+  { name: 'Sofía', age: 22, gender: 'mujer', city: 'Madrid', context: 'estudiante de último año que combina prácticas con preparación para una media maratón' },
+  { name: 'Roberto', age: 45, gender: 'hombre', city: 'Valencia', context: 'autónomo del sector logístico que retoma el ejercicio tras una década inactivo' },
+  { name: 'Inés', age: 54, gender: 'mujer', city: 'Sevilla', context: 'profesora de instituto que busca mantener energía y fuerza durante la menopausia' },
+  { name: 'Javier', age: 33, gender: 'hombre', city: 'Zaragoza', context: 'padre de dos hijos pequeños con apenas tres horas semanales disponibles' },
+  { name: 'Patricia', age: 38, gender: 'mujer', city: 'Barcelona', context: 'ejecutiva que viaja a menudo y necesita rutinas adaptables a hoteles' },
+  { name: 'Marco', age: 62, gender: 'hombre', city: 'Málaga', context: 'jubilado activo que prioriza autonomía funcional y prevención de caídas' },
+  { name: 'Lucía', age: 27, gender: 'mujer', city: 'Granada', context: 'freelance creativa con vida muy sedentaria desde el confinamiento' },
+  { name: 'Tomás', age: 41, gender: 'hombre', city: 'Murcia', context: 'comercial con lumbalgia recurrente que quiere reforzar el core' },
+  { name: 'Carla', age: 19, gender: 'mujer', city: 'Vigo', context: 'universitaria que se inicia en el gimnasio y nunca había entrenado' },
+  { name: 'David', age: 50, gender: 'hombre', city: 'Pamplona', context: 'médico con hipertensión controlada que quiere bajar grasa corporal' },
+  { name: 'Andrea', age: 35, gender: 'mujer', city: 'Las Palmas', context: 'fisioterapeuta que entrena CrossFit y busca técnica de levantamientos' },
+  { name: 'Iván', age: 24, gender: 'hombre', city: 'A Coruña', context: 'opositor que pasa diez horas estudiando y necesita romper el sedentarismo' },
+  { name: 'Noelia', age: 47, gender: 'mujer', city: 'Salamanca', context: 'enfermera con turnos rotatorios que entrena cuando puede' },
+  { name: 'Hugo', age: 31, gender: 'hombre', city: 'Alicante', context: 'cocinero que pasa el día de pie y arrastra molestias en rodillas' },
+  { name: 'Sara', age: 58, gender: 'mujer', city: 'Logroño', context: 'directiva próxima a jubilarse que quiere mantener masa muscular' },
+];
+
+function pickProfileForLesson(globalIdx: number): ExampleProfile {
+  const i = ((globalIdx % EXAMPLE_PROFILES.length) + EXAMPLE_PROFILES.length) %
+    EXAMPLE_PROFILES.length;
+  return EXAMPLE_PROFILES[i];
 }
 
 interface RichLessonOutput {
@@ -114,6 +168,12 @@ function buildRichLessonPrompt(ctx: RichJobContext): string {
     .map((m, i) => `${i + 1}) ${m.title}: ${m.summary || '(sin resumen)'}`)
     .join('\n');
 
+  const p = ctx.exampleProfile;
+  const forbiddenNamesText =
+    ctx.forbiddenNames.length > 0
+      ? ctx.forbiddenNames.join(', ')
+      : '(ninguno aún)';
+
   return `Eres un escritor experto en contenido educativo de pago. Redactas en castellano, claro, profesional y aplicado.
 
 CURSO: ${ctx.courseTitle}
@@ -133,14 +193,19 @@ LECCIÓN A REDACTAR: ${ctx.lesson.title}
 - Resultado de aprendizaje (intent): ${ctx.lesson.intent}
 - Conceptos clave a trabajar AQUÍ: ${ctx.lesson.keyConcepts.join(', ') || '(n/d)'}
 - Asume como conocido (NO redefinir): ${ctx.lesson.assumesKnown.join(', ') || '(n/d)'}
-- Sugerencia de ejemplo: ${ctx.lesson.suggestedExample || '(libre)'}
-- Sugerencia de ejercicio: ${ctx.lesson.suggestedExercise || '(libre)'}
+- Sugerencia de ejemplo (del plan editorial): ${ctx.lesson.suggestedExample || '(libre)'}
+- Sugerencia de ejercicio (del plan editorial): ${ctx.lesson.suggestedExercise || '(libre)'}
+
+PERFIL OBLIGATORIO PARA EL "example" DE ESTA LECCIÓN (varía para evitar clichés):
+- Nombre: ${p.name} (${p.gender}, ${p.age} años, ${p.city})
+- Contexto: ${p.context}
+- Nombres ya usados en otras lecciones de este curso (NO uses ninguno de estos en tu "example"): ${forbiddenNamesText}
 
 DEVUELVE UN ÚNICO JSON VÁLIDO con esta forma:
 {
   "intro": "string (80-150 palabras, sin definir nada que ya esté en assumesKnown; engancha con el resultado de aprendizaje)",
   "body": "string (1200-1800 palabras; texto plano con párrafos separados por líneas en blanco; estructura: contexto → desarrollo conceptual → cómo se aplica → matices y casos límite; no uses títulos internos, no uses markdown)",
-  "example": "string (200-300 palabras; un caso concreto y plausible, con nombres/cifras/situaciones realistas; debe ilustrar los conceptos clave de ESTA lección)",
+  "example": "string (200-300 palabras; debe protagonizarlo EXACTAMENTE el perfil indicado arriba, usando su nombre, edad, ciudad y contexto vital; debe ser específico, con cifras o decisiones concretas; ilustra los conceptos clave de ESTA lección sin redefinir lo de assumesKnown)",
   "exercise": "string (120-200 palabras; un ejercicio aplicado paso a paso que el alumno pueda realizar tras leer la lección; indica qué entregable produce)",
   "commonMistakes": ["3-5 errores frecuentes con explicación corta de por qué se producen y cómo evitarlos"],
   "checklist": ["4-6 ítems accionables que el alumno debería poder confirmar tras la lección"],
@@ -152,7 +217,7 @@ REGLAS DE ESTILO:
 2. NO uses emojis ni markdown. Solo texto plano dentro de cada string. Si necesitas listas, usa los arrays del JSON, no guiones dentro de los strings.
 3. NO redefinas los conceptos en "assumesKnown" ni los presentes en lecciones previas listadas arriba.
 4. Cita los conceptos clave de la lección al menos una vez en "body".
-5. "example" debe ser específico, no genérico.
+5. "example" DEBE protagonizarlo el perfil indicado arriba con su nombre exacto; no inventes otros nombres ni reutilices nombres prohibidos.
 6. "exercise" debe ser autocontenido y verificable (el alumno sabe si lo hizo bien).
 7. Todo el contenido va en castellano. No mezcles idiomas salvo nombres propios.`;
 }
@@ -373,6 +438,12 @@ async function expandWithPlan(
   };
 
   const jobs: Job[] = [];
+  /**
+   * Construimos un índice global de lección para rotar el perfil determinístico,
+   * y vamos acumulando los nombres ya asignados para prohibírselos al resto.
+   */
+  const assignedNames: string[] = [];
+  let globalIdx = 0;
 
   for (let ti = 0; ti < plan.modules.length; ti++) {
     const modulePlan = plan.modules[ti];
@@ -381,6 +452,8 @@ async function expandWithPlan(
     for (let li = 0; li < modulePlan.lessons.length; li++) {
       const lessonPlan = modulePlan.lessons[li];
       const previous = modulePlan.lessons.slice(0, li);
+      const profile = pickProfileForLesson(globalIdx);
+      globalIdx += 1;
       jobs.push({
         ti,
         li,
@@ -391,9 +464,21 @@ async function expandWithPlan(
           lesson: lessonPlan,
           previousLessonsInModule: previous,
           earlierModulesSummary: earlier,
+          exampleProfile: profile,
+          forbiddenNames: assignedNames.filter((n) => n !== profile.name),
         },
       });
+      assignedNames.push(profile.name);
     }
+  }
+
+  // El primer pase no conoce los nombres posteriores; recalculamos `forbiddenNames`
+  // como "todos los nombres asignados al curso menos el propio" para que en el
+  // prompt cada lección vea la lista completa.
+  for (const j of jobs) {
+    j.ctx.forbiddenNames = assignedNames.filter(
+      (n) => n !== j.ctx.exampleProfile.name
+    );
   }
 
   async function runJob(job: Job) {
@@ -470,6 +555,26 @@ async function expandWithPlan(
     };
   });
 
+  // Glosario (Hito 2): si hay candidatos, lo resolvemos en paralelo al final.
+  // Si falla, omitimos la sección sin romper la generación.
+  let glossary: GlossaryEntry[] | undefined;
+  if (plan.glossaryCandidates && plan.glossaryCandidates.length > 0) {
+    try {
+      const { buildGlossary } = await import('@/services/openaiGlossary');
+      glossary = await buildGlossary({
+        courseTitle: content.title,
+        courseShortDesc: content.short_description ?? '',
+        candidates: plan.glossaryCandidates,
+        courseId,
+      });
+    } catch (err) {
+      console.warn(
+        '[expandCourseForEbook] glossary build failed; skipping:',
+        err instanceof Error ? err.message : err
+      );
+    }
+  }
+
   return {
     title: content.title,
     short_description: content.short_description,
@@ -479,6 +584,7 @@ async function expandWithPlan(
     topics,
     editorialPlan: plan,
     glossaryCandidates: plan.glossaryCandidates,
+    glossary,
   };
 }
 

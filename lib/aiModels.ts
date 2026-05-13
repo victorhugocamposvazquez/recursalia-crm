@@ -17,6 +17,7 @@ export type AiPipelineStage =
   | 'lessonExpand'
   | 'lessonRewrite'
   | 'ebookLessonExpandLegacy'
+  | 'glossary'
   | 'reviews';
 
 const DEFAULT_MODEL = 'gpt-4.1-mini';
@@ -27,6 +28,7 @@ const ENV_KEYS: Record<AiPipelineStage, string> = {
   lessonExpand: 'OPENAI_MODEL_LESSON_EXPAND',
   lessonRewrite: 'OPENAI_MODEL_LESSON_REWRITE',
   ebookLessonExpandLegacy: 'OPENAI_MODEL_LESSON_EXPAND_LEGACY',
+  glossary: 'OPENAI_MODEL_GLOSSARY',
   reviews: 'OPENAI_MODEL_REVIEWS',
 };
 
@@ -44,6 +46,7 @@ export function describeAiModels(): Record<AiPipelineStage, string> {
     lessonExpand: resolveAiModel('lessonExpand'),
     lessonRewrite: resolveAiModel('lessonRewrite'),
     ebookLessonExpandLegacy: resolveAiModel('ebookLessonExpandLegacy'),
+    glossary: resolveAiModel('glossary'),
     reviews: resolveAiModel('reviews'),
   };
 }

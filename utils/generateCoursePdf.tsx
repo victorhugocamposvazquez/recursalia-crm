@@ -4,71 +4,123 @@ import {
   Page,
   Text,
   View,
-  Image,
   StyleSheet,
+  Link,
   renderToBuffer,
 } from '@react-pdf/renderer';
 import type { ExpandedCourseContent } from '@/services/openaiEbookService';
+import type { ModulePlan } from '@/services/openaiEditorialPlan';
 import { resolveCourseAuthorDisplay } from '@/lib/courseAuthorDefaults';
+import {
+  BRAND_BLUE,
+  BRAND_INK,
+  RecursaliaLockup,
+  RecursaliaMark,
+} from '@/components/pdf/RecursaliaLogo';
+import { registerPdfFonts, FONT_BODY, FONT_DISPLAY } from '@/lib/pdfFonts';
 
+// Efecto colateral: registra Inter + Source Serif 4 y desactiva hifenación.
+registerPdfFonts();
+
+/**
+ * Compat: el route handler antiguo pasaba aquí los bytes del PNG de Recursalia.
+ * Con el logo ahora reconstruido en SVG nativo, esta opción se ignora pero el
+ * tipo se mantiene para no romper llamadas existentes.
+ */
 export interface PdfLogos {
   recursalia?: Uint8Array;
-  hotmart?: Uint8Array;
 }
 
-function toDataUri(bytes: Uint8Array): string {
-  const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8;
-  const mime = isJpeg ? 'image/jpeg' : 'image/png';
-  const b64 = Buffer.from(bytes).toString('base64');
-  return `data:${mime};base64,${b64}`;
-}
-
+/**
+ * Limpieza ligera: quita caracteres de control y normaliza espacios. A
+ * diferencia de versiones previas, conservamos comillas tipográficas, em-dashes
+ * y demás caracteres Unicode porque Inter y Source Serif 4 los soportan.
+ */
 function safe(text: string): string {
-  // eslint-disable-next-line no-control-regex
-  return text.replace(/[^\x00-\x7F\xA0-\xFF\n]/g, '').trim();
+  if (!text) return '';
+  return text
+    .replace(/\r\n?/g, '\n')
+    // Caracteres de control (excepto \n y \t)
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\x00-\x08\x0B-\x1F\x7F]/g, '')
+    .trim();
 }
+
+/** Quita tags HTML, decodifica entidades comunes y normaliza saltos. */
+function stripHtml(html: string): string {
+  if (!html) return '';
+  return html
+    .replace(/<br\s*\/?>(?=[\s\S])/gi, '\n')
+    .replace(/<\/(p|div|li|h[1-6]|ul|ol|blockquote)>/gi, '\n\n')
+    .replace(/<(p|div|h[1-6]|ul|ol|blockquote)[^>]*>/gi, '')
+    .replace(/<li[^>]*>/gi, '· ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Paleta de marca
+// ────────────────────────────────────────────────────────────────────────────
 
 const C = {
-  primary: '#1a1b3a',
-  accent: '#4f46e5',
-  accentLight: '#1b38c4',
-  accentBg: '#eef2ff',
-  body: '#2d2d3a',
-  muted: '#6b7280',
-  light: '#9ca3af',
-  rule: '#d1d5db',
-  bg: '#f8f9fa',
+  // Marca
+  brand: BRAND_BLUE, // azul intenso (hexágono): #1b38c4
+  brandInk: BRAND_INK, // negro de marca: #0a0d1f
+  brandSoft: '#eef2ff', // tinte muy claro del azul (callouts/objetivos)
+  brandLime: '#c6f04d', // acento secundario
+  brandLimeSoft: '#f5fadf',
+  // Tipografía
+  primary: BRAND_INK,
+  body: '#1f2333',
+  muted: '#5b6172',
+  light: '#9aa0b2',
+  rule: '#dfe3ec',
+  bg: '#f7f8fc',
   white: '#ffffff',
-  coverBg: '#1e1b4b',
-  coverAccent: '#1b38c4',
-  topicBg: '#f0f0ff',
-  // Callouts (Hito 1)
-  exampleBg: '#eef9f1',
-  exampleBorder: '#16a34a',
-  exerciseBg: '#fef3c7',
-  exerciseBorder: '#d97706',
-  mistakesBg: '#fef2f2',
-  mistakesBorder: '#dc2626',
-  checklistBg: '#f0f9ff',
-  checklistBorder: '#0284c7',
-  keypointsBg: '#f5f3ff',
-  keypointsBorder: '#7c3aed',
+  // Portada
+  coverBg: '#0a0d1f',
+  coverAccent: BRAND_BLUE,
+  // Callouts
+  exampleBg: '#e9f5ee',
+  exampleBorder: '#1f9a59',
+  exerciseBg: '#eef2ff',
+  exerciseBorder: BRAND_BLUE,
+  mistakesBg: '#fdf0ee',
+  mistakesBorder: '#c14b3a',
+  checklistBg: '#f0f3f8',
+  checklistBorder: '#4b5468',
+  keypointsBg: '#f5fadf',
+  keypointsBorder: '#6f8f00',
 };
 
+// ────────────────────────────────────────────────────────────────────────────
+// Estilos
+// ────────────────────────────────────────────────────────────────────────────
+
 const s = StyleSheet.create({
+  // Página genérica de contenido
   page: {
-    fontFamily: 'Helvetica',
-    fontSize: 10,
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
     color: C.body,
-    paddingTop: 70,
+    paddingTop: 72,
     paddingBottom: 56,
-    paddingHorizontal: 56,
+    paddingHorizontal: 60,
   },
+  // Cabecera y pie
   header: {
     position: 'absolute',
     top: 28,
-    left: 56,
-    right: 56,
+    left: 60,
+    right: 60,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -76,274 +128,630 @@ const s = StyleSheet.create({
     borderBottomColor: C.rule,
     paddingBottom: 6,
   },
-  headerText: {
-    fontSize: 7,
-    color: C.light,
-    fontFamily: 'Helvetica-Oblique',
+  headerCourse: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 8,
+    color: C.muted,
+    letterSpacing: 0.4,
+  },
+  headerModule: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 8,
+    color: C.brand,
+    letterSpacing: 0.4,
   },
   footer: {
     position: 'absolute',
     bottom: 24,
-    left: 56,
-    right: 56,
+    left: 60,
+    right: 60,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     borderTopWidth: 0.5,
     borderTopColor: C.rule,
     paddingTop: 6,
   },
   footerNum: {
-    fontSize: 8,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 8.5,
     color: C.light,
   },
+  footerSite: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 8,
+    color: C.light,
+    letterSpacing: 0.3,
+  },
 
-  // Cover
+  // ─── Cover ───
   coverPage: {
-    fontFamily: 'Helvetica',
+    fontFamily: FONT_DISPLAY,
     padding: 0,
   },
   coverTop: {
     backgroundColor: C.coverBg,
-    height: '58%',
+    height: '64%',
     justifyContent: 'flex-end',
-    paddingHorizontal: 56,
-    paddingBottom: 40,
+    paddingHorizontal: 60,
+    paddingBottom: 44,
   },
-  coverAccentBar: {
-    width: 60,
-    height: 4,
-    backgroundColor: C.coverAccent,
-    marginBottom: 20,
+  coverKicker: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.brandLime,
+    letterSpacing: 2.5,
+    textTransform: 'uppercase' as const,
+    marginBottom: 18,
   },
   coverTitle: {
+    fontFamily: FONT_DISPLAY,
     fontSize: 30,
-    fontFamily: 'Helvetica-Bold',
+    fontWeight: 700,
     color: C.white,
-    lineHeight: 1.25,
-    marginBottom: 14,
+    lineHeight: 1.18,
+    marginBottom: 18,
   },
   coverDesc: {
+    fontFamily: FONT_BODY,
     fontSize: 12,
     color: '#c7d2fe',
     lineHeight: 1.5,
-    maxWidth: 400,
+    maxWidth: 420,
   },
   coverBottom: {
-    height: '42%',
-    paddingHorizontal: 56,
-    paddingTop: 30,
+    height: '36%',
+    paddingHorizontal: 60,
+    paddingTop: 28,
+    paddingBottom: 32,
     justifyContent: 'space-between',
-    paddingBottom: 30,
+  },
+  coverMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  coverMetaBar: {
+    width: 4,
+    height: 32,
+    backgroundColor: C.brand,
+    marginRight: 14,
   },
   coverAuthor: {
+    fontFamily: FONT_DISPLAY,
     fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
-    color: C.accentLight,
+    fontWeight: 600,
+    color: C.primary,
   },
   coverAuthorSub: {
-    fontSize: 9,
+    fontFamily: FONT_BODY,
+    fontSize: 9.5,
     color: C.muted,
-    marginTop: 3,
+    marginTop: 2,
   },
-  coverLogos: {
+  coverFooter: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   },
-  coverLogo: {
-    maxWidth: 130,
-    maxHeight: 38,
-    objectFit: 'contain' as const,
-  },
   coverCopy: {
-    fontSize: 7,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 7.5,
     color: C.light,
   },
 
-  // Legal
+  // ─── Legal ───
   legalPage: {
-    fontFamily: 'Helvetica',
-    paddingHorizontal: 56,
+    fontFamily: FONT_BODY,
+    paddingHorizontal: 60,
     paddingTop: 200,
     paddingBottom: 56,
   },
   legalTitle: {
+    fontFamily: FONT_DISPLAY,
     fontSize: 14,
-    fontFamily: 'Helvetica-Bold',
+    fontWeight: 700,
     color: C.primary,
-    marginBottom: 24,
+    marginBottom: 22,
   },
   legalText: {
-    fontSize: 9,
+    fontFamily: FONT_BODY,
+    fontSize: 9.5,
     color: C.muted,
-    lineHeight: 1.8,
+    lineHeight: 1.75,
   },
 
-  // TOC
-  tocTitle: {
+  // ─── How to use ───
+  howToTitle: {
+    fontFamily: FONT_DISPLAY,
     fontSize: 22,
-    fontFamily: 'Helvetica-Bold',
+    fontWeight: 700,
     color: C.primary,
+    marginBottom: 4,
+  },
+  howToKicker: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase' as const,
+    marginBottom: 6,
+  },
+  howToRule: {
+    width: 60,
+    height: 3,
+    backgroundColor: C.brand,
+    marginBottom: 22,
+  },
+  howToIntro: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: C.body,
+    lineHeight: 1.6,
+    marginBottom: 22,
+  },
+  howToBlock: {
+    marginBottom: 16,
+  },
+  howToBlockLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9.5,
+    fontWeight: 700,
+    color: C.brand,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.2,
+    marginBottom: 4,
+  },
+  howToBlockTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 12,
+    fontWeight: 600,
+    color: C.primary,
+    marginBottom: 4,
+  },
+  howToBlockBody: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: C.body,
+    lineHeight: 1.6,
+  },
+
+  // ─── TOC ───
+  tocTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 22,
+    fontWeight: 700,
+    color: C.primary,
+    marginBottom: 4,
+  },
+  tocKicker: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase' as const,
     marginBottom: 6,
   },
   tocRule: {
     width: '100%',
-    height: 1,
+    height: 0.5,
     backgroundColor: C.rule,
-    marginBottom: 20,
+    marginBottom: 18,
   },
-  tocTopic: {
-    fontSize: 11,
-    fontFamily: 'Helvetica-Bold',
-    color: C.primary,
-    marginTop: 10,
+  tocTopicRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginTop: 12,
     marginBottom: 4,
   },
+  tocTopicNum: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.brand,
+    marginRight: 8,
+    minWidth: 22,
+  },
+  tocTopic: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 12,
+    fontWeight: 700,
+    color: C.primary,
+    flex: 1,
+  },
   tocLesson: {
-    fontSize: 9.5,
+    fontFamily: FONT_BODY,
+    fontSize: 10,
     color: C.body,
-    paddingLeft: 16,
+    paddingLeft: 30,
     marginBottom: 3,
+    textDecoration: 'none' as const,
   },
 
-  // Intro
+  // ─── Intro ───
   sectionTitle: {
+    fontFamily: FONT_DISPLAY,
     fontSize: 22,
-    fontFamily: 'Helvetica-Bold',
+    fontWeight: 700,
     color: C.primary,
+    marginBottom: 4,
+  },
+  sectionKicker: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase' as const,
     marginBottom: 6,
   },
   sectionRule: {
     width: 50,
     height: 3,
-    backgroundColor: C.accent,
-    marginBottom: 18,
+    backgroundColor: C.brand,
+    marginBottom: 20,
   },
   bodyText: {
-    fontSize: 10,
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
     color: C.body,
-    lineHeight: 1.7,
+    lineHeight: 1.65,
     marginBottom: 8,
-    textAlign: 'justify' as const,
+    textAlign: 'left' as const,
   },
 
-  // Topic banner
+  // ─── Module Opening (full page) ───
+  modOpeningPage: {
+    fontFamily: FONT_DISPLAY,
+    paddingHorizontal: 60,
+    paddingTop: 90,
+    paddingBottom: 60,
+  },
+  modOpeningNumber: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 120,
+    fontWeight: 700,
+    color: C.bg,
+    lineHeight: 1,
+    letterSpacing: -3,
+    marginBottom: 8,
+  },
+  modOpeningKicker: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 2,
+    textTransform: 'uppercase' as const,
+    marginBottom: 6,
+  },
+  modOpeningTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 26,
+    fontWeight: 700,
+    color: C.primary,
+    lineHeight: 1.18,
+    marginBottom: 14,
+  },
+  modOpeningLead: {
+    fontFamily: FONT_BODY,
+    fontSize: 11,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 28,
+    maxWidth: 440,
+  },
+  modOpeningBlock: {
+    marginBottom: 22,
+  },
+  modOpeningBlockLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9.5,
+    fontWeight: 700,
+    color: C.brand,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.2,
+    marginBottom: 6,
+  },
+  modOpeningItem: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 3,
+  },
+  modOpeningAccentBar: {
+    width: 60,
+    height: 4,
+    backgroundColor: C.brandLime,
+    marginBottom: 18,
+  },
+
+  // ─── Topic banner (sigue para coherencia con lecciones) ───
   topicBanner: {
-    backgroundColor: C.accentBg,
+    backgroundColor: C.brandSoft,
     borderLeftWidth: 4,
-    borderLeftColor: C.accent,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    marginBottom: 24,
+    borderLeftColor: C.brand,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    marginBottom: 22,
+  },
+  topicBannerLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 1.4,
+    textTransform: 'uppercase' as const,
+    marginBottom: 4,
   },
   topicTitle: {
-    fontSize: 18,
-    fontFamily: 'Helvetica-Bold',
+    fontFamily: FONT_DISPLAY,
+    fontSize: 16,
+    fontWeight: 700,
     color: C.primary,
     lineHeight: 1.3,
   },
 
-  // Lesson
-  lessonTitle: {
-    fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
-    color: C.accent,
+  // ─── Lesson ───
+  lessonHeader: {
+    marginTop: 22,
     marginBottom: 8,
-    marginTop: 20,
+  },
+  lessonNumber: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 8.5,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase' as const,
+    marginBottom: 3,
+  },
+  lessonTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 13.5,
+    fontWeight: 700,
+    color: C.primary,
+    lineHeight: 1.3,
   },
   lessonSep: {
     width: '100%',
     height: 0.5,
     backgroundColor: C.rule,
-    marginTop: 16,
+    marginTop: 14,
     marginBottom: 4,
   },
 
-  // Topic objectives (Hito 1)
+  // ─── Topic objectives (cabecera del módulo dentro de la primera página) ───
   topicObjectivesBox: {
     backgroundColor: C.bg,
     borderWidth: 0.5,
     borderColor: C.rule,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    marginBottom: 16,
+    marginBottom: 18,
   },
   topicObjectivesLabel: {
+    fontFamily: FONT_DISPLAY,
     fontSize: 8.5,
-    fontFamily: 'Helvetica-Bold',
+    fontWeight: 700,
     color: C.muted,
-    textTransform: 'uppercase' as const,
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  topicObjectivesItem: {
-    fontSize: 9.5,
-    color: C.body,
-    lineHeight: 1.55,
-    marginBottom: 2,
-  },
-
-  // Callouts (Hito 1)
-  callout: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderLeftWidth: 3,
-    marginTop: 10,
-    marginBottom: 6,
-  },
-  calloutLabel: {
-    fontSize: 8.5,
-    fontFamily: 'Helvetica-Bold',
     textTransform: 'uppercase' as const,
     letterSpacing: 0.6,
     marginBottom: 4,
   },
-  calloutText: {
-    fontSize: 9.5,
-    color: C.body,
-    lineHeight: 1.6,
-  },
-  calloutItem: {
+  topicObjectivesItem: {
+    fontFamily: FONT_BODY,
     fontSize: 9.5,
     color: C.body,
     lineHeight: 1.55,
     marginBottom: 2,
   },
 
-  // Back cover
+  // ─── Callouts ───
+  callout: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderLeftWidth: 3,
+    marginTop: 12,
+    marginBottom: 6,
+  },
+  calloutLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 8.5,
+    fontWeight: 700,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  calloutText: {
+    fontFamily: FONT_BODY,
+    fontSize: 10,
+    color: C.body,
+    lineHeight: 1.6,
+    marginBottom: 4,
+  },
+  calloutItem: {
+    fontFamily: FONT_BODY,
+    fontSize: 10,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 2,
+  },
+
+  // ─── Recap (cierre de módulo) ───
+  recapBox: {
+    marginTop: 28,
+    paddingTop: 18,
+    borderTopWidth: 0.5,
+    borderTopColor: C.rule,
+  },
+  recapLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9.5,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase' as const,
+    marginBottom: 6,
+  },
+  recapTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 14,
+    fontWeight: 700,
+    color: C.primary,
+    marginBottom: 10,
+  },
+  recapItem: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 3,
+  },
+
+  // ─── Glossary ───
+  glossaryRow: {
+    marginBottom: 10,
+  },
+  glossaryTerm: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10.5,
+    fontWeight: 700,
+    color: C.brand,
+    marginBottom: 2,
+  },
+  glossaryDef: {
+    fontFamily: FONT_BODY,
+    fontSize: 10,
+    color: C.body,
+    lineHeight: 1.55,
+  },
+
+  // ─── Back cover ───
   backPage: {
-    fontFamily: 'Helvetica',
+    fontFamily: FONT_DISPLAY,
     backgroundColor: C.coverBg,
-    padding: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingTop: 84,
+    paddingBottom: 60,
+    paddingHorizontal: 60,
   },
-  backLogoWrap: {
-    alignItems: 'center',
-    marginBottom: 20,
+  backAccentBar: {
+    width: 60,
+    height: 4,
+    backgroundColor: C.brandLime,
+    marginBottom: 22,
   },
-  backLogo: {
-    maxWidth: 200,
-    maxHeight: 60,
-    objectFit: 'contain' as const,
+  backKicker: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.brandLime,
+    letterSpacing: 2,
+    textTransform: 'uppercase' as const,
+    marginBottom: 10,
+  },
+  backHeadline: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 28,
+    fontWeight: 700,
+    color: C.white,
+    lineHeight: 1.2,
     marginBottom: 16,
   },
-  backCopy: {
-    fontSize: 8,
-    color: '#8b8fa8',
+  backLead: {
+    fontFamily: FONT_BODY,
+    fontSize: 12,
+    color: '#c7d2fe',
+    lineHeight: 1.55,
+    marginBottom: 28,
+    maxWidth: 460,
+  },
+  backSectionTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10.5,
+    fontWeight: 700,
+    color: C.white,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.2,
+    marginBottom: 10,
+  },
+  backList: {
+    marginBottom: 26,
+  },
+  backListItem: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: '#dbe1ff',
+    lineHeight: 1.55,
+    marginBottom: 5,
+  },
+  backAboutBox: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderLeftWidth: 3,
+    borderLeftColor: C.brandLime,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 26,
+  },
+  backAboutTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.white,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  backAboutText: {
+    fontFamily: FONT_BODY,
+    fontSize: 9.5,
+    color: '#c7d2fe',
+    lineHeight: 1.55,
+  },
+  backFooter: {
     position: 'absolute',
     bottom: 30,
+    left: 60,
+    right: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  backFooterUrl: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.white,
+  },
+  backCopy: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 7.5,
+    color: '#8b8fa8',
   },
 });
 
-// ─── Components ────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
+// Componentes utilitarios
+// ────────────────────────────────────────────────────────────────────────────
 
-function PageHeader({ title }: { title: string }) {
+function PageHeader({
+  courseTitle,
+  moduleTitle,
+}: {
+  courseTitle: string;
+  moduleTitle?: string;
+}) {
   return (
     <View style={s.header} fixed>
-      <Text style={s.headerText}>{safe(title)}</Text>
-      <Text style={s.headerText}>Recursalia</Text>
+      <Text style={s.headerCourse}>{safe(courseTitle)}</Text>
+      {moduleTitle ? (
+        <Text style={s.headerModule}>{safe(moduleTitle)}</Text>
+      ) : (
+        <Text style={s.headerCourse}>Recursalia</Text>
+      )}
     </View>
   );
 }
@@ -355,6 +763,7 @@ function PageFooter() {
         style={s.footerNum}
         render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
       />
+      <Text style={s.footerSite}>recursalia.com</Text>
     </View>
   );
 }
@@ -386,7 +795,10 @@ function CalloutText({
   labelColor: string;
 }) {
   return (
-    <View style={[s.callout, { backgroundColor: bg, borderLeftColor: border }]}>
+    <View
+      style={[s.callout, { backgroundColor: bg, borderLeftColor: border }]}
+      wrap={false}
+    >
       <Text style={[s.calloutLabel, { color: labelColor }]}>{label}</Text>
       {safe(text)
         .split(/\n\n+/)
@@ -416,7 +828,10 @@ function CalloutList({
   numbered?: boolean;
 }) {
   return (
-    <View style={[s.callout, { backgroundColor: bg, borderLeftColor: border }]}>
+    <View
+      style={[s.callout, { backgroundColor: bg, borderLeftColor: border }]}
+      wrap={false}
+    >
       <Text style={[s.calloutLabel, { color: labelColor }]}>{label}</Text>
       {items.map((it, i) => (
         <Text key={i} style={s.calloutItem}>
@@ -428,15 +843,15 @@ function CalloutList({
   );
 }
 
+// ────────────────────────────────────────────────────────────────────────────
+// Páginas
+// ────────────────────────────────────────────────────────────────────────────
+
 function CoverPage({
   content,
-  recLogoUri,
-  hotLogoUri,
   year,
 }: {
   content: ExpandedCourseContent;
-  recLogoUri?: string;
-  hotLogoUri?: string;
   year: number;
 }) {
   const { name: coverAuthor } = resolveCourseAuthorDisplay(
@@ -446,76 +861,152 @@ function CoverPage({
   return (
     <Page size="A4" style={s.coverPage}>
       <View style={s.coverTop}>
-        <View style={s.coverAccentBar} />
+        <Text style={s.coverKicker}>Recursalia · Curso</Text>
         <Text style={s.coverTitle}>{safe(content.title)}</Text>
         {content.short_description && (
           <Text style={s.coverDesc}>{safe(content.short_description)}</Text>
         )}
       </View>
       <View style={s.coverBottom}>
-        <View>
-          <Text style={s.coverAuthor}>{safe(coverAuthor)}</Text>
-          <Text style={s.coverAuthorSub}>Curso completo</Text>
-        </View>
-        <View style={s.coverLogos}>
+        <View style={s.coverMetaRow}>
+          <View style={s.coverMetaBar} />
           <View>
-            {recLogoUri ? (
-              <Image src={recLogoUri} style={s.coverLogo} />
-            ) : (
-              <Text style={{ fontSize: 10, color: C.muted }}>Recursalia</Text>
-            )}
+            <Text style={s.coverAuthor}>{safe(coverAuthor)}</Text>
+            <Text style={s.coverAuthorSub}>Curso completo</Text>
           </View>
-          <View style={{ alignItems: 'flex-end' }}>
-            {hotLogoUri ? (
-              <Image src={hotLogoUri} style={s.coverLogo} />
-            ) : (
-              <Text style={{ fontSize: 9, color: C.light }}>Hotmart</Text>
-            )}
-            <Text style={s.coverCopy}>
-              {year} Recursalia. Todos los derechos reservados.
-            </Text>
-          </View>
+        </View>
+        <View style={s.coverFooter}>
+          <RecursaliaLockup height={26} />
+          <Text style={s.coverCopy}>
+            © {year} Recursalia. Todos los derechos reservados.
+          </Text>
         </View>
       </View>
     </Page>
   );
 }
 
-function LegalPage({
-  title,
-  year,
-}: {
-  title: string;
-  year: number;
-}) {
+function LegalPage({ title, year }: { title: string; year: number }) {
   return (
     <Page size="A4" style={s.legalPage}>
       <Text style={s.legalTitle}>{safe(title)}</Text>
       <Text style={s.legalText}>
-        {`(c) ${year} Recursalia. Todos los derechos reservados.
-
-Queda prohibida la reproduccion total o parcial de este libro, su incorporacion a un sistema informatico, su transmision en cualquier forma o por cualquier medio, sea este electronico, mecanico, por fotocopia, por grabacion u otros metodos, sin el permiso previo y por escrito del editor.
-
-Publicado y distribuido a traves de Hotmart.
-Revisado profesionalmente por la plataforma Recursalia.
-recursalia.com`}
+        © {year} Recursalia. Todos los derechos reservados.
+        {'\n\n'}
+        Queda prohibida la reproducción total o parcial de esta obra, su
+        incorporación a un sistema informático, su transmisión en cualquier
+        forma o por cualquier medio, sea éste electrónico, mecánico, por
+        fotocopia, por grabación u otros métodos, sin el permiso previo y por
+        escrito del editor.
+        {'\n\n'}
+        Edición, revisión y distribución: Recursalia.
+        {'\n'}
+        recursalia.com
       </Text>
     </Page>
   );
 }
 
-function TocPage({ content }: { content: ExpandedCourseContent }) {
+function HowToUsePage({ courseTitle }: { courseTitle: string }) {
   return (
     <Page size="A4" style={s.page}>
-      <Text style={s.tocTitle}>Indice</Text>
+      <PageHeader courseTitle={courseTitle} />
+      <Text style={s.howToKicker}>Antes de empezar</Text>
+      <Text style={s.howToTitle}>Cómo usar este manual</Text>
+      <View style={s.howToRule} />
+      <Text style={s.howToIntro}>
+        Este curso combina lectura, ejemplos aplicados y ejercicios para que
+        avances con criterio en cada módulo. Si lo quieres aprovechar al
+        máximo, ten presente estos cinco bloques que verás repetidos en cada
+        lección.
+      </Text>
+
+      <View style={s.howToBlock}>
+        <Text style={s.howToBlockLabel}>Ejemplo</Text>
+        <Text style={s.howToBlockTitle}>Casos concretos, no genéricos</Text>
+        <Text style={s.howToBlockBody}>
+          Cada lección incluye un caso protagonizado por una persona distinta,
+          con su contexto y cifras. Léelos como si fueran clientes reales: lo
+          aprendido en abstracto se asienta mucho más rápido sobre un ejemplo
+          aterrizado.
+        </Text>
+      </View>
+
+      <View style={s.howToBlock}>
+        <Text style={s.howToBlockLabel}>Ejercicio práctico</Text>
+        <Text style={s.howToBlockTitle}>Aplica lo aprendido</Text>
+        <Text style={s.howToBlockBody}>
+          Al terminar la lección encontrarás un ejercicio con un entregable
+          claro. Hazlo aunque no sea obligatorio: es el momento en el que el
+          conocimiento se convierte en habilidad.
+        </Text>
+      </View>
+
+      <View style={s.howToBlock}>
+        <Text style={s.howToBlockLabel}>Errores frecuentes</Text>
+        <Text style={s.howToBlockTitle}>Lo que se suele hacer mal</Text>
+        <Text style={s.howToBlockBody}>
+          Te avisamos de los tropezones más habituales y de cómo prevenirlos.
+          Saber qué evitar es tan importante como saber qué hacer.
+        </Text>
+      </View>
+
+      <View style={s.howToBlock}>
+        <Text style={s.howToBlockLabel}>Checklist</Text>
+        <Text style={s.howToBlockTitle}>Confirma que lo dominas</Text>
+        <Text style={s.howToBlockBody}>
+          Una lista breve para autoevaluarte. Si puedes marcar todos los puntos
+          con sinceridad, estás listo para la siguiente lección.
+        </Text>
+      </View>
+
+      <View style={s.howToBlock}>
+        <Text style={s.howToBlockLabel}>Puntos clave</Text>
+        <Text style={s.howToBlockTitle}>La esencia en cinco ideas</Text>
+        <Text style={s.howToBlockBody}>
+          El cierre de cada lección: las ideas que merece la pena recordar para
+          siempre. Útiles para repasar antes de cada examen, sesión o proyecto.
+        </Text>
+      </View>
+
+      <PageFooter />
+    </Page>
+  );
+}
+
+function TocPage({
+  content,
+  courseTitle,
+}: {
+  content: ExpandedCourseContent;
+  courseTitle: string;
+}) {
+  return (
+    <Page size="A4" style={s.page}>
+      <PageHeader courseTitle={courseTitle} />
+      <Text style={s.tocKicker}>Índice</Text>
+      <Text style={s.tocTitle}>Programa del curso</Text>
       <View style={s.tocRule} />
       {(content.topics ?? []).map((topic, ti) => (
         <View key={ti} wrap={false}>
-          <Text style={s.tocTopic}>{safe(topic.title)}</Text>
+          <Link src={`#topic-${ti}`} style={{ textDecoration: 'none' }}>
+            <View style={s.tocTopicRow}>
+              <Text style={s.tocTopicNum}>
+                {String(ti + 1).padStart(2, '0')}
+              </Text>
+              <Text style={s.tocTopic}>{safe(topic.title)}</Text>
+            </View>
+          </Link>
           {topic.lessons.map((lesson, li) => (
-            <Text key={li} style={s.tocLesson}>
-              {safe(lesson.title)}
-            </Text>
+            <Link
+              key={li}
+              src={`#topic-${ti}`}
+              style={{ textDecoration: 'none' }}
+            >
+              <Text style={s.tocLesson}>
+                {ti + 1}.{li + 1}  ·  {safe(lesson.title)}
+              </Text>
+            </Link>
           ))}
         </View>
       ))}
@@ -531,12 +1022,73 @@ function IntroPage({
   content: ExpandedCourseContent;
   courseTitle: string;
 }) {
+  const intro = stripHtml(content.description ?? '');
   return (
     <Page size="A4" style={s.page}>
-      <PageHeader title={courseTitle} />
-      <Text style={s.sectionTitle}>Introduccion</Text>
+      <PageHeader courseTitle={courseTitle} />
+      <Text style={s.sectionKicker}>Bienvenido</Text>
+      <Text style={s.sectionTitle}>Introducción</Text>
       <View style={s.sectionRule} />
-      {content.description && <Paragraphs text={content.description} />}
+      {intro && <Paragraphs text={intro} />}
+      <PageFooter />
+    </Page>
+  );
+}
+
+function ModuleOpeningPage({
+  topic,
+  modulePlan,
+  index,
+  totalModules,
+  courseTitle,
+}: {
+  topic: ExpandedCourseContent['topics'][number];
+  modulePlan?: ModulePlan;
+  index: number;
+  totalModules: number;
+  courseTitle: string;
+}) {
+  const planObjectives = modulePlan?.objectives ?? topic.objectives ?? [];
+  const summary = modulePlan?.summary ?? topic.summary ?? '';
+  const definesHere = modulePlan?.definesHere ?? [];
+
+  return (
+    <Page size="A4" style={s.modOpeningPage} bookmark={`Módulo ${index + 1}: ${topic.title}`}>
+      <PageHeader courseTitle={courseTitle} moduleTitle={topic.title} />
+      <View id={`topic-${index}`}>
+        <Text style={s.modOpeningNumber}>
+          {String(index + 1).padStart(2, '0')}
+        </Text>
+        <Text style={s.modOpeningKicker}>
+          Módulo {index + 1} de {totalModules}
+        </Text>
+        <Text style={s.modOpeningTitle}>{safe(topic.title)}</Text>
+        <View style={s.modOpeningAccentBar} />
+      </View>
+      {summary ? <Text style={s.modOpeningLead}>{safe(summary)}</Text> : null}
+
+      {planObjectives.length > 0 && (
+        <View style={s.modOpeningBlock} wrap={false}>
+          <Text style={s.modOpeningBlockLabel}>Objetivos de este módulo</Text>
+          {planObjectives.map((o, i) => (
+            <Text key={i} style={s.modOpeningItem}>
+              · {safe(o)}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      {definesHere.length > 0 && (
+        <View style={s.modOpeningBlock} wrap={false}>
+          <Text style={s.modOpeningBlockLabel}>Qué cubre este módulo</Text>
+          {definesHere.map((d, i) => (
+            <Text key={i} style={s.modOpeningItem}>
+              · {safe(d)}
+            </Text>
+          ))}
+        </View>
+      )}
+
       <PageFooter />
     </Page>
   );
@@ -545,9 +1097,11 @@ function IntroPage({
 function LessonBlock({
   lesson,
   showSep,
+  number,
 }: {
   lesson: ExpandedCourseContent['topics'][number]['lessons'][number];
   showSep: boolean;
+  number: string;
 }) {
   const hasRich =
     !!lesson.body ||
@@ -561,7 +1115,10 @@ function LessonBlock({
     return (
       <View>
         {showSep && <View style={s.lessonSep} />}
-        <Text style={s.lessonTitle}>{safe(lesson.title)}</Text>
+        <View style={s.lessonHeader}>
+          <Text style={s.lessonNumber}>Lección {number}</Text>
+          <Text style={s.lessonTitle}>{safe(lesson.title)}</Text>
+        </View>
         {lesson.content && <Paragraphs text={lesson.content} />}
       </View>
     );
@@ -570,7 +1127,10 @@ function LessonBlock({
   return (
     <View>
       {showSep && <View style={s.lessonSep} />}
-      <Text style={s.lessonTitle}>{safe(lesson.title)}</Text>
+      <View style={s.lessonHeader} wrap={false}>
+        <Text style={s.lessonNumber}>Lección {number}</Text>
+        <Text style={s.lessonTitle}>{safe(lesson.title)}</Text>
+      </View>
       {lesson.intro && <Paragraphs text={lesson.intro} />}
       {lesson.body && <Paragraphs text={lesson.body} />}
       {lesson.example && (
@@ -623,18 +1183,29 @@ function LessonBlock({
   );
 }
 
-function TopicPages({
+function TopicLessonsPage({
   topic,
+  index,
   courseTitle,
+  showRecap,
 }: {
   topic: ExpandedCourseContent['topics'][number];
+  index: number;
   courseTitle: string;
+  showRecap: boolean;
 }) {
   const hasObjectives = !!topic.objectives && topic.objectives.length > 0;
+  const recapItems = (topic.lessons ?? [])
+    .map((l) => l.keyPoints?.[0])
+    .filter((x): x is string => typeof x === 'string' && x.trim().length > 0);
+
   return (
     <Page size="A4" style={s.page} wrap>
-      <PageHeader title={courseTitle} />
+      <PageHeader courseTitle={courseTitle} moduleTitle={topic.title} />
       <View style={s.topicBanner} wrap={false}>
+        <Text style={s.topicBannerLabel}>
+          Módulo {String(index + 1).padStart(2, '0')}
+        </Text>
         <Text style={s.topicTitle}>{safe(topic.title)}</Text>
       </View>
       {hasObjectives && (
@@ -648,7 +1219,47 @@ function TopicPages({
         </View>
       )}
       {topic.lessons.map((lesson, li) => (
-        <LessonBlock key={li} lesson={lesson} showSep={li > 0} />
+        <LessonBlock
+          key={li}
+          lesson={lesson}
+          showSep={li > 0}
+          number={`${index + 1}.${li + 1}`}
+        />
+      ))}
+      {showRecap && recapItems.length > 0 && (
+        <View style={s.recapBox} wrap={false}>
+          <Text style={s.recapLabel}>Cierre del módulo</Text>
+          <Text style={s.recapTitle}>Lo que has aprendido</Text>
+          {recapItems.map((it, i) => (
+            <Text key={i} style={s.recapItem}>
+              · {safe(it)}
+            </Text>
+          ))}
+        </View>
+      )}
+      <PageFooter />
+    </Page>
+  );
+}
+
+function GlossaryPage({
+  glossary,
+  courseTitle,
+}: {
+  glossary: { term: string; definition: string }[];
+  courseTitle: string;
+}) {
+  return (
+    <Page size="A4" style={s.page}>
+      <PageHeader courseTitle={courseTitle} />
+      <Text style={s.sectionKicker}>Anexo</Text>
+      <Text style={s.sectionTitle}>Glosario</Text>
+      <View style={s.sectionRule} />
+      {glossary.map((g, i) => (
+        <View key={i} style={s.glossaryRow} wrap={false}>
+          <Text style={s.glossaryTerm}>{safe(g.term)}</Text>
+          <Text style={s.glossaryDef}>{safe(g.definition)}</Text>
+        </View>
       ))}
       <PageFooter />
     </Page>
@@ -656,89 +1267,124 @@ function TopicPages({
 }
 
 function BackCoverPage({
-  recLogoUri,
-  hotLogoUri,
+  content,
   year,
 }: {
-  recLogoUri?: string;
-  hotLogoUri?: string;
+  content: ExpandedCourseContent;
   year: number;
 }) {
+  const objectives = (content.editorialPlan?.globalObjectives ?? []).slice(0, 5);
+
   return (
     <Page size="A4" style={s.backPage}>
-      <View style={s.backLogoWrap}>
-        {recLogoUri && <Image src={recLogoUri} style={s.backLogo} />}
-        {hotLogoUri && (
-          <Image
-            src={hotLogoUri}
-            style={[s.backLogo, { maxWidth: 160, maxHeight: 50 }]}
-          />
-        )}
-      </View>
-      <Text style={s.backCopy}>
-        {year} Recursalia. Todos los derechos reservados.
+      <View style={s.backAccentBar} />
+      <Text style={s.backKicker}>Has llegado al final</Text>
+      <Text style={s.backHeadline}>Enhorabuena. Has completado el curso.</Text>
+      <Text style={s.backLead}>
+        Has recorrido un programa diseñado para llevarte de la teoría a la
+        práctica con ejemplos reales, ejercicios aplicados y herramientas que
+        puedes usar desde el primer día.
       </Text>
+
+      {objectives.length > 0 && (
+        <>
+          <Text style={s.backSectionTitle}>Ahora eres capaz de</Text>
+          <View style={s.backList}>
+            {objectives.map((o, i) => (
+              <Text key={i} style={s.backListItem}>
+                · {safe(o)}
+              </Text>
+            ))}
+          </View>
+        </>
+      )}
+
+      <View style={s.backAboutBox}>
+        <Text style={s.backAboutTitle}>Sobre Recursalia</Text>
+        <Text style={s.backAboutText}>
+          Recursalia es la plataforma de cursos prácticos diseñada para que
+          aprendas habilidades aplicables a tu vida y a tu carrera, con
+          contenidos cuidados y formación útil desde el primer minuto.
+        </Text>
+      </View>
+
+      <View style={s.backFooter}>
+        <View>
+          <Text style={s.backFooterUrl}>recursalia.com</Text>
+          <Text style={[s.backCopy, { marginTop: 4 }]}>
+            © {year} Recursalia. Todos los derechos reservados.
+          </Text>
+        </View>
+        <RecursaliaLockup
+          height={24}
+          markColor={C.white}
+          wordmarkColor={C.white}
+        />
+      </View>
     </Page>
   );
 }
 
-// ─── Main document ─────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
+// Documento
+// ────────────────────────────────────────────────────────────────────────────
 
-function CourseDocument({
-  content,
-  recLogoUri,
-  hotLogoUri,
-}: {
-  content: ExpandedCourseContent;
-  recLogoUri?: string;
-  hotLogoUri?: string;
-}) {
+function CourseDocument({ content }: { content: ExpandedCourseContent }) {
   const year = new Date().getFullYear();
   const courseTitle = safe(content.title);
+  const planModules = content.editorialPlan?.modules ?? [];
+  const glossary = content.glossary ?? [];
+  const totalModules = (content.topics ?? []).length;
 
   return (
     <Document title={courseTitle} author="Recursalia" subject={courseTitle}>
-      <CoverPage
-        content={content}
-        recLogoUri={recLogoUri}
-        hotLogoUri={hotLogoUri}
-        year={year}
-      />
+      <CoverPage content={content} year={year} />
       <LegalPage title={courseTitle} year={year} />
-      <TocPage content={content} />
+      <HowToUsePage courseTitle={courseTitle} />
+      <TocPage content={content} courseTitle={courseTitle} />
       <IntroPage content={content} courseTitle={courseTitle} />
       {(content.topics ?? []).map((topic, i) => (
-        <TopicPages key={i} topic={topic} courseTitle={courseTitle} />
+        <React.Fragment key={i}>
+          <ModuleOpeningPage
+            topic={topic}
+            modulePlan={planModules[i]}
+            index={i}
+            totalModules={totalModules}
+            courseTitle={courseTitle}
+          />
+          <TopicLessonsPage
+            topic={topic}
+            index={i}
+            courseTitle={courseTitle}
+            showRecap
+          />
+        </React.Fragment>
       ))}
-      <BackCoverPage
-        recLogoUri={recLogoUri}
-        hotLogoUri={hotLogoUri}
-        year={year}
-      />
+      {glossary.length > 0 && (
+        <GlossaryPage glossary={glossary} courseTitle={courseTitle} />
+      )}
+      <BackCoverPage content={content} year={year} />
     </Document>
   );
 }
 
-// ─── Public API ────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
+// API pública
+// ────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Genera el PDF del curso. Los logos PNG ya no son necesarios (se reconstruye
+ * el lockup Recursalia con SVG nativo), pero la firma se mantiene para no
+ * romper llamadas existentes.
+ */
 export async function generateCoursePdf(
   content: ExpandedCourseContent,
-  logos?: PdfLogos
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _logos?: PdfLogos
 ): Promise<Uint8Array> {
-  const recLogoUri = logos?.recursalia?.length
-    ? toDataUri(logos.recursalia)
-    : undefined;
-  const hotLogoUri = logos?.hotmart?.length
-    ? toDataUri(logos.hotmart)
-    : undefined;
-
-  const buffer = await renderToBuffer(
-    <CourseDocument
-      content={content}
-      recLogoUri={recLogoUri}
-      hotLogoUri={hotLogoUri}
-    />
-  );
-
+  const buffer = await renderToBuffer(<CourseDocument content={content} />);
   return new Uint8Array(buffer);
 }
+
+// Re-export para tests / depuración.
+export { RecursaliaMark };
