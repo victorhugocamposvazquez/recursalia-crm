@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { FrontCategoryRow } from '@/lib/front-site-data';
-import type { FrontSearchCopy } from '@/types';
+import { STATIC_HOME_HERO } from '@/lib/front-site-data';
+import type { FrontHomeHeroCopy, FrontSearchCopy } from '@/types';
 import styles from './front.module.css';
 
 function sortRows(rows: FrontCategoryRow[]): FrontCategoryRow[] {
@@ -17,6 +18,7 @@ export default function FrontContentPage() {
     header: '',
     drawer: '',
   });
+  const [homeHero, setHomeHero] = useState<FrontHomeHeroCopy>(() => ({ ...STATIC_HOME_HERO }));
   const [heroText, setHeroText] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -32,6 +34,7 @@ export default function FrontContentPage() {
       setCategories(sortRows(data.categories ?? []));
       const sc = data.searchCopy as FrontSearchCopy;
       setSearchCopy(sc);
+      setHomeHero(data.homeHero ?? { ...STATIC_HOME_HERO });
       const lines =
         Array.isArray(sc.heroLines) && sc.heroLines.length > 0
           ? sc.heroLines
@@ -101,7 +104,7 @@ export default function FrontContentPage() {
       .map((l) => l.trim())
       .filter(Boolean);
     if (heroLinesParsed.length === 0) {
-      setError('En «Hero»: escribe al menos una frase (una por línea).');
+      setError('En «Buscador del hero» (abajo): escribe al menos una frase, una por línea.');
       setSaving(false);
       return;
     }
@@ -117,6 +120,7 @@ export default function FrontContentPage() {
         body: JSON.stringify({
           categories: normalized,
           searchCopy: searchPayload,
+          homeHero,
         }),
       });
       const data = await res.json();
@@ -124,6 +128,7 @@ export default function FrontContentPage() {
       setCategories(sortRows(data.categories ?? normalized));
       const next = (data.searchCopy ?? searchPayload) as FrontSearchCopy;
       setSearchCopy(next);
+      setHomeHero(data.homeHero ?? homeHero);
       const nextLines =
         Array.isArray(next.heroLines) && next.heroLines.length > 0
           ? next.heroLines
@@ -152,19 +157,98 @@ export default function FrontContentPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Contenido del sitio (Front web)</h1>
       <p className={styles.subtitle}>
-        Edita las categorías del menú «Categorías», activa o desactiva entradas y los textos de los
-        buscadores (cabecera, hero y menú móvil). Los cambios se reflejan en la web pública al
-        guardar.
+        Edita los textos del hero de la home, las categorías del menú «Categorías», activa o desactiva entradas
+        y los placeholders de los buscadores (cabecera, buscador del hero y menú móvil). Los cambios se
+        reflejan en la web pública al guardar.
       </p>
 
       {error ? <p className={styles.error}>{error}</p> : null}
+
+      <section className={styles.section} aria-labelledby="hero-copy-title">
+        <h2 id="hero-copy-title" className={styles.sectionTitle}>
+          Hero · página principal
+        </h2>
+        <p className={styles.fieldHint}>
+          El titular (H1) se divide en texto normal,{' '}
+          <strong>palabra subrayada</strong> tipo doodle y cierre (p. ej. un punto). El subtítulo puede
+          resaltar una frase con el fondo amarillo de marca en «Fragmento resaltado».
+        </p>
+        <div className={styles.field}>
+          <label htmlFor="hero-eyebrow">Línea superior (eyebrow)</label>
+          <input
+            id="hero-eyebrow"
+            type="text"
+            value={homeHero.eyebrow}
+            onChange={(e) => setHomeHero((h) => ({ ...h, eyebrow: e.target.value }))}
+          />
+        </div>
+        <div className={styles.heroGrid}>
+          <div className={styles.field}>
+            <label htmlFor="hero-title-lead">Titular · antes del acento</label>
+            <input
+              id="hero-title-lead"
+              type="text"
+              value={homeHero.titleLead}
+              onChange={(e) => setHomeHero((h) => ({ ...h, titleLead: e.target.value }))}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="hero-title-accent">Titular · palabra acento</label>
+            <input
+              id="hero-title-accent"
+              type="text"
+              value={homeHero.titleAccent}
+              onChange={(e) => setHomeHero((h) => ({ ...h, titleAccent: e.target.value }))}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="hero-title-rest">Titular · cierre</label>
+            <input
+              id="hero-title-rest"
+              type="text"
+              value={homeHero.titleRest}
+              onChange={(e) => setHomeHero((h) => ({ ...h, titleRest: e.target.value }))}
+              placeholder="."
+            />
+          </div>
+        </div>
+        <div className={styles.heroGrid}>
+          <div className={styles.field}>
+            <label htmlFor="hero-sub-lead">Subtítulo · antes del resaltado</label>
+            <input
+              id="hero-sub-lead"
+              type="text"
+              value={homeHero.subtitleLead}
+              onChange={(e) => setHomeHero((h) => ({ ...h, subtitleLead: e.target.value }))}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="hero-sub-hi">Subtítulo · fragmento resaltado</label>
+            <input
+              id="hero-sub-hi"
+              type="text"
+              value={homeHero.subtitleHighlight}
+              onChange={(e) => setHomeHero((h) => ({ ...h, subtitleHighlight: e.target.value }))}
+            />
+          </div>
+          <div className={styles.field}>
+            <label htmlFor="hero-sub-rest">Subtítulo · después del resaltado</label>
+            <input
+              id="hero-sub-rest"
+              type="text"
+              value={homeHero.subtitleRest}
+              onChange={(e) => setHomeHero((h) => ({ ...h, subtitleRest: e.target.value }))}
+            />
+          </div>
+        </div>
+      </section>
 
       <section className={styles.section} aria-labelledby="copy-title">
         <h2 id="copy-title" className={styles.sectionTitle}>
           Textos de búsqueda
         </h2>
         <div className={styles.field}>
-          <label htmlFor="ph-hero-lines">Hero (página principal) — frases rotativas</label>
+          <label htmlFor="ph-hero-lines">Buscador del hero — frases rotativas</label>
           <textarea
             id="ph-hero-lines"
             className={styles.textarea}

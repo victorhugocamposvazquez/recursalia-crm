@@ -74,6 +74,18 @@ export interface GeneratedReview {
   date: string; // YYYY-MM-DD
 }
 
+/** Fila en Supabase `course_reviews` (lectura panel). */
+export interface CourseReviewStored {
+  id: string;
+  course_id: string;
+  title: string;
+  content: string;
+  rating: number;
+  author_name: string;
+  review_date: string;
+  created_at: string;
+}
+
 /** Perfil de estrellas para IA (reseñas al publicar / regenerar). */
 export type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
 
@@ -168,9 +180,26 @@ export interface FrontSearchCopy {
   drawer: string;
 }
 
+/** Titular y subtítulo del hero de la home (`/`). */
+export interface FrontHomeHeroCopy {
+  eyebrow: string;
+  /** Texto antes de la palabra destacada (subrayado doodle). */
+  titleLead: string;
+  /** Palabra destacada visualmente en el H1. */
+  titleAccent: string;
+  /** Cierre del H1 después del acento (p. ej. «.»). */
+  titleRest: string;
+  /** Subtítulo antes del fragmento resaltado (fondo marca). */
+  subtitleLead: string;
+  subtitleHighlight: string;
+  /** Subtítulo después del fragmento resaltado. */
+  subtitleRest: string;
+}
+
 export interface FrontSitePayload {
   categories: FrontCategoryPublic[];
   searchCopy: FrontSearchCopy;
+  homeHero: FrontHomeHeroCopy;
 }
 
 export interface FrontCategoryInput {

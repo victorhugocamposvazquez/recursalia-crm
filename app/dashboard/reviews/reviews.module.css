@@ -16,6 +16,190 @@
   margin-bottom: 1.25rem;
 }
 
+.coursePicker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.coursePicker label {
+  font-size: 0.75rem;
+  color: #2f2e2b;
+  font-weight: 500;
+}
+
+.coursePicker select {
+  max-width: min(100%, 32rem);
+  padding: 0.45rem 0.65rem;
+  border-radius: 4px;
+  border: 1px solid rgb(36 35 32 / 16%);
+  background: #fff;
+  color: #242320;
+  font-size: 0.8125rem;
+}
+
+.section {
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid rgb(27 29 30 / 10%);
+}
+
+.section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #242320;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.sectionLead {
+  font-size: 0.8125rem;
+  color: rgb(36 35 32 / 62%);
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.sectionLead code {
+  font-size: 0.76rem;
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  background: rgb(27 29 30 / 7%);
+}
+
+.sectionLeadDanger {
+  composes: sectionLead;
+  color: rgb(120 45 15 / 92%);
+  background: rgb(254 243 199 / 65%);
+  padding: 0.65rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgb(251 191 36 / 35%);
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+}
+
+@media (max-width: 620px) {
+  .fieldRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.success {
+  color: #047857;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.storedWrap {
+  margin-top: 1.35rem;
+}
+
+.storedHeading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.65rem;
+  color: #242320;
+}
+
+.storedMuted {
+  font-weight: 400;
+  color: rgb(36 35 32 / 52%);
+}
+
+.storedEmpty {
+  font-size: 0.8125rem;
+  color: rgb(36 35 32 / 55%);
+  margin: 0;
+}
+
+.storedList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.storedCard {
+  background: #faf9f6;
+  border-radius: 6px;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgb(36 35 32 / 10%);
+}
+
+.storedCardHead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.storedCardHead .rating {
+  flex-shrink: 0;
+}
+
+.storedCardHead .author {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.storedCardHead .date {
+  margin-left: 0;
+}
+
+.btnDelete {
+  margin-left: auto;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid rgb(180 55 55 / 45%);
+  background: #fff;
+  color: #991b1b;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btnDelete:hover:not(:disabled) {
+  background: rgb(254 226 226 / 85%);
+  border-color: rgb(180 55 55 / 65%);
+}
+
+.btnDelete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.storedCardTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1b1d1e;
+  margin: 0 0 0.3rem;
+}
+
+.storedCardBody {
+  font-size: 0.82rem;
+  color: rgb(27 29 30 / 76%);
+  margin: 0;
+  line-height: 1.52;
+  white-space: pre-wrap;
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -98,7 +282,8 @@
   padding-top: 2rem;
 }
 
-.preview h2 {
+.preview h2,
+.preview h3 {
   font-size: 1rem;
   font-weight: 600;
   color: #242320;

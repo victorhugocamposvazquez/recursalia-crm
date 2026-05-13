@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { createPublicSupabaseClient } from '@/lib/supabase/public-server';
+import { loadFrontSitePayload } from '@/lib/front-site-data';
 import { HomeHeroSearch } from '@/components/marketing/HomeHeroSearch';
 import { HomeCategoryCarousel } from '@/components/marketing/HomeCategoryCarousel';
 import { HomeHowItWorksPinned } from '@/components/marketing/HomeHowItWorksPinned';
@@ -287,6 +288,7 @@ export default async function MarketingHomePage() {
   }
 
   const featured = featuredRaw.slice(0, 6);
+  const { homeHero } = await loadFrontSitePayload();
 
   return (
     <>
@@ -299,16 +301,17 @@ export default async function MarketingHomePage() {
 
         <div className={homeStyles.heroInner}>
           <p className={homeStyles.heroEyebrow}>
-            <span className={homeStyles.heroEyebrowDot} aria-hidden />Mejora tu presente. Decide tu futuro
+            <span className={homeStyles.heroEyebrowDot} aria-hidden />{homeHero.eyebrow}
           </p>
           <h1 id="hero-heading" className={homeStyles.heroTitle}>
-            Cursos online claros y aplicables, creados por{' '}
-            <span className={homeStyles.heroAccent}>expertos</span>.
+            {homeHero.titleLead}{' '}
+            <span className={homeStyles.heroAccent}>{homeHero.titleAccent}</span>
+            {homeHero.titleRest}
           </h1>
           <p className={homeStyles.heroSubtitle}>
-            Diploma incluido, acceso de por vida y{' '}
-            <span className={homeStyles.markerHighlight}>7 días de garantía</span>.
-            Empieza hoy y avanza a tu ritmo, sin compromisos.
+            {homeHero.subtitleLead}
+            <span className={homeStyles.markerHighlight}>{homeHero.subtitleHighlight}</span>
+            {homeHero.subtitleRest}
           </p>
 
           <div className={homeStyles.heroSearchWrap}>

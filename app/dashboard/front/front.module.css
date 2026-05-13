@@ -93,6 +93,28 @@
   margin: 0;
 }
 
+.fieldHint strong {
+  font-weight: 600;
+  color: rgb(28 27 25 / 72%);
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.heroGrid .field {
+  margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .tableWrap {
   overflow-x: auto;
   border-radius: 6px;

@@ -50,6 +50,17 @@ export async function resolveUniquePublicSlug(
   }
 }
 
+function mapReviewToInsertRow(courseId: string, r: GeneratedReview) {
+  return {
+    course_id: courseId,
+    title: String(r.title).slice(0, 500),
+    content: String(r.content ?? '').slice(0, 8000),
+    rating: clampRating(r.rating),
+    author_name: String(r.author_name).slice(0, 200),
+    review_date: normalizeReviewDate(r.date),
+  };
+}
+
 export async function replaceCourseReviews(
   courseId: string,
   reviews: GeneratedReview[]
@@ -65,15 +76,22 @@ export async function replaceCourseReviews(
 
   if (reviews.length === 0) return;
 
-  const rows = reviews.map((r) => ({
-    course_id: courseId,
-    title: String(r.title).slice(0, 500),
-    content: String(r.content ?? '').slice(0, 8000),
-    rating: clampRating(r.rating),
-    author_name: String(r.author_name).slice(0, 200),
-    review_date: normalizeReviewDate(r.date),
-  }));
+  const rows = reviews.map((r) => mapReviewToInsertRow(courseId, r));
 
+  const { error: insErr } = await supabase.from('course_reviews').insert(rows);
+  if (insErr) {
+    throw new Error(`Failed to insert reviews: ${insErr.message}`);
+  }
+}
+
+/** Añade reseñas sin borrar las existentes (p. ej. reseñas manuales desde el panel). */
+export async function appendCourseReviews(
+  courseId: string,
+  reviews: GeneratedReview[]
+): Promise<void> {
+  const supabase = getSupabase();
+  if (reviews.length === 0) return;
+  const rows = reviews.map((r) => mapReviewToInsertRow(courseId, r));
   const { error: insErr } = await supabase.from('course_reviews').insert(rows);
   if (insErr) {
     throw new Error(`Failed to insert reviews: ${insErr.message}`);

@@ -2,10 +2,10 @@ import { randomUUID } from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
-import { loadFrontSiteAdmin } from '@/lib/front-site-data';
+import { loadFrontSiteAdmin, STATIC_HOME_HERO, STATIC_SEARCH_COPY } from '@/lib/front-site-data';
 import { getSupabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
-import type { FrontCategoryInput, FrontSearchCopy } from '@/types';
+import type { FrontCategoryInput, FrontHomeHeroCopy, FrontSearchCopy } from '@/types';
 
 export async function GET() {
   const { error: authError } = await requireAuthApi();
@@ -24,6 +24,7 @@ export async function GET() {
 type PutBody = {
   categories?: FrontCategoryInput[];
   searchCopy?: FrontSearchCopy;
+  homeHero?: FrontHomeHeroCopy;
 };
 
 export async function PUT(req: NextRequest) {
@@ -77,6 +78,45 @@ export async function PUT(req: NextRequest) {
     if (upErr) return errorResponse('Error guardando textos', 500, upErr.message);
   }
 
+  if (body.homeHero) {
+    const slice = (s: string, max: number) => s.slice(0, max);
+    const eyebrow = body.homeHero.eyebrow?.trim() ?? '';
+    const titleLead = body.homeHero.titleLead?.trim() ?? '';
+    const titleAccent = body.homeHero.titleAccent?.trim() ?? '';
+    const titleRest = body.homeHero.titleRest?.trim() ?? '';
+    const subtitleLead = body.homeHero.subtitleLead?.trim() ?? '';
+    const subtitleHighlight = body.homeHero.subtitleHighlight?.trim() ?? '';
+    const subtitleRest = body.homeHero.subtitleRest?.trim() ?? '';
+    if (
+      !eyebrow ||
+      !titleLead ||
+      !titleAccent ||
+      titleRest === '' ||
+      !subtitleLead ||
+      !subtitleHighlight ||
+      !subtitleRest
+    ) {
+      return errorResponse(
+        'Hero: todos los campos deben tener texto (incluso «cierre» del titular puede ser solo un punto).',
+        400
+      );
+    }
+    const heroRows = [
+      { key: 'home_eyebrow', value: slice(eyebrow, 240) },
+      { key: 'home_title_lead', value: slice(titleLead, 400) },
+      { key: 'home_title_accent', value: slice(titleAccent, 120) },
+      { key: 'home_title_rest', value: slice(titleRest, 40) },
+      { key: 'home_sub_lead', value: slice(subtitleLead, 360) },
+      { key: 'home_sub_highlight', value: slice(subtitleHighlight, 200) },
+      { key: 'home_sub_rest', value: slice(subtitleRest, 520) },
+    ];
+    const { error: hErr } = await supabase.from('front_site_copy').upsert(
+      heroRows.map((r) => ({ ...r, updated_at: new Date().toISOString() })),
+      { onConflict: 'key' }
+    );
+    if (hErr) return errorResponse('Error guardando textos del hero', 500, hErr.message);
+  }
+
   if (body.categories) {
     const list = body.categories;
     if (list.length === 0) {
@@ -126,5 +166,11 @@ export async function PUT(req: NextRequest) {
   revalidatePath('/cursos');
 
   const fresh = await loadFrontSiteAdmin();
-  return jsonResponse(fresh ?? { categories: [], searchCopy: body.searchCopy });
+  return jsonResponse(
+    fresh ?? {
+      categories: body.categories ?? [],
+      searchCopy: body.searchCopy ?? STATIC_SEARCH_COPY,
+      homeHero: body.homeHero ?? STATIC_HOME_HERO,
+    }
+  );
 }

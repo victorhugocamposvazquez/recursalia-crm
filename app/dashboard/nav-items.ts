@@ -4,7 +4,7 @@ export const CURSOS_NAV = [
   { href: '/dashboard/catalog-categories', label: 'Categorías /cursos' },
   { href: '/dashboard/gastos-ia', label: 'Gastos IA' },
   { href: '/dashboard/courses', label: 'Mis cursos' },
-  { href: '/dashboard/reviews', label: 'Generar reseñas' },
+  { href: '/dashboard/reviews', label: 'Reseñas' },
   { href: '/dashboard/seo-posts', label: 'Posts SEO' },
   { href: '/dashboard/blog', label: 'Blog' },
   { href: '/dashboard/docs', label: 'Documentación' },
