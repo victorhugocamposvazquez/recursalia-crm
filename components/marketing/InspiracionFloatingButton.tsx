@@ -1,15 +1,16 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { NeurallFabIcon } from '@/components/marketing/NeurallFabIcon';
 import { isMarketingCourseLandingPath } from '@/lib/marketing-path';
 import styles from './InspiracionFloatingButton.module.css';
 
 const PULSE_MS = 580;
+const ORACLE_SRC = '/images/oracle.png';
 
-/** FAB Neurall: icono brújula legible + disco lime (sin canvas). */
+/** FAB Neurall: recurso marca (`public/images/oracle.png`). */
 export function InspiracionFloatingButton() {
   const pathname = usePathname();
   const [pulse, setPulse] = useState(false);
@@ -42,7 +43,16 @@ export function InspiracionFloatingButton() {
       onMouseEnter={triggerPulse}
       onFocus={triggerPulse}
     >
-      <NeurallFabIcon className={styles.glyph} />
+      <span className={styles.glyph}>
+        <Image
+          src={ORACLE_SRC}
+          alt=""
+          width={144}
+          height={144}
+          className={styles.glyphImg}
+          sizes="54px"
+        />
+      </span>
     </Link>
   );
 }
