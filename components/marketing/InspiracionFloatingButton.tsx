@@ -2,31 +2,32 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import ParticleOracle, {
-  type ParticleOracleHandle,
-} from '@/components/marketing/inspiracion/ParticleOracle';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { NeurallFabIcon } from '@/components/marketing/NeurallFabIcon';
 import { isMarketingCourseLandingPath } from '@/lib/marketing-path';
 import styles from './InspiracionFloatingButton.module.css';
 
-/**
- * Botón flotante compacto: disco opaco detrás del canvas para que no se vea
- * “fantasma” sobre fondos claros.
- */
+const PULSE_MS = 580;
+
+/** FAB Neurall: icono brújula legible + disco lime (sin canvas). */
 export function InspiracionFloatingButton() {
   const pathname = usePathname();
-  const oracleRef = useRef<ParticleOracleHandle | null>(null);
-  const [oracleSize, setOracleSize] = useState(58);
+  const [pulse, setPulse] = useState(false);
+  const pulseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const triggerPulse = useCallback(() => {
+    setPulse(true);
+    if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
+    pulseTimerRef.current = setTimeout(() => {
+      pulseTimerRef.current = null;
+      setPulse(false);
+    }, PULSE_MS);
+  }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const compute = () => {
-      const w = window.innerWidth;
-      setOracleSize(w >= 768 ? 72 : 58);
+    return () => {
+      if (pulseTimerRef.current) clearTimeout(pulseTimerRef.current);
     };
-    compute();
-    window.addEventListener('resize', compute);
-    return () => window.removeEventListener('resize', compute);
   }, []);
 
   const isInspiracion = pathname === '/inspiracion';
@@ -36,17 +37,12 @@ export function InspiracionFloatingButton() {
   return (
     <Link
       href="/inspiracion"
-      className={styles.dock}
-      aria-label="Inspírate con Neurall"
-      onMouseEnter={() => oracleRef.current?.pulse()}
-      onFocus={() => oracleRef.current?.pulse()}
+      className={`${styles.dock} ${pulse ? styles.dockPulse : ''}`.trim()}
+      aria-label="Abrir Inspiración con Neurall"
+      onMouseEnter={triggerPulse}
+      onFocus={triggerPulse}
     >
-      <ParticleOracle
-        ref={oracleRef}
-        size={oracleSize}
-        bodyCount={420}
-        haloCount={150}
-      />
+      <NeurallFabIcon className={styles.glyph} />
     </Link>
   );
 }

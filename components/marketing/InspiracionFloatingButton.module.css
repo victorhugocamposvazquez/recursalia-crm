@@ -1,4 +1,4 @@
-/* FAB Neurall compacto: disco casi opaco (no “cristal”) + aro lime discreto. */
+/* FAB Neurall: disco casi opaco + aro lime + icono brújula */
 .dock {
   position: fixed;
   right: clamp(0.45rem, 1.4vw, 0.85rem);
@@ -20,7 +20,7 @@
   filter: drop-shadow(0 8px 18px rgb(8 19 56 / 26%));
 }
 
-/* Fondo sólido detrás del canvas: evita sensación translúcida */
+/* Fondo sólido detrás del icono */
 .dock::before {
   content: '';
   position: absolute;
@@ -34,12 +34,26 @@
   box-shadow:
     0 1px 0 rgb(255 255 255 / 90%) inset,
     0 6px 16px rgb(8 19 56 / 16%);
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
 }
 
-.dock canvas {
+.glyph {
   position: relative;
   z-index: 1;
   display: block;
+  width: clamp(46px, 11vw, 54px);
+  height: clamp(46px, 11vw, 54px);
+}
+
+.dock:hover::before,
+.dock:focus-visible::before {
+  border-color: rgb(168 205 52 / 98%);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 90%) inset,
+    0 6px 18px rgb(8 19 56 / 18%),
+    0 0 0 1px rgb(200 240 66 / 22%);
 }
 
 .dock:hover,
@@ -58,6 +72,22 @@
   transform: translateY(0);
 }
 
+@keyframes dockPulseKeyframes {
+  0%,
+  100% {
+    filter: drop-shadow(0 8px 18px rgb(8 19 56 / 26%));
+  }
+
+  45% {
+    filter: drop-shadow(0 14px 28px rgb(8 19 56 / 38%))
+      drop-shadow(0 0 24px rgb(200 240 66 / 42%));
+  }
+}
+
+.dockPulse {
+  animation: dockPulseKeyframes 0.55s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dock,
   .dock:hover,
@@ -68,5 +98,13 @@
 
   .dock:active {
     transform: none;
+  }
+
+  .dockPulse {
+    animation: none;
+  }
+
+  .dock::before {
+    transition: none;
   }
 }
