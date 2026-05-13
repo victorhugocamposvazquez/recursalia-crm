@@ -1,8 +1,8 @@
-/* FAB Neurall: disco casi opaco + aro lime + icono brújula */
+/* FAB Neurall: disco claro + borde azul + icono tipo Safari */
 .dock {
   position: fixed;
-  right: clamp(0.45rem, 1.4vw, 0.85rem);
-  bottom: calc(clamp(0.45rem, 1.4vw, 0.85rem) + env(safe-area-inset-bottom, 0px));
+  right: clamp(1rem, 4.5vw, 1.65rem);
+  bottom: calc(clamp(1rem, 4.5vw, 1.65rem) + env(safe-area-inset-bottom, 0px));
   z-index: 35;
   display: inline-flex;
   align-items: center;
@@ -11,7 +11,7 @@
   background: transparent;
   border: 0;
   padding: 6px;
-  margin: 0 -6px -6px 0;
+  margin: 0;
   border-radius: 999px;
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
@@ -20,7 +20,7 @@
   filter: drop-shadow(0 8px 18px rgb(8 19 56 / 26%));
 }
 
-/* Fondo sólido detrás del icono */
+/* Halo detrás del icono (coherente con tonos azules del glyph) */
 .dock::before {
   content: '';
   position: absolute;
@@ -29,11 +29,11 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 38% 28%, #ffffff 0%, #f7fbf0 72%, #eef5e4 100%);
-  border: 1.5px solid rgb(185 218 72 / 90%);
+    radial-gradient(circle at 38% 28%, #ffffff 0%, #f4f7fd 72%, #e8eef9 100%);
+  border: 1.5px solid rgb(27 56 196 / 42%);
   box-shadow:
-    0 1px 0 rgb(255 255 255 / 90%) inset,
-    0 6px 16px rgb(8 19 56 / 16%);
+    0 1px 0 rgb(255 255 255 / 92%) inset,
+    0 6px 18px rgb(27 56 196 / 14%);
   transition:
     border-color 0.22s ease,
     box-shadow 0.22s ease;
@@ -49,22 +49,22 @@
 
 .dock:hover::before,
 .dock:focus-visible::before {
-  border-color: rgb(168 205 52 / 98%);
+  border-color: rgb(27 56 196 / 72%);
   box-shadow:
-    0 1px 0 rgb(255 255 255 / 90%) inset,
-    0 6px 18px rgb(8 19 56 / 18%),
-    0 0 0 1px rgb(200 240 66 / 22%);
+    0 1px 0 rgb(255 255 255 / 92%) inset,
+    0 8px 22px rgb(27 56 196 / 22%),
+    0 0 0 1px rgb(61 107 255 / 28%);
 }
 
 .dock:hover,
 .dock:focus-visible {
   transform: translateY(-2px) scale(1.015);
-  filter: drop-shadow(0 12px 24px rgb(8 19 56 / 32%))
-    drop-shadow(0 0 16px rgb(200 240 66 / 18%));
+  filter: drop-shadow(0 12px 24px rgb(8 19 56 / 28%))
+    drop-shadow(0 0 18px rgb(61 107 255 / 22%));
 }
 
 .dock:focus-visible {
-  outline: 2px solid #c8f542;
+  outline: 2px solid #3d6bff;
   outline-offset: 2px;
 }
 
@@ -80,7 +80,7 @@
 
   45% {
     filter: drop-shadow(0 14px 28px rgb(8 19 56 / 38%))
-      drop-shadow(0 0 24px rgb(200 240 66 / 42%));
+      drop-shadow(0 0 24px rgb(61 107 255 / 38%));
   }
 }
 
