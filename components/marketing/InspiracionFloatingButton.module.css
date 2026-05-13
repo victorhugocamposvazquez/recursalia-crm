@@ -1,9 +1,9 @@
-/* FAB Neurall: oráculo + halo tipo hist. Instagram (anillo fluor + glow) */
+/* FAB Neurall: anillo fluor fino + hueco blanco + disco azul (más compacto). */
 
 .dock {
   position: fixed;
-  right: clamp(1rem, 4.5vw, 1.65rem);
-  bottom: calc(clamp(1rem, 4.5vw, 1.65rem) + env(safe-area-inset-bottom, 0px));
+  right: clamp(0.95rem, 4vw, 1.45rem);
+  bottom: calc(clamp(0.95rem, 4vw, 1.45rem) + env(safe-area-inset-bottom, 0px));
   z-index: 35;
   display: inline-flex;
   align-items: center;
@@ -11,62 +11,67 @@
   isolation: isolate;
   background: transparent;
   border: 0;
-  padding: 4px;
+  padding: 2px;
   margin: 0;
   border-radius: 999px;
   -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   text-decoration: none;
   transition: transform 0.22s ease, filter 0.22s ease;
-  filter: drop-shadow(0 8px 18px rgb(8 19 56 / 26%));
+  filter: drop-shadow(0 6px 14px rgb(8 19 56 / 22%));
 }
 
-/* Anillo conic-gradient (verde fluorescente) + halo exterior */
+/* Borde gradiente muy fino (≈Instagram) — gira; interior compensa giros */
 .storyRing {
-  position: relative;
-  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  padding: clamp(4px, 1.1vw, 6px);
+  padding: 2px;
   border-radius: 50%;
   background: conic-gradient(
-    from 40deg,
+    from 35deg,
     #39ff14 0%,
-    #c8f542 18%,
-    #7fff00 36%,
-    #d8ff5c 52%,
-    #22ff8a 68%,
-    #b7ff2e 84%,
+    #ccff52 22%,
+    #7bff3a 44%,
+    #e8ff73 62%,
+    #22ffa3 82%,
     #39ff14 100%
   );
   box-shadow:
-    0 0 0 1px rgb(200 255 100 / 35%),
-    0 0 18px rgb(57 255 20 / 42%),
-    0 0 40px rgb(200 255 90 / 28%),
-    0 4px 14px rgb(8 19 56 / 20%);
+    0 0 0 0.5px rgb(200 255 120 / 32%),
+    0 0 12px rgb(57 255 20 / 32%),
+    0 0 26px rgb(200 255 90 / 20%),
+    0 3px 10px rgb(8 19 56 / 16%);
   animation: storyRingSpin 14s linear infinite;
 }
 
-.glyph {
-  position: relative;
-  display: block;
-  width: clamp(56px, 14vw, 72px);
-  height: clamp(56px, 14vw, 72px);
+/* Anula rotación sobre hueco + disco (quedan fijos como en IG) */
+.storyInner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-  background: rgb(15 23 42);
   animation: storyRingSpin 14s linear infinite reverse;
 }
 
-.glyphImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
+/* Separación entre anillo y contenido */
+.storyGap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.25px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.storyCore {
+  width: clamp(38px, 9.5vw, 46px);
+  height: clamp(38px, 9.5vw, 46px);
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #1b38c4;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%);
 }
 
 @keyframes storyRingSpin {
@@ -77,24 +82,23 @@
 
 .dock:hover,
 .dock:focus-visible {
-  transform: translateY(-2px) scale(1.015);
-  filter: drop-shadow(0 12px 24px rgb(8 19 56 / 28%))
-    drop-shadow(0 0 22px rgb(57 255 20 / 32%))
-    drop-shadow(0 0 36px rgb(200 255 100 / 22%));
+  transform: translateY(-2px) scale(1.012);
+  filter: drop-shadow(0 10px 22px rgb(8 19 56 / 26%))
+    drop-shadow(0 0 16px rgb(57 255 20 / 28%))
+    drop-shadow(0 0 30px rgb(200 255 100 / 18%));
 }
 
 .dock:focus-visible .storyRing {
   box-shadow:
-    0 0 0 2px rgb(255 255 255 / 45%),
-    0 0 0 1px rgb(200 255 100 / 55%),
-    0 0 24px rgb(57 255 20 / 55%),
-    0 0 48px rgb(200 255 90 / 35%),
-    0 4px 18px rgb(8 19 56 / 22%);
+    0 0 0 1.5px rgb(255 255 255 / 40%),
+    0 0 16px rgb(57 255 20 / 45%),
+    0 0 36px rgb(200 255 90 / 28%),
+    0 3px 12px rgb(8 19 56 / 18%);
 }
 
 .dock:focus-visible {
   outline: 2px solid #b7ff2e;
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 .dock:active {
@@ -104,14 +108,14 @@
 @keyframes dockPulseKeyframes {
   0%,
   100% {
-    filter: drop-shadow(0 8px 18px rgb(8 19 56 / 26%))
-      drop-shadow(0 0 12px rgb(57 255 20 / 20%));
+    filter: drop-shadow(0 6px 14px rgb(8 19 56 / 22%))
+      drop-shadow(0 0 10px rgb(57 255 20 / 16%));
   }
 
   45% {
-    filter: drop-shadow(0 14px 28px rgb(8 19 56 / 38%))
-      drop-shadow(0 0 28px rgb(57 255 20 / 50%))
-      drop-shadow(0 0 48px rgb(200 255 100 / 38%));
+    filter: drop-shadow(0 11px 24px rgb(8 19 56 / 34%))
+      drop-shadow(0 0 22px rgb(57 255 20 / 42%))
+      drop-shadow(0 0 40px rgb(200 255 100 / 30%));
   }
 }
 
@@ -121,7 +125,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .storyRing,
-  .glyph {
+  .storyInner {
     animation: none;
   }
 

@@ -28,10 +28,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Hueco inferior en móvil para el FAB Neurall + anillo (fixed, más alto) */
+/* Hueco inferior en móvil para el FAB Neurall (fixed, anillo compacto) */
 @media (max-width: 1023px) {
   .marketing:not(.marketingInspiracion) {
-    padding-bottom: clamp(4.85rem, 12.5vw, 6rem);
+    padding-bottom: clamp(4.2rem, 11vw, 5.35rem);
   }
 }
 

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -8,9 +7,8 @@ import { isMarketingCourseLandingPath } from '@/lib/marketing-path';
 import styles from './InspiracionFloatingButton.module.css';
 
 const PULSE_MS = 580;
-const ORACLE_SRC = '/images/oracle.png';
 
-/** FAB Neurall: recurso marca (`public/images/oracle.png`). */
+/** FAB Neurall: disco azul + anillo fluor fino tipo IG (hueco entre anillo y disco). */
 export function InspiracionFloatingButton() {
   const pathname = usePathname();
   const [pulse, setPulse] = useState(false);
@@ -44,15 +42,10 @@ export function InspiracionFloatingButton() {
       onFocus={triggerPulse}
     >
       <span className={styles.storyRing}>
-        <span className={styles.glyph}>
-          <Image
-            src={ORACLE_SRC}
-            alt=""
-            width={200}
-            height={200}
-            className={styles.glyphImg}
-            sizes="(max-width: 768px) 72px, 84px"
-          />
+        <span className={styles.storyInner}>
+          <span className={styles.storyGap}>
+            <span className={styles.storyCore} aria-hidden />
+          </span>
         </span>
       </span>
     </Link>
