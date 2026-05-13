@@ -66,8 +66,8 @@
 }
 
 .storyCore {
-  width: clamp(38px, 9.5vw, 46px);
-  height: clamp(38px, 9.5vw, 46px);
+  width: clamp(41px, 10.2vw, 50px);
+  height: clamp(41px, 10.2vw, 50px);
   flex-shrink: 0;
   border-radius: 50%;
   background: #1b38c4;
