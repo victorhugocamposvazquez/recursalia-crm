@@ -1,4 +1,5 @@
-/* FAB Neurall: imagen oracle.png (recorte circular) */
+/* FAB Neurall: oráculo + halo tipo hist. Instagram (anillo fluor + glow) */
+
 .dock {
   position: fixed;
   right: clamp(1rem, 4.5vw, 1.65rem);
@@ -20,16 +21,44 @@
   filter: drop-shadow(0 8px 18px rgb(8 19 56 / 26%));
 }
 
-.glyph {
+/* Anillo conic-gradient (verde fluorescente) + halo exterior */
+.storyRing {
   position: relative;
   z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: clamp(4px, 1.1vw, 6px);
+  border-radius: 50%;
+  background: conic-gradient(
+    from 40deg,
+    #39ff14 0%,
+    #c8f542 18%,
+    #7fff00 36%,
+    #d8ff5c 52%,
+    #22ff8a 68%,
+    #b7ff2e 84%,
+    #39ff14 100%
+  );
+  box-shadow:
+    0 0 0 1px rgb(200 255 100 / 35%),
+    0 0 18px rgb(57 255 20 / 42%),
+    0 0 40px rgb(200 255 90 / 28%),
+    0 4px 14px rgb(8 19 56 / 20%);
+  animation: storyRingSpin 14s linear infinite;
+}
+
+.glyph {
+  position: relative;
   display: block;
-  width: clamp(46px, 11vw, 54px);
-  height: clamp(46px, 11vw, 54px);
+  width: clamp(56px, 14vw, 72px);
+  height: clamp(56px, 14vw, 72px);
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
-  box-shadow: 0 2px 10px rgb(8 19 56 / 18%);
+  background: rgb(15 23 42);
+  animation: storyRingSpin 14s linear infinite reverse;
 }
 
 .glyphImg {
@@ -40,21 +69,32 @@
   display: block;
 }
 
+@keyframes storyRingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .dock:hover,
 .dock:focus-visible {
   transform: translateY(-2px) scale(1.015);
   filter: drop-shadow(0 12px 24px rgb(8 19 56 / 28%))
-    drop-shadow(0 0 18px rgb(61 107 255 / 22%));
+    drop-shadow(0 0 22px rgb(57 255 20 / 32%))
+    drop-shadow(0 0 36px rgb(200 255 100 / 22%));
 }
 
-.dock:hover .glyph,
-.dock:focus-visible .glyph {
-  box-shadow: 0 4px 14px rgb(27 56 196 / 24%);
+.dock:focus-visible .storyRing {
+  box-shadow:
+    0 0 0 2px rgb(255 255 255 / 45%),
+    0 0 0 1px rgb(200 255 100 / 55%),
+    0 0 24px rgb(57 255 20 / 55%),
+    0 0 48px rgb(200 255 90 / 35%),
+    0 4px 18px rgb(8 19 56 / 22%);
 }
 
 .dock:focus-visible {
-  outline: 2px solid #3d6bff;
-  outline-offset: 2px;
+  outline: 2px solid #b7ff2e;
+  outline-offset: 3px;
 }
 
 .dock:active {
@@ -64,12 +104,14 @@
 @keyframes dockPulseKeyframes {
   0%,
   100% {
-    filter: drop-shadow(0 8px 18px rgb(8 19 56 / 26%));
+    filter: drop-shadow(0 8px 18px rgb(8 19 56 / 26%))
+      drop-shadow(0 0 12px rgb(57 255 20 / 20%));
   }
 
   45% {
     filter: drop-shadow(0 14px 28px rgb(8 19 56 / 38%))
-      drop-shadow(0 0 24px rgb(61 107 255 / 38%));
+      drop-shadow(0 0 28px rgb(57 255 20 / 50%))
+      drop-shadow(0 0 48px rgb(200 255 100 / 38%));
   }
 }
 
@@ -78,6 +120,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .storyRing,
+  .glyph {
+    animation: none;
+  }
+
   .dock,
   .dock:hover,
   .dock:focus-visible {

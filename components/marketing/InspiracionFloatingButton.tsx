@@ -43,15 +43,17 @@ export function InspiracionFloatingButton() {
       onMouseEnter={triggerPulse}
       onFocus={triggerPulse}
     >
-      <span className={styles.glyph}>
-        <Image
-          src={ORACLE_SRC}
-          alt=""
-          width={144}
-          height={144}
-          className={styles.glyphImg}
-          sizes="54px"
-        />
+      <span className={styles.storyRing}>
+        <span className={styles.glyph}>
+          <Image
+            src={ORACLE_SRC}
+            alt=""
+            width={200}
+            height={200}
+            className={styles.glyphImg}
+            sizes="(max-width: 768px) 72px, 84px"
+          />
+        </span>
       </span>
     </Link>
   );
