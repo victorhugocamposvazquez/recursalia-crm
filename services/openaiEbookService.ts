@@ -1,11 +1,26 @@
 /**
  * Genera contenido extenso para cada lección del curso (solo para el PDF/ebook).
- * Paraleliza las llamadas a OpenAI con concurrencia limitada.
+ *
+ * Pipeline:
+ *  1) `buildEditorialPlan` (1 llamada): plan editorial coherente del curso.
+ *  2) Expansión por lección con el plan como contexto, devolviendo bloques
+ *     estructurados (intro / body / example / exercise / commonMistakes /
+ *     checklist / keyPoints). Paralela con concurrencia limitada.
+ *
+ * Si el plan editorial falla, hacemos fallback a una expansión "legacy"
+ * (prompt anterior, texto plano) para no romper la generación.
  */
 
 import OpenAI from 'openai';
 import type { GeneratedCourseStructure } from '@/types';
+import { resolveAiModel } from '@/lib/aiModels';
 import { logOpenAiChatUsage } from '@/services/aiUsageLogService';
+import {
+  buildEditorialPlan,
+  type EditorialPlan,
+  type LessonPlan,
+  type ModulePlan,
+} from '@/services/openaiEditorialPlan';
 
 const CONCURRENCY = 6;
 
@@ -15,14 +30,28 @@ function getOpenAI(): OpenAI {
   return new OpenAI({ apiKey: key });
 }
 
+/**
+ * Estructura enriquecida de una lección. `content` se mantiene como fallback
+ * para compatibilidad con el renderer y otros consumidores.
+ */
 export interface ExpandedLesson {
   title: string;
+  /** Texto plano "todo en uno" (fallback histórico, también lo poblamos siempre). */
   content: string;
+  intro?: string;
+  body?: string;
+  example?: string;
+  exercise?: string;
+  commonMistakes?: string[];
+  checklist?: string[];
+  keyPoints?: string[];
 }
 
 export interface ExpandedTopic {
   title: string;
   lessons: ExpandedLesson[];
+  summary?: string;
+  objectives?: string[];
 }
 
 export interface ExpandedCourseContent {
@@ -32,10 +61,202 @@ export interface ExpandedCourseContent {
   author_name?: string;
   author_bio?: string;
   topics: ExpandedTopic[];
+  /** Plan editorial empleado (si la fase no ha caído al fallback). */
+  editorialPlan?: EditorialPlan;
+  /** Glosario candidato del plan, expuesto a nivel curso (para PDF futuro). */
+  glossaryCandidates?: string[];
 }
 
-async function expandLesson(
+export type ProgressCallback = (
+  current: number,
+  total: number,
+  lessonTitle: string
+) => void;
+
+export function countLessons(content: GeneratedCourseStructure): number {
+  return (content.topics ?? []).reduce((sum, t) => sum + t.lessons.length, 0);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Expansión enriquecida
+// ────────────────────────────────────────────────────────────────────────────
+
+interface RichJobContext {
+  courseTitle: string;
+  courseShortDesc: string;
+  module: ModulePlan;
+  lesson: LessonPlan;
+  /** Lecciones previas del mismo módulo (índices < lesson.index). */
+  previousLessonsInModule: LessonPlan[];
+  /** Resumen de módulos anteriores (1-2 frases cada uno). */
+  earlierModulesSummary: { title: string; summary: string }[];
+}
+
+interface RichLessonOutput {
+  intro: string;
+  body: string;
+  example: string;
+  exercise: string;
+  commonMistakes: string[];
+  checklist: string[];
+  keyPoints: string[];
+}
+
+function buildRichLessonPrompt(ctx: RichJobContext): string {
+  const previous = ctx.previousLessonsInModule
+    .map(
+      (l) =>
+        `· ${l.title} → conceptos ya cubiertos: ${l.keyConcepts.join(', ') || '(n/d)'}`
+    )
+    .join('\n');
+
+  const earlier = ctx.earlierModulesSummary
+    .map((m, i) => `${i + 1}) ${m.title}: ${m.summary || '(sin resumen)'}`)
+    .join('\n');
+
+  return `Eres un escritor experto en contenido educativo de pago. Redactas en castellano, claro, profesional y aplicado.
+
+CURSO: ${ctx.courseTitle}
+${ctx.courseShortDesc ? `Resumen del curso: ${ctx.courseShortDesc}` : ''}
+
+MÓDULO: ${ctx.module.title}
+Objetivos del módulo: ${ctx.module.objectives.join(' | ') || '(n/d)'}
+Resumen del módulo: ${ctx.module.summary || '(n/d)'}
+
+CONTEXTO PREVIO (NO repetir definiciones ya cubiertas):
+- Lecciones anteriores de este módulo:
+${previous || '(esta es la primera lección del módulo)'}
+- Módulos anteriores del curso:
+${earlier || '(este es el primer módulo)'}
+
+LECCIÓN A REDACTAR: ${ctx.lesson.title}
+- Resultado de aprendizaje (intent): ${ctx.lesson.intent}
+- Conceptos clave a trabajar AQUÍ: ${ctx.lesson.keyConcepts.join(', ') || '(n/d)'}
+- Asume como conocido (NO redefinir): ${ctx.lesson.assumesKnown.join(', ') || '(n/d)'}
+- Sugerencia de ejemplo: ${ctx.lesson.suggestedExample || '(libre)'}
+- Sugerencia de ejercicio: ${ctx.lesson.suggestedExercise || '(libre)'}
+
+DEVUELVE UN ÚNICO JSON VÁLIDO con esta forma:
+{
+  "intro": "string (80-150 palabras, sin definir nada que ya esté en assumesKnown; engancha con el resultado de aprendizaje)",
+  "body": "string (1200-1800 palabras; texto plano con párrafos separados por líneas en blanco; estructura: contexto → desarrollo conceptual → cómo se aplica → matices y casos límite; no uses títulos internos, no uses markdown)",
+  "example": "string (200-300 palabras; un caso concreto y plausible, con nombres/cifras/situaciones realistas; debe ilustrar los conceptos clave de ESTA lección)",
+  "exercise": "string (120-200 palabras; un ejercicio aplicado paso a paso que el alumno pueda realizar tras leer la lección; indica qué entregable produce)",
+  "commonMistakes": ["3-5 errores frecuentes con explicación corta de por qué se producen y cómo evitarlos"],
+  "checklist": ["4-6 ítems accionables que el alumno debería poder confirmar tras la lección"],
+  "keyPoints": ["4-5 ideas clave en una frase cada una; sin numeración"]
+}
+
+REGLAS DE ESTILO:
+1. Castellano de España, registro profesional y accesible. No uses tú/usted alternados; mantén "tú".
+2. NO uses emojis ni markdown. Solo texto plano dentro de cada string. Si necesitas listas, usa los arrays del JSON, no guiones dentro de los strings.
+3. NO redefinas los conceptos en "assumesKnown" ni los presentes en lecciones previas listadas arriba.
+4. Cita los conceptos clave de la lección al menos una vez en "body".
+5. "example" debe ser específico, no genérico.
+6. "exercise" debe ser autocontenido y verificable (el alumno sabe si lo hizo bien).
+7. Todo el contenido va en castellano. No mezcles idiomas salvo nombres propios.`;
+}
+
+async function expandLessonRich(
   openai: OpenAI,
+  model: string,
+  ctx: RichJobContext,
+  courseId?: string | null
+): Promise<RichLessonOutput> {
+  const response = await openai.chat.completions.create({
+    model,
+    messages: [
+      {
+        role: 'system',
+        content:
+          'Eres un escritor pedagógico experto. Devuelves SOLO JSON válido, sin markdown, sin emojis, en castellano.',
+      },
+      { role: 'user', content: buildRichLessonPrompt(ctx) },
+    ],
+    temperature: 0.7,
+    response_format: { type: 'json_object' },
+  });
+
+  logOpenAiChatUsage('ebook_lesson_expand_rich', model, response.usage, courseId, {
+    lesson_title: ctx.lesson.title,
+    topic_title: ctx.module.title,
+  });
+
+  const raw = response.choices[0]?.message?.content?.trim() ?? '';
+  if (!raw) throw new Error('Lesson expansion: empty response');
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    throw new Error(
+      `Lesson expansion: invalid JSON (${err instanceof Error ? err.message : String(err)})`
+    );
+  }
+
+  return normalizeRichLesson(parsed);
+}
+
+function normalizeRichLesson(parsed: unknown): RichLessonOutput {
+  const obj =
+    typeof parsed === 'object' && parsed !== null
+      ? (parsed as Record<string, unknown>)
+      : {};
+
+  return {
+    intro: asNonEmptyString(obj.intro),
+    body: asNonEmptyString(obj.body),
+    example: asNonEmptyString(obj.example),
+    exercise: asNonEmptyString(obj.exercise),
+    commonMistakes: asStringArray(obj.commonMistakes).slice(0, 8),
+    checklist: asStringArray(obj.checklist).slice(0, 10),
+    keyPoints: asStringArray(obj.keyPoints).slice(0, 8),
+  };
+}
+
+function asNonEmptyString(v: unknown): string {
+  return typeof v === 'string' ? v.trim() : '';
+}
+
+function asStringArray(v: unknown): string[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .filter((x): x is string => typeof x === 'string' && x.trim().length > 0)
+    .map((x) => x.trim());
+}
+
+/** Fusiona los bloques en un texto plano legible para consumidores legacy. */
+function flattenRichToContent(rich: RichLessonOutput): string {
+  const out: string[] = [];
+  if (rich.intro) out.push(rich.intro);
+  if (rich.body) out.push(rich.body);
+  if (rich.example) out.push(`Ejemplo:\n${rich.example}`);
+  if (rich.exercise) out.push(`Ejercicio práctico:\n${rich.exercise}`);
+  if (rich.commonMistakes.length > 0) {
+    out.push(
+      `Errores comunes:\n${rich.commonMistakes.map((m, i) => `${i + 1}. ${m}`).join('\n')}`
+    );
+  }
+  if (rich.checklist.length > 0) {
+    out.push(
+      `Checklist:\n${rich.checklist.map((c) => `- ${c}`).join('\n')}`
+    );
+  }
+  if (rich.keyPoints.length > 0) {
+    out.push(
+      `Puntos clave:\n${rich.keyPoints.map((k, i) => `${i + 1}. ${k}`).join('\n')}`
+    );
+  }
+  return out.join('\n\n');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Fallback legacy (mismo prompt que antes; solo texto plano)
+// ────────────────────────────────────────────────────────────────────────────
+
+async function expandLessonLegacy(
+  openai: OpenAI,
+  model: string,
   courseTitle: string,
   topicTitle: string,
   lessonTitle: string,
@@ -43,7 +264,7 @@ async function expandLesson(
   courseId?: string | null
 ): Promise<string> {
   const response = await openai.chat.completions.create({
-    model: 'gpt-4o-mini',
+    model,
     messages: [
       {
         role: 'system',
@@ -69,22 +290,18 @@ INSTRUCCIONES:
     max_tokens: 2000,
   });
 
-  logOpenAiChatUsage(
-    'ebook_lesson_expand',
-    'gpt-4o-mini',
-    response.usage,
-    courseId,
-    { lesson_title: lessonTitle, topic_title: topicTitle }
-  );
+  logOpenAiChatUsage('ebook_lesson_expand', model, response.usage, courseId, {
+    lesson_title: lessonTitle,
+    topic_title: topicTitle,
+    fallback: true,
+  });
 
   return response.choices[0]?.message?.content?.trim() ?? '';
 }
 
-export type ProgressCallback = (current: number, total: number, lessonTitle: string) => void;
-
-export function countLessons(content: GeneratedCourseStructure): number {
-  return (content.topics ?? []).reduce((sum, t) => sum + t.lessons.length, 0);
-}
+// ────────────────────────────────────────────────────────────────────────────
+// Orquestación
+// ────────────────────────────────────────────────────────────────────────────
 
 interface LessonJob {
   topicIdx: number;
@@ -101,7 +318,178 @@ export async function expandCourseForEbook(
 ): Promise<ExpandedCourseContent> {
   const openai = getOpenAI();
   const total = countLessons(content);
+  const lessonModel = resolveAiModel('lessonExpand');
+  const legacyModel = resolveAiModel('ebookLessonExpandLegacy');
 
+  // 1) Plan editorial. Si falla, caemos al pipeline legacy.
+  let plan: EditorialPlan | null = null;
+  try {
+    plan = await buildEditorialPlan(content, courseId ?? null);
+  } catch (err) {
+    console.warn(
+      '[expandCourseForEbook] editorial plan failed; falling back to legacy expansion:',
+      err instanceof Error ? err.message : err
+    );
+  }
+
+  // 2) Expansión.
+  if (plan) {
+    return expandWithPlan(
+      openai,
+      lessonModel,
+      content,
+      plan,
+      onProgress,
+      courseId
+    );
+  }
+  return expandLegacy(openai, legacyModel, content, total, onProgress, courseId);
+}
+
+async function expandWithPlan(
+  openai: OpenAI,
+  model: string,
+  content: GeneratedCourseStructure,
+  plan: EditorialPlan,
+  onProgress: ProgressCallback | undefined,
+  courseId?: string | null
+): Promise<ExpandedCourseContent> {
+  const total = countLessons(content);
+  let completed = 0;
+
+  // Pre-calculamos los resúmenes acumulados por módulo (módulos < current).
+  const moduleSummaries = plan.modules.map((m) => ({
+    title: m.title,
+    summary: m.summary,
+  }));
+
+  type Result = { ti: number; li: number; rich: RichLessonOutput };
+  const results: Result[] = [];
+
+  type Job = {
+    ti: number;
+    li: number;
+    ctx: RichJobContext;
+  };
+
+  const jobs: Job[] = [];
+
+  for (let ti = 0; ti < plan.modules.length; ti++) {
+    const modulePlan = plan.modules[ti];
+    const earlier = moduleSummaries.slice(0, ti);
+
+    for (let li = 0; li < modulePlan.lessons.length; li++) {
+      const lessonPlan = modulePlan.lessons[li];
+      const previous = modulePlan.lessons.slice(0, li);
+      jobs.push({
+        ti,
+        li,
+        ctx: {
+          courseTitle: content.title,
+          courseShortDesc: content.short_description ?? '',
+          module: modulePlan,
+          lesson: lessonPlan,
+          previousLessonsInModule: previous,
+          earlierModulesSummary: earlier,
+        },
+      });
+    }
+  }
+
+  async function runJob(job: Job) {
+    try {
+      const rich = await expandLessonRich(openai, model, job.ctx, courseId);
+      results.push({ ti: job.ti, li: job.li, rich });
+    } catch (err) {
+      console.warn(
+        `[expandCourseForEbook] lesson ${job.ti + 1}.${job.li + 1} rich failed; saving minimal fallback:`,
+        err instanceof Error ? err.message : err
+      );
+      results.push({
+        ti: job.ti,
+        li: job.li,
+        rich: {
+          intro: '',
+          body:
+            'No se pudo expandir esta lección automáticamente. El equipo editorial la revisará antes de publicar.',
+          example: '',
+          exercise: '',
+          commonMistakes: [],
+          checklist: [],
+          keyPoints: [],
+        },
+      });
+    }
+    completed++;
+    onProgress?.(completed, total, job.ctx.lesson.title);
+  }
+
+  const pending = [...jobs];
+  const active: Promise<void>[] = [];
+  while (pending.length > 0 || active.length > 0) {
+    while (active.length < CONCURRENCY && pending.length > 0) {
+      const job = pending.shift()!;
+      const p = runJob(job).then(() => {
+        active.splice(active.indexOf(p), 1);
+      });
+      active.push(p);
+    }
+    if (active.length > 0) await Promise.race(active);
+  }
+
+  const byKey = new Map<string, RichLessonOutput>();
+  for (const r of results) byKey.set(`${r.ti}-${r.li}`, r.rich);
+
+  const topics: ExpandedTopic[] = (content.topics ?? []).map((topic, ti) => {
+    const modulePlan = plan.modules[ti];
+    return {
+      title: topic.title,
+      summary: modulePlan?.summary,
+      objectives: modulePlan?.objectives,
+      lessons: topic.lessons.map((lesson, li) => {
+        const rich = byKey.get(`${ti}-${li}`);
+        if (!rich) {
+          return {
+            title: lesson.title,
+            content: '',
+          };
+        }
+        return {
+          title: lesson.title,
+          content: flattenRichToContent(rich),
+          intro: rich.intro || undefined,
+          body: rich.body || undefined,
+          example: rich.example || undefined,
+          exercise: rich.exercise || undefined,
+          commonMistakes:
+            rich.commonMistakes.length > 0 ? rich.commonMistakes : undefined,
+          checklist: rich.checklist.length > 0 ? rich.checklist : undefined,
+          keyPoints: rich.keyPoints.length > 0 ? rich.keyPoints : undefined,
+        };
+      }),
+    };
+  });
+
+  return {
+    title: content.title,
+    short_description: content.short_description,
+    description: content.description,
+    author_name: content.author_name,
+    author_bio: content.author_bio,
+    topics,
+    editorialPlan: plan,
+    glossaryCandidates: plan.glossaryCandidates,
+  };
+}
+
+async function expandLegacy(
+  openai: OpenAI,
+  model: string,
+  content: GeneratedCourseStructure,
+  total: number,
+  onProgress: ProgressCallback | undefined,
+  courseId?: string | null
+): Promise<ExpandedCourseContent> {
   const jobs: LessonJob[] = [];
   for (let ti = 0; ti < (content.topics ?? []).length; ti++) {
     const topic = content.topics![ti];
@@ -119,12 +507,13 @@ export async function expandCourseForEbook(
     }
   }
 
-  const results: Map<string, string> = new Map();
+  const results = new Map<string, string>();
   let completed = 0;
 
   async function runJob(job: LessonJob) {
-    const text = await expandLesson(
+    const text = await expandLessonLegacy(
       openai,
+      model,
       content.title,
       job.topicTitle,
       job.lessonTitle,
@@ -136,10 +525,8 @@ export async function expandCourseForEbook(
     onProgress?.(completed, total, job.lessonTitle);
   }
 
-  // Pool de concurrencia
   const pending = [...jobs];
   const active: Promise<void>[] = [];
-
   while (pending.length > 0 || active.length > 0) {
     while (active.length < CONCURRENCY && pending.length > 0) {
       const job = pending.shift()!;
@@ -148,12 +535,10 @@ export async function expandCourseForEbook(
       });
       active.push(p);
     }
-    if (active.length > 0) {
-      await Promise.race(active);
-    }
+    if (active.length > 0) await Promise.race(active);
   }
 
-  const expandedTopics: ExpandedTopic[] = (content.topics ?? []).map((topic, ti) => ({
+  const topics: ExpandedTopic[] = (content.topics ?? []).map((topic, ti) => ({
     title: topic.title,
     lessons: topic.lessons.map((lesson, li) => ({
       title: lesson.title,
@@ -167,6 +552,6 @@ export async function expandCourseForEbook(
     description: content.description,
     author_name: content.author_name,
     author_bio: content.author_bio,
-    topics: expandedTopics,
+    topics,
   };
 }

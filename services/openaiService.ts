@@ -5,6 +5,7 @@ import type {
   GeneratedCourseStructure,
 } from '@/types';
 import { logOpenAiChatUsage } from '@/services/aiUsageLogService';
+import { resolveAiModel } from '@/lib/aiModels';
 import {
   COURSE_AUTHOR_BIO_DEFAULT,
   COURSE_AUTHOR_NAME_DEFAULT,
@@ -148,8 +149,9 @@ export async function generateCourseStructure(
   payload: CourseInputPayload,
   courseId?: string | null
 ): Promise<GeneratedCourseStructure> {
+  const model = resolveAiModel('courseStructure');
   const response = await getOpenAI().chat.completions.create({
-    model: 'gpt-4o-mini',
+    model,
     messages: [
       {
         role: 'system',
@@ -161,12 +163,7 @@ export async function generateCourseStructure(
     temperature: 0.7,
   });
 
-  logOpenAiChatUsage(
-    'course_structure',
-    'gpt-4o-mini',
-    response.usage,
-    courseId
-  );
+  logOpenAiChatUsage('course_structure', model, response.usage, courseId);
 
   const raw = response.choices[0]?.message?.content?.trim();
   if (!raw) throw new Error('OpenAI returned empty response');

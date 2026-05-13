@@ -42,6 +42,17 @@ const C = {
   coverBg: '#1e1b4b',
   coverAccent: '#1b38c4',
   topicBg: '#f0f0ff',
+  // Callouts (Hito 1)
+  exampleBg: '#eef9f1',
+  exampleBorder: '#16a34a',
+  exerciseBg: '#fef3c7',
+  exerciseBorder: '#d97706',
+  mistakesBg: '#fef2f2',
+  mistakesBorder: '#dc2626',
+  checklistBg: '#f0f9ff',
+  checklistBorder: '#0284c7',
+  keypointsBg: '#f5f3ff',
+  keypointsBorder: '#7c3aed',
 };
 
 const s = StyleSheet.create({
@@ -249,6 +260,57 @@ const s = StyleSheet.create({
     marginBottom: 4,
   },
 
+  // Topic objectives (Hito 1)
+  topicObjectivesBox: {
+    backgroundColor: C.bg,
+    borderWidth: 0.5,
+    borderColor: C.rule,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginBottom: 16,
+  },
+  topicObjectivesLabel: {
+    fontSize: 8.5,
+    fontFamily: 'Helvetica-Bold',
+    color: C.muted,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  topicObjectivesItem: {
+    fontSize: 9.5,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 2,
+  },
+
+  // Callouts (Hito 1)
+  callout: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderLeftWidth: 3,
+    marginTop: 10,
+    marginBottom: 6,
+  },
+  calloutLabel: {
+    fontSize: 8.5,
+    fontFamily: 'Helvetica-Bold',
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.6,
+    marginBottom: 4,
+  },
+  calloutText: {
+    fontSize: 9.5,
+    color: C.body,
+    lineHeight: 1.6,
+  },
+  calloutItem: {
+    fontSize: 9.5,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 2,
+  },
+
   // Back cover
   backPage: {
     fontFamily: 'Helvetica',
@@ -307,6 +369,62 @@ function Paragraphs({ text }: { text: string }) {
         </Text>
       ))}
     </>
+  );
+}
+
+function CalloutText({
+  label,
+  text,
+  bg,
+  border,
+  labelColor,
+}: {
+  label: string;
+  text: string;
+  bg: string;
+  border: string;
+  labelColor: string;
+}) {
+  return (
+    <View style={[s.callout, { backgroundColor: bg, borderLeftColor: border }]}>
+      <Text style={[s.calloutLabel, { color: labelColor }]}>{label}</Text>
+      {safe(text)
+        .split(/\n\n+/)
+        .filter(Boolean)
+        .map((p, i) => (
+          <Text key={i} style={s.calloutText}>
+            {p.trim()}
+          </Text>
+        ))}
+    </View>
+  );
+}
+
+function CalloutList({
+  label,
+  items,
+  bg,
+  border,
+  labelColor,
+  numbered,
+}: {
+  label: string;
+  items: string[];
+  bg: string;
+  border: string;
+  labelColor: string;
+  numbered?: boolean;
+}) {
+  return (
+    <View style={[s.callout, { backgroundColor: bg, borderLeftColor: border }]}>
+      <Text style={[s.calloutLabel, { color: labelColor }]}>{label}</Text>
+      {items.map((it, i) => (
+        <Text key={i} style={s.calloutItem}>
+          {numbered ? `${i + 1}. ` : '· '}
+          {safe(it)}
+        </Text>
+      ))}
+    </View>
   );
 }
 
@@ -424,6 +542,87 @@ function IntroPage({
   );
 }
 
+function LessonBlock({
+  lesson,
+  showSep,
+}: {
+  lesson: ExpandedCourseContent['topics'][number]['lessons'][number];
+  showSep: boolean;
+}) {
+  const hasRich =
+    !!lesson.body ||
+    !!lesson.example ||
+    !!lesson.exercise ||
+    (lesson.commonMistakes && lesson.commonMistakes.length > 0) ||
+    (lesson.checklist && lesson.checklist.length > 0) ||
+    (lesson.keyPoints && lesson.keyPoints.length > 0);
+
+  if (!hasRich) {
+    return (
+      <View>
+        {showSep && <View style={s.lessonSep} />}
+        <Text style={s.lessonTitle}>{safe(lesson.title)}</Text>
+        {lesson.content && <Paragraphs text={lesson.content} />}
+      </View>
+    );
+  }
+
+  return (
+    <View>
+      {showSep && <View style={s.lessonSep} />}
+      <Text style={s.lessonTitle}>{safe(lesson.title)}</Text>
+      {lesson.intro && <Paragraphs text={lesson.intro} />}
+      {lesson.body && <Paragraphs text={lesson.body} />}
+      {lesson.example && (
+        <CalloutText
+          label="Ejemplo"
+          text={lesson.example}
+          bg={C.exampleBg}
+          border={C.exampleBorder}
+          labelColor={C.exampleBorder}
+        />
+      )}
+      {lesson.exercise && (
+        <CalloutText
+          label="Ejercicio práctico"
+          text={lesson.exercise}
+          bg={C.exerciseBg}
+          border={C.exerciseBorder}
+          labelColor={C.exerciseBorder}
+        />
+      )}
+      {lesson.commonMistakes && lesson.commonMistakes.length > 0 && (
+        <CalloutList
+          label="Errores frecuentes"
+          items={lesson.commonMistakes}
+          bg={C.mistakesBg}
+          border={C.mistakesBorder}
+          labelColor={C.mistakesBorder}
+        />
+      )}
+      {lesson.checklist && lesson.checklist.length > 0 && (
+        <CalloutList
+          label="Checklist"
+          items={lesson.checklist}
+          bg={C.checklistBg}
+          border={C.checklistBorder}
+          labelColor={C.checklistBorder}
+        />
+      )}
+      {lesson.keyPoints && lesson.keyPoints.length > 0 && (
+        <CalloutList
+          label="Puntos clave"
+          items={lesson.keyPoints}
+          bg={C.keypointsBg}
+          border={C.keypointsBorder}
+          labelColor={C.keypointsBorder}
+          numbered
+        />
+      )}
+    </View>
+  );
+}
+
 function TopicPages({
   topic,
   courseTitle,
@@ -431,18 +630,25 @@ function TopicPages({
   topic: ExpandedCourseContent['topics'][number];
   courseTitle: string;
 }) {
+  const hasObjectives = !!topic.objectives && topic.objectives.length > 0;
   return (
     <Page size="A4" style={s.page} wrap>
       <PageHeader title={courseTitle} />
       <View style={s.topicBanner} wrap={false}>
         <Text style={s.topicTitle}>{safe(topic.title)}</Text>
       </View>
-      {topic.lessons.map((lesson, li) => (
-        <View key={li} wrap={false}>
-          {li > 0 && <View style={s.lessonSep} />}
-          <Text style={s.lessonTitle}>{safe(lesson.title)}</Text>
-          {lesson.content && <Paragraphs text={lesson.content} />}
+      {hasObjectives && (
+        <View style={s.topicObjectivesBox} wrap={false}>
+          <Text style={s.topicObjectivesLabel}>Objetivos del módulo</Text>
+          {topic.objectives!.map((o, i) => (
+            <Text key={i} style={s.topicObjectivesItem}>
+              · {safe(o)}
+            </Text>
+          ))}
         </View>
+      )}
+      {topic.lessons.map((lesson, li) => (
+        <LessonBlock key={li} lesson={lesson} showSep={li > 0} />
       ))}
       <PageFooter />
     </Page>
