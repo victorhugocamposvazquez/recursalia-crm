@@ -46,6 +46,55 @@ function safe(text: string): string {
     .trim();
 }
 
+/**
+ * Cuenta el total de lecciones del curso (suma plana sobre módulos).
+ */
+function countCourseLessons(content: ExpandedCourseContent): number {
+  return (content.topics ?? []).reduce(
+    (sum, t) => sum + (t.lessons?.length ?? 0),
+    0
+  );
+}
+
+/**
+ * Estima minutos de lectura de TODO el curso usando 200 palabras/min como
+ * referencia neutra. Considera body, intro, example, exercise, content y
+ * descripción. Para módulos individuales hay variante.
+ */
+function estimateCourseMinutes(content: ExpandedCourseContent): number {
+  const blobs: string[] = [stripHtml(content.description ?? '')];
+  for (const t of content.topics ?? []) {
+    for (const l of t.lessons ?? []) {
+      blobs.push(
+        l.intro ?? '',
+        l.body ?? '',
+        l.example ?? '',
+        l.exercise ?? '',
+        l.content ?? ''
+      );
+    }
+  }
+  const words = blobs.join(' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(15, Math.round(words / 200));
+}
+
+function estimateModuleMinutes(
+  topic: ExpandedCourseContent['topics'][number]
+): number {
+  const blobs: string[] = [];
+  for (const l of topic.lessons ?? []) {
+    blobs.push(
+      l.intro ?? '',
+      l.body ?? '',
+      l.example ?? '',
+      l.exercise ?? '',
+      l.content ?? ''
+    );
+  }
+  const words = blobs.join(' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(5, Math.round(words / 200));
+}
+
 /** Quita tags HTML, decodifica entidades comunes y normaliza saltos. */
 function stripHtml(html: string): string {
   if (!html) return '';
@@ -172,8 +221,9 @@ const s = StyleSheet.create({
   coverTop: {
     backgroundColor: C.coverBg,
     height: '64%',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     paddingHorizontal: 60,
+    paddingTop: 44,
     paddingBottom: 44,
   },
   coverKicker: {
@@ -183,8 +233,9 @@ const s = StyleSheet.create({
     color: C.brandLime,
     letterSpacing: 2.5,
     textTransform: 'uppercase' as const,
-    marginBottom: 18,
+    marginBottom: 22,
   },
+  coverHero: {},
   coverTitle: {
     fontFamily: FONT_DISPLAY,
     fontSize: 30,
@@ -199,6 +250,29 @@ const s = StyleSheet.create({
     color: '#c7d2fe',
     lineHeight: 1.5,
     maxWidth: 420,
+    marginBottom: 28,
+  },
+  coverStatsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 18,
+    flexWrap: 'wrap',
+  },
+  coverStat: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10,
+    color: '#dbe1ff',
+    letterSpacing: 0.5,
+  },
+  coverStatNum: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 14,
+    fontWeight: 700,
+    color: C.brandLime,
+  },
+  coverStatSep: {
+    fontSize: 10,
+    color: '#5660a8',
   },
   coverBottom: {
     height: '36%',
@@ -244,21 +318,46 @@ const s = StyleSheet.create({
   legalPage: {
     fontFamily: FONT_BODY,
     paddingHorizontal: 60,
-    paddingTop: 200,
-    paddingBottom: 56,
+    paddingTop: 140,
+    paddingBottom: 60,
   },
   legalTitle: {
     fontFamily: FONT_DISPLAY,
     fontSize: 14,
     fontWeight: 700,
     color: C.primary,
-    marginBottom: 22,
+    marginBottom: 18,
   },
   legalText: {
     fontFamily: FONT_BODY,
     fontSize: 9.5,
     color: C.muted,
     lineHeight: 1.75,
+  },
+  legalSection: {
+    marginTop: 26,
+  },
+  legalSectionLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 8.5,
+    fontWeight: 700,
+    color: C.brand,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.1,
+    marginBottom: 6,
+  },
+  legalSectionBody: {
+    fontFamily: FONT_BODY,
+    fontSize: 9.5,
+    color: C.body,
+    lineHeight: 1.7,
+  },
+  legalDivider: {
+    width: 60,
+    height: 0.5,
+    backgroundColor: C.rule,
+    marginTop: 26,
+    marginBottom: 4,
   },
 
   // ─── How to use ───
@@ -288,33 +387,63 @@ const s = StyleSheet.create({
     fontFamily: FONT_BODY,
     fontSize: 10.5,
     color: C.body,
-    lineHeight: 1.6,
-    marginBottom: 22,
+    lineHeight: 1.55,
+    marginBottom: 16,
   },
   howToBlock: {
-    marginBottom: 16,
+    marginBottom: 10,
   },
   howToBlockLabel: {
     fontFamily: FONT_DISPLAY,
-    fontSize: 9.5,
+    fontSize: 9,
     fontWeight: 700,
     color: C.brand,
     textTransform: 'uppercase' as const,
     letterSpacing: 1.2,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   howToBlockTitle: {
     fontFamily: FONT_DISPLAY,
-    fontSize: 12,
+    fontSize: 11.5,
     fontWeight: 600,
     color: C.primary,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   howToBlockBody: {
     fontFamily: FONT_BODY,
-    fontSize: 10.5,
+    fontSize: 10,
     color: C.body,
-    lineHeight: 1.6,
+    lineHeight: 1.5,
+  },
+  howToTipsBox: {
+    marginTop: 14,
+    backgroundColor: C.brandSoft,
+    borderLeftWidth: 3,
+    borderLeftColor: C.brand,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  howToTipsLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.brand,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.1,
+    marginBottom: 6,
+  },
+  howToTipItem: {
+    fontFamily: FONT_BODY,
+    fontSize: 10,
+    color: C.body,
+    lineHeight: 1.5,
+    marginBottom: 4,
+  },
+  howToTipNum: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.brand,
   },
 
   // ─── TOC ───
@@ -338,12 +467,45 @@ const s = StyleSheet.create({
     width: '100%',
     height: 0.5,
     backgroundColor: C.rule,
+    marginBottom: 10,
+  },
+  tocMeta: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
     marginBottom: 18,
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  tocMetaNum: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.brand,
+  },
+  tocMetaText: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9.5,
+    color: C.muted,
+    letterSpacing: 0.3,
+  },
+  tocMetaSep: {
+    fontSize: 9.5,
+    color: C.light,
+  },
+  tocHint: {
+    marginTop: 22,
+    paddingTop: 14,
+    borderTopWidth: 0.5,
+    borderTopColor: C.rule,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    color: C.muted,
+    letterSpacing: 0.3,
   },
   tocTopicRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginTop: 12,
+    marginTop: 14,
     marginBottom: 4,
   },
   tocTopicNum: {
@@ -400,6 +562,76 @@ const s = StyleSheet.create({
     lineHeight: 1.65,
     marginBottom: 8,
     textAlign: 'left' as const,
+  },
+
+  // ─── Intro blocks ───
+  introBlock: {
+    marginTop: 20,
+  },
+  introBlockLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9.5,
+    fontWeight: 700,
+    color: C.brand,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.2,
+    marginBottom: 8,
+  },
+  introBlockTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 14,
+    fontWeight: 700,
+    color: C.primary,
+    marginBottom: 10,
+  },
+  introItem: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 4,
+  },
+  introModuleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  introModuleNum: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.brand,
+    width: 28,
+  },
+  introModuleBody: {
+    flex: 1,
+  },
+  introModuleTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 11,
+    fontWeight: 600,
+    color: C.primary,
+    marginBottom: 2,
+  },
+  introModuleSummary: {
+    fontFamily: FONT_BODY,
+    fontSize: 9.5,
+    color: C.muted,
+    lineHeight: 1.5,
+  },
+  introTargetBox: {
+    marginTop: 20,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    backgroundColor: C.brandSoft,
+    borderLeftWidth: 3,
+    borderLeftColor: C.brand,
+  },
+  introTargetText: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: C.body,
+    lineHeight: 1.55,
   },
 
   // ─── Module Opening (full page) ───
@@ -467,6 +699,47 @@ const s = StyleSheet.create({
     height: 4,
     backgroundColor: C.brandLime,
     marginBottom: 18,
+  },
+  modOpeningMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginTop: 24,
+    marginBottom: 4,
+    paddingTop: 12,
+    borderTopWidth: 0.5,
+    borderTopColor: C.rule,
+  },
+  modOpeningMetaItem: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9.5,
+    color: C.muted,
+    letterSpacing: 0.4,
+  },
+  modOpeningMetaNum: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 12,
+    fontWeight: 700,
+    color: C.brand,
+  },
+  modOpeningLessonRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 6,
+  },
+  modOpeningLessonNum: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9.5,
+    fontWeight: 700,
+    color: C.brand,
+    width: 32,
+  },
+  modOpeningLessonTitle: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: C.body,
+    flex: 1,
+    lineHeight: 1.45,
   },
 
   // ─── Topic banner (sigue para coherencia con lecciones) ───
@@ -581,40 +854,124 @@ const s = StyleSheet.create({
     marginBottom: 2,
   },
 
-  // ─── Recap (cierre de módulo) ───
-  recapBox: {
-    marginTop: 28,
-    paddingTop: 18,
-    borderTopWidth: 0.5,
-    borderTopColor: C.rule,
+  // ─── Cierre de módulo (página propia) ───
+  modClosePage: {
+    fontFamily: FONT_BODY,
+    paddingHorizontal: 60,
+    paddingTop: 90,
+    paddingBottom: 60,
   },
-  recapLabel: {
+  modCloseKicker: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 2,
+    textTransform: 'uppercase' as const,
+    marginBottom: 6,
+  },
+  modCloseTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 26,
+    fontWeight: 700,
+    color: C.primary,
+    lineHeight: 1.2,
+    marginBottom: 8,
+  },
+  modCloseAccentBar: {
+    width: 60,
+    height: 4,
+    backgroundColor: C.brandLime,
+    marginBottom: 22,
+  },
+  modCloseLead: {
+    fontFamily: FONT_BODY,
+    fontSize: 11,
+    color: C.body,
+    lineHeight: 1.55,
+    marginBottom: 26,
+    maxWidth: 440,
+  },
+  modCloseBlock: {
+    marginBottom: 22,
+  },
+  modCloseBlockLabel: {
     fontFamily: FONT_DISPLAY,
     fontSize: 9.5,
     fontWeight: 700,
     color: C.brand,
-    letterSpacing: 1.5,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 1.2,
+    marginBottom: 8,
+  },
+  modCloseLessonRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  modCloseLessonNum: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10,
+    fontWeight: 700,
+    color: C.brand,
+    width: 32,
+    paddingTop: 1,
+  },
+  modCloseLessonTitle: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 10.5,
+    fontWeight: 600,
+    color: C.primary,
+    lineHeight: 1.4,
+    marginBottom: 2,
+  },
+  modCloseLessonText: {
+    fontFamily: FONT_BODY,
+    fontSize: 10,
+    color: C.muted,
+    lineHeight: 1.5,
+  },
+  modCloseNextBox: {
+    marginTop: 6,
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    backgroundColor: C.brandSoft,
+    borderLeftWidth: 3,
+    borderLeftColor: C.brand,
+  },
+  modCloseNextLabel: {
+    fontFamily: FONT_DISPLAY,
+    fontSize: 9,
+    fontWeight: 700,
+    color: C.brand,
+    letterSpacing: 1.2,
     textTransform: 'uppercase' as const,
     marginBottom: 6,
   },
-  recapTitle: {
+  modCloseNextTitle: {
     fontFamily: FONT_DISPLAY,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 700,
     color: C.primary,
-    marginBottom: 10,
-  },
-  recapItem: {
-    fontFamily: FONT_BODY,
-    fontSize: 10.5,
-    color: C.body,
-    lineHeight: 1.55,
     marginBottom: 3,
+  },
+  modCloseNextDesc: {
+    fontFamily: FONT_BODY,
+    fontSize: 10,
+    color: C.muted,
+    lineHeight: 1.5,
   },
 
   // ─── Glossary ───
+  glossaryGrid: {
+    flexDirection: 'row',
+    columnGap: 22,
+  },
+  glossaryColumn: {
+    flex: 1,
+  },
   glossaryRow: {
-    marginBottom: 10,
+    marginBottom: 12,
   },
   glossaryTerm: {
     fontFamily: FONT_DISPLAY,
@@ -625,9 +982,17 @@ const s = StyleSheet.create({
   },
   glossaryDef: {
     fontFamily: FONT_BODY,
-    fontSize: 10,
+    fontSize: 9.5,
     color: C.body,
+    lineHeight: 1.5,
+  },
+  glossaryIntro: {
+    fontFamily: FONT_BODY,
+    fontSize: 10.5,
+    color: C.muted,
     lineHeight: 1.55,
+    marginBottom: 18,
+    maxWidth: 460,
   },
 
   // ─── Back cover ───
@@ -858,14 +1223,33 @@ function CoverPage({
     content.author_name,
     content.author_bio
   );
+  const modules = (content.topics ?? []).length;
+  const lessons = countCourseLessons(content);
+  const minutes = estimateCourseMinutes(content);
+  const hours = Math.max(1, Math.round(minutes / 60));
   return (
     <Page size="A4" style={s.coverPage}>
       <View style={s.coverTop}>
-        <Text style={s.coverKicker}>Recursalia · Curso</Text>
-        <Text style={s.coverTitle}>{safe(content.title)}</Text>
-        {content.short_description && (
-          <Text style={s.coverDesc}>{safe(content.short_description)}</Text>
-        )}
+        <View style={s.coverHero}>
+          <Text style={s.coverKicker}>Recursalia · Curso</Text>
+          <Text style={s.coverTitle}>{safe(content.title)}</Text>
+          {content.short_description && (
+            <Text style={s.coverDesc}>{safe(content.short_description)}</Text>
+          )}
+          <View style={s.coverStatsRow}>
+            <Text style={s.coverStat}>
+              <Text style={s.coverStatNum}>{modules}</Text>  módulos
+            </Text>
+            <Text style={s.coverStatSep}>·</Text>
+            <Text style={s.coverStat}>
+              <Text style={s.coverStatNum}>{lessons}</Text>  lecciones
+            </Text>
+            <Text style={s.coverStatSep}>·</Text>
+            <Text style={s.coverStat}>
+              ~<Text style={s.coverStatNum}>{hours}</Text> h de lectura
+            </Text>
+          </View>
+        </View>
       </View>
       <View style={s.coverBottom}>
         <View style={s.coverMetaRow}>
@@ -886,7 +1270,15 @@ function CoverPage({
   );
 }
 
-function LegalPage({ title, year }: { title: string; year: number }) {
+function LegalPage({
+  title,
+  author,
+  year,
+}: {
+  title: string;
+  author: string;
+  year: number;
+}) {
   return (
     <Page size="A4" style={s.legalPage}>
       <Text style={s.legalTitle}>{safe(title)}</Text>
@@ -898,11 +1290,35 @@ function LegalPage({ title, year }: { title: string; year: number }) {
         forma o por cualquier medio, sea éste electrónico, mecánico, por
         fotocopia, por grabación u otros métodos, sin el permiso previo y por
         escrito del editor.
-        {'\n\n'}
-        Edición, revisión y distribución: Recursalia.
-        {'\n'}
-        recursalia.com
       </Text>
+
+      <View style={s.legalSection}>
+        <Text style={s.legalSectionLabel}>Edición y diseño editorial</Text>
+        <Text style={s.legalSectionBody}>
+          Recursalia. Edición digital, primera edición {year}.{'\n'}
+          Coordinación editorial: equipo de contenido de Recursalia.
+        </Text>
+      </View>
+
+      <View style={s.legalSection}>
+        <Text style={s.legalSectionLabel}>Cómo citar este manual</Text>
+        <Text style={s.legalSectionBody}>
+          {safe(author)} ({year}). {safe(title)}. Recursalia.{'\n'}
+          Disponible en recursalia.com
+        </Text>
+      </View>
+
+      <View style={s.legalSection}>
+        <Text style={s.legalSectionLabel}>Soporte y contacto</Text>
+        <Text style={s.legalSectionBody}>
+          ¿Has detectado una errata o quieres compartir tu experiencia con
+          este curso? Escríbenos a hola@recursalia.com. Cada mensaje nos ayuda
+          a mejorar la siguiente edición.
+        </Text>
+      </View>
+
+      <View style={s.legalDivider} />
+      <Text style={s.legalSectionBody}>recursalia.com</Text>
     </Page>
   );
 }
@@ -969,6 +1385,22 @@ function HowToUsePage({ courseTitle }: { courseTitle: string }) {
         </Text>
       </View>
 
+      <View style={s.howToTipsBox}>
+        <Text style={s.howToTipsLabel}>Tres consejos para sacarle todo el jugo</Text>
+        <Text style={s.howToTipItem}>
+          <Text style={s.howToTipNum}>1.  </Text>Léelo despacio. Veinte minutos
+          al día durante dos semanas asientan más que tres horas un sábado.
+        </Text>
+        <Text style={s.howToTipItem}>
+          <Text style={s.howToTipNum}>2.  </Text>Haz los ejercicios, aunque sea
+          mentalmente. Lo que se aplica se queda; lo que solo se lee se olvida.
+        </Text>
+        <Text style={s.howToTipItem}>
+          <Text style={s.howToTipNum}>3.  </Text>Vuelve al glosario cuando
+          dudes. Está al final del manual y resuelve la mayoría de bloqueos.
+        </Text>
+      </View>
+
       <PageFooter />
     </Page>
   );
@@ -977,16 +1409,31 @@ function HowToUsePage({ courseTitle }: { courseTitle: string }) {
 function TocPage({
   content,
   courseTitle,
+  totalLessons,
+  totalMinutes,
 }: {
   content: ExpandedCourseContent;
   courseTitle: string;
+  totalLessons: number;
+  totalMinutes: number;
 }) {
+  const modules = (content.topics ?? []).length;
+  const hours = Math.max(1, Math.round(totalMinutes / 60));
   return (
     <Page size="A4" style={s.page}>
       <PageHeader courseTitle={courseTitle} />
       <Text style={s.tocKicker}>Índice</Text>
       <Text style={s.tocTitle}>Programa del curso</Text>
       <View style={s.tocRule} />
+      <View style={s.tocMeta}>
+        <Text style={s.tocMetaNum}>{modules}</Text>
+        <Text style={s.tocMetaText}>módulos</Text>
+        <Text style={s.tocMetaSep}>·</Text>
+        <Text style={s.tocMetaNum}>{totalLessons}</Text>
+        <Text style={s.tocMetaText}>lecciones</Text>
+        <Text style={s.tocMetaSep}>·</Text>
+        <Text style={s.tocMetaText}>~{hours} h de lectura estimada</Text>
+      </View>
       {(content.topics ?? []).map((topic, ti) => (
         <View key={ti} wrap={false}>
           <Link src={`#topic-${ti}`} style={{ textDecoration: 'none' }}>
@@ -1010,6 +1457,9 @@ function TocPage({
           ))}
         </View>
       ))}
+      <Text style={s.tocHint}>
+        Toca cualquier título del índice para saltar al módulo correspondiente.
+      </Text>
       <PageFooter />
     </Page>
   );
@@ -1018,11 +1468,21 @@ function TocPage({
 function IntroPage({
   content,
   courseTitle,
+  totalLessons,
+  totalMinutes,
 }: {
   content: ExpandedCourseContent;
   courseTitle: string;
+  totalLessons: number;
+  totalMinutes: number;
 }) {
   const intro = stripHtml(content.description ?? '');
+  const plan = content.editorialPlan;
+  const objectives = (plan?.globalObjectives ?? []).slice(0, 6);
+  const targetReader = plan?.targetReader?.trim();
+  const modules = content.topics ?? [];
+  const hours = Math.max(1, Math.round(totalMinutes / 60));
+
   return (
     <Page size="A4" style={s.page}>
       <PageHeader courseTitle={courseTitle} />
@@ -1030,6 +1490,48 @@ function IntroPage({
       <Text style={s.sectionTitle}>Introducción</Text>
       <View style={s.sectionRule} />
       {intro && <Paragraphs text={intro} />}
+
+      {objectives.length > 0 && (
+        <View style={s.introBlock} wrap={false}>
+          <Text style={s.introBlockLabel}>Qué vas a aprender</Text>
+          <Text style={s.introBlockTitle}>Al terminar este curso serás capaz de:</Text>
+          {objectives.map((o, i) => (
+            <Text key={i} style={s.introItem}>
+              · {safe(o)}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      {targetReader && (
+        <View style={s.introTargetBox} wrap={false}>
+          <Text style={s.introBlockLabel}>Para quién es este curso</Text>
+          <Text style={s.introTargetText}>{safe(targetReader)}</Text>
+        </View>
+      )}
+
+      {modules.length > 0 && (
+        <View style={s.introBlock} wrap={false}>
+          <Text style={s.introBlockLabel}>Cómo está organizado</Text>
+          <Text style={s.introBlockTitle}>
+            {modules.length} módulos · {totalLessons} lecciones · ~{hours} h de lectura
+          </Text>
+          {modules.map((m, i) => (
+            <View key={i} style={s.introModuleRow} wrap={false}>
+              <Text style={s.introModuleNum}>
+                {String(i + 1).padStart(2, '0')}
+              </Text>
+              <View style={s.introModuleBody}>
+                <Text style={s.introModuleTitle}>{safe(m.title)}</Text>
+                {m.summary && (
+                  <Text style={s.introModuleSummary}>{safe(m.summary)}</Text>
+                )}
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+
       <PageFooter />
     </Page>
   );
@@ -1051,6 +1553,8 @@ function ModuleOpeningPage({
   const planObjectives = modulePlan?.objectives ?? topic.objectives ?? [];
   const summary = modulePlan?.summary ?? topic.summary ?? '';
   const definesHere = modulePlan?.definesHere ?? [];
+  const lessons = topic.lessons ?? [];
+  const minutes = estimateModuleMinutes(topic);
 
   return (
     <Page size="A4" style={s.modOpeningPage} bookmark={`Módulo ${index + 1}: ${topic.title}`}>
@@ -1066,6 +1570,17 @@ function ModuleOpeningPage({
         <View style={s.modOpeningAccentBar} />
       </View>
       {summary ? <Text style={s.modOpeningLead}>{safe(summary)}</Text> : null}
+
+      <View style={s.modOpeningMeta}>
+        <Text style={s.modOpeningMetaItem}>
+          <Text style={s.modOpeningMetaNum}>{lessons.length}</Text>{' '}
+          {lessons.length === 1 ? 'lección' : 'lecciones'}
+        </Text>
+        <Text style={{ color: C.light, fontSize: 9.5 }}>·</Text>
+        <Text style={s.modOpeningMetaItem}>
+          ~<Text style={s.modOpeningMetaNum}>{minutes}</Text> min de lectura
+        </Text>
+      </View>
 
       {planObjectives.length > 0 && (
         <View style={s.modOpeningBlock} wrap={false}>
@@ -1085,6 +1600,20 @@ function ModuleOpeningPage({
             <Text key={i} style={s.modOpeningItem}>
               · {safe(d)}
             </Text>
+          ))}
+        </View>
+      )}
+
+      {lessons.length > 0 && (
+        <View style={s.modOpeningBlock} wrap={false}>
+          <Text style={s.modOpeningBlockLabel}>Lecciones</Text>
+          {lessons.map((l, i) => (
+            <View key={i} style={s.modOpeningLessonRow} wrap={false}>
+              <Text style={s.modOpeningLessonNum}>
+                {index + 1}.{i + 1}
+              </Text>
+              <Text style={s.modOpeningLessonTitle}>{safe(l.title)}</Text>
+            </View>
           ))}
         </View>
       )}
@@ -1187,37 +1716,14 @@ function TopicLessonsPage({
   topic,
   index,
   courseTitle,
-  showRecap,
 }: {
   topic: ExpandedCourseContent['topics'][number];
   index: number;
   courseTitle: string;
-  showRecap: boolean;
 }) {
-  const hasObjectives = !!topic.objectives && topic.objectives.length > 0;
-  const recapItems = (topic.lessons ?? [])
-    .map((l) => l.keyPoints?.[0])
-    .filter((x): x is string => typeof x === 'string' && x.trim().length > 0);
-
   return (
     <Page size="A4" style={s.page} wrap>
       <PageHeader courseTitle={courseTitle} moduleTitle={topic.title} />
-      <View style={s.topicBanner} wrap={false}>
-        <Text style={s.topicBannerLabel}>
-          Módulo {String(index + 1).padStart(2, '0')}
-        </Text>
-        <Text style={s.topicTitle}>{safe(topic.title)}</Text>
-      </View>
-      {hasObjectives && (
-        <View style={s.topicObjectivesBox} wrap={false}>
-          <Text style={s.topicObjectivesLabel}>Objetivos del módulo</Text>
-          {topic.objectives!.map((o, i) => (
-            <Text key={i} style={s.topicObjectivesItem}>
-              · {safe(o)}
-            </Text>
-          ))}
-        </View>
-      )}
       {topic.lessons.map((lesson, li) => (
         <LessonBlock
           key={li}
@@ -1226,17 +1732,95 @@ function TopicLessonsPage({
           number={`${index + 1}.${li + 1}`}
         />
       ))}
-      {showRecap && recapItems.length > 0 && (
-        <View style={s.recapBox} wrap={false}>
-          <Text style={s.recapLabel}>Cierre del módulo</Text>
-          <Text style={s.recapTitle}>Lo que has aprendido</Text>
-          {recapItems.map((it, i) => (
-            <Text key={i} style={s.recapItem}>
-              · {safe(it)}
-            </Text>
-          ))}
-        </View>
-      )}
+      <PageFooter />
+    </Page>
+  );
+}
+
+function ModuleClosingPage({
+  topic,
+  index,
+  totalModules,
+  nextTopic,
+  courseTitle,
+  hasGlossary,
+}: {
+  topic: ExpandedCourseContent['topics'][number];
+  index: number;
+  totalModules: number;
+  nextTopic?: ExpandedCourseContent['topics'][number];
+  courseTitle: string;
+  hasGlossary: boolean;
+}) {
+  // Por lección: tomamos el primer keyPoint si existe; si no, el primer item
+  // del checklist; si no, los primeros 100 caracteres del intro/body.
+  const recapByLesson = (topic.lessons ?? []).map((l) => {
+    if (l.keyPoints && l.keyPoints.length > 0) return l.keyPoints[0];
+    if (l.checklist && l.checklist.length > 0) return l.checklist[0];
+    const fallback = (l.intro || l.body || l.content || '').replace(/\s+/g, ' ').trim();
+    if (fallback) return fallback.slice(0, 140) + (fallback.length > 140 ? '…' : '');
+    return null;
+  });
+
+  const isLast = index === totalModules - 1;
+  const nextLabel = isLast
+    ? hasGlossary
+      ? 'Glosario'
+      : 'Cierre del curso'
+    : `Módulo ${index + 2}`;
+  const nextTitle = isLast
+    ? hasGlossary
+      ? 'Repasa los términos clave del curso'
+      : 'Has llegado al final del programa'
+    : nextTopic
+    ? safe(nextTopic.title)
+    : '';
+  const nextDesc = isLast
+    ? hasGlossary
+      ? 'Antes de cerrar el manual, consulta el glosario para asentar los conceptos centrales del curso.'
+      : 'Cierra el manual con la sensación del trabajo hecho.'
+    : nextTopic?.summary
+    ? safe(nextTopic.summary)
+    : 'Continúa con el siguiente módulo cuando estés listo.';
+
+  return (
+    <Page size="A4" style={s.modClosePage}>
+      <PageHeader courseTitle={courseTitle} moduleTitle={topic.title} />
+      <Text style={s.modCloseKicker}>
+        Cierre del módulo {String(index + 1).padStart(2, '0')}
+      </Text>
+      <Text style={s.modCloseTitle}>Lo que has aprendido</Text>
+      <View style={s.modCloseAccentBar} />
+      <Text style={s.modCloseLead}>
+        Pon una marca mental en este punto del curso. Si tuvieras que resumirle
+        a alguien lo más importante de este módulo, podrías hablarle de esto.
+      </Text>
+
+      <View style={s.modCloseBlock} wrap={false}>
+        <Text style={s.modCloseBlockLabel}>Resumen por lección</Text>
+        {topic.lessons.map((lesson, i) => {
+          const recap = recapByLesson[i];
+          if (!recap) return null;
+          return (
+            <View key={i} style={s.modCloseLessonRow} wrap={false}>
+              <Text style={s.modCloseLessonNum}>
+                {index + 1}.{i + 1}
+              </Text>
+              <View style={{ flex: 1 }}>
+                <Text style={s.modCloseLessonTitle}>{safe(lesson.title)}</Text>
+                <Text style={s.modCloseLessonText}>{safe(recap)}</Text>
+              </View>
+            </View>
+          );
+        })}
+      </View>
+
+      <View style={s.modCloseNextBox} wrap={false}>
+        <Text style={s.modCloseNextLabel}>Siguiente paso · {nextLabel}</Text>
+        <Text style={s.modCloseNextTitle}>{nextTitle}</Text>
+        {nextDesc && <Text style={s.modCloseNextDesc}>{nextDesc}</Text>}
+      </View>
+
       <PageFooter />
     </Page>
   );
@@ -1249,18 +1833,40 @@ function GlossaryPage({
   glossary: { term: string; definition: string }[];
   courseTitle: string;
 }) {
+  // Repartimos las entradas en dos columnas (zig-zag por mitad para que la
+  // longitud visual de ambas columnas sea aproximadamente la misma).
+  const half = Math.ceil(glossary.length / 2);
+  const left = glossary.slice(0, half);
+  const right = glossary.slice(half);
+
   return (
     <Page size="A4" style={s.page}>
       <PageHeader courseTitle={courseTitle} />
       <Text style={s.sectionKicker}>Anexo</Text>
       <Text style={s.sectionTitle}>Glosario</Text>
       <View style={s.sectionRule} />
-      {glossary.map((g, i) => (
-        <View key={i} style={s.glossaryRow} wrap={false}>
-          <Text style={s.glossaryTerm}>{safe(g.term)}</Text>
-          <Text style={s.glossaryDef}>{safe(g.definition)}</Text>
+      <Text style={s.glossaryIntro}>
+        Los términos clave del curso, en orden alfabético. Vuelve aquí cada vez
+        que dudes sobre el significado preciso de un concepto.
+      </Text>
+      <View style={s.glossaryGrid}>
+        <View style={s.glossaryColumn}>
+          {left.map((g, i) => (
+            <View key={i} style={s.glossaryRow} wrap={false}>
+              <Text style={s.glossaryTerm}>{safe(g.term)}</Text>
+              <Text style={s.glossaryDef}>{safe(g.definition)}</Text>
+            </View>
+          ))}
         </View>
-      ))}
+        <View style={s.glossaryColumn}>
+          {right.map((g, i) => (
+            <View key={i} style={s.glossaryRow} wrap={false}>
+              <Text style={s.glossaryTerm}>{safe(g.term)}</Text>
+              <Text style={s.glossaryDef}>{safe(g.definition)}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
       <PageFooter />
     </Page>
   );
@@ -1335,14 +1941,30 @@ function CourseDocument({ content }: { content: ExpandedCourseContent }) {
   const planModules = content.editorialPlan?.modules ?? [];
   const glossary = content.glossary ?? [];
   const totalModules = (content.topics ?? []).length;
+  const { name: authorName } = resolveCourseAuthorDisplay(
+    content.author_name,
+    content.author_bio
+  );
+  const totalLessons = countCourseLessons(content);
+  const totalMinutes = estimateCourseMinutes(content);
 
   return (
     <Document title={courseTitle} author="Recursalia" subject={courseTitle}>
       <CoverPage content={content} year={year} />
-      <LegalPage title={courseTitle} year={year} />
+      <LegalPage title={courseTitle} author={authorName} year={year} />
       <HowToUsePage courseTitle={courseTitle} />
-      <TocPage content={content} courseTitle={courseTitle} />
-      <IntroPage content={content} courseTitle={courseTitle} />
+      <TocPage
+        content={content}
+        courseTitle={courseTitle}
+        totalLessons={totalLessons}
+        totalMinutes={totalMinutes}
+      />
+      <IntroPage
+        content={content}
+        courseTitle={courseTitle}
+        totalLessons={totalLessons}
+        totalMinutes={totalMinutes}
+      />
       {(content.topics ?? []).map((topic, i) => (
         <React.Fragment key={i}>
           <ModuleOpeningPage
@@ -1356,7 +1978,14 @@ function CourseDocument({ content }: { content: ExpandedCourseContent }) {
             topic={topic}
             index={i}
             courseTitle={courseTitle}
-            showRecap
+          />
+          <ModuleClosingPage
+            topic={topic}
+            index={i}
+            totalModules={totalModules}
+            nextTopic={(content.topics ?? [])[i + 1]}
+            courseTitle={courseTitle}
+            hasGlossary={glossary.length > 0}
           />
         </React.Fragment>
       ))}
