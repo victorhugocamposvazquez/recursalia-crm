@@ -1633,6 +1633,8 @@ function LessonBlock({
     !!lesson.body ||
     !!lesson.example ||
     !!lesson.exercise ||
+    (lesson.exerciseSteps && lesson.exerciseSteps.length > 0) ||
+    !!lesson.exerciseDeliverable ||
     (lesson.commonMistakes && lesson.commonMistakes.length > 0) ||
     (lesson.checklist && lesson.checklist.length > 0) ||
     (lesson.keyPoints && lesson.keyPoints.length > 0);

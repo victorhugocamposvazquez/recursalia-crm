@@ -109,9 +109,10 @@ REGLAS:
 1. Respeta exactamente el número y orden de módulos y lecciones del outline.
 2. "assumesKnown" en la lección N debe usar SOLO conceptos definidos en lecciones anteriores del MISMO módulo o en módulos previos.
 3. Una vez un concepto aparece en "definesHere" o "keyConcepts", NO debe volver a aparecer como "definesHere" en módulos posteriores (solo como "assumesKnown" si hace falta).
-4. "globalObjectives": 3-5 frases con outcomes accionables ("Al final del curso, el alumno será capaz de ...").
-5. "glossaryCandidates": 8-20 términos centrales del curso (no muletillas).
-6. No uses emojis ni markdown. Idioma: castellano.`;
+4. "globalObjectives": 3-5 outcomes accionables; cada objetivo debe ser una sola frase: empieza con verbo en infinitivo (p. ej. Diseñar, Aplicar, Evaluar) o con segunda persona directa (p. ej. Sabrás, Serás capaz de). No repitas la misma muletilla al inicio de todas las frases. Evita redacciones tipo "Al final del curso, el alumno...", "El estudiante podrá...", "Al completar el módulo, el participante...".
+5. Los objetivos de cada módulo ("modules[].objectives") siguen el mismo estilo que los globales (infinitivo o segunda persona breve); no repitas el mismo prefijo en todas las líneas.
+6. "glossaryCandidates": 8-20 términos centrales del curso (no muletillas).
+7. No uses emojis ni markdown. Idioma: castellano.`;
 }
 
 export async function buildEditorialPlan(
@@ -185,7 +186,9 @@ function normalizePlan(
       index: ti,
       title: topic.title,
       summary: pickString(m?.summary, ''),
-      objectives: pickStringArray(m?.objectives).slice(0, 6),
+      objectives: pickStringArray(m?.objectives)
+        .slice(0, 6)
+        .map(cleanLearningOutcome),
       definesHere: pickStringArray(m?.definesHere).slice(0, 12),
       leavesForLater: pickStringArray(m?.leavesForLater).slice(0, 12),
       lessons,
@@ -193,7 +196,9 @@ function normalizePlan(
   });
 
   return {
-    globalObjectives: pickStringArray(obj.globalObjectives).slice(0, 6),
+    globalObjectives: pickStringArray(obj.globalObjectives)
+      .slice(0, 6)
+      .map(cleanLearningOutcome),
     targetReader: pickString(obj.targetReader, ''),
     glossaryCandidates: pickStringArray(obj.glossaryCandidates).slice(0, 30),
     modules,
@@ -242,6 +247,34 @@ function pickStringArray(v: unknown): string[] {
   return v
     .filter((x): x is string => typeof x === 'string' && x.trim().length > 0)
     .map((x) => x.trim());
+}
+
+/** Quita prefacios típicamente genéricos de modelos para outcomes más útiles en PDF y landing. */
+function cleanLearningOutcome(text: string): string {
+  const t = text.trim();
+  if (!t.length) return t;
+  let s = t.replace(/\s+/g, ' ');
+  const patterns = [
+    /^al\s+final\s+del\s+curso[,:\s]+/i,
+    /^al\s+completar\s+(el\s+)?curso[,:\s]+/i,
+    /^al\s+terminar\s+(el\s+)?(curso|programa)[,:\s]+/i,
+    /^al\s+acabar\s+(el\s+)?(curso|programa)[,:\s]+/i,
+    /^al\s+finalizar\s+(el\s+)?(curso|programa)[,:\s]+/i,
+    /^al\s+completar\s+(el\s+)?(curso|programa|módulo)[,:\s]+/i,
+    /^el\s+alumno\s+(será\s+capaz\s+de|podrá|sabrá|deberá\s+poder|debería\s+poder)\s+/i,
+    /^la\s+alumna\s+(será\s+capaz\s+de|podrá|sabrá|deberá\s+poder)\s+/i,
+    /^el\s+estudiante\s+(será\s+capaz\s+de|podrá|sabrá|deberá\s+poder)\s+/i,
+    /^la\s+estudiante\s+(será\s+capaz\s+de|podrá|sabrá)\s+/i,
+    /^los\s+alumnos\s+(serán\s+capaces\s+de|podrán|sabrán)\s+/i,
+    /^las\s+alumnas\s+(serán\s+capaces\s+de|podrán)\s+/i,
+    /^el\s+participante\s+(será\s+capaz\s+de|podrá|sabrá)\s+/i,
+  ];
+  for (const re of patterns) {
+    s = s.replace(re, '').trim();
+  }
+  s = s.replace(/^[,;]\s*/, '').trim();
+  if (!s.length) return t;
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function norm(s: unknown): string {

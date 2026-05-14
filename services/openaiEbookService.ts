@@ -4,7 +4,8 @@
  * Pipeline:
  *  1) `buildEditorialPlan` (1 llamada): plan editorial coherente del curso.
  *  2) Expansión por lección con el plan como contexto, devolviendo bloques
- *     estructurados (intro / body / example / exercise / commonMistakes /
+ *     estructurados (intro / body / example / exerciseSteps +
+ *     exerciseDeliverable [+ exerciseContext] → compuesto en texto / commonMistakes /
  *     checklist / keyPoints). Paralela con concurrencia limitada.
  *
  * Si el plan editorial falla, hacemos fallback a una expansión "legacy"
@@ -41,7 +42,14 @@ export interface ExpandedLesson {
   intro?: string;
   body?: string;
   example?: string;
+  /**
+   * Texto compuesto para PDF y consumidores que esperan una sola cadena (pasos +
+   * entregable, o formato legado).
+   */
   exercise?: string;
+  /** Pasos ordenados si el modelo devolvió estructura; útil para TTS/UI. */
+  exerciseSteps?: string[];
+  exerciseDeliverable?: string;
   commonMistakes?: string[];
   checklist?: string[];
   keyPoints?: string[];
@@ -151,6 +159,8 @@ interface RichLessonOutput {
   body: string;
   example: string;
   exercise: string;
+  exerciseSteps: string[];
+  exerciseDeliverable: string;
   commonMistakes: string[];
   checklist: string[];
   keyPoints: string[];
@@ -204,22 +214,28 @@ PERFIL OBLIGATORIO PARA EL "example" DE ESTA LECCIÓN (varía para evitar clich�
 DEVUELVE UN ÚNICO JSON VÁLIDO con esta forma:
 {
   "intro": "string (80-150 palabras, sin definir nada que ya esté en assumesKnown; engancha con el resultado de aprendizaje)",
-  "body": "string (1200-1800 palabras; texto plano con párrafos separados por líneas en blanco; estructura: contexto → desarrollo conceptual → cómo se aplica → matices y casos límite; no uses títulos internos, no uses markdown)",
+  "body": "string (1200-1800 palabras; texto plano con párrafos separados por líneas en blanco; estructura lógica: contexto → ideas centrales → aplicación práctica → matices y casos límite). Incluye dato cuantificado, estándar, criterio o referencia concreta cuando el tema lo permita (neutral a cualquier sector). Sin markdown.",
   "example": "string (200-300 palabras; debe protagonizarlo EXACTAMENTE el perfil indicado arriba, usando su nombre, edad, ciudad y contexto vital; debe ser específico, con cifras o decisiones concretas; ilustra los conceptos clave de ESTA lección sin redefinir lo de assumesKnown)",
-  "exercise": "string (120-200 palabras; un ejercicio aplicado paso a paso que el alumno pueda realizar tras leer la lección; indica qué entregable produce)",
-  "commonMistakes": ["3-5 errores frecuentes con explicación corta de por qué se producen y cómo evitarlos"],
-  "checklist": ["4-6 ítems accionables que el alumno debería poder confirmar tras la lección"],
-  "keyPoints": ["4-5 ideas clave en una frase cada una; sin numeración"]
+  "exerciseContext": "string opcional vacío o muy breve (0-60 palabras): aclaración previa antes de los pasos; si no aporta, usa \"\" ",
+  "exerciseSteps": ["4-8 strings: cada elemento es UN paso concreto y ordenado. Infinitivos o imperativos claros (Redactar…, Comparar…, Ejecutar…, Registrar…)", "...", "..."],
+  "exerciseDeliverable": "string (1-2 frases): qué entrega el alumno y cómo sabe si lo ha hecho bien",
+  "commonMistakes": ["3-5 strings: cada uno es UN error frecuente en una o dos frases como máximo, sin solución larga anexada en el mismo string"],
+  "checklist": ["4-6 ítems accionables en infinitivo o segunda persona (Verifica, Completa, Registra, Documenta, Selecciona…). Evita filas todas iguales empezando por «Comprendo que», «Soy capaz de explicar», «Reconozco que» salvo cuando sea inevitable"],
+  "keyPoints": ["4-5 frases muy breves; una idea por elemento"]
 }
 
+Nota técnica: no devuelvas un campo \"exercise\" en formato antiguo; usa exerciseSteps + exerciseDeliverable (+ exerciseContext si hace falta).
+
 REGLAS DE ESTILO:
-1. Castellano de España, registro profesional y accesible. No uses tú/usted alternados; mantén "tú".
-2. NO uses emojis ni markdown. Solo texto plano dentro de cada string. Si necesitas listas, usa los arrays del JSON, no guiones dentro de los strings.
+1. Castellano de España, registro profesional y accesible. No uses tú/usted alternados; mantén «tú».
+2. NO uses emojis ni markdown dentro de strings. Las listas van en los arrays del JSON.
 3. NO redefinas los conceptos en "assumesKnown" ni los presentes en lecciones previas listadas arriba.
 4. Cita los conceptos clave de la lección al menos una vez en "body".
 5. "example" DEBE protagonizarlo el perfil indicado arriba con su nombre exacto; no inventes otros nombres ni reutilices nombres prohibidos.
-6. "exercise" debe ser autocontenido y verificable (el alumno sabe si lo hizo bien).
-7. Todo el contenido va en castellano. No mezcles idiomas salvo nombres propios.`;
+6. En intro y body, evita abrir párrafos con fórmulas vacías repetidas: «Es fundamental», «Es importante destacar», «En esta lección exploraremos», «En esta sección», «Es esencial tener en cuenta», «En resumen», «Como vimos».
+7. Cuando el dominio lo permita, menciona criterios, métricas o referencias concretas con moderación (aplicable a cualquier temática).
+8. El bloque de ejercicio debe ser autocontenido con exerciseSteps + exerciseDeliverable.
+9. Todo el contenido va en castellano. No mezcles idiomas salvo nombres propios.`;
 }
 
 async function expandLessonRich(
@@ -262,17 +278,63 @@ async function expandLessonRich(
   return normalizeRichLesson(parsed);
 }
 
+/** Compone el texto del ejercicio y conserva pasos/entregable para consumidores estructurados (p. ej. TTS). */
+function composeExerciseFields(obj: Record<string, unknown>): {
+  exercise: string;
+  exerciseSteps: string[];
+  exerciseDeliverable: string;
+} {
+  const steps = asStringArray(obj.exerciseSteps).slice(0, 14);
+  const deliverableRaw =
+    typeof obj.exerciseDeliverable === 'string'
+      ? obj.exerciseDeliverable.trim()
+      : '';
+  const contextRaw =
+    typeof obj.exerciseContext === 'string' ? obj.exerciseContext.trim() : '';
+  const legacy = asNonEmptyString(obj.exercise);
+
+  const parts: string[] = [];
+  if (contextRaw.length > 0) parts.push(contextRaw);
+  if (steps.length > 0) {
+    parts.push(steps.map((s, i) => `Paso ${i + 1}: ${s}`).join('\n\n'));
+  }
+  if (deliverableRaw.length > 0) {
+    parts.push(`Entregable: ${deliverableRaw}`);
+  }
+
+  const composed = parts.join('\n\n').trim();
+
+  if (composed.length > 0) {
+    return {
+      exercise: composed,
+      exerciseSteps: steps,
+      exerciseDeliverable: deliverableRaw,
+    };
+  }
+
+  return {
+    exercise: legacy,
+    exerciseSteps: [],
+    exerciseDeliverable: '',
+  };
+}
+
 function normalizeRichLesson(parsed: unknown): RichLessonOutput {
   const obj =
     typeof parsed === 'object' && parsed !== null
       ? (parsed as Record<string, unknown>)
       : {};
 
+  const { exercise, exerciseSteps, exerciseDeliverable } =
+    composeExerciseFields(obj);
+
   return {
     intro: asNonEmptyString(obj.intro),
     body: asNonEmptyString(obj.body),
     example: asNonEmptyString(obj.example),
-    exercise: asNonEmptyString(obj.exercise),
+    exercise,
+    exerciseSteps,
+    exerciseDeliverable,
     commonMistakes: asStringArray(obj.commonMistakes).slice(0, 8),
     checklist: asStringArray(obj.checklist).slice(0, 10),
     keyPoints: asStringArray(obj.keyPoints).slice(0, 8),
@@ -499,6 +561,8 @@ async function expandWithPlan(
             'No se pudo expandir esta lección automáticamente. El equipo editorial la revisará antes de publicar.',
           example: '',
           exercise: '',
+          exerciseSteps: [],
+          exerciseDeliverable: '',
           commonMistakes: [],
           checklist: [],
           keyPoints: [],
@@ -546,6 +610,9 @@ async function expandWithPlan(
           body: rich.body || undefined,
           example: rich.example || undefined,
           exercise: rich.exercise || undefined,
+          exerciseSteps:
+            rich.exerciseSteps.length > 0 ? rich.exerciseSteps : undefined,
+          exerciseDeliverable: rich.exerciseDeliverable || undefined,
           commonMistakes:
             rich.commonMistakes.length > 0 ? rich.commonMistakes : undefined,
           checklist: rich.checklist.length > 0 ? rich.checklist : undefined,
