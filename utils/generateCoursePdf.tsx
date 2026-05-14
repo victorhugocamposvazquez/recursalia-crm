@@ -493,14 +493,12 @@ const s = StyleSheet.create({
     color: C.light,
   },
   tocHint: {
-    marginTop: 22,
-    paddingTop: 14,
-    borderTopWidth: 0.5,
-    borderTopColor: C.rule,
+    marginBottom: 14,
     fontFamily: FONT_DISPLAY,
     fontSize: 9,
     color: C.muted,
     letterSpacing: 0.3,
+    lineHeight: 1.45,
   },
   tocTopicRow: {
     flexDirection: 'row',
@@ -962,15 +960,15 @@ const s = StyleSheet.create({
     lineHeight: 1.5,
   },
 
-  // ─── Glossary ───
-  glossaryGrid: {
+  // ─── Glosario (flexWrap: fluye entre páginas con Page wrap) ───
+  glossaryFlow: {
     flexDirection: 'row',
-    columnGap: 22,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: 2,
   },
-  glossaryColumn: {
-    flex: 1,
-  },
-  glossaryRow: {
+  glossaryEntry: {
+    width: '48%',
     marginBottom: 12,
   },
   glossaryTerm: {
@@ -1162,7 +1160,6 @@ function CalloutText({
   return (
     <View
       style={[s.callout, { backgroundColor: bg, borderLeftColor: border }]}
-      wrap={false}
     >
       <Text style={[s.calloutLabel, { color: labelColor }]}>{label}</Text>
       {safe(text)
@@ -1195,7 +1192,6 @@ function CalloutList({
   return (
     <View
       style={[s.callout, { backgroundColor: bg, borderLeftColor: border }]}
-      wrap={false}
     >
       <Text style={[s.calloutLabel, { color: labelColor }]}>{label}</Text>
       {items.map((it, i) => (
@@ -1420,7 +1416,7 @@ function TocPage({
   const modules = (content.topics ?? []).length;
   const hours = Math.max(1, Math.round(totalMinutes / 60));
   return (
-    <Page size="A4" style={s.page}>
+    <Page size="A4" style={s.page} wrap>
       <PageHeader courseTitle={courseTitle} />
       <Text style={s.tocKicker}>Índice</Text>
       <Text style={s.tocTitle}>Programa del curso</Text>
@@ -1434,8 +1430,12 @@ function TocPage({
         <Text style={s.tocMetaSep}>·</Text>
         <Text style={s.tocMetaText}>~{hours} h de lectura estimada</Text>
       </View>
+      <Text style={s.tocHint}>
+        Haz clic en cualquier título del programa para saltar al inicio del
+        módulo correspondiente (funciona en la mayoría de lectores PDF).
+      </Text>
       {(content.topics ?? []).map((topic, ti) => (
-        <View key={ti} wrap={false}>
+        <View key={ti}>
           <Link src={`#topic-${ti}`} style={{ textDecoration: 'none' }}>
             <View style={s.tocTopicRow}>
               <Text style={s.tocTopicNum}>
@@ -1457,9 +1457,6 @@ function TocPage({
           ))}
         </View>
       ))}
-      <Text style={s.tocHint}>
-        Toca cualquier título del índice para saltar al módulo correspondiente.
-      </Text>
       <PageFooter />
     </Page>
   );
@@ -1484,7 +1481,7 @@ function IntroPage({
   const hours = Math.max(1, Math.round(totalMinutes / 60));
 
   return (
-    <Page size="A4" style={s.page}>
+    <Page size="A4" style={s.page} wrap>
       <PageHeader courseTitle={courseTitle} />
       <Text style={s.sectionKicker}>Bienvenido</Text>
       <Text style={s.sectionTitle}>Introducción</Text>
@@ -1492,7 +1489,7 @@ function IntroPage({
       {intro && <Paragraphs text={intro} />}
 
       {objectives.length > 0 && (
-        <View style={s.introBlock} wrap={false}>
+        <View style={s.introBlock}>
           <Text style={s.introBlockLabel}>Qué vas a aprender</Text>
           <Text style={s.introBlockTitle}>Al terminar este curso serás capaz de:</Text>
           {objectives.map((o, i) => (
@@ -1504,20 +1501,20 @@ function IntroPage({
       )}
 
       {targetReader && (
-        <View style={s.introTargetBox} wrap={false}>
+        <View style={s.introTargetBox}>
           <Text style={s.introBlockLabel}>Para quién es este curso</Text>
           <Text style={s.introTargetText}>{safe(targetReader)}</Text>
         </View>
       )}
 
       {modules.length > 0 && (
-        <View style={s.introBlock} wrap={false}>
+        <View style={s.introBlock}>
           <Text style={s.introBlockLabel}>Cómo está organizado</Text>
           <Text style={s.introBlockTitle}>
             {modules.length} módulos · {totalLessons} lecciones · ~{hours} h de lectura
           </Text>
           {modules.map((m, i) => (
-            <View key={i} style={s.introModuleRow} wrap={false}>
+            <View key={i} style={s.introModuleRow}>
               <Text style={s.introModuleNum}>
                 {String(i + 1).padStart(2, '0')}
               </Text>
@@ -1557,7 +1554,7 @@ function ModuleOpeningPage({
   const minutes = estimateModuleMinutes(topic);
 
   return (
-    <Page size="A4" style={s.modOpeningPage} bookmark={`Módulo ${index + 1}: ${topic.title}`}>
+    <Page size="A4" style={s.modOpeningPage} bookmark={`Módulo ${index + 1}: ${topic.title}`} wrap>
       <PageHeader courseTitle={courseTitle} moduleTitle={topic.title} />
       <View id={`topic-${index}`}>
         <Text style={s.modOpeningNumber}>
@@ -1583,7 +1580,7 @@ function ModuleOpeningPage({
       </View>
 
       {planObjectives.length > 0 && (
-        <View style={s.modOpeningBlock} wrap={false}>
+        <View style={s.modOpeningBlock}>
           <Text style={s.modOpeningBlockLabel}>Objetivos de este módulo</Text>
           {planObjectives.map((o, i) => (
             <Text key={i} style={s.modOpeningItem}>
@@ -1594,7 +1591,7 @@ function ModuleOpeningPage({
       )}
 
       {definesHere.length > 0 && (
-        <View style={s.modOpeningBlock} wrap={false}>
+        <View style={s.modOpeningBlock}>
           <Text style={s.modOpeningBlockLabel}>Qué cubre este módulo</Text>
           {definesHere.map((d, i) => (
             <Text key={i} style={s.modOpeningItem}>
@@ -1605,10 +1602,10 @@ function ModuleOpeningPage({
       )}
 
       {lessons.length > 0 && (
-        <View style={s.modOpeningBlock} wrap={false}>
+        <View style={s.modOpeningBlock}>
           <Text style={s.modOpeningBlockLabel}>Lecciones</Text>
           {lessons.map((l, i) => (
-            <View key={i} style={s.modOpeningLessonRow} wrap={false}>
+            <View key={i} style={s.modOpeningLessonRow}>
               <Text style={s.modOpeningLessonNum}>
                 {index + 1}.{i + 1}
               </Text>
@@ -1656,7 +1653,7 @@ function LessonBlock({
   return (
     <View>
       {showSep && <View style={s.lessonSep} />}
-      <View style={s.lessonHeader} wrap={false}>
+      <View style={s.lessonHeader}>
         <Text style={s.lessonNumber}>Lección {number}</Text>
         <Text style={s.lessonTitle}>{safe(lesson.title)}</Text>
       </View>
@@ -1784,7 +1781,7 @@ function ModuleClosingPage({
     : 'Continúa con el siguiente módulo cuando estés listo.';
 
   return (
-    <Page size="A4" style={s.modClosePage}>
+    <Page size="A4" style={s.modClosePage} wrap>
       <PageHeader courseTitle={courseTitle} moduleTitle={topic.title} />
       <Text style={s.modCloseKicker}>
         Cierre del módulo {String(index + 1).padStart(2, '0')}
@@ -1796,13 +1793,13 @@ function ModuleClosingPage({
         a alguien lo más importante de este módulo, podrías hablarle de esto.
       </Text>
 
-      <View style={s.modCloseBlock} wrap={false}>
+      <View style={s.modCloseBlock}>
         <Text style={s.modCloseBlockLabel}>Resumen por lección</Text>
         {topic.lessons.map((lesson, i) => {
           const recap = recapByLesson[i];
           if (!recap) return null;
           return (
-            <View key={i} style={s.modCloseLessonRow} wrap={false}>
+            <View key={i} style={s.modCloseLessonRow}>
               <Text style={s.modCloseLessonNum}>
                 {index + 1}.{i + 1}
               </Text>
@@ -1815,7 +1812,7 @@ function ModuleClosingPage({
         })}
       </View>
 
-      <View style={s.modCloseNextBox} wrap={false}>
+      <View style={s.modCloseNextBox}>
         <Text style={s.modCloseNextLabel}>Siguiente paso · {nextLabel}</Text>
         <Text style={s.modCloseNextTitle}>{nextTitle}</Text>
         {nextDesc && <Text style={s.modCloseNextDesc}>{nextDesc}</Text>}
@@ -1833,14 +1830,8 @@ function GlossaryPage({
   glossary: { term: string; definition: string }[];
   courseTitle: string;
 }) {
-  // Repartimos las entradas en dos columnas (zig-zag por mitad para que la
-  // longitud visual de ambas columnas sea aproximadamente la misma).
-  const half = Math.ceil(glossary.length / 2);
-  const left = glossary.slice(0, half);
-  const right = glossary.slice(half);
-
   return (
-    <Page size="A4" style={s.page}>
+    <Page size="A4" style={s.page} wrap>
       <PageHeader courseTitle={courseTitle} />
       <Text style={s.sectionKicker}>Anexo</Text>
       <Text style={s.sectionTitle}>Glosario</Text>
@@ -1849,23 +1840,13 @@ function GlossaryPage({
         Los términos clave del curso, en orden alfabético. Vuelve aquí cada vez
         que dudes sobre el significado preciso de un concepto.
       </Text>
-      <View style={s.glossaryGrid}>
-        <View style={s.glossaryColumn}>
-          {left.map((g, i) => (
-            <View key={i} style={s.glossaryRow} wrap={false}>
-              <Text style={s.glossaryTerm}>{safe(g.term)}</Text>
-              <Text style={s.glossaryDef}>{safe(g.definition)}</Text>
-            </View>
-          ))}
-        </View>
-        <View style={s.glossaryColumn}>
-          {right.map((g, i) => (
-            <View key={i} style={s.glossaryRow} wrap={false}>
-              <Text style={s.glossaryTerm}>{safe(g.term)}</Text>
-              <Text style={s.glossaryDef}>{safe(g.definition)}</Text>
-            </View>
-          ))}
-        </View>
+      <View style={s.glossaryFlow}>
+        {glossary.map((g, i) => (
+          <View key={`${safe(g.term)}-${i}`} style={s.glossaryEntry}>
+            <Text style={s.glossaryTerm}>{safe(g.term)}</Text>
+            <Text style={s.glossaryDef}>{safe(g.definition)}</Text>
+          </View>
+        ))}
       </View>
       <PageFooter />
     </Page>
