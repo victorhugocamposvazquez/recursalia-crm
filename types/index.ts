@@ -97,6 +97,18 @@ export interface CourseReviewStored {
 /** Perfil de estrellas para IA (reseñas al publicar / regenerar). */
 export type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
 
+/** Rol de usuario en `public.profiles` (panel vs LMS). */
+export type UserRole = 'admin' | 'student';
+
+/** Fila en Supabase `profiles` (sincronizada con auth.users). */
+export interface Profile {
+  id: string;
+  email: string;
+  role: UserRole;
+  created_at: string;
+  updated_at: string;
+}
+
 // Entidad en Supabase
 export type CourseStatus = 'draft' | 'published' | 'error';
 
