@@ -3,6 +3,7 @@ import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
 import { jsonResponse, errorResponse } from '@/utils/api-response';
 import type { GeneratedCourseStructure } from '@/types';
+import { normalizeGeneratedContentIdentity } from '@/lib/normalizeGeneratedContentIdentity';
 import { writeAudit } from '@/services/auditLogService';
 export async function GET(
   req: NextRequest,
@@ -49,8 +50,17 @@ export async function PATCH(
     };
 
     const updates: Record<string, unknown> = {};
-    if (body.generated_content !== undefined)
-      updates.generated_content = body.generated_content;
+    if (body.generated_content !== undefined) {
+      const gc = {
+        ...body.generated_content,
+        topics: (body.generated_content.topics ?? []).map((t) => ({
+          ...t,
+          lessons: (t.lessons ?? []).map((l) => ({ ...l })),
+        })),
+      };
+      normalizeGeneratedContentIdentity(gc);
+      updates.generated_content = gc;
+    }
     if (body.topic !== undefined) updates.topic = body.topic;
     if (body.input_payload !== undefined)
       updates.input_payload = body.input_payload;

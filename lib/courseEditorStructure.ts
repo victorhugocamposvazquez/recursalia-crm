@@ -15,7 +15,22 @@ export function recalcTotalDurationMinutes(topics: GeneratedTopic[]): number {
 }
 
 export function defaultLesson(): GeneratedLesson {
-  return { title: 'Nueva lección', content: '<p></p>', duration_minutes: 15 };
+  return {
+    id: crypto.randomUUID(),
+    slug: '',
+    title: 'Nueva lección',
+    content: '<p></p>',
+    duration_minutes: 15,
+  };
+}
+
+export function defaultTopic(): GeneratedTopic {
+  return {
+    id: crypto.randomUUID(),
+    slug: '',
+    title: 'Nuevo módulo',
+    lessons: [defaultLesson()],
+  };
 }
 
 export function withTopics(

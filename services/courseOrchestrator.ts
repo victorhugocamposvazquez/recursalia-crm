@@ -12,6 +12,7 @@ import {
   normalizeReviewsRatingPreset,
 } from '@/lib/reviewsRatingPreset';
 import { buildManualCourseSkeleton } from '@/services/manualCourseSkeleton';
+import { normalizeGeneratedContentIdentity } from '@/lib/normalizeGeneratedContentIdentity';
 import type {
   CourseInputPayload,
   CourseRecord,
@@ -28,6 +29,10 @@ export interface ReviewsConfig {
 
 const DEFAULT_REVIEWS_COUNT = parseInt(process.env.COURSE_REVIEWS_COUNT ?? '50', 10);
 
+/**
+ * Genera el borrador con IA y persiste `generated_content` + `public_slug` estable.
+ * Invariante: `public_slug` no se sobrescribe una vez asignado; aquí solo se rellena si sigue vacío.
+ */
 export async function generateAndSaveCourse(
   payload: CourseInputPayload
 ): Promise<CourseRecord> {
@@ -44,19 +49,48 @@ export async function generateAndSaveCourse(
 
   if (insertError) throw new Error(`DB insert failed: ${insertError.message}`);
 
-  const courseId = insertData.id;
+  const insertRow = insertData as CourseRecord;
+  const courseId = insertRow.id;
 
   try {
-    const generatedContent = await generateCourseStructure(payload, courseId);
+    const generatedContentRaw = await generateCourseStructure(
+      payload,
+      courseId
+    );
+    const generatedContent = { ...generatedContentRaw };
+    normalizeGeneratedContentIdentity(generatedContent);
+
+    const hadSlug =
+      insertRow.public_slug != null &&
+      String(insertRow.public_slug).trim().length > 0;
+    let publicSlug: string = hadSlug
+      ? String(insertRow.public_slug).trim()
+      : await resolveUniquePublicSlug(generatedContent.title, courseId);
+    if (hadSlug) {
+      console.info(
+        `[course ${courseId}] Slug publico existente: ${publicSlug}`
+      );
+    } else {
+      console.info(
+        `[course ${courseId}] Slug publico asignado: ${publicSlug}`
+      );
+    }
 
     const { error: updateError } = await supabase
       .from('courses')
-      .update({ generated_content: generatedContent })
+      .update({
+        generated_content: generatedContent,
+        public_slug: publicSlug,
+      })
       .eq('id', courseId);
 
     if (updateError) throw new Error(`DB update failed: ${updateError.message}`);
 
-    return { ...insertData, generated_content: generatedContent };
+    return {
+      ...insertRow,
+      generated_content: generatedContent,
+      public_slug: publicSlug,
+    };
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     await getSupabase()
@@ -76,13 +110,17 @@ export async function createManualDraftCourse(
 ): Promise<CourseRecord> {
   const supabase = getSupabase();
   const enriched: CourseInputPayload = { ...payload, creationMode: 'manual' };
-  const generatedContent = buildManualCourseSkeleton(enriched);
+  const generatedContentRaw = buildManualCourseSkeleton(enriched);
+  const generatedContent = { ...generatedContentRaw };
+  normalizeGeneratedContentIdentity(generatedContent);
+  const publicSlug = await resolveUniquePublicSlug(generatedContent.title);
   const { data: insertData, error: insertError } = await supabase
     .from('courses')
     .insert({
       topic: enriched.topic.trim(),
       input_payload: enriched,
       generated_content: generatedContent,
+      public_slug: publicSlug,
       status: 'draft',
     })
     .select()
@@ -90,9 +128,15 @@ export async function createManualDraftCourse(
 
   if (insertError) throw new Error(`DB insert failed: ${insertError.message}`);
 
-  return { ...insertData, generated_content: generatedContent };
+  return { ...(insertData as CourseRecord), generated_content: generatedContent };
 }
 
+/**
+ * Primera publicación del curso en la web (Next + Supabase).
+ *
+ * Invariante: `public_slug` es estable; una vez asignado, nunca se sobrescribe.
+ * Si el borrador ya tiene `public_slug` (p. ej. asignado al generar el draft), se reutiliza.
+ */
 export async function publishCourse(
   courseId: string,
   reviewsCfg?: ReviewsConfig
@@ -199,10 +243,16 @@ export async function publishCourse(
     );
   }
 
-  let publicSlug: string | null = null;
+  let publicSlug: string | null = course.public_slug?.trim() || null;
   try {
-    publicSlug = await resolveUniquePublicSlug(content.title, courseId);
-    await setProgress(`Slug publico: ${publicSlug}`);
+    if (!publicSlug) {
+      publicSlug = await resolveUniquePublicSlug(content.title, courseId);
+      if (publicSlug) {
+        await setProgress(`Slug publico asignado: ${publicSlug}`);
+      }
+    } else {
+      await setProgress(`Slug publico existente: ${publicSlug}`);
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     errorLog = (errorLog ?? '') + ` | Slug: ${msg}`;
@@ -257,8 +307,11 @@ export type RepublishPublicOptions = {
 };
 
 /**
- * Sincroniza el curso actual con el sitio Next (/cursos/[slug]): slug (conserva si existe),
- * SEO desde generated_content, portada y reseñas opcionales.
+ * Sincroniza el curso actual con el sitio Next (/cursos/[slug]): SEO desde generated_content,
+ * portada y reseñas opcionales.
+ *
+ * Invariante: `public_slug` es estable; una vez asignado, nunca se sobrescribe.
+ * Si falta slug, se calcula una sola vez con el título actual.
  */
 export async function republishPublicSnapshot(
   courseId: string,

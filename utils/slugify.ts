@@ -11,3 +11,18 @@ export function slugifyTitle(title: string): string {
     .replace(/-+$/g, '');
   return s || 'curso';
 }
+
+/**
+ * Devuelve el primer slug disponible: `base`, `base-2`, `base-3`, …
+ * No modifica `used`; el llamador debe hacer `used.add(resultado)`.
+ */
+export function ensureUniqueSlug(base: string, used: Set<string>): string {
+  const root = base.trim() || 'item';
+  let candidate = root;
+  let n = 2;
+  while (used.has(candidate)) {
+    candidate = `${root}-${n}`;
+    n += 1;
+  }
+  return candidate;
+}

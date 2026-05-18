@@ -10,6 +10,7 @@ import type {
 } from '@/types';
 import {
   defaultLesson,
+  defaultTopic,
   withTopics,
 } from '@/lib/courseEditorStructure';
 import type { ReviewsRatingPreset } from '@/lib/reviewsRatingPreset';
@@ -170,10 +171,7 @@ export default function CourseDetailPage() {
     setEditContent((prev) => {
       if (!prev) return prev;
       const topics = [...(prev.topics ?? [])];
-      topics.push({
-        title: 'Nuevo módulo',
-        lessons: [defaultLesson()],
-      });
+      topics.push(defaultTopic());
       return withTopics(prev, topics);
     });
   }

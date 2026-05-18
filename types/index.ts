@@ -29,12 +29,20 @@ export interface CourseInputPayload {
 
 // Estructura generada por OpenAI
 export interface GeneratedLesson {
+  /** UUID v4 estable por lección dentro del curso (progreso, enlaces). */
+  id: string;
+  /** Slug único entre todas las lecciones del curso; no se regenera si ya existe. */
+  slug: string;
   title: string;
   content: string;
   duration_minutes: number;
 }
 
 export interface GeneratedTopic {
+  /** UUID v4 estable por módulo/tema dentro del curso. */
+  id: string;
+  /** Slug único entre los topics del curso; no se regenera si ya existe. */
+  slug: string;
   title: string;
   lessons: GeneratedLesson[];
 }
@@ -102,8 +110,8 @@ export interface CourseRecord {
   status: CourseStatus;
   error_log: string | null;
   created_at: string;
-  /** Slug para URL pública /cursos/[slug] */
-  public_slug?: string | null;
+  /** Slug para URL pública /cursos/[slug]; estable una vez asignado (ver orchestrator). */
+  public_slug: string | null;
   published_at?: string | null;
   published_title?: string | null;
   meta_title?: string | null;

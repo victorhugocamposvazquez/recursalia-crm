@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import {
   COURSE_AUTHOR_BIO_DEFAULT,
   COURSE_AUTHOR_NAME_DEFAULT,
@@ -33,12 +34,16 @@ export function buildManualCourseSkeleton(
     const lessons: GeneratedLesson[] = [];
     for (let L = 1; L <= lessonsPerTopic; L++) {
       lessons.push({
+        id: randomUUID(),
+        slug: '',
         title: `Lección ${L}`,
         content: '<p>Escribe aquí el contenido de la lección.</p>',
         duration_minutes: 15,
       });
     }
     topics.push({
+      id: randomUUID(),
+      slug: '',
       title: isGuide ? `Capítulo ${t}` : `Módulo ${t}`,
       lessons,
     });
