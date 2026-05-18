@@ -1,3 +1,5 @@
+import type { ExpandedCourseContent } from '@/services/openaiEbookService';
+
 // Input para generación de curso
 export type ProductType = 'course' | 'guide';
 
@@ -140,6 +142,10 @@ export interface CourseRecord {
   catalog_category?: string | null;
   /** Copia ligera del JSON generado la primera vez que pasó a publicado */
   published_content_snapshot?: GeneratedCourseStructure | null;
+  /** Contenido extendido por lección (ebook / LMS); null hasta generar desde el panel. */
+  expanded_content: ExpandedCourseContent | null;
+  /** ISO de la última persistencia de `expanded_content`. */
+  expanded_at: string | null;
 }
 
 // SEO Blog Posts

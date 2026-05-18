@@ -1,11 +1,18 @@
 import { NextRequest } from 'next/server';
 import { requireAuthApi } from '@/lib/auth-api';
 import { getSupabase } from '@/lib/supabase';
-import { expandCourseForEbook, countLessons } from '@/services/openaiEbookService';
+import { countLessons } from '@/services/openaiEbookService';
 import { generateCoursePdf } from '@/utils/generateCoursePdf';
 import type { GeneratedCourseStructure } from '@/types';
+import type { ExpandedCourseContent } from '@/services/openaiEbookService';
 
 const CHUNK_SIZE = 256 * 1024; // 256 KB de base64 por evento
+
+const CONFLICT_BODY = {
+  error: 'Course not expanded',
+  message:
+    'Genera primero el contenido del curso desde el panel de administración.',
+};
 
 export async function GET(
   req: NextRequest,
@@ -19,7 +26,7 @@ export async function GET(
 
   const { data: course, error } = await getSupabase()
     .from('courses')
-    .select('generated_content')
+    .select('generated_content, expanded_content')
     .eq('id', id)
     .single();
 
@@ -28,11 +35,14 @@ export async function GET(
   }
 
   const raw = course.generated_content as GeneratedCourseStructure;
+  const expandedRow = course.expanded_content as ExpandedCourseContent | null;
 
   if (!stream) {
+    if (!expandedRow) {
+      return Response.json(CONFLICT_BODY, { status: 409 });
+    }
     try {
-      const expanded = await expandCourseForEbook(raw, undefined, id);
-      const pdfBytes = await generateCoursePdf(expanded);
+      const pdfBytes = await generateCoursePdf(expandedRow);
       const safeName = (raw.title ?? 'curso')
         .replace(/[^a-z0-9áéíóúñ\s-]/gi, '')
         .replace(/\s+/g, '-')
@@ -60,19 +70,20 @@ export async function GET(
       }
 
       try {
-        send({ type: 'start', total });
+        if (!expandedRow) {
+          send({
+            type: 'error',
+            message: CONFLICT_BODY.message,
+            error: CONFLICT_BODY.error,
+          });
+          return;
+        }
 
-        const expanded = await expandCourseForEbook(
-          raw,
-          (current, tot, title) => {
-            send({ type: 'progress', current, total: tot, lesson: title });
-          },
-          id
-        );
+        send({ type: 'start', total });
 
         send({ type: 'progress', current: total, total, lesson: 'Generando PDF...' });
 
-        const pdfBytes = await generateCoursePdf(expanded);
+        const pdfBytes = await generateCoursePdf(expandedRow);
 
         const safeName = (raw.title ?? 'curso')
           .replace(/[^a-z0-9áéíóúñ\s-]/gi, '')

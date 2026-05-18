@@ -22,6 +22,28 @@ import {
 } from '@/lib/catalogCategory';
 import { PublishChecklist } from './PublishChecklist';
 
+function formatExpandedRelative(iso: string): string {
+  const diffMs = new Date(iso).getTime() - Date.now();
+  let duration = diffMs / 1000;
+  const rtf = new Intl.RelativeTimeFormat('es', { numeric: 'auto' });
+  const divisions: { amount: number; unit: Intl.RelativeTimeFormatUnit }[] = [
+    { amount: 60, unit: 'second' },
+    { amount: 60, unit: 'minute' },
+    { amount: 24, unit: 'hour' },
+    { amount: 7, unit: 'day' },
+    { amount: 4.34524, unit: 'week' },
+    { amount: 12, unit: 'month' },
+    { amount: Number.POSITIVE_INFINITY, unit: 'year' },
+  ];
+  for (const { amount, unit } of divisions) {
+    if (Math.abs(duration) < amount) {
+      return rtf.format(Math.round(duration), unit);
+    }
+    duration /= amount;
+  }
+  return rtf.format(Math.round(duration), 'year');
+}
+
 export default function CourseDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -61,6 +83,10 @@ export default function CourseDetailPage() {
   const publishPollRef = useRef<number | null>(null);
   const pdfAbortRef = useRef<AbortController | null>(null);
   const [coverUploading, setCoverUploading] = useState(false);
+  const [expandGenerating, setExpandGenerating] = useState(false);
+  const [expandNotice, setExpandNotice] = useState<
+    { kind: 'ok' | 'err'; text: string } | null
+  >(null);
 
   const catalogSelectOptions = useMemo(() => {
     const rows = [...catalogOptions];
@@ -401,6 +427,38 @@ export default function CourseDetailPage() {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleExpandCourseContent() {
+    const hasExpanded = Boolean(course?.expanded_at?.trim());
+    if (hasExpanded) {
+      const ok = window.confirm(
+        'Esto sobreescribirá el contenido actual y puede tardar varios minutos. ¿Continuar?'
+      );
+      if (!ok) return;
+    }
+
+    setExpandGenerating(true);
+    setExpandNotice(null);
+    setError(null);
+    try {
+      const res = await fetch(`/api/courses/${id}/expand`, { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(
+          typeof data.error === 'string'
+            ? data.error
+            : `Error ${res.status}: ${JSON.stringify(data)}`
+        );
+      }
+      await fetchCourse(false);
+      setExpandNotice({ kind: 'ok', text: 'Contenido generado correctamente' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setExpandNotice({ kind: 'err', text: msg });
+    } finally {
+      setExpandGenerating(false);
     }
   }
 
@@ -777,7 +835,7 @@ export default function CourseDetailPage() {
         </p>
       )}
 
-      {!editMode && content && course.public_slug && (
+      {!editMode && content && (
         <section className={styles.hotmartSection}>
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Enlace de pago Hotmart</h3>
@@ -821,9 +879,59 @@ export default function CourseDetailPage() {
             </div>
           </div>
           <div className={styles.hotmartCard}>
+            <h3 className={styles.hotmartCardTitle}>Contenido del curso</h3>
+            <p className={styles.hotmartNote}>
+              Contenido extendido de cada lección. Necesario para el PDF y para el área de alumno.
+            </p>
+            {course.expanded_at?.trim() ? (
+              <p className={styles.hotmartNote}>
+                <strong>Última generación:</strong> {formatExpandedRelative(course.expanded_at)}
+              </p>
+            ) : (
+              <p className={styles.expandStatusMuted}>Sin generar</p>
+            )}
+            {expandNotice?.kind === 'ok' ? (
+              <p className={styles.expandSuccess} role="status">
+                {expandNotice.text}
+              </p>
+            ) : null}
+            {expandNotice?.kind === 'err' ? (
+              <p className={styles.pdfError} role="alert">
+                {expandNotice.text}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              className={
+                course.expanded_at?.trim()
+                  ? styles.btnSecondary
+                  : styles.btnPrimary
+              }
+              disabled={expandGenerating}
+              onClick={() => void handleExpandCourseContent()}
+            >
+              {expandGenerating
+                ? 'Generando contenido…'
+                : course.expanded_at?.trim()
+                  ? 'Regenerar contenido del curso'
+                  : 'Generar contenido del curso'}
+            </button>
+            {course.expanded_at?.trim() ? (
+              <p className={styles.hotmartNote} style={{ marginTop: '0.5rem' }}>
+                Regenerar sobreescribe el contenido actual y puede tardar varios minutos.
+              </p>
+            ) : null}
+            {expandGenerating ? (
+              <p className={styles.expandWaitNote}>
+                Esto puede tardar varios minutos. No cierres la página.
+              </p>
+            ) : null}
+          </div>
+          <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>PDF del curso (ebook)</h3>
             <p className={styles.hotmartNote}>
-              Genera el ebook completo con contenido extenso para cada lección y súbelo en Hotmart en &quot;Contenido del producto&quot;.
+              Requiere haber generado antes el contenido extendido en «Contenido del curso». El archivo
+              usa el texto ya persistido en Supabase (no se vuelve a expandir con IA aquí).
             </p>
             {pdfGenerating ? (
               <div className={styles.pdfProgressWrap}>
