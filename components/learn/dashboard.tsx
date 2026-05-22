@@ -1,0 +1,348 @@
+// @ts-nocheck — see README for typing guidance on internal helpers
+'use client';
+import React from 'react';
+import { useTheme, Logo, Icon, Button, Progress, Chip, Mono, fmt } from './tokens';
+import { mockCourse, mockModules } from '@/lib/learn-mock';
+import { useLearnDataOptional } from '@/lib/learn/context';
+import type { TweakOptions } from './types';
+
+/* components/learn/dashboard.tsx — "Mis cursos"
+   Vista general del estudiante: cursos en progreso, recomendados, racha,
+   y un pequeño resumen de logros. Diseño editorial: tipografía protagonista,
+   tarjetas con jerarquía clara (no cards de catálogo genéricas). */
+
+// Datos de ejemplo del dashboard
+  const enrolled = [
+    {
+      slug: 'captura-el-mundo',
+      title: 'Captura el mundo a través de tu lente',
+      instructor: 'Lucía Vega',
+      pct: 0.42, nextLesson: '2.2 Líneas, formas y patrones',
+      time: '2h 40m restantes', tag: 'FOTOGRAFÍA', current: true,
+    },
+    {
+      slug: 'redaccion-clara',
+      title: 'Escribe como si hablaras (pero mejor)',
+      instructor: 'Marcos del Río',
+      pct: 0.78, nextLesson: '4.3 Cortar para enfocar',
+      time: '52 min restantes', tag: 'ESCRITURA',
+    },
+    {
+      slug: 'productividad-ritmica',
+      title: 'Productividad rítmica · trabaja con tu energía',
+      instructor: 'Andrea Cano',
+      pct: 0.15, nextLesson: '1.2 Detecta tus picos',
+      time: '4h restantes', tag: 'HÁBITOS',
+    },
+  ];
+
+  const completed = [
+    { title: 'Negociación amable', instructor: 'Inés Vallejo', date: '12 abr', score: 96 },
+    { title: 'Excel sin sufrir',    instructor: 'David Cuadros', date: '03 mar', score: 88 },
+  ];
+
+  const recommended = [
+    { title: 'Retrato natural — el rostro como paisaje', instructor: 'Lucía Vega', tag: 'FOTO · INTERMEDIO', reason: 'Continúa tu camino fotográfico' },
+    { title: 'El primer borrador es siempre una mentira', instructor: 'Marcos del Río', tag: 'ESCRITURA',   reason: 'Porque completaste «Redacción clara»' },
+    { title: 'Sin reuniones · cómo asíncrono se hace',     instructor: 'Lena Tobar',     tag: 'EQUIPOS',     reason: 'Nuevo esta semana' },
+  ];
+
+  // ── TARJETA DE CURSO EN PROGRESO ────────────────────────────────────────────
+  function CourseCard({ c, t, accent, large, mobile, onOpen }) {
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onOpen}
+        onKeyDown={(e) => e.key === 'Enter' && onOpen?.()}
+        style={{
+        position: 'relative', overflow: 'hidden',
+        background: large ? t.ink : t.surface,
+        color: large ? t.bg : t.ink,
+        borderRadius: 18,
+        border: large ? 'none' : `1px solid ${t.line}`,
+        padding: mobile ? 18 : (large ? 28 : 22),
+        display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18,
+        minHeight: large ? (mobile ? 'auto' : 280) : 'auto',
+        cursor: onOpen ? 'pointer' : 'default',
+      }}>
+        {large && (
+          <div style={{ position: 'absolute', top: -60, right: -60, width: 220, height: 220, borderRadius: 110, background: `radial-gradient(circle, ${accent.bg}33, transparent 70%)`, pointerEvents: 'none' }}/>
+        )}
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Mono color={large ? accent.bg : t.faint} size={10}>{c.tag}</Mono>
+          {c.current && <Chip size="sm" bg={accent.bg} color={accent.fg} mono>EN CURSO</Chip>}
+        </div>
+
+        <div style={{ position: 'relative', flex: 1 }}>
+          <div style={{ fontFamily: large ? t.serif : t.sans, fontWeight: large ? 500 : 700, fontSize: mobile ? 22 : (large ? 32 : 19), letterSpacing: large ? -1 : -0.4, lineHeight: 1.05, color: 'inherit' }}>
+            {c.title}
+          </div>
+          <div style={{ marginTop: 6, fontSize: 12.5, opacity: 0.7 }}>con {c.instructor}</div>
+        </div>
+
+        <div style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <Mono color={large ? 'rgba(244,244,240,0.5)' : t.faint} size={10}>SIGUIENTE</Mono>
+            <Mono color={large ? 'rgba(244,244,240,0.5)' : t.faint} size={10}>{Math.round(c.pct*100)}%</Mono>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {c.nextLesson}
+          </div>
+          <Progress value={c.pct} color={accent.bg} track={large ? 'rgba(255,255,255,0.15)' : t.lineSoft} height={5}/>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14 }}>
+            <span style={{ fontSize: 12, opacity: 0.6 }}>{c.time}</span>
+            <Button bg={large ? accent.bg : t.ink} fg={large ? accent.fg : t.bg} icon="play" size="sm">
+              {large ? 'Reanudar' : 'Continuar'}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── TARJETA DE CURSO COMPLETADO ────────────────────────────────────────────
+  function CompletedCard({ c, t, accent }) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 14,
+        padding: '14px 16px', borderRadius: 14,
+        background: t.dark ? 'rgba(255,255,255,0.04)' : t.surface2,
+        border: `1px solid ${t.line}`,
+      }}>
+        <div style={{ width: 40, height: 40, borderRadius: 20, background: accent.bg, color: accent.fg, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+          <Icon name="trophy" size={18}/>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: t.ink, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.title}</div>
+          <div style={{ fontSize: 12, color: t.muted }}>{c.instructor} · Completado {c.date}</div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ fontFamily: t.mono, fontSize: 14, fontWeight: 700, color: t.ink }}>{c.score}%</div>
+          <Mono color={t.faint} size={9}>NOTA</Mono>
+        </div>
+      </div>
+    );
+  }
+
+  // ── TARJETA RECOMENDADA ────────────────────────────────────────────────────
+  function RecCard({ c, t, accent }) {
+    return (
+      <div style={{
+        padding: 18, borderRadius: 16, background: t.surface, border: `1px solid ${t.line}`,
+        display: 'flex', flexDirection: 'column', gap: 12, height: '100%',
+      }}>
+        <div style={{ height: 80, borderRadius: 10, background: `linear-gradient(135deg, ${accent.bg}, #1b38c4)`, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.15, background: 'repeating-linear-gradient(45deg, #FFF 0 1px, transparent 1px 12px)' }}/>
+        </div>
+        <Mono color={t.faint} size={10}>{c.tag}</Mono>
+        <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: -0.3, lineHeight: 1.2, color: t.ink, flex: 1 }}>{c.title}</div>
+        <div style={{ fontSize: 12, color: t.muted }}>con {c.instructor}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 10, borderTop: `1px solid ${t.line}` }}>
+          <Icon name="sparkle" size={14}/>
+          <span style={{ fontSize: 11.5, color: t.muted, flex: 1 }}>{c.reason}</span>
+          <Icon name="arrowR" size={14}/>
+        </div>
+      </div>
+    );
+  }
+
+  // ── DASHBOARD DESKTOP ──────────────────────────────────────────────────────
+  export function DashboardDesktop({ tweak }: { tweak?: TweakOptions }) {
+    const learn = useLearnDataOptional();
+    const course = learn?.course ?? mockCourse;
+    const enrolledList = learn?.enrolled?.length ? learn.enrolled : enrolled;
+    const onCourseOpen = learn?.onCourseOpen;
+    const stats = learn?.stats;
+    const t = useTheme(tweak);
+    const { A: accent } = t;
+    const main = enrolledList[0];
+    const others = enrolledList.slice(1);
+    const open = (slug: string) => () => onCourseOpen?.(slug);
+
+    return (
+      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, overflow: 'hidden', display: 'flex' }}>
+        {/* Sidebar */}
+        <aside style={{ width: 240, background: t.surface, borderRight: `1px solid ${t.line}`, padding: '22px 18px', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+          <Logo size={26} color={t.ink}/>
+          <nav style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {[
+              { ic: 'grid', label: 'Mis cursos', active: true },
+              { ic: 'play', label: 'Continuar', badge: '3' },
+              { ic: 'bookmark', label: 'Guardado' },
+              { ic: 'trophy', label: 'Logros' },
+              { ic: 'doc', label: 'Diplomas', badge: '2' },
+            ].map((it, i) => (
+              <a key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '10px 12px', borderRadius: 10,
+                background: it.active ? (t.dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,10,20,0.04)') : 'transparent',
+                color: it.active ? t.ink : t.muted, fontSize: 14,
+                fontWeight: it.active ? 600 : 500, cursor: 'pointer',
+              }}>
+                <Icon name={it.ic} size={17}/>
+                <span style={{ flex: 1 }}>{it.label}</span>
+                {it.badge && <Chip size="sm" bg={accent.bg} color={accent.fg}>{it.badge}</Chip>}
+              </a>
+            ))}
+          </nav>
+          <div style={{ marginTop: 'auto', padding: 14, borderRadius: 14, background: t.dark ? 'rgba(255,255,255,0.04)' : t.surface2, border: `1px solid ${t.line}` }}>
+            <Mono color={t.faint} size={9}>EXPLORAR</Mono>
+            <div style={{ marginTop: 6, fontSize: 13, fontWeight: 700, color: t.ink }}>Catálogo · 142 cursos</div>
+            <Button kind="ghost" size="sm" iconRight="arrowR" style={{ marginTop: 10, color: t.ink, borderColor: t.line, padding: '6px 12px', fontSize: 12 }}>Buscar cursos</Button>
+          </div>
+        </aside>
+
+        {/* Main */}
+        <main style={{ flex: 1, overflowY: 'auto', minWidth: 0 }}>
+          {/* Header */}
+          <div style={{ padding: '32px 40px 24px', borderBottom: `1px solid ${t.line}` }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24 }}>
+              <div>
+                <Mono color={t.faint}>VIERNES · 22 MAYO</Mono>
+                <h1 style={{ margin: '6px 0 0', fontSize: 42, fontWeight: 800, letterSpacing: -1.5, lineHeight: 1 }}>
+                  Hola Hugo, te queda <br/>
+                  <span style={{ background: `linear-gradient(transparent 60%, ${accent.bg}aa 60%)`, padding: '0 4px' }}>una lección</span> para tu racha.
+                </h1>
+              </div>
+              <div style={{ display: 'flex', gap: 14 }}>
+                <StatBig t={t} accent={accent} label="RACHA" value={String(stats?.streak_days ?? 5)} sub="días seguidos" icon="flame"/>
+                <StatBig t={t} accent={accent} label="XP TOTAL" value={fmt.n(stats?.xp ?? 2840)} sub="+120 esta semana" icon="bolt"/>
+                <StatBig t={t} accent={accent} label="NIVEL" value={String(stats?.level ?? 7).padStart(2, '0')} sub="Aprendiz constante" icon="star" brand/>
+              </div>
+            </div>
+          </div>
+
+          {/* En curso */}
+          <section style={{ padding: '32px 40px 12px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 18 }}>
+              <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: -0.5 }}>En curso · 3 cursos</h2>
+              <button style={{ background: 'none', border: 'none', color: t.muted, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Ver todos →</button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 16 }}>
+              {main ? <CourseCard c={main} t={t} accent={accent} large onOpen={open(main.slug)}/> : null}
+              {others.map(c => <CourseCard key={c.slug} c={c} t={t} accent={accent} onOpen={open(c.slug)}/>)}
+            </div>
+          </section>
+
+          {/* Recomendados */}
+          <section style={{ padding: '28px 40px 16px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 18 }}>
+              <div>
+                <Mono color={t.faint}>PARA TI</Mono>
+                <h2 style={{ margin: '4px 0 0', fontSize: 22, fontWeight: 700, letterSpacing: -0.5 }}>Tres cursos que tienen sentido ahora</h2>
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+              {recommended.map((c, i) => <RecCard key={i} c={c} t={t} accent={accent}/>)}
+            </div>
+          </section>
+
+          {/* Completados */}
+          <section style={{ padding: '28px 40px 50px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
+              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, letterSpacing: -0.4 }}>Completados · 2 cursos</h2>
+              <button style={{ background: 'none', border: 'none', color: t.muted, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Ver diplomas →</button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {completed.map((c, i) => <CompletedCard key={i} c={c} t={t} accent={accent}/>)}
+            </div>
+          </section>
+        </main>
+      </div>
+    );
+  };
+
+  function StatBig({ t, accent, label, value, sub, icon, brand }) {
+    const labelColor = brand ? t.brandInk : (accent.bg === '#C8F542' ? (t.dark ? accent.bg : '#5A7B0E') : accent.bg);
+    return (
+      <div style={{ minWidth: 140, padding: '14px 18px', borderRadius: 16, background: t.surface, border: `1px solid ${t.line}`, position: 'relative', overflow: 'hidden' }}>
+        {brand && <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: t.brand }}/>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: labelColor }}>
+          <Icon name={icon} size={14}/>
+          <Mono color="currentColor" size={10}>{label}</Mono>
+        </div>
+        <div style={{ marginTop: 6, fontSize: 30, fontWeight: 800, letterSpacing: -0.8, color: t.ink, lineHeight: 1 }}>{value}</div>
+        <div style={{ marginTop: 3, fontSize: 11, color: t.muted }}>{sub}</div>
+      </div>
+    );
+  }
+
+  // ── DASHBOARD MOBILE ───────────────────────────────────────────────────────
+  export function DashboardMobile({ tweak }: { tweak?: TweakOptions }) {
+    const learn = useLearnDataOptional();
+    const enrolledList = learn?.enrolled?.length ? learn.enrolled : enrolled;
+    const onCourseOpen = learn?.onCourseOpen;
+    const stats = learn?.stats;
+    const t = useTheme(tweak);
+    const { A: accent } = t;
+    const open = (slug: string) => () => onCourseOpen?.(slug);
+    return (
+      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        {/* Topbar */}
+        <div style={{ padding: '14px 18px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <Logo size={22} color={t.ink} withText={false}/>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Chip size="sm" bg={accent.bg} color={accent.fg} icon="fire">{stats?.streak_days ?? 5}</Chip>
+            <Chip size="sm" border={`1px solid ${t.line}`} color={t.ink} icon="bolt">{fmt.n(stats?.xp ?? 2840)}</Chip>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '18px 18px 100px' }}>
+          <Mono color={t.faint}>VIERNES · 22 MAYO</Mono>
+          <h1 style={{ margin: '6px 0 0', fontSize: 28, fontWeight: 800, letterSpacing: -1, lineHeight: 1.05 }}>
+            Te queda <span style={{ background: `linear-gradient(transparent 60%, ${accent.bg}aa 60%)`, padding: '0 3px' }}>una lección</span> para tu racha.
+          </h1>
+
+          {/* Main course (large) */}
+          <div style={{ marginTop: 22 }}>
+            {enrolledList[0] ? (
+              <CourseCard c={enrolledList[0]} t={t} accent={accent} large mobile onOpen={open(enrolledList[0].slug)}/>
+            ) : null}
+          </div>
+
+          {/* Tag row */}
+          <div style={{ marginTop: 22, display: 'flex', justifyContent: 'space-between' }}>
+            <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, letterSpacing: -0.3 }}>Otros en curso</h2>
+            <button style={{ background: 'none', border: 'none', color: t.muted, fontSize: 12, fontWeight: 500 }}>Ver todos</button>
+          </div>
+          <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {enrolledList.slice(1).map(c => <CourseCard key={c.slug} c={c} t={t} accent={accent} mobile onOpen={open(c.slug)}/>)}
+          </div>
+
+          {/* Recommended */}
+          <div style={{ marginTop: 22 }}>
+            <Mono color={t.faint}>PARA TI</Mono>
+            <h2 style={{ margin: '4px 0 12px', fontSize: 16, fontWeight: 700, letterSpacing: -0.3 }}>Tres cursos que encajan ahora</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {recommended.slice(0, 2).map((c, i) => <RecCard key={i} c={c} t={t} accent={accent}/>)}
+            </div>
+          </div>
+
+          {/* Completed */}
+          <div style={{ marginTop: 22 }}>
+            <h2 style={{ margin: '0 0 10px', fontSize: 16, fontWeight: 700, letterSpacing: -0.3 }}>Completados</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {completed.map((c, i) => <CompletedCard key={i} c={c} t={t} accent={accent}/>)}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom nav */}
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '10px 24px 22px', background: t.surface, borderTop: `1px solid ${t.line}`, display: 'flex', justifyContent: 'space-around' }}>
+          {[
+            { ic: 'grid', label: 'Cursos', active: true },
+            { ic: 'play', label: 'Aprender' },
+            { ic: 'trophy', label: 'Logros' },
+            { ic: 'doc', label: 'Diplomas' },
+          ].map((it, i) => (
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, color: it.active ? t.ink : t.faint }}>
+              <Icon name={it.ic} size={20}/>
+              <span style={{ fontSize: 10, fontWeight: it.active ? 700 : 500 }}>{it.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };

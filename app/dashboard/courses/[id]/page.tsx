@@ -21,6 +21,7 @@ import {
   type CatalogCategoryPublic,
 } from '@/lib/catalogCategory';
 import { PublishChecklist } from './PublishChecklist';
+import { CourseEnrollments } from './CourseEnrollments';
 
 function formatExpandedRelative(iso: string): string {
   const diffMs = new Date(iso).getTime() - Date.now();
@@ -881,7 +882,7 @@ export default function CourseDetailPage() {
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Contenido del curso</h3>
             <p className={styles.hotmartNote}>
-              Contenido extendido de cada lección. Necesario para el PDF y para el área de alumno.
+              Contenido extendido de cada lección. Necesario para el área de alumno en /aprender.
             </p>
             {course.expanded_at?.trim() ? (
               <p className={styles.hotmartNote}>
@@ -927,45 +928,12 @@ export default function CourseDetailPage() {
               </p>
             ) : null}
           </div>
-          <div className={styles.hotmartCard}>
-            <h3 className={styles.hotmartCardTitle}>PDF del curso (ebook)</h3>
-            <p className={styles.hotmartNote}>
-              Requiere haber generado antes el contenido extendido en «Contenido del curso». El archivo
-              usa el texto ya persistido en Supabase (no se vuelve a expandir con IA aquí).
-            </p>
-            {pdfGenerating ? (
-              <div className={styles.pdfProgressWrap}>
-                <div className={styles.pdfProgressBar}>
-                  <div
-                    className={styles.pdfProgressFill}
-                    style={{ width: pdfTotal ? `${(pdfProgress / pdfTotal) * 100}%` : '0%' }}
-                  />
-                </div>
-                <div className={styles.pdfProgressInfo}>
-                  <span className={styles.pdfProgressLabel}>
-                    {pdfProgress}/{pdfTotal} lecciones
-                  </span>
-                  <span className={styles.pdfProgressLesson}>{pdfLesson}</span>
-                </div>
-                <button
-                  type="button"
-                  className={styles.btnSecondary}
-                  onClick={() => pdfAbortRef.current?.abort()}
-                >
-                  Cancelar
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                className={styles.pdfDownloadBtn}
-                onClick={handleGeneratePdf}
-              >
-                Generar y descargar PDF
-              </button>
-            )}
-            {pdfError && <p className={styles.pdfError}>{pdfError}</p>}
-          </div>
+          <CourseEnrollments
+            courseId={id}
+            learnUrl={
+              course.public_slug ? `/aprender/cursos/${course.public_slug}` : null
+            }
+          />
           <div className={styles.hotmartCard}>
             <h3 className={styles.hotmartCardTitle}>Datos para copiar en Hotmart</h3>
             <p className={styles.hotmartNote}>

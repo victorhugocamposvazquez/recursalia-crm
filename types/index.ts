@@ -148,6 +148,90 @@ export interface CourseRecord {
   expanded_at: string | null;
 }
 
+// ─── LMS (matrículas, progreso, quizzes, diplomas) ───────────────────────────
+
+export interface UserCourse {
+  user_id: string;
+  course_id: string;
+  enrolled_at: string;
+  completed_at: string | null;
+}
+
+export interface UserLessonProgress {
+  user_id: string;
+  course_id: string;
+  lesson_id: string;
+  completed_at: string | null;
+  seconds_watched: number;
+}
+
+export interface UserStats {
+  user_id: string;
+  xp: number;
+  level: number;
+  streak_days: number;
+  last_active: string | null;
+  hearts: number;
+  hearts_refilled_at: string | null;
+  completed_first_quiz: boolean;
+}
+
+export interface QuizRecord {
+  id: string;
+  course_id: string;
+  lesson_id: string | null;
+  title: string;
+  is_final: boolean;
+  time_limit_sec: number | null;
+  pass_threshold: number;
+  lives: number;
+  created_at: string;
+}
+
+export interface QuizQuestionRecord {
+  id: string;
+  quiz_id: string;
+  position: number;
+  kind: 'single' | 'multi' | 'tf' | 'image' | 'order';
+  text: string;
+  hint: string | null;
+  explanation: string | null;
+  payload: Record<string, unknown>;
+}
+
+export interface QuizAttemptRecord {
+  id: string;
+  user_id: string;
+  quiz_id: string;
+  course_id: string;
+  started_at: string;
+  finished_at: string | null;
+  score: number | null;
+  xp_earned: number | null;
+  max_combo: number | null;
+  answers: unknown;
+  passed: boolean | null;
+}
+
+export interface DiplomaRecord {
+  id: string;
+  cert_number: string;
+  user_id: string;
+  course_id: string;
+  attempt_id: string | null;
+  score: number | null;
+  issued_at: string;
+  pdf_url: string | null;
+  share_token: string;
+}
+
+export interface EnrollmentListItem {
+  user_id: string;
+  email: string;
+  enrolled_at: string;
+  completed_at: string | null;
+}
+
 // SEO Blog Posts
 export type SeoPostType =
   | 'tutorial'

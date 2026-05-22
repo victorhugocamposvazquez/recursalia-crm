@@ -27,6 +27,19 @@ function parseSupabaseUrl(raw: string | undefined): string | null {
   }
 }
 
+async function getUserRole(
+  supabase: ReturnType<typeof createServerClient>,
+  userId: string
+): Promise<'admin' | 'student' | null> {
+  const { data } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .maybeSingle();
+  if (data?.role === 'admin' || data?.role === 'student') return data.role;
+  return null;
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -58,7 +71,6 @@ export async function updateSession(request: NextRequest) {
       user = data.user;
     }
   } catch {
-    // DNS (ENOTFOUND), red, timeout: no bloquear la request 25s ni tumbar el sitio entero
     return supabaseResponse;
   }
 
@@ -66,16 +78,28 @@ export async function updateSession(request: NextRequest) {
   const isLoginPage = pathname === '/login';
   const isAuthCallback = pathname.startsWith('/auth/');
   const isDashboard = pathname.startsWith('/dashboard');
+  const isAprender = pathname.startsWith('/aprender');
+  const isVerify = pathname.startsWith('/verify');
 
-  if (!user && !isLoginPage && !isAuthCallback && isDashboard) {
+  if (!user && !isLoginPage && !isAuthCallback && !isVerify && (isDashboard || isAprender)) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
+  if (user && isDashboard) {
+    const role = await getUserRole(supabase, user.id);
+    if (role === 'student') {
+      const url = request.nextUrl.clone();
+      url.pathname = '/aprender';
+      return NextResponse.redirect(url);
+    }
+  }
+
   if (user && isLoginPage) {
+    const role = await getUserRole(supabase, user.id);
     const url = request.nextUrl.clone();
-    url.pathname = '/dashboard';
+    url.pathname = role === 'admin' ? '/dashboard' : '/aprender';
     return NextResponse.redirect(url);
   }
 

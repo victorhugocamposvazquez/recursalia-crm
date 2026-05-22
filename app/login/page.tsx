@@ -18,7 +18,7 @@ export default function LoginPage() {
     setError(null);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
@@ -26,7 +26,18 @@ export default function LoginPage() {
       return;
     }
 
-    router.push('/dashboard');
+    const userId = authData.user?.id;
+    let destination = '/aprender';
+    if (userId) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', userId)
+        .maybeSingle();
+      if (profile?.role === 'admin') destination = '/dashboard';
+    }
+
+    router.push(destination);
     router.refresh();
   }
 

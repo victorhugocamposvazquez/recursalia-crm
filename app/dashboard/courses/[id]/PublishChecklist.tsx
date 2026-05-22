@@ -83,6 +83,16 @@ export function PublishChecklist({ course, courseId }: { course: CourseRecord; c
           : undefined,
     },
     {
+      ok: published ? Boolean(course.expanded_content) : true,
+      label: published
+        ? 'Contenido extendido (LMS /aprender)'
+        : 'Contenido extendido antes de abrir acceso alumno',
+      hint:
+        published && !course.expanded_content
+          ? 'Genera el contenido en «Contenido del curso» y matricula alumnos manualmente.'
+          : undefined,
+    },
+    {
       ok: published ? hotmartOk : true,
       label: published ? 'Enlace Hotmart configurado' : 'Hotmart al tener producto activo',
     },

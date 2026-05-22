@@ -1,0 +1,21 @@
+.learn-root {
+  --font-sans: var(--font-learn-sans), system-ui, sans-serif;
+  --font-serif: var(--font-learn-serif), Georgia, serif;
+  --font-mono: var(--font-learn-mono), ui-monospace, monospace;
+}
+
+.learn-root * {
+  box-sizing: border-box;
+}
+
+@keyframes rx-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}

@@ -12,7 +12,7 @@ const FAQS: FaqItem[] = [
   {
     question: '¿Cómo accedo al curso después de comprarlo?',
     answer:
-      'En cuanto completas el pago en Hotmart recibes un correo con tus datos de acceso. Inicia sesión y empieza a aprender en menos de un minuto, desde cualquier dispositivo.',
+      'Tras comprar en Hotmart, nuestro equipo te matricula manualmente con el email de la compra. Recibirás un mensaje para iniciar sesión en /login y entrar al área de alumno en /aprender.',
   },
   {
     question: '¿De verdad hay 7 días de garantía?',
