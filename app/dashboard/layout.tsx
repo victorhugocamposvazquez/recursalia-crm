@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import Image from 'next/image';
+import Link from 'next/link';
 import { MobileNav } from './MobileNav';
 import { Footer } from './Footer';
 import { DashboardNav } from './DashboardNav';
@@ -32,16 +32,10 @@ export default async function DashboardLayout({
     <div className={styles.layout}>
       <MobileNav userEmail={user.email ?? ''} />
       <aside className={styles.sidebar}>
-        <div className={styles.brand}>
-          <Image
-            src="/logos/recursalia-logo.png"
-            alt="Recursalia"
-            width={112}
-            height={38}
-            priority
-            className={styles.brandLogo}
-          />
-        </div>
+        <Link href="/dashboard" className={styles.brand} aria-label="Ir al inicio del panel">
+          <span className={styles.brandEyebrow}>Recursalia</span>
+          <span className={styles.brandTitle}>Mi panel</span>
+        </Link>
         <nav className={styles.sidebarNav} aria-label="Navegación del panel">
           <DashboardNav />
         </nav>

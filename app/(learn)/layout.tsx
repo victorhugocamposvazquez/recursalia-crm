@@ -49,10 +49,16 @@ export default async function LearnLayout({ children }: { children: React.ReactN
   return (
     <div
       className={`${plusJakarta.variable} ${fraunces.variable} ${jetbrains.variable} learn-root`}
-      style={{ minHeight: '100dvh', width: '100%', display: 'flex', flexDirection: 'column' }}
+      style={{
+        minHeight: '100dvh',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        background: '#f8fafc',
+      }}
     >
       <LearnTopbar email={user.email ?? ''} role={role} />
-      <div style={{ flex: 1, minHeight: 0 }}>{children}</div>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>{children}</main>
     </div>
   );
 }

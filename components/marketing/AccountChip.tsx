@@ -71,8 +71,23 @@ export function AccountChip() {
   if (!session.authenticated) {
     return (
       <Link href="/login" className={styles.loginBtn}>
-        <span className={styles.loginBtnDot} aria-hidden />
         <span>Acceder</span>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden
+          className={styles.loginBtnArrow}
+        >
+          <path
+            d="M5 12h14M13 5l7 7-7 7"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </Link>
     );
   }
@@ -136,6 +151,14 @@ export function AccountChip() {
             onClick={() => setOpen(false)}
           >
             <IconLayers /> <span>Catálogo</span>
+          </Link>
+          <Link
+            href="/aprender/diplomas"
+            className={styles.menuItem}
+            role="menuitem"
+            onClick={() => setOpen(false)}
+          >
+            <IconDoc /> <span>Diplomas</span>
           </Link>
           <Link
             href="/aprender/cuenta"
@@ -227,6 +250,20 @@ function IconShield() {
         strokeWidth="1.6"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function IconDoc() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path d="M14 3v6h6" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   );
 }

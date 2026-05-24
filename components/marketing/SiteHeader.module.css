@@ -87,6 +87,12 @@
   font-family: var(--font-marketing), sans-serif;
 }
 
+.logoImage {
+  height: 1.85rem;
+  width: auto;
+  display: block;
+}
+
 .navCluster {
   display: none;
   align-items: center;

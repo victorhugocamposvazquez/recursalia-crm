@@ -29,26 +29,8 @@
 
 .brandLogo {
   display: block;
-  height: 32px;
+  height: 30px;
   width: auto;
-}
-
-.brandBadge {
-  display: none;
-  padding: 0.18rem 0.5rem;
-  border-radius: 9999px;
-  background: rgb(27 56 196 / 8%);
-  color: #1b38c4;
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-@media (min-width: 520px) {
-  .brandBadge {
-    display: inline-flex;
-  }
 }
 
 .nav {
@@ -83,13 +65,17 @@
 }
 
 .navLinkActive {
-  background: #1b1d1e;
-  color: #ffffff !important;
+  background: #ffffff;
+  color: #0f172a !important;
+  box-shadow:
+    0 1px 0 rgb(15 23 42 / 4%),
+    0 8px 24px -12px rgb(27 56 196 / 35%);
+  border: 1px solid rgb(27 56 196 / 18%);
 }
 
 .navLinkActive:hover {
-  background: #0f1011;
-  color: #ffffff !important;
+  background: #ffffff;
+  color: #0f172a !important;
 }
 
 .navLinkAdmin {

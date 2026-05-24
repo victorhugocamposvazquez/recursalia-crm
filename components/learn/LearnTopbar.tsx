@@ -19,6 +19,11 @@ const NAV_ITEMS = [
     match: (p: string) => p.startsWith('/aprender/catalogo'),
   },
   {
+    href: '/aprender/diplomas',
+    label: 'Diplomas',
+    match: (p: string) => p.startsWith('/aprender/diplomas'),
+  },
+  {
     href: '/aprender/cuenta',
     label: 'Mi cuenta',
     match: (p: string) => p.startsWith('/aprender/cuenta'),
@@ -73,12 +78,11 @@ export function LearnTopbar({ email, role }: LearnTopbarProps) {
           <Image
             src="/logos/recursalia-logo.png"
             alt="Recursalia"
-            width={118}
-            height={36}
+            width={166}
+            height={58}
             priority
             className={styles.brandLogo}
           />
-          <span className={styles.brandBadge}>Aprender</span>
         </Link>
 
         <nav className={styles.nav} aria-label="Navegación de aprender">
@@ -164,6 +168,14 @@ export function LearnTopbar({ email, role }: LearnTopbarProps) {
                 <IconLayers /> <span>Catálogo</span>
               </Link>
               <Link
+                href="/aprender/diplomas"
+                className={styles.menuItem}
+                role="menuitem"
+                onClick={() => setOpen(false)}
+              >
+                <IconDoc /> <span>Diplomas</span>
+              </Link>
+              <Link
                 href="/aprender/cuenta"
                 className={styles.menuItem}
                 role="menuitem"
@@ -245,6 +257,20 @@ function IconShield() {
         strokeWidth="1.6"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function IconDoc() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path d="M14 3v6h6" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
     </svg>
   );
 }

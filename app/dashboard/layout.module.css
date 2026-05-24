@@ -173,20 +173,34 @@
 }
 
 .brand {
-  padding: 0.15rem 0.85rem 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.55rem 0.95rem 0.7rem;
   margin-bottom: 0.1rem;
   border-bottom: 1px solid rgb(28 27 25 / 9%);
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
 }
 
-.brandLogo {
-  max-width: 108px;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  opacity: 0.92;
+.brand:hover {
+  background: rgb(255 255 255 / 25%);
+}
+
+.brandEyebrow {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgb(28 27 25 / 45%);
+}
+
+.brandTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--db-ink);
 }
 
 .sidebarNav {

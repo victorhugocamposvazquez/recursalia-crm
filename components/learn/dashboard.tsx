@@ -185,40 +185,10 @@ import type { TweakOptions } from './types';
     const hasCourses = enrolledList.length > 0;
 
     return (
-      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, overflow: 'hidden', display: 'flex' }}>
-        {/* Sidebar */}
-        <aside style={{ width: 240, background: t.surface, borderRight: `1px solid ${t.line}`, padding: '22px 18px', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-          <Logo size={26} color={t.ink}/>
-          <nav style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {[
-              { ic: 'grid', label: 'Mis cursos', active: true, action: learn?.onGoHome },
-              { ic: 'doc', label: 'Diplomas', badge: completedList.length ? String(completedList.length) : null, action: completedList[0]?.certNumber ? () => onOpenDiploma?.(completedList[0].certNumber) : undefined },
-            ].map((it, i) => (
-              <button key={i} type="button" onClick={it.action} style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 12px', borderRadius: 10, width: '100%',
-                background: it.active ? (t.dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,10,20,0.04)') : 'transparent',
-                color: it.active ? t.ink : t.muted, fontSize: 14,
-                fontWeight: it.active ? 600 : 500, cursor: 'pointer',
-                border: 'none', fontFamily: 'inherit', textAlign: 'left',
-              }}>
-                <Icon name={it.ic} size={17}/>
-                <span style={{ flex: 1 }}>{it.label}</span>
-                {it.badge && <Chip size="sm" bg={accent.bg} color={accent.fg}>{it.badge}</Chip>}
-              </button>
-            ))}
-          </nav>
-          <div style={{ marginTop: 'auto', padding: 14, borderRadius: 14, background: t.dark ? 'rgba(255,255,255,0.04)' : t.surface2, border: `1px solid ${t.line}` }}>
-            <Mono color={t.faint} size={9}>EXPLORAR</Mono>
-            <div style={{ marginTop: 6, fontSize: 13, fontWeight: 700, color: t.ink }}>Catálogo público</div>
-            <Button kind="ghost" size="sm" iconRight="arrowR" onClick={onOpenCatalog} style={{ marginTop: 10, color: t.ink, borderColor: t.line, padding: '6px 12px', fontSize: 12 }}>Ver cursos</Button>
-          </div>
-        </aside>
-
-        {/* Main */}
-        <main style={{ flex: 1, overflowY: 'auto', minWidth: 0 }}>
+      <div style={{ width: '100%', minHeight: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: '100%', maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
           {/* Header */}
-          <div style={{ padding: '32px 40px 24px', borderBottom: `1px solid ${t.line}` }}>
+          <div style={{ padding: '32px 0 24px', borderBottom: `1px solid ${t.line}` }}>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24 }}>
               <div>
                 <Mono color={t.faint}>{formatToday()}</Mono>
@@ -240,14 +210,14 @@ import type { TweakOptions } from './types';
           </div>
 
           {/* En curso */}
-          <section style={{ padding: '32px 40px 12px' }}>
+          <section style={{ padding: '32px 0 12px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 18 }}>
               <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: -0.5 }}>
                 En curso · {enrolledList.length} {enrolledList.length === 1 ? 'curso' : 'cursos'}
               </h2>
             </div>
             {!hasCourses ? (
-              <div style={{ padding: '32px 24px', borderRadius: 16, border: `1px dashed ${t.line}`, textAlign: 'center', color: t.muted }}>
+              <div style={{ padding: '32px 24px', borderRadius: 16, border: `1px dashed ${t.line}`, textAlign: 'center', color: t.muted, background: t.surface }}>
                 <p style={{ margin: '0 0 16px' }}>Cuando compres un curso, te matricularán con tu email y aparecerá aquí.</p>
                 <Button kind="ghost" onClick={onOpenCatalog} style={{ borderColor: t.line, color: t.ink }}>Explorar catálogo</Button>
               </div>
@@ -260,7 +230,7 @@ import type { TweakOptions } from './types';
           </section>
 
           {hasCourses ? null : (
-          <section style={{ padding: '28px 40px 16px' }}>
+          <section style={{ padding: '28px 0 16px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
                 <Mono color={t.faint}>PARA TI</Mono>
@@ -275,7 +245,7 @@ import type { TweakOptions } from './types';
 
           {/* Completados */}
           {completedList.length > 0 ? (
-          <section style={{ padding: '28px 40px 50px' }}>
+          <section style={{ padding: '28px 0 50px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
               <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, letterSpacing: -0.4 }}>
                 Completados · {completedList.length} {completedList.length === 1 ? 'curso' : 'cursos'}
@@ -294,7 +264,7 @@ import type { TweakOptions } from './types';
             </div>
           </section>
           ) : null}
-        </main>
+        </div>
       </div>
     );
   };
@@ -329,17 +299,14 @@ import type { TweakOptions } from './types';
     const open = (slug: string) => () => onCourseOpen?.(slug);
     const hasCourses = enrolledList.length > 0;
     return (
-      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {/* Topbar */}
-        <div style={{ padding: '14px 18px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <Logo size={22} color={t.ink} withText={false}/>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <Chip size="sm" bg={accent.bg} color={accent.fg} icon="fire">{stats?.streak_days ?? 5}</Chip>
-            <Chip size="sm" border={`1px solid ${t.line}`} color={t.ink} icon="bolt">{fmt.n(stats?.xp ?? 2840)}</Chip>
-          </div>
+      <div style={{ width: '100%', minHeight: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column' }}>
+        {/* Header */}
+        <div style={{ padding: '14px 18px 0', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8, flexShrink: 0 }}>
+          <Chip size="sm" bg={accent.bg} color={accent.fg} icon="fire">{stats?.streak_days ?? 5}</Chip>
+          <Chip size="sm" border={`1px solid ${t.line}`} color={t.ink} icon="bolt">{fmt.n(stats?.xp ?? 2840)}</Chip>
         </div>
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: '18px 18px 100px' }}>
+        <div style={{ flex: 1, padding: '18px 18px 40px' }}>
           <Mono color={t.faint}>{formatToday()}</Mono>
           <h1 style={{ margin: '6px 0 0', fontSize: 28, fontWeight: 800, letterSpacing: -1, lineHeight: 1.05 }}>
             Hola {userName}. {hasCourses ? (
@@ -388,9 +355,8 @@ import type { TweakOptions } from './types';
           </div>
           ) : null}
         </div>
-
-        {/* Bottom nav */}
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '10px 24px 22px', background: t.surface, borderTop: `1px solid ${t.line}`, display: 'flex', justifyContent: 'space-around' }}>
+        {/* Bottom nav (oculto: el LearnTopbar ya gestiona la navegación) */}
+        <div style={{ display: 'none' }}>
           {[
             { ic: 'grid', label: 'Cursos', active: true, action: learn?.onGoHome },
             { ic: 'doc', label: 'Diplomas', action: completedList[0]?.certNumber ? () => onOpenDiploma?.(completedList[0].certNumber) : undefined },

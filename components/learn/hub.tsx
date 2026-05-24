@@ -198,52 +198,10 @@ import type { TweakOptions } from './types';
     const { A: accent } = t;
 
     return (
-      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', overflow: 'hidden' }}>
-        {/* Sidebar nav */}
-        <aside style={{ width: 240, background: t.surface, borderRight: `1px solid ${t.line}`, padding: '22px 18px', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-          <Logo size={26} color={t.ink}/>
-          <nav style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <button type="button" onClick={onGoHome} style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: '10px 12px', borderRadius: 10, width: '100%',
-              background: 'transparent',
-              color: t.muted, fontSize: 14, fontWeight: 500,
-              cursor: 'pointer', border: 'none', fontFamily: 'inherit', textAlign: 'left',
-            }}>
-              <Icon name="grid" size={17}/>
-              <span style={{ flex: 1 }}>Mis cursos</span>
-            </button>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: '10px 12px', borderRadius: 10,
-              background: t.dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,10,20,0.04)',
-              color: t.ink, fontSize: 14, fontWeight: 600,
-            }}>
-              <Icon name="play" size={17}/>
-              <span style={{ flex: 1 }}>Este curso</span>
-            </div>
-          </nav>
-
-          <div style={{ marginTop: 'auto', padding: 14, borderRadius: 14, background: t.dark ? 'rgba(255,255,255,0.04)' : t.surface2, border: `1px solid ${t.line}` }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Icon name="fire" size={18}/>
-              <span style={{ fontWeight: 700, fontSize: 14 }}>Racha de {course.streak} días</span>
-            </div>
-            <div style={{ display: 'flex', gap: 4, marginTop: 10 }}>
-              {['L','M','X','J','V','S','D'].map((d, i) => (
-                <div key={i} style={{ flex: 1, textAlign: 'center' }}>
-                  <div style={{ height: 22, borderRadius: 6, background: i < 5 ? accent.bg : 'transparent', border: i < 5 ? 'none' : `1.5px dashed ${t.line}`, marginBottom: 4 }}/>
-                  <Mono color={i < 5 ? t.ink : t.faint} size={9}>{d}</Mono>
-                </div>
-              ))}
-            </div>
-          </div>
-        </aside>
-
-        {/* Main */}
-        <main style={{ flex: 1, overflowY: 'auto', minWidth: 0 }}>
+      <div style={{ width: '100%', minHeight: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: '100%', maxWidth: 1240, margin: '0 auto', padding: '0 24px' }}>
           {/* Hero del curso */}
-          <section style={{ padding: '32px 48px 36px', borderBottom: `1px solid ${t.line}`, position: 'relative' }}>
+          <section style={{ padding: '32px 0 36px', borderBottom: `1px solid ${t.line}`, position: 'relative' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 32 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
@@ -283,7 +241,7 @@ import type { TweakOptions } from './types';
           </section>
 
           {/* Módulos */}
-          <section style={{ padding: '36px 48px 60px' }}>
+          <section style={{ padding: '36px 0 60px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28 }}>
               <div>
                 <Mono color={t.faint}>{modules.length} MÓDULOS · {lessonStats.total} LECCIONES</Mono>
@@ -314,7 +272,7 @@ import type { TweakOptions } from './types';
               })}
             </div>
           </section>
-        </main>
+        </div>
 
         <style>{`
           @keyframes rx-pulse { 0%,100% { transform: scale(1); opacity: 1 } 50% { transform: scale(1.4); opacity: .55 } }
@@ -384,19 +342,14 @@ import type { TweakOptions } from './types';
     const { A: accent } = t;
 
     return (
-      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
+      <div style={{ width: '100%', minHeight: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', position: 'relative' }}>
         {/* Top bar */}
-        <div style={{ padding: '14px 18px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <button type="button" onClick={onGoHome} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
-            <Logo size={22} color={t.ink} withText={false}/>
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Chip size="sm" bg={accent.bg} color={accent.fg} icon="fire">{course.streak}</Chip>
-            <Chip size="sm" border={`1px solid ${t.line}`} color={t.ink} icon="bolt">{fmt.n(course.xp)}</Chip>
-          </div>
+        <div style={{ padding: '14px 18px 0', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 10, flexShrink: 0 }}>
+          <Chip size="sm" bg={accent.bg} color={accent.fg} icon="fire">{course.streak}</Chip>
+          <Chip size="sm" border={`1px solid ${t.line}`} color={t.ink} icon="bolt">{fmt.n(course.xp)}</Chip>
         </div>
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 18px 100px' }}>
+        <div style={{ flex: 1, padding: '20px 18px 40px' }}>
           {/* Header curso */}
           <div>
             <Mono color={t.faint}>{course.tag} · {course.level.toUpperCase()}</Mono>
@@ -465,19 +418,6 @@ import type { TweakOptions } from './types';
               })}
             </div>
           </div>
-        </div>
-
-        {/* Bottom nav */}
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '10px 24px 22px', background: t.surface, borderTop: `1px solid ${t.line}`, display: 'flex', justifyContent: 'space-around' }}>
-          {[
-            { ic: 'grid', label: 'Cursos', active: false, action: onGoHome },
-            { ic: 'play', label: 'Curso', active: true },
-          ].map((it, i) => (
-            <button key={i} type="button" onClick={it.action} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, color: it.active ? t.ink : t.faint, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-              <Icon name={it.ic} size={20}/>
-              <span style={{ fontSize: 10, fontWeight: it.active ? 700 : 500 }}>{it.label}</span>
-            </button>
-          ))}
         </div>
 
         <style>{`@keyframes rx-pulse { 0%,100% { transform: scale(1); opacity: 1 } 50% { transform: scale(1.4); opacity: .55 } }`}</style>
