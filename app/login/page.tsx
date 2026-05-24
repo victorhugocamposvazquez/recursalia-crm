@@ -29,14 +29,49 @@ function LoginFallback() {
   );
 }
 
+type ForgotState = { open: boolean; sending: boolean; sent: boolean; error: string | null };
+
 function LoginPageInner() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [forgot, setForgot] = useState<ForgotState>({
+    open: false,
+    sending: false,
+    sent: false,
+    error: null,
+  });
   const router = useRouter();
   const searchParams = useSearchParams();
   const explicitRedirect = safeRedirectTo(searchParams.get('redirectTo'));
+
+  async function handleForgotSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.trim()) {
+      setForgot((f) => ({ ...f, error: 'Escribe tu email arriba.' }));
+      return;
+    }
+    setForgot((f) => ({ ...f, sending: true, error: null }));
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? 'No se pudo enviar el correo.');
+      }
+      setForgot({ open: true, sending: false, sent: true, error: null });
+    } catch (err) {
+      setForgot((f) => ({
+        ...f,
+        sending: false,
+        error: err instanceof Error ? err.message : 'Error al enviar.',
+      }));
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -127,16 +162,72 @@ function LoginPageInner() {
                 required
               />
             </div>
+            <div className="row-extra">
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => setForgot((f) => ({ ...f, open: !f.open, error: null }))}
+                aria-expanded={forgot.open}
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
             {error ? <p className="error">{error}</p> : null}
             <button type="submit" disabled={loading}>
               {loading ? 'Entrando…' : 'Entrar'}
             </button>
           </form>
 
+          {forgot.open ? (
+            <div className="forgot-card">
+              {forgot.sent ? (
+                <>
+                  <p className="forgot-title">Revisa tu correo</p>
+                  <p className="forgot-text">
+                    Si <strong>{email}</strong> está registrado, te llegará un enlace en breve para
+                    restablecer la contraseña.
+                  </p>
+                  <button
+                    type="button"
+                    className="forgot-close"
+                    onClick={() =>
+                      setForgot({ open: false, sending: false, sent: false, error: null })
+                    }
+                  >
+                    Volver al login
+                  </button>
+                </>
+              ) : (
+                <form onSubmit={handleForgotSubmit} className="forgot-form">
+                  <p className="forgot-title">Te enviaremos un enlace seguro</p>
+                  <p className="forgot-text">
+                    Usaremos el email del formulario. Si la cuenta existe, recibirás un correo en unos
+                    segundos.
+                  </p>
+                  {forgot.error ? <p className="error">{forgot.error}</p> : null}
+                  <div className="forgot-actions">
+                    <button type="submit" disabled={forgot.sending} className="forgot-primary">
+                      {forgot.sending ? 'Enviando…' : 'Enviar enlace'}
+                    </button>
+                    <button
+                      type="button"
+                      className="forgot-cancel"
+                      onClick={() =>
+                        setForgot({ open: false, sending: false, sent: false, error: null })
+                      }
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          ) : null}
+
           <p className="hint">
             ¿No tienes acceso?{' '}
             <Link href="/cursos" className="hint-link">
-              Agenda un demo
+              Explora los cursos disponibles
             </Link>
           </p>
         </div>
@@ -262,7 +353,97 @@ function LoginPageInner() {
           border-radius: 10px;
           font-size: 0.88rem;
         }
-        button {
+        .row-extra {
+          display: flex;
+          justify-content: flex-end;
+          margin-top: -0.4rem;
+        }
+        .link-btn {
+          background: none;
+          border: none;
+          color: #1b38c4;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          padding: 0;
+          text-decoration: none;
+          font-family: inherit;
+        }
+        .link-btn:hover {
+          text-decoration: underline;
+        }
+        .forgot-card {
+          margin-top: 1.1rem;
+          padding: 1rem 1.1rem 1.15rem;
+          border-radius: 14px;
+          background: rgb(27 56 196 / 5%);
+          border: 1px solid rgb(27 56 196 / 18%);
+          display: flex;
+          flex-direction: column;
+          gap: 0.55rem;
+        }
+        .forgot-title {
+          margin: 0;
+          font-size: 0.95rem;
+          font-weight: 700;
+          color: #1b1d1e;
+        }
+        .forgot-text {
+          margin: 0;
+          font-size: 0.85rem;
+          color: rgb(27 29 30 / 70%);
+          line-height: 1.45;
+        }
+        .forgot-form {
+          display: flex;
+          flex-direction: column;
+          gap: 0.6rem;
+        }
+        .forgot-actions {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+        .forgot-primary {
+          margin: 0;
+          padding: 0.55rem 1.1rem;
+          font-size: 0.88rem;
+          border-radius: 9999px;
+          border: 1px solid #1b38c4;
+          background: #1b38c4;
+          color: #ffffff;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: inherit;
+          transition: background-color 0.15s ease;
+        }
+        .forgot-primary:hover:not(:disabled) {
+          background: #142a99;
+          border-color: #142a99;
+        }
+        .forgot-primary:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+        }
+        .forgot-cancel,
+        .forgot-close {
+          margin: 0;
+          padding: 0.55rem 1.1rem;
+          font-size: 0.88rem;
+          border-radius: 9999px;
+          border: 1px solid rgb(27 29 30 / 14%);
+          background: transparent;
+          color: #1b1d1e;
+          font-weight: 600;
+          cursor: pointer;
+          font-family: inherit;
+          transition: background-color 0.15s ease;
+        }
+        .forgot-cancel:hover,
+        .forgot-close:hover {
+          background: rgb(27 29 30 / 6%);
+        }
+        .login-form > button[type='submit'] {
           margin-top: 0.25rem;
           padding: 0.85rem 1.5rem;
           border-radius: 9999px;
@@ -274,11 +455,11 @@ function LoginPageInner() {
           cursor: pointer;
           transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
         }
-        button:hover:not(:disabled) {
+        .login-form > button[type='submit']:hover:not(:disabled) {
           background: #1b38c4;
           border-color: #1b38c4;
         }
-        button:disabled {
+        .login-form > button[type='submit']:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }

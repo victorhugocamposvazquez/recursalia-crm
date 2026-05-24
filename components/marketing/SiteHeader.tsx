@@ -91,7 +91,6 @@ export function SiteHeader() {
             </div>
 
             <div className={styles.actions}>
-              <AccountChip />
               <Link href="/cursos" className={styles.cta}>
                 <span className={styles.ctaLabel}>Recursos</span>
                 <span className={styles.ctaBadge} aria-hidden>
@@ -124,6 +123,7 @@ export function SiteHeader() {
                   />
                 </svg>
               </button>
+              <AccountChip />
             </div>
           </nav>
         </div>

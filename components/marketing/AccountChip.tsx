@@ -38,8 +38,15 @@ export function AccountChip() {
         setOpen(false);
       }
     };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
     document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
   }, [open]);
 
   async function handleLogout() {
@@ -51,6 +58,7 @@ export function AccountChip() {
     } finally {
       setLoggingOut(false);
       setSession({ authenticated: false });
+      setOpen(false);
       router.push('/');
       router.refresh();
     }
@@ -63,7 +71,8 @@ export function AccountChip() {
   if (!session.authenticated) {
     return (
       <Link href="/login" className={styles.loginBtn}>
-        Acceder
+        <span className={styles.loginBtnDot} aria-hidden />
+        <span>Acceder</span>
       </Link>
     );
   }
@@ -74,35 +83,170 @@ export function AccountChip() {
     <div className={styles.wrap} ref={wrapRef}>
       <button
         type="button"
-        className={styles.chip}
+        className={`${styles.chip} ${open ? styles.chipOpen : ''}`.trim()}
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        <span className={styles.avatar} aria-hidden>{initial}</span>
+        <span className={styles.avatar} aria-hidden>
+          {initial}
+          <span className={styles.avatarRing} aria-hidden />
+        </span>
         <span className={styles.chipLabel}>Mi área</span>
+        <svg
+          className={`${styles.chipCaret} ${open ? styles.chipCaretOpen : ''}`.trim()}
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          aria-hidden
+        >
+          <path
+            d="M6 9l6 6 6-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
       {open ? (
         <div className={styles.menu} role="menu">
-          <div className={styles.menuEmail} title={session.email}>{session.email}</div>
-          <Link href="/aprender" className={styles.menuItem} onClick={() => setOpen(false)}>
-            Mis cursos
+          <div className={styles.menuHeader}>
+            <span className={styles.menuAvatar} aria-hidden>{initial}</span>
+            <div className={styles.menuHeaderText}>
+              <span className={styles.menuRole}>
+                {session.role === 'admin' ? 'Administrador' : 'Alumno'}
+              </span>
+              <span className={styles.menuEmail} title={session.email}>
+                {session.email}
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.menuDivider} />
+
+          <Link href="/aprender" className={styles.menuItem} role="menuitem" onClick={() => setOpen(false)}>
+            <IconGrid /> <span>Mis cursos</span>
+          </Link>
+          <Link
+            href="/aprender/catalogo"
+            className={styles.menuItem}
+            role="menuitem"
+            onClick={() => setOpen(false)}
+          >
+            <IconLayers /> <span>Catálogo</span>
+          </Link>
+          <Link
+            href="/aprender/cuenta"
+            className={styles.menuItem}
+            role="menuitem"
+            onClick={() => setOpen(false)}
+          >
+            <IconUser /> <span>Mi cuenta</span>
           </Link>
           {session.role === 'admin' ? (
-            <Link href="/dashboard" className={styles.menuItem} onClick={() => setOpen(false)}>
-              Panel admin
+            <Link
+              href="/dashboard"
+              className={`${styles.menuItem} ${styles.menuItemAdmin}`}
+              role="menuitem"
+              onClick={() => setOpen(false)}
+            >
+              <IconShield /> <span>Panel admin</span>
             </Link>
           ) : null}
+
+          <div className={styles.menuDivider} />
+
           <button
             type="button"
             onClick={handleLogout}
             disabled={loggingOut}
             className={styles.menuLogout}
+            role="menuitem"
           >
-            {loggingOut ? 'Cerrando…' : 'Cerrar sesión'}
+            <IconLogout />
+            <span>{loggingOut ? 'Cerrando sesión…' : 'Cerrar sesión'}</span>
           </button>
         </div>
       ) : null}
     </div>
+  );
+}
+
+function IconGrid() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+function IconLayers() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 3l9 5-9 5-9-5 9-5z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3 13l9 5 9-5M3 18l9 5 9-5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconUser() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M4 21a8 8 0 0116 0"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function IconShield() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 3l8 3v6c0 5-3.4 8.4-8 9-4.6-.6-8-4-8-9V6l8-3z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function IconLogout() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M15 4h3a2 2 0 012 2v12a2 2 0 01-2 2h-3"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10 17l-5-5 5-5M5 12h11"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

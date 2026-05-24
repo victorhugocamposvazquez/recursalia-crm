@@ -19,7 +19,7 @@ export function AprenderDashboardClient(props: Props) {
     ...props,
     onCourseOpen: (slug) => router.push(`/aprender/cursos/${slug}`),
     onGoHome: () => router.push('/aprender'),
-    onOpenCatalog: () => router.push('/cursos'),
+    onOpenCatalog: () => router.push('/aprender/catalogo'),
     onOpenDiploma: (certNumber) => router.push(`/aprender/diplomas/${certNumber}`),
   };
 
