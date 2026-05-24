@@ -12,7 +12,7 @@ import type { TweakOptions } from './types';
    Comparten un layout: topbar con progreso/breadcrumb, contenido, footer-nav. */
 
 // ── TOPBAR LECCIÓN ────────────────────────────────────────────────────────
-  function LessonTopbar({ t, accent, mobile, current, total, onBack }) {
+  function LessonTopbar({ t, accent, mobile, current, total, onBack, breadcrumb }) {
     return (
       <div style={{
         padding: mobile ? '12px 16px' : '14px 28px',
@@ -25,9 +25,9 @@ import type { TweakOptions } from './types';
           {!mobile && <span>Volver al curso</span>}
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          {!mobile && (
+          {!mobile && breadcrumb && (
             <Mono color={t.faint}>
-              FOTOGRAFÍA · CAPTURA EL MUNDO… · MÓDULO 02
+              {breadcrumb}
             </Mono>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: mobile ? 0 : 4 }}>
@@ -392,9 +392,10 @@ import type { TweakOptions } from './types';
     const current = learn?.lessonUuid
       ? sidebarModules.flatMap(m => m.lessons).findIndex(l => l.id === learn.lessonUuid) + 1
       : 1;
+    const crumb = [learn?.course?.tag, learn?.course?.title].filter(Boolean).join(' · ').toUpperCase();
     return (
       <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <LessonTopbar t={t} accent={accent} current={current || 1} total={total} onBack={learn?.onBackToHub}/>
+        <LessonTopbar t={t} accent={accent} current={current || 1} total={total} onBack={learn?.onBackToHub} breadcrumb={crumb}/>
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
           <main style={{ flex: 1, padding: '40px 56px', overflowY: 'auto' }}>
             <ArticleBody t={t} accent={accent}/>
@@ -415,9 +416,10 @@ import type { TweakOptions } from './types';
     const current = learn?.lessonUuid
       ? sidebarModules.flatMap(m => m.lessons).findIndex(l => l.id === learn.lessonUuid) + 1
       : 1;
+    const crumb = [learn?.course?.tag, learn?.course?.title].filter(Boolean).join(' · ').toUpperCase();
     return (
       <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <LessonTopbar t={t} accent={accent} mobile current={current || 1} total={total} onBack={learn?.onBackToHub}/>
+        <LessonTopbar t={t} accent={accent} mobile current={current || 1} total={total} onBack={learn?.onBackToHub} breadcrumb={crumb}/>
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 20px' }}>
           <ArticleBody t={t} accent={accent} mobile/>
         </div>

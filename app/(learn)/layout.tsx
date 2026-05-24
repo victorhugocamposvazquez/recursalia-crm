@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Fraunces, JetBrains_Mono } from 'next/font/google';
+import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
+import { LearnTopbar } from '@/components/learn/LearnTopbar';
 import './learn.css';
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -25,13 +28,31 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function LearnLayout({ children }: { children: React.ReactNode }) {
+export default async function LearnLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login?redirectTo=/aprender');
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  const role: 'admin' | 'student' = profile?.role === 'admin' ? 'admin' : 'student';
+
   return (
     <div
       className={`${plusJakarta.variable} ${fraunces.variable} ${jetbrains.variable} learn-root`}
-      style={{ minHeight: '100dvh', width: '100%' }}
+      style={{ minHeight: '100dvh', width: '100%', display: 'flex', flexDirection: 'column' }}
     >
-      {children}
+      <LearnTopbar email={user.email ?? ''} role={role} />
+      <div style={{ flex: 1, minHeight: 0 }}>{children}</div>
     </div>
   );
 }

@@ -1,9 +1,19 @@
 'use client';
 
-import { DiplomaDesktop, DiplomaMobile } from '@/components/learn/diploma';
-import { useIsMobileLearn } from '@/lib/learn/useIsMobileLearn';
+import { RealDiplomaView } from '@/components/learn/RealDiplomaView';
 
-export function AprenderDiplomaClient() {
-  const mobile = useIsMobileLearn();
-  return mobile ? <DiplomaMobile /> : <DiplomaDesktop />;
+type Props = {
+  studentName: string;
+  courseTitle: string;
+  instructorName: string;
+  certNumber: string;
+  shareToken?: string | null;
+  scorePct: number;
+  totalLessons: number;
+  totalDurationMinutes?: number;
+  issuedAt: string;
+};
+
+export function AprenderDiplomaClient(props: Props) {
+  return <RealDiplomaView {...props} />;
 }

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { CourseSearchField } from '@/components/marketing/CourseSearchField';
 import { DrawerCategoriesSection, HeaderCategories } from '@/components/marketing/HeaderCategories';
 import { useMarketingContent } from '@/components/marketing/MarketingContentProvider';
+import { AccountChip } from '@/components/marketing/AccountChip';
 import { isMarketingCourseLandingPath } from '@/lib/marketing-path';
 import styles from './SiteHeader.module.css';
 
@@ -90,6 +91,7 @@ export function SiteHeader() {
             </div>
 
             <div className={styles.actions}>
+              <AccountChip />
               <Link href="/cursos" className={styles.cta}>
                 <span className={styles.ctaLabel}>Recursos</span>
                 <span className={styles.ctaBadge} aria-hidden>

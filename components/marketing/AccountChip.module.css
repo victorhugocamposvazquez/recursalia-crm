@@ -1,0 +1,138 @@
+.wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.placeholder {
+  display: inline-block;
+  width: 6rem;
+  height: 2.25rem;
+}
+
+.loginBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.05rem;
+  border-radius: 9999px;
+  border: 1px solid #1b1d1e;
+  background: transparent;
+  color: #1b1d1e !important;
+  font-weight: 500;
+  font-size: 0.88rem;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.loginBtn:hover {
+  background: #1b1d1e;
+  color: #ffffff !important;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.32rem 0.85rem 0.32rem 0.32rem;
+  border-radius: 9999px;
+  border: 1px solid #1b1d1e;
+  background: #ffffff;
+  color: #1b1d1e;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.chip:hover {
+  background: #f4f4f0;
+}
+
+.avatar {
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 9999px;
+  background: #1b38c4;
+  color: #ffffff;
+  display: inline-grid;
+  place-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.chipLabel {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .chipLabel {
+    display: inline;
+  }
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 14rem;
+  background: #ffffff;
+  border: 1px solid rgb(15 23 42 / 12%);
+  border-radius: 14px;
+  padding: 0.5rem;
+  box-shadow: 0 18px 40px -10px rgb(17 24 39 / 22%);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.menuEmail {
+  font-size: 0.78rem;
+  color: rgb(15 23 42 / 60%);
+  padding: 0.4rem 0.65rem 0.5rem;
+  border-bottom: 1px solid rgb(15 23 42 / 10%);
+  margin-bottom: 0.35rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.menuItem {
+  display: block;
+  padding: 0.55rem 0.65rem;
+  border-radius: 9px;
+  color: #1b1d1e;
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.12s ease;
+}
+
+.menuItem:hover {
+  background: rgb(27 56 196 / 8%);
+  color: #1b38c4;
+}
+
+.menuLogout {
+  margin-top: 0.35rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 9px;
+  border: none;
+  background: rgb(248 113 113 / 12%);
+  color: #b91c1c;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.12s ease;
+}
+
+.menuLogout:hover {
+  background: rgb(248 113 113 / 18%);
+}
+
+.menuLogout:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}

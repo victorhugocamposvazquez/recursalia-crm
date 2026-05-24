@@ -170,8 +170,8 @@ import type { TweakOptions } from './types';
   // ── DASHBOARD DESKTOP ──────────────────────────────────────────────────────
   export function DashboardDesktop({ tweak }: { tweak?: TweakOptions }) {
     const learn = useLearnDataOptional();
-    const enrolledList = learn?.enrolled?.length ? learn.enrolled : enrolled;
-    const completedList = learn?.completed?.length ? learn.completed : completed;
+    const enrolledList = learn?.enrolled ?? enrolled;
+    const completedList = learn?.completed ?? completed;
     const onCourseOpen = learn?.onCourseOpen;
     const onOpenCatalog = learn?.onOpenCatalog;
     const onOpenDiploma = learn?.onOpenDiploma;
@@ -317,8 +317,8 @@ import type { TweakOptions } from './types';
   // ── DASHBOARD MOBILE ───────────────────────────────────────────────────────
   export function DashboardMobile({ tweak }: { tweak?: TweakOptions }) {
     const learn = useLearnDataOptional();
-    const enrolledList = learn?.enrolled?.length ? learn.enrolled : enrolled;
-    const completedList = learn?.completed?.length ? learn.completed : completed;
+    const enrolledList = learn?.enrolled ?? enrolled;
+    const completedList = learn?.completed ?? completed;
     const onCourseOpen = learn?.onCourseOpen;
     const onOpenCatalog = learn?.onOpenCatalog;
     const onOpenDiploma = learn?.onOpenDiploma;

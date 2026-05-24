@@ -178,6 +178,7 @@ CREATE POLICY "diplomas own read"
   ON public.diplomas FOR SELECT
   USING (auth.uid() = user_id);
 
-CREATE POLICY "diplomas public verify by share_token"
-  ON public.diplomas FOR SELECT
-  USING (share_token IS NOT NULL);
+-- La verificación pública por share_token NO usa RLS: se sirve siempre desde
+-- el servidor con service role en /verify/[shareToken] (ver getDiplomaByShareToken).
+-- Una policy abierta tipo `USING (share_token IS NOT NULL)` permitiría que
+-- cualquier usuario autenticado listara todos los diplomas, así que se omite.

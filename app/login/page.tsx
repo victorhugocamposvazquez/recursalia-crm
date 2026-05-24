@@ -3,7 +3,13 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+function safeRedirectTo(raw: string | null): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith('/') || raw.startsWith('//')) return null;
+  return raw;
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -11,6 +17,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const explicitRedirect = safeRedirectTo(searchParams.get('redirectTo'));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,14 +35,22 @@ export default function LoginPage() {
     }
 
     const userId = authData.user?.id;
-    let destination = '/aprender';
+    let role: 'admin' | 'student' = 'student';
     if (userId) {
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', userId)
         .maybeSingle();
-      if (profile?.role === 'admin') destination = '/dashboard';
+      if (profile?.role === 'admin') role = 'admin';
+    }
+
+    let destination = role === 'admin' ? '/dashboard' : '/aprender';
+    if (explicitRedirect) {
+      const goesToDashboard = explicitRedirect.startsWith('/dashboard');
+      if (role === 'admin' || !goesToDashboard) {
+        destination = explicitRedirect;
+      }
     }
 
     router.push(destination);

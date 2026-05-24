@@ -215,19 +215,33 @@ export async function getDiplomaByShareToken(shareToken: string) {
 }
 
 export async function getQuizById(quizId: string) {
-  const supabase = await createClient();
-  const { data } = await supabase.from('quizzes').select('*').eq('id', quizId).maybeSingle();
+  // service role: la página ya valida acceso al curso (admin o matriculado)
+  // antes de llamar; así un admin no matriculado también puede previsualizar.
+  const admin = getSupabase();
+  const { data } = await admin.from('quizzes').select('*').eq('id', quizId).maybeSingle();
   return data;
 }
 
 export async function getQuizQuestions(quizId: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
+  // service role: ver nota en getQuizById.
+  const admin = getSupabase();
+  const { data } = await admin
     .from('quiz_questions')
     .select('*')
     .eq('quiz_id', quizId)
     .order('position', { ascending: true });
   return data ?? [];
+}
+
+export async function getFinalQuizForCourse(courseId: string) {
+  const admin = getSupabase();
+  const { data } = await admin
+    .from('quizzes')
+    .select('*')
+    .eq('course_id', courseId)
+    .eq('is_final', true)
+    .maybeSingle();
+  return data;
 }
 
 export async function getQuizAttempt(attemptId: string, userId: string) {
@@ -248,17 +262,6 @@ export async function getDiplomaByCertNumber(certNumber: string, userId: string)
     .select('*, courses(published_title, generated_content, public_slug)')
     .eq('cert_number', certNumber)
     .eq('user_id', userId)
-    .maybeSingle();
-  return data;
-}
-
-export async function getFinalQuizForCourse(courseId: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from('quizzes')
-    .select('*')
-    .eq('course_id', courseId)
-    .eq('is_final', true)
     .maybeSingle();
   return data;
 }

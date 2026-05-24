@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CURSOS_NAV, FRONT_ADMIN_NAV } from './nav-items';
+import { APRENDER_NAV, CURSOS_NAV, FRONT_ADMIN_NAV } from './nav-items';
 import { isCursosNavActive, isFrontNavActive } from './nav-utils';
 import styles from './layout.module.css';
 
@@ -54,6 +54,23 @@ export function DashboardNav({ onNavigate }: DashboardNavProps) {
               </li>
             );
           })}
+        </ul>
+      </div>
+
+      <div className={styles.navGroup}>
+        <p className={styles.navGroupTitle}>LMS</p>
+        <ul className={styles.navList}>
+          {APRENDER_NAV.map((item) => (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={styles.navItem}
+                onClick={onNavigate}
+              >
+                {item.label} ↗
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
     </div>

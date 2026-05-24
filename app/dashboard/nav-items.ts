@@ -14,3 +14,8 @@ export const CURSOS_NAV = [
 export const FRONT_ADMIN_NAV = [
   { href: '/dashboard/front', label: 'Contenido del sitio' },
 ] as const;
+
+/** Accesos al área alumno (vista LMS desde el admin) */
+export const APRENDER_NAV = [
+  { href: '/aprender', label: 'Área alumno' },
+] as const;
