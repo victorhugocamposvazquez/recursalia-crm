@@ -1,9 +1,16 @@
 'use client';
 
-import { QuizResultsDesktop, QuizResultsMobile } from '@/components/learn/quiz';
-import { useIsMobileLearn } from '@/lib/learn/useIsMobileLearn';
+import { ResultsView } from '@/components/learn/ResultsView';
 
-export function AprenderResultsClient() {
-  const mobile = useIsMobileLearn();
-  return mobile ? <QuizResultsMobile /> : <QuizResultsDesktop />;
+type Props = {
+  courseSlug: string;
+  passed: boolean;
+  scorePct: number;
+  xpEarned: number;
+  isFinal: boolean;
+  certNumber?: string | null;
+};
+
+export function AprenderResultsClient(props: Props) {
+  return <ResultsView {...props} />;
 }

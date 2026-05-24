@@ -48,7 +48,7 @@ import type { TweakOptions } from './types';
   }
 
   // ── FOOTER NAV LECCIÓN ─────────────────────────────────────────────────────
-  function LessonFooter({ t, accent, mobile, prev, next, completed = false, onPrimary, loading = false }) {
+  function LessonFooter({ t, accent, mobile, prev, next, completed = false, onPrimary, onPrev, loading = false }) {
     return (
       <div style={{
         padding: mobile ? '12px 16px 18px' : '18px 28px',
@@ -56,7 +56,7 @@ import type { TweakOptions } from './types';
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         gap: 12, background: t.surface, flexShrink: 0,
       }}>
-        <Button kind="ghost" icon="arrowL" size={mobile ? 'sm' : 'md'} style={{ color: t.muted, borderColor: t.line }}>
+        <Button kind="ghost" icon="arrowL" size={mobile ? 'sm' : 'md'} style={{ color: t.muted, borderColor: t.line }} onClick={onPrev} disabled={!onPrev}>
           {mobile ? '' : (prev || 'Anterior')}
         </Button>
         {!mobile && (
@@ -73,11 +73,11 @@ import type { TweakOptions } from './types';
   }
 
   // ── SIDEBAR INDICE DESKTOP ─────────────────────────────────────────────────
-  function LessonSidebar({ t, accent, currentId }) {
+  function LessonSidebar({ t, accent, currentId, modules, courseTitle, onOpen }) {
     return (
       <aside style={{ width: 300, background: t.surface, borderLeft: `1px solid ${t.line}`, padding: '22px 18px', overflowY: 'auto', flexShrink: 0 }}>
         <Mono color={t.faint}>EN ESTE CURSO</Mono>
-        <h3 style={{ margin: '6px 0 18px', fontSize: 16, fontWeight: 700, letterSpacing: -0.3 }}>Captura el mundo a través de tu lente</h3>
+        <h3 style={{ margin: '6px 0 18px', fontSize: 16, fontWeight: 700, letterSpacing: -0.3 }}>{courseTitle}</h3>
 
         {modules.map(m => (
           <div key={m.n} style={{ marginBottom: 18 }}>
@@ -91,7 +91,7 @@ import type { TweakOptions } from './types';
                 const done = l.state === 'done';
                 const locked = l.state === 'locked';
                 return (
-                  <button key={l.id} style={{
+                  <button key={l.id} type="button" onClick={() => !locked && onOpen?.(l.id, l.kind)} style={{
                     display: 'flex', alignItems: 'center', gap: 10,
                     padding: '7px 8px', borderRadius: 8, background: active ? (t.dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,10,20,0.04)') : 'transparent',
                     border: 'none', cursor: locked ? 'not-allowed' : 'pointer', textAlign: 'left',
@@ -387,18 +387,21 @@ import type { TweakOptions } from './types';
     const learn = useLearnDataOptional();
     const t = useTheme(tweak);
     const { A: accent } = t;
-    const total = learn?.modules?.reduce((s, m) => s + m.lessons.length, 0) ?? 14;
-    const current = learn?.lessonUuid ? 1 : 6;
+    const sidebarModules = learn?.modules ?? [];
+    const total = sidebarModules.reduce((s, m) => s + m.lessons.length, 0) || 14;
+    const current = learn?.lessonUuid
+      ? sidebarModules.flatMap(m => m.lessons).findIndex(l => l.id === learn.lessonUuid) + 1
+      : 1;
     return (
       <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <LessonTopbar t={t} accent={accent} current={current} total={total} onBack={learn?.onBackToHub}/>
+        <LessonTopbar t={t} accent={accent} current={current || 1} total={total} onBack={learn?.onBackToHub}/>
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
           <main style={{ flex: 1, padding: '40px 56px', overflowY: 'auto' }}>
             <ArticleBody t={t} accent={accent}/>
           </main>
-          <LessonSidebar t={t} accent={accent} currentId={learn?.lessonUuid ?? '2.2'}/>
+          <LessonSidebar t={t} accent={accent} currentId={learn?.lessonUuid} modules={sidebarModules} courseTitle={learn?.course?.title ?? 'Curso'} onOpen={learn?.onLessonOpen}/>
         </div>
-        <LessonFooter t={t} accent={accent} onPrimary={learn?.onMarkComplete} loading={completing}/>
+        <LessonFooter t={t} accent={accent} onPrimary={learn?.onMarkComplete} onPrev={learn?.onPrevLesson} loading={completing}/>
       </div>
     );
   };
@@ -407,15 +410,18 @@ import type { TweakOptions } from './types';
     const learn = useLearnDataOptional();
     const t = useTheme(tweak);
     const { A: accent } = t;
-    const total = learn?.modules?.reduce((s, m) => s + m.lessons.length, 0) ?? 14;
-    const current = learn?.lessonUuid ? 1 : 6;
+    const sidebarModules = learn?.modules ?? [];
+    const total = sidebarModules.reduce((s, m) => s + m.lessons.length, 0) || 14;
+    const current = learn?.lessonUuid
+      ? sidebarModules.flatMap(m => m.lessons).findIndex(l => l.id === learn.lessonUuid) + 1
+      : 1;
     return (
       <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <LessonTopbar t={t} accent={accent} mobile current={current} total={total} onBack={learn?.onBackToHub}/>
+        <LessonTopbar t={t} accent={accent} mobile current={current || 1} total={total} onBack={learn?.onBackToHub}/>
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 20px' }}>
           <ArticleBody t={t} accent={accent} mobile/>
         </div>
-        <LessonFooter t={t} accent={accent} mobile onPrimary={learn?.onMarkComplete} loading={completing}/>
+        <LessonFooter t={t} accent={accent} mobile onPrimary={learn?.onMarkComplete} onPrev={learn?.onPrevLesson} loading={completing}/>
       </div>
     );
   };

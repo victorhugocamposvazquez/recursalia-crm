@@ -11,12 +11,30 @@ type Props = Omit<
   'onBackToHub' | 'onMarkComplete' | 'onNextLesson'
 > & {
   nextLessonUuid?: string | null;
+  prevLessonUuid?: string | null;
 };
 
 export function AprenderLessonClient(props: Props) {
   const router = useRouter();
   const mobile = useIsMobileLearn();
   const [completing, setCompleting] = useState(false);
+
+  const goToLesson = (uuid: string) => {
+    router.push(`/aprender/cursos/${props.courseSlug}/lecciones/${uuid}`);
+  };
+
+  const openLesson = (lessonUuid: string, kind: string) => {
+    if (kind === 'quiz') {
+      const qid = props.quizByLesson?.[lessonUuid] ?? lessonUuid;
+      router.push(`/aprender/cursos/${props.courseSlug}/quiz/${qid}`);
+      return;
+    }
+    if (kind === 'boss') {
+      if (props.finalQuizId) router.push(`/aprender/cursos/${props.courseSlug}/examen`);
+      return;
+    }
+    goToLesson(lessonUuid);
+  };
 
   const markComplete = useCallback(async () => {
     if (!props.lessonUuid || completing) return;
@@ -59,16 +77,15 @@ export function AprenderLessonClient(props: Props) {
 
   const value: LearnContextValue = {
     ...props,
+    prevLessonUuid: props.prevLessonUuid,
     onBackToHub: () => router.push(`/aprender/cursos/${props.courseSlug}`),
+    onGoHome: () => router.push('/aprender'),
+    onLessonOpen: openLesson,
     onMarkComplete: markComplete,
+    onPrevLesson: props.prevLessonUuid ? () => goToLesson(props.prevLessonUuid!) : undefined,
     onNextLesson: () => {
-      if (props.nextLessonUuid) {
-        router.push(
-          `/aprender/cursos/${props.courseSlug}/lecciones/${props.nextLessonUuid}`
-        );
-      } else {
-        router.push(`/aprender/cursos/${props.courseSlug}`);
-      }
+      if (props.nextLessonUuid) goToLesson(props.nextLessonUuid);
+      else router.push(`/aprender/cursos/${props.courseSlug}`);
     },
   };
 

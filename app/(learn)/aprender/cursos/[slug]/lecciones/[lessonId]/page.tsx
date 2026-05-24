@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { requireCourseAccess } from '@/lib/learn/access';
-import { buildHubLearnData } from '@/lib/learn/lmsServer';
+import { buildHubLearnData, getFinalQuizForCourse, getQuizMap } from '@/lib/learn/lmsServer';
 import {
   expandedLessonToHtml,
   findLessonByUuid,
@@ -40,7 +40,7 @@ export default async function AprenderLessonPage({ params }: Props) {
   const lessonHtml = expandedLessonToHtml(expanded, fallback);
 
   const { learnCourse, modules, stats } = await buildHubLearnData(user.id, course);
-  const { next } = getAdjacentLessons(gc, lessonId);
+  const { next, prev } = getAdjacentLessons(gc, lessonId);
 
   return (
     <AprenderLessonClient
@@ -51,10 +51,13 @@ export default async function AprenderLessonPage({ params }: Props) {
       completed={[]}
       courseSlug={slug}
       courseId={course.id}
+      quizByLesson={await getQuizMap(course.id)}
+      finalQuizId={(await getFinalQuizForCourse(course.id))?.id ?? null}
       lessonUuid={lessonId}
       lessonTitle={found.lesson.title}
       lessonHtml={lessonHtml}
       nextLessonUuid={next?.id ?? null}
+      prevLessonUuid={prev?.id ?? null}
       stats={{ xp: stats.xp, streak_days: stats.streak_days, level: stats.level }}
     />
   );

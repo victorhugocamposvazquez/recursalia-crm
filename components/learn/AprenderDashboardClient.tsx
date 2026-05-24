@@ -4,8 +4,12 @@ import { useRouter } from 'next/navigation';
 import { LearnProvider, type LearnContextValue } from '@/lib/learn/context';
 import { DashboardDesktop, DashboardMobile } from '@/components/learn/dashboard';
 import { useIsMobileLearn } from '@/lib/learn/useIsMobileLearn';
+import {
+  findCurrentLessonFromModules,
+  isReadyForFinalExam,
+} from '@/lib/learn/courseAdapter';
 
-type Props = Omit<LearnContextValue, 'onCourseOpen' | 'onLessonOpen'>;
+type Props = Omit<LearnContextValue, 'onCourseOpen' | 'onLessonOpen' | 'onGoHome' | 'onOpenCatalog' | 'onOpenDiploma'>;
 
 export function AprenderDashboardClient(props: Props) {
   const router = useRouter();
@@ -14,6 +18,9 @@ export function AprenderDashboardClient(props: Props) {
   const value: LearnContextValue = {
     ...props,
     onCourseOpen: (slug) => router.push(`/aprender/cursos/${slug}`),
+    onGoHome: () => router.push('/aprender'),
+    onOpenCatalog: () => router.push('/cursos'),
+    onOpenDiploma: (certNumber) => router.push(`/aprender/diplomas/${certNumber}`),
   };
 
   return (

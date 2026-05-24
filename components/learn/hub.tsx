@@ -135,12 +135,65 @@ import type { TweakOptions } from './types';
     );
   }
 
+  // Tarjeta «continuar» con datos reales del contexto
+  function ContinueCard({ t, accent, course, currentLesson, onResume, mobile }) {
+    const title = currentLesson?.title ?? 'Empezar curso';
+    const meta = currentLesson
+      ? `${currentLesson.code ? `Lección ${currentLesson.code}` : 'Lección'} · ${currentLesson.dur}`
+      : `${Math.round(course.completion * 100)}% completado`;
+    return (
+      <div style={{
+        width: mobile ? '100%' : 320,
+        padding: mobile ? 18 : 22,
+        borderRadius: 18,
+        background: t.ink,
+        color: t.bg,
+        flexShrink: 0,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{ position: 'absolute', top: mobile ? -30 : -40, right: mobile ? -30 : -40, width: mobile ? 120 : 160, height: mobile ? 120 : 160, borderRadius: '50%', background: `radial-gradient(circle, ${accent.bg}66, transparent 70%)` }}/>
+        <Mono color={accent.bg} size={mobile ? 9 : 10}>CONTINÚA DONDE LO DEJASTE</Mono>
+        <div style={{ marginTop: mobile ? 8 : 10, fontSize: mobile ? 18 : 20, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.2 }}>
+          {title}
+        </div>
+        <div style={{ marginTop: 6, fontSize: mobile ? 12 : 13, opacity: 0.7 }}>{meta}</div>
+        <div style={{ marginTop: mobile ? 14 : 16 }}>
+          <Progress value={course.completion} color={accent.bg} track="rgba(255,255,255,0.15)" height={mobile ? 4 : 5}/>
+        </div>
+        <div style={{ position: 'relative', zIndex: 1, marginTop: mobile ? 14 : 18 }}>
+          <Button bg={accent.bg} fg={accent.fg} icon="play" size={mobile ? 'sm' : 'md'} style={{ width: '100%', justifyContent: 'center' }} onClick={onResume}>
+            {currentLesson ? 'Reanudar lección' : 'Ir al curso'}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  function resumeCurrent(currentLesson, onLessonOpen, onStartExam) {
+    if (!currentLesson) return;
+    if (currentLesson.kind === 'boss') {
+      onStartExam?.();
+      return;
+    }
+    onLessonOpen?.(currentLesson.id, currentLesson.kind);
+  }
+
   // ── HUB DESKTOP ────────────────────────────────────────────────────────────
   export function HubDesktop({ tweak }: { tweak?: TweakOptions }) {
     const learn = useLearnDataOptional();
     const course = learn?.course ?? mockCourse;
     const modules = learn?.modules ?? mockModules;
     const onLessonOpen = learn?.onLessonOpen;
+    const onGoHome = learn?.onGoHome;
+    const onStartExam = learn?.onStartExam;
+    const currentLesson = learn?.currentLesson;
+    const examUnlocked = learn?.examUnlocked;
+    const lessonStats = modules.reduce((acc, m) => {
+      acc.total += m.lessons.length;
+      acc.done += m.lessons.filter(l => l.state === 'done').length;
+      return acc;
+    }, { total: 0, done: 0 });
     const t = useTheme(tweak);
     const { A: accent } = t;
 
@@ -150,26 +203,25 @@ import type { TweakOptions } from './types';
         <aside style={{ width: 240, background: t.surface, borderRight: `1px solid ${t.line}`, padding: '22px 18px', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
           <Logo size={26} color={t.ink}/>
           <nav style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {[
-              { ic: 'grid', label: 'Mis cursos', active: false },
-              { ic: 'play', label: 'Continuar', active: true, badge: '2' },
-              { ic: 'bookmark', label: 'Guardado' },
-              { ic: 'trophy', label: 'Logros' },
-              { ic: 'doc', label: 'Diplomas' },
-            ].map((it, i) => (
-              <a key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 12px', borderRadius: 10,
-                background: it.active ? (t.dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,10,20,0.04)') : 'transparent',
-                color: it.active ? t.ink : t.muted,
-                fontSize: 14, fontWeight: it.active ? 600 : 500,
-                cursor: 'pointer',
-              }}>
-                <Icon name={it.ic} size={17}/>
-                <span style={{ flex: 1 }}>{it.label}</span>
-                {it.badge && <Chip size="sm" bg={accent.bg} color={accent.fg}>{it.badge}</Chip>}
-              </a>
-            ))}
+            <button type="button" onClick={onGoHome} style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '10px 12px', borderRadius: 10, width: '100%',
+              background: 'transparent',
+              color: t.muted, fontSize: 14, fontWeight: 500,
+              cursor: 'pointer', border: 'none', fontFamily: 'inherit', textAlign: 'left',
+            }}>
+              <Icon name="grid" size={17}/>
+              <span style={{ flex: 1 }}>Mis cursos</span>
+            </button>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '10px 12px', borderRadius: 10,
+              background: t.dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,10,20,0.04)',
+              color: t.ink, fontSize: 14, fontWeight: 600,
+            }}>
+              <Icon name="play" size={17}/>
+              <span style={{ flex: 1 }}>Este curso</span>
+            </div>
           </nav>
 
           <div style={{ marginTop: 'auto', padding: 14, borderRadius: 14, background: t.dark ? 'rgba(255,255,255,0.04)' : t.surface2, border: `1px solid ${t.line}` }}>
@@ -195,12 +247,12 @@ import type { TweakOptions } from './types';
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 32 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                  <Chip mono size="sm" color={t.muted} border={`1px solid ${t.line}`}>FOTOGRAFÍA</Chip>
+                  <Chip mono size="sm" color={t.muted} border={`1px solid ${t.line}`}>{course.tag}</Chip>
                   <Chip mono size="sm" color={t.muted} border={`1px solid ${t.line}`}>{course.level.toUpperCase()}</Chip>
-                  <Mono color={t.faint}>· 14 lecciones · {course.duration}</Mono>
+                  <Mono color={t.faint}>· {course.lessons} lecciones · {course.duration}</Mono>
                 </div>
                 <h1 style={{ margin: 0, fontFamily: t.sans, fontSize: 44, fontWeight: 800, color: t.ink, letterSpacing: -1.6, lineHeight: 1.02, maxWidth: 640 }}>
-                  Captura el mundo<br/>a través de tu lente.
+                  {course.title}
                 </h1>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 20 }}>
                   <div style={{ width: 36, height: 36, borderRadius: 18, background: `linear-gradient(135deg, ${accent.bg}, #1b38c4)`, flexShrink: 0 }}/>
@@ -211,33 +263,13 @@ import type { TweakOptions } from './types';
                 </div>
               </div>
 
-              {/* Continue card */}
-              <div style={{
-                width: 320, padding: 22, borderRadius: 18,
-                background: t.ink, color: t.bg, flexShrink: 0,
-                position: 'relative', overflow: 'hidden',
-              }}>
-                <div style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: 80, background: `radial-gradient(circle, ${accent.bg}66, transparent 70%)` }}/>
-                <Mono color={accent.bg} size={10}>CONTINÚA DONDE LO DEJASTE</Mono>
-                <div style={{ marginTop: 10, fontSize: 20, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.2 }}>
-                  Líneas, formas y patrones
-                </div>
-                <div style={{ marginTop: 6, fontSize: 13, opacity: 0.7 }}>
-                  Lección 2.2 · 12 min restantes
-                </div>
-                <div style={{ marginTop: 16 }}>
-                  <Progress value={0.35} color={accent.bg} track="rgba(255,255,255,0.15)" height={5}/>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-                    <Mono color="rgba(255,255,255,0.5)" size={10}>35%</Mono>
-                    <Mono color="rgba(255,255,255,0.5)" size={10}>04:18 / 12:32</Mono>
-                  </div>
-                </div>
-                <div style={{ position: 'relative', zIndex: 1, marginTop: 18 }}>
-                  <Button bg={accent.bg} fg={accent.fg} icon="play" size="md" style={{ width: '100%', justifyContent: 'center' }}>
-                    Reanudar lección
-                  </Button>
-                </div>
-              </div>
+              <ContinueCard
+                t={t}
+                accent={accent}
+                course={course}
+                currentLesson={currentLesson}
+                onResume={() => resumeCurrent(currentLesson, onLessonOpen, onStartExam)}
+              />
             </div>
 
             {/* Stats row */}
@@ -245,9 +277,8 @@ import type { TweakOptions } from './types';
               <Stat t={t} label="Progreso del curso" value={`${Math.round(course.completion * 100)}%`} sub={
                 <Progress value={course.completion} color={accent.bg} height={4} style={{ marginTop: 8, maxWidth: 180 }}/>
               }/>
-              <Stat t={t} label="XP acumulada" value={fmt.n(course.xp)} sub={<span style={{ fontSize: 12, color: t.muted }}>+120 esta semana</span>}/>
-              <Stat t={t} label="Racha actual" value={`${course.streak} días`} sub={<span style={{ fontSize: 12, color: t.muted }}>Mejor: 11 días</span>}/>
-              <Stat t={t} label="Promedio quizzes" value="92%" sub={<span style={{ fontSize: 12, color: t.muted }}>3 quizzes superados</span>}/>
+              <Stat t={t} label="Racha actual" value={`${course.streak} días`} sub={<span style={{ fontSize: 12, color: t.muted }}>Sigue estudiando hoy</span>}/>
+              <Stat t={t} label="Lecciones" value={`${lessonStats.done}/${lessonStats.total}`} sub={<span style={{ fontSize: 12, color: t.muted }}>completadas</span>}/>
             </div>
           </section>
 
@@ -255,7 +286,7 @@ import type { TweakOptions } from './types';
           <section style={{ padding: '36px 48px 60px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28 }}>
               <div>
-                <Mono color={t.faint}>04 MÓDULOS · 14 LECCIONES</Mono>
+                <Mono color={t.faint}>{modules.length} MÓDULOS · {lessonStats.total} LECCIONES</Mono>
                 <h2 style={{ margin: '6px 0 0', fontSize: 22, fontWeight: 700, letterSpacing: -0.5 }}>Tu camino</h2>
               </div>
               <button style={{ background: 'none', border: 'none', color: t.muted, fontSize: 13, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
@@ -270,7 +301,7 @@ import type { TweakOptions } from './types';
                   <div key={m.n} style={{ paddingBottom: mi < modules.length - 1 ? 12 : 0, borderBottom: mi < modules.length - 1 ? `1px solid ${t.line}` : 'none' }}>
                     <ModuleHeader m={m} t={t} accent={accent} completedCount={completed} totalCount={m.lessons.length} isFinal={m.isFinal}/>
                     {m.isFinal ? (
-                      <BossCard t={t} accent={accent} l={m.lessons[0]}/>
+                      <BossCard t={t} accent={accent} l={m.lessons[0]} unlocked={examUnlocked} onOpen={onStartExam}/>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 74 }}>
                         {m.lessons.map(l => (
@@ -306,7 +337,7 @@ import type { TweakOptions } from './types';
     );
   }
 
-  function BossCard({ t, accent, l }) {
+  function BossCard({ t, accent, l, unlocked, onOpen }) {
     return (
       <div style={{
         marginLeft: 74, padding: 22, borderRadius: 18,
@@ -316,15 +347,20 @@ import type { TweakOptions } from './types';
       }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Chip mono size="sm" bg={t.ink} color={t.bg}>BOSS FIGHT</Chip>
-            <Mono color={t.faint}>20 PREGUNTAS · 12 MIN · 1 INTENTO</Mono>
+            <Chip mono size="sm" bg={t.ink} color={t.bg}>EXAMEN FINAL</Chip>
           </div>
-          <div style={{ marginTop: 8, fontSize: 18, fontWeight: 700, letterSpacing: -0.4, color: t.ink }}>{l.title}</div>
+          <div style={{ marginTop: 8, fontSize: 18, fontWeight: 700, letterSpacing: -0.4, color: t.ink }}>{l?.title ?? 'Examen final del curso'}</div>
           <div style={{ marginTop: 4, fontSize: 13, color: t.muted, maxWidth: 480 }}>
-            Demuestra lo que dominas. Apruebas con 70% y desbloqueas tu diploma firmado por Lucía.
+            {unlocked
+              ? 'Has completado todas las lecciones. Aprueba con 70% para obtener tu diploma.'
+              : 'Completa todas las lecciones del curso para desbloquear el examen.'}
           </div>
         </div>
-        <Button kind="ghost" iconRight="lock" disabled style={{ color: t.muted }}>Bloqueado</Button>
+        {unlocked ? (
+          <Button bg={accent.bg} fg={accent.fg} icon="play" onClick={onOpen}>Empezar examen</Button>
+        ) : (
+          <Button kind="ghost" iconRight="lock" disabled style={{ color: t.muted }}>Bloqueado</Button>
+        )}
       </div>
     );
   }
@@ -335,14 +371,25 @@ import type { TweakOptions } from './types';
     const course = learn?.course ?? mockCourse;
     const modules = learn?.modules ?? mockModules;
     const onLessonOpen = learn?.onLessonOpen;
+    const onGoHome = learn?.onGoHome;
+    const onStartExam = learn?.onStartExam;
+    const currentLesson = learn?.currentLesson;
+    const examUnlocked = learn?.examUnlocked;
+    const lessonStats = modules.reduce((acc, m) => {
+      acc.total += m.lessons.length;
+      acc.done += m.lessons.filter(l => l.state === 'done').length;
+      return acc;
+    }, { total: 0, done: 0 });
     const t = useTheme(tweak);
     const { A: accent } = t;
 
     return (
-      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
         {/* Top bar */}
         <div style={{ padding: '14px 18px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-          <Logo size={22} color={t.ink} withText={false}/>
+          <button type="button" onClick={onGoHome} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
+            <Logo size={22} color={t.ink} withText={false}/>
+          </button>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <Chip size="sm" bg={accent.bg} color={accent.fg} icon="fire">{course.streak}</Chip>
             <Chip size="sm" border={`1px solid ${t.line}`} color={t.ink} icon="bolt">{fmt.n(course.xp)}</Chip>
@@ -352,9 +399,9 @@ import type { TweakOptions } from './types';
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 18px 100px' }}>
           {/* Header curso */}
           <div>
-            <Mono color={t.faint}>FOTOGRAFÍA · PRINCIPIANTE</Mono>
+            <Mono color={t.faint}>{course.tag} · {course.level.toUpperCase()}</Mono>
             <h1 style={{ margin: '8px 0 0', fontSize: 28, fontWeight: 800, letterSpacing: -1, lineHeight: 1.05 }}>
-              Captura el mundo a través de tu lente.
+              {course.title}
             </h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 14 }}>
               <div style={{ width: 28, height: 28, borderRadius: 14, background: `linear-gradient(135deg, ${accent.bg}, #1b38c4)` }}/>
@@ -364,23 +411,15 @@ import type { TweakOptions } from './types';
             </div>
           </div>
 
-          {/* Continue card */}
-          <div style={{
-            marginTop: 22, padding: 18, borderRadius: 18, background: t.ink, color: t.bg,
-            position: 'relative', overflow: 'hidden',
-          }}>
-            <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: 60, background: `radial-gradient(circle, ${accent.bg}55, transparent 70%)` }}/>
-            <Mono color={accent.bg} size={9}>CONTINÚA AHORA</Mono>
-            <div style={{ marginTop: 8, fontSize: 18, fontWeight: 700, letterSpacing: -0.4, lineHeight: 1.15 }}>
-              Líneas, formas y patrones
-            </div>
-            <div style={{ marginTop: 4, fontSize: 12, opacity: 0.7 }}>Lección 2.2 · 12 min restantes</div>
-            <div style={{ marginTop: 14 }}>
-              <Progress value={0.35} color={accent.bg} track="rgba(255,255,255,0.15)" height={4}/>
-            </div>
-            <Button bg={accent.bg} fg={accent.fg} icon="play" size="sm" style={{ marginTop: 14, width: '100%', justifyContent: 'center' }}>
-              Reanudar
-            </Button>
+          <div style={{ marginTop: 22 }}>
+          <ContinueCard
+            t={t}
+            accent={accent}
+            course={course}
+            currentLesson={currentLesson}
+            onResume={() => resumeCurrent(currentLesson, onLessonOpen, onStartExam)}
+            mobile
+          />
           </div>
 
           {/* Progreso */}
@@ -390,13 +429,14 @@ import type { TweakOptions } from './types';
               <span style={{ fontSize: 13, fontWeight: 700 }}>{Math.round(course.completion*100)}%</span>
             </div>
             <Progress value={course.completion} color={accent.bg} height={5} style={{ marginTop: 8 }}/>
-            <div style={{ marginTop: 8, fontSize: 12, color: t.muted }}>6 de 14 lecciones · Tardarás ~2h 40min</div>
+            <div style={{ marginTop: 8, fontSize: 12, color: t.muted }}>{lessonStats.done} de {lessonStats.total} lecciones</div>
           </div>
 
-          {/* Módulos */}
           <div style={{ marginTop: 28 }}>
             <Mono color={t.faint}>TU CAMINO</Mono>
-            <h2 style={{ margin: '4px 0 18px', fontSize: 18, fontWeight: 700, letterSpacing: -0.4 }}>4 módulos · 14 lecciones</h2>
+            <h2 style={{ margin: '4px 0 18px', fontSize: 18, fontWeight: 700, letterSpacing: -0.4 }}>
+              {modules.length} módulos · {lessonStats.total} lecciones
+            </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
               {modules.map(m => {
@@ -414,7 +454,11 @@ import type { TweakOptions } from './types';
                       {!m.isFinal && <span style={{ fontSize: 11, color: t.muted, fontFamily: t.mono }}>{completed}/{m.lessons.length}</span>}
                     </div>
                     <div style={{ marginLeft: 38, display: 'flex', flexDirection: 'column', gap: 0 }}>
-                      {m.lessons.map(l => (<LessonRow key={l.id} l={l} t={t} accent={accent} compact onOpen={() => l.state !== 'locked' && onLessonOpen?.(l.id, l.kind)}/>))}
+                      {m.isFinal ? (
+                        <BossCard t={t} accent={accent} l={m.lessons[0]} unlocked={examUnlocked} onOpen={onStartExam}/>
+                      ) : m.lessons.map(l => (
+                        <LessonRow key={l.id} l={l} t={t} accent={accent} compact onOpen={() => l.state !== 'locked' && onLessonOpen?.(l.id, l.kind)}/>
+                      ))}
                     </div>
                   </div>
                 );
@@ -426,15 +470,13 @@ import type { TweakOptions } from './types';
         {/* Bottom nav */}
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '10px 24px 22px', background: t.surface, borderTop: `1px solid ${t.line}`, display: 'flex', justifyContent: 'space-around' }}>
           {[
-            { ic: 'grid', label: 'Cursos' },
-            { ic: 'play', label: 'Aprender', active: true },
-            { ic: 'trophy', label: 'Logros' },
-            { ic: 'doc', label: 'Diplomas' },
+            { ic: 'grid', label: 'Cursos', active: false, action: onGoHome },
+            { ic: 'play', label: 'Curso', active: true },
           ].map((it, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, color: it.active ? t.ink : t.faint }}>
+            <button key={i} type="button" onClick={it.action} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, color: it.active ? t.ink : t.faint, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
               <Icon name={it.ic} size={20}/>
               <span style={{ fontSize: 10, fontWeight: it.active ? 700 : 500 }}>{it.label}</span>
-            </div>
+            </button>
           ))}
         </div>
 

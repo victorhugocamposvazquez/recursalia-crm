@@ -220,3 +220,30 @@ export function computeCompletionPct(
   const done = lessons.filter((l) => progress.get(l.id)?.completed_at).length;
   return done / lessons.length;
 }
+
+export function findCurrentLessonFromModules(modules: Module[]): Lesson | null {
+  for (const m of modules) {
+    const current = m.lessons.find((l) => l.state === 'current');
+    if (current) return current;
+  }
+  for (const m of modules) {
+    const pending = m.lessons.find(
+      (l) => l.state === 'next' || (l.state !== 'done' && l.state !== 'locked')
+    );
+    if (pending) return pending;
+  }
+  return null;
+}
+
+export function countLessonStats(modules: Module[]): { total: number; done: number } {
+  const all = modules.flatMap((m) => m.lessons);
+  return {
+    total: all.length,
+    done: all.filter((l) => l.state === 'done').length,
+  };
+}
+
+export function isReadyForFinalExam(modules: Module[]): boolean {
+  const regular = modules.flatMap((m) => m.lessons).filter((l) => l.kind !== 'boss');
+  return regular.length > 0 && regular.every((l) => l.state === 'done');
+}

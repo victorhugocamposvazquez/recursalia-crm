@@ -59,8 +59,14 @@ export default async function AprenderPage() {
         month: 'short',
       }),
       score: Math.round((d.score ?? 0) * 100),
+      certNumber: d.cert_number,
     };
   });
+
+  const userName =
+    user.user_metadata?.full_name ??
+    user.email?.split('@')[0] ??
+    'Alumno';
 
   return (
     <AprenderDashboardClient
@@ -71,6 +77,7 @@ export default async function AprenderPage() {
       completed={completed}
       courseSlug={primary?.public_slug ?? ''}
       courseId={primary?.id ?? ''}
+      userName={userName}
       stats={{ xp: stats.xp, streak_days: stats.streak_days, level: stats.level }}
     />
   );

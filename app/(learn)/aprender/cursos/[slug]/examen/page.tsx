@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation';
 import { requireCourseAccess } from '@/lib/learn/access';
-import { getFinalQuizForCourse } from '@/lib/learn/lmsServer';
+import { getFinalQuizForCourse, getQuizQuestions } from '@/lib/learn/lmsServer';
 import { AprenderExamClient } from '@/components/learn/AprenderExamClient';
+import type { QuizQuestionRecord } from '@/types';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -22,7 +23,15 @@ export default async function AprenderExamenPage({ params }: Props) {
     );
   }
 
+  const questions = (await getQuizQuestions(finalQuiz.id)) as QuizQuestionRecord[];
+
   return (
-    <AprenderExamClient courseId={course.id} courseSlug={slug} quizId={finalQuiz.id} />
+    <AprenderExamClient
+      courseId={course.id}
+      courseSlug={slug}
+      quizId={finalQuiz.id}
+      title={finalQuiz.title}
+      questions={questions}
+    />
   );
 }

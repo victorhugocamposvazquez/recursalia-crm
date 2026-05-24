@@ -5,6 +5,7 @@ import {
   buildLearnCourseMeta,
   buildLearnModules,
   computeCompletionPct,
+  findCurrentLessonFromModules,
   type LessonProgressMap,
 } from '@/lib/learn/courseAdapter';
 import type { EnrolledCourseCard } from '@/lib/learn/context';
@@ -154,14 +155,22 @@ export async function buildEnrolledCards(
     const gc = c.generated_content;
     if (!gc) continue;
     const progress = await getLessonProgressMap(userId, c.id);
+    const quizIds = await getQuizLessonIds(c.id);
+    const modules = buildLearnModules(gc, progress, quizIds);
+    const current = findCurrentLessonFromModules(modules);
     const pct = computeCompletionPct(gc, progress);
     const slug = c.public_slug ?? c.id;
+    const nextLabel = current
+      ? `${current.code ? `${current.code} ` : ''}${current.title}`.trim()
+      : pct >= 1
+        ? 'Curso completado'
+        : 'Empezar curso';
     cards.push({
       slug,
       title: gc.title,
       instructor: gc.author_name ?? 'Recursalia',
       pct,
-      nextLesson: 'Continuar curso',
+      nextLesson: nextLabel,
       time: `${Math.round((1 - pct) * (gc.total_duration_minutes ?? 60))} min restantes`,
       tag: (c.catalog_category ?? 'CURSO').toUpperCase(),
       current: cards.length === 0,
@@ -208,6 +217,38 @@ export async function getDiplomaByShareToken(shareToken: string) {
 export async function getQuizById(quizId: string) {
   const supabase = await createClient();
   const { data } = await supabase.from('quizzes').select('*').eq('id', quizId).maybeSingle();
+  return data;
+}
+
+export async function getQuizQuestions(quizId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('quiz_questions')
+    .select('*')
+    .eq('quiz_id', quizId)
+    .order('position', { ascending: true });
+  return data ?? [];
+}
+
+export async function getQuizAttempt(attemptId: string, userId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('quiz_attempts')
+    .select('*, quizzes(title, is_final)')
+    .eq('id', attemptId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return data;
+}
+
+export async function getDiplomaByCertNumber(certNumber: string, userId: string) {
+  const admin = getSupabase();
+  const { data } = await admin
+    .from('diplomas')
+    .select('*, courses(published_title, generated_content, public_slug)')
+    .eq('cert_number', certNumber)
+    .eq('user_id', userId)
+    .maybeSingle();
   return data;
 }
 

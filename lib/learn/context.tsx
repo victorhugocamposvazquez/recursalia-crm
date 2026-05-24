@@ -14,25 +14,50 @@ export type EnrolledCourseCard = {
   current?: boolean;
 };
 
+export type CompletedCourseCard = {
+  title: string;
+  instructor: string;
+  date: string;
+  score: number;
+  certNumber?: string;
+};
+
+export type CurrentLessonInfo = {
+  id: string;
+  title: string;
+  code?: string;
+  dur: string;
+  kind: string;
+};
+
 export type LearnContextValue = {
   tweak: TweakOptions;
   course: Course;
   modules: Module[];
   enrolled: EnrolledCourseCard[];
-  completed: { title: string; instructor: string; date: string; score: number }[];
+  completed: CompletedCourseCard[];
   courseSlug: string;
   courseId: string;
+  userName?: string;
+  currentLesson?: CurrentLessonInfo | null;
   lessonUuid?: string;
   lessonHtml?: string;
   lessonTitle?: string;
   onLessonOpen?: (lessonUuid: string, kind: string) => void;
   onBackToHub?: () => void;
+  onGoHome?: () => void;
+  onOpenCatalog?: () => void;
+  onOpenDiploma?: (certNumber: string) => void;
+  onStartExam?: () => void;
+  onPrevLesson?: () => void;
+  prevLessonUuid?: string | null;
   onMarkComplete?: () => void;
   onNextLesson?: () => void;
   onCourseOpen?: (slug: string) => void;
   stats?: { xp: number; streak_days: number; level: number };
   quizByLesson?: Record<string, string>;
   finalQuizId?: string | null;
+  examUnlocked?: boolean;
 };
 
 const LearnContext = createContext<LearnContextValue | null>(null);

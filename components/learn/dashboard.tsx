@@ -47,6 +47,19 @@ import type { TweakOptions } from './types';
     { title: 'Sin reuniones · cómo asíncrono se hace',     instructor: 'Lena Tobar',     tag: 'EQUIPOS',     reason: 'Nuevo esta semana' },
   ];
 
+  function formatToday() {
+    return new Date().toLocaleDateString('es-ES', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    }).toUpperCase();
+  }
+
+  function firstName(name?: string) {
+    if (!name) return 'Alumno';
+    return name.split(/[\s@]/)[0];
+  }
+
   // ── TARJETA DE CURSO EN PROGRESO ────────────────────────────────────────────
   function CourseCard({ c, t, accent, large, mobile, onOpen }) {
     return (
@@ -103,13 +116,19 @@ import type { TweakOptions } from './types';
   }
 
   // ── TARJETA DE CURSO COMPLETADO ────────────────────────────────────────────
-  function CompletedCard({ c, t, accent }) {
+  function CompletedCard({ c, t, accent, onOpen }) {
     return (
-      <div style={{
+      <div
+        role={onOpen ? 'button' : undefined}
+        tabIndex={onOpen ? 0 : undefined}
+        onClick={onOpen}
+        onKeyDown={(e) => e.key === 'Enter' && onOpen?.()}
+        style={{
         display: 'flex', alignItems: 'center', gap: 14,
         padding: '14px 16px', borderRadius: 14,
         background: t.dark ? 'rgba(255,255,255,0.04)' : t.surface2,
         border: `1px solid ${t.line}`,
+        cursor: onOpen ? 'pointer' : 'default',
       }}>
         <div style={{ width: 40, height: 40, borderRadius: 20, background: accent.bg, color: accent.fg, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
           <Icon name="trophy" size={18}/>
@@ -151,15 +170,19 @@ import type { TweakOptions } from './types';
   // ── DASHBOARD DESKTOP ──────────────────────────────────────────────────────
   export function DashboardDesktop({ tweak }: { tweak?: TweakOptions }) {
     const learn = useLearnDataOptional();
-    const course = learn?.course ?? mockCourse;
     const enrolledList = learn?.enrolled?.length ? learn.enrolled : enrolled;
+    const completedList = learn?.completed?.length ? learn.completed : completed;
     const onCourseOpen = learn?.onCourseOpen;
+    const onOpenCatalog = learn?.onOpenCatalog;
+    const onOpenDiploma = learn?.onOpenDiploma;
     const stats = learn?.stats;
+    const userName = firstName(learn?.userName);
     const t = useTheme(tweak);
     const { A: accent } = t;
     const main = enrolledList[0];
     const others = enrolledList.slice(1);
     const open = (slug: string) => () => onCourseOpen?.(slug);
+    const hasCourses = enrolledList.length > 0;
 
     return (
       <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, overflow: 'hidden', display: 'flex' }}>
@@ -168,29 +191,27 @@ import type { TweakOptions } from './types';
           <Logo size={26} color={t.ink}/>
           <nav style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 2 }}>
             {[
-              { ic: 'grid', label: 'Mis cursos', active: true },
-              { ic: 'play', label: 'Continuar', badge: '3' },
-              { ic: 'bookmark', label: 'Guardado' },
-              { ic: 'trophy', label: 'Logros' },
-              { ic: 'doc', label: 'Diplomas', badge: '2' },
+              { ic: 'grid', label: 'Mis cursos', active: true, action: learn?.onGoHome },
+              { ic: 'doc', label: 'Diplomas', badge: completedList.length ? String(completedList.length) : null, action: completedList[0]?.certNumber ? () => onOpenDiploma?.(completedList[0].certNumber) : undefined },
             ].map((it, i) => (
-              <a key={i} style={{
+              <button key={i} type="button" onClick={it.action} style={{
                 display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 12px', borderRadius: 10,
+                padding: '10px 12px', borderRadius: 10, width: '100%',
                 background: it.active ? (t.dark ? 'rgba(255,255,255,0.06)' : 'rgba(10,10,20,0.04)') : 'transparent',
                 color: it.active ? t.ink : t.muted, fontSize: 14,
                 fontWeight: it.active ? 600 : 500, cursor: 'pointer',
+                border: 'none', fontFamily: 'inherit', textAlign: 'left',
               }}>
                 <Icon name={it.ic} size={17}/>
                 <span style={{ flex: 1 }}>{it.label}</span>
                 {it.badge && <Chip size="sm" bg={accent.bg} color={accent.fg}>{it.badge}</Chip>}
-              </a>
+              </button>
             ))}
           </nav>
           <div style={{ marginTop: 'auto', padding: 14, borderRadius: 14, background: t.dark ? 'rgba(255,255,255,0.04)' : t.surface2, border: `1px solid ${t.line}` }}>
             <Mono color={t.faint} size={9}>EXPLORAR</Mono>
-            <div style={{ marginTop: 6, fontSize: 13, fontWeight: 700, color: t.ink }}>Catálogo · 142 cursos</div>
-            <Button kind="ghost" size="sm" iconRight="arrowR" style={{ marginTop: 10, color: t.ink, borderColor: t.line, padding: '6px 12px', fontSize: 12 }}>Buscar cursos</Button>
+            <div style={{ marginTop: 6, fontSize: 13, fontWeight: 700, color: t.ink }}>Catálogo público</div>
+            <Button kind="ghost" size="sm" iconRight="arrowR" onClick={onOpenCatalog} style={{ marginTop: 10, color: t.ink, borderColor: t.line, padding: '6px 12px', fontSize: 12 }}>Ver cursos</Button>
           </div>
         </aside>
 
@@ -200,10 +221,14 @@ import type { TweakOptions } from './types';
           <div style={{ padding: '32px 40px 24px', borderBottom: `1px solid ${t.line}` }}>
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24 }}>
               <div>
-                <Mono color={t.faint}>VIERNES · 22 MAYO</Mono>
+                <Mono color={t.faint}>{formatToday()}</Mono>
                 <h1 style={{ margin: '6px 0 0', fontSize: 42, fontWeight: 800, letterSpacing: -1.5, lineHeight: 1 }}>
-                  Hola Hugo, te queda <br/>
-                  <span style={{ background: `linear-gradient(transparent 60%, ${accent.bg}aa 60%)`, padding: '0 4px' }}>una lección</span> para tu racha.
+                  Hola {userName},{hasCourses ? (
+                    <> continúa <br/>
+                    <span style={{ background: `linear-gradient(transparent 60%, ${accent.bg}aa 60%)`, padding: '0 4px' }}>aprendiendo</span>.</>
+                  ) : (
+                    <> aún no tienes cursos matriculados.</>
+                  )}
                 </h1>
               </div>
               <div style={{ display: 'flex', gap: 14 }}>
@@ -217,38 +242,58 @@ import type { TweakOptions } from './types';
           {/* En curso */}
           <section style={{ padding: '32px 40px 12px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 18 }}>
-              <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: -0.5 }}>En curso · 3 cursos</h2>
-              <button style={{ background: 'none', border: 'none', color: t.muted, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Ver todos →</button>
+              <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: -0.5 }}>
+                En curso · {enrolledList.length} {enrolledList.length === 1 ? 'curso' : 'cursos'}
+              </h2>
             </div>
+            {!hasCourses ? (
+              <div style={{ padding: '32px 24px', borderRadius: 16, border: `1px dashed ${t.line}`, textAlign: 'center', color: t.muted }}>
+                <p style={{ margin: '0 0 16px' }}>Cuando compres un curso, te matricularán con tu email y aparecerá aquí.</p>
+                <Button kind="ghost" onClick={onOpenCatalog} style={{ borderColor: t.line, color: t.ink }}>Explorar catálogo</Button>
+              </div>
+            ) : (
             <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr 1fr', gap: 16 }}>
               {main ? <CourseCard c={main} t={t} accent={accent} large onOpen={open(main.slug)}/> : null}
               {others.map(c => <CourseCard key={c.slug} c={c} t={t} accent={accent} onOpen={open(c.slug)}/>)}
             </div>
+            )}
           </section>
 
-          {/* Recomendados */}
+          {hasCourses ? null : (
           <section style={{ padding: '28px 40px 16px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 18 }}>
               <div>
                 <Mono color={t.faint}>PARA TI</Mono>
-                <h2 style={{ margin: '4px 0 0', fontSize: 22, fontWeight: 700, letterSpacing: -0.5 }}>Tres cursos que tienen sentido ahora</h2>
+                <h2 style={{ margin: '4px 0 0', fontSize: 22, fontWeight: 700, letterSpacing: -0.5 }}>Explora el catálogo</h2>
               </div>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
-              {recommended.map((c, i) => <RecCard key={i} c={c} t={t} accent={accent}/>)}
-            </div>
+            <Button kind="ghost" iconRight="arrowR" onClick={onOpenCatalog} style={{ borderColor: t.line, color: t.ink }}>
+              Ver todos los cursos
+            </Button>
           </section>
+          )}
 
           {/* Completados */}
+          {completedList.length > 0 ? (
           <section style={{ padding: '28px 40px 50px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
-              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, letterSpacing: -0.4 }}>Completados · 2 cursos</h2>
-              <button style={{ background: 'none', border: 'none', color: t.muted, fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Ver diplomas →</button>
+              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, letterSpacing: -0.4 }}>
+                Completados · {completedList.length} {completedList.length === 1 ? 'curso' : 'cursos'}
+              </h2>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {completed.map((c, i) => <CompletedCard key={i} c={c} t={t} accent={accent}/>)}
+              {completedList.map((c, i) => (
+                <CompletedCard
+                  key={i}
+                  c={c}
+                  t={t}
+                  accent={accent}
+                  onOpen={c.certNumber ? () => onOpenDiploma?.(c.certNumber) : undefined}
+                />
+              ))}
             </div>
           </section>
+          ) : null}
         </main>
       </div>
     );
@@ -273,11 +318,16 @@ import type { TweakOptions } from './types';
   export function DashboardMobile({ tweak }: { tweak?: TweakOptions }) {
     const learn = useLearnDataOptional();
     const enrolledList = learn?.enrolled?.length ? learn.enrolled : enrolled;
+    const completedList = learn?.completed?.length ? learn.completed : completed;
     const onCourseOpen = learn?.onCourseOpen;
+    const onOpenCatalog = learn?.onOpenCatalog;
+    const onOpenDiploma = learn?.onOpenDiploma;
     const stats = learn?.stats;
+    const userName = firstName(learn?.userName);
     const t = useTheme(tweak);
     const { A: accent } = t;
     const open = (slug: string) => () => onCourseOpen?.(slug);
+    const hasCourses = enrolledList.length > 0;
     return (
       <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {/* Topbar */}
@@ -290,12 +340,20 @@ import type { TweakOptions } from './types';
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '18px 18px 100px' }}>
-          <Mono color={t.faint}>VIERNES · 22 MAYO</Mono>
+          <Mono color={t.faint}>{formatToday()}</Mono>
           <h1 style={{ margin: '6px 0 0', fontSize: 28, fontWeight: 800, letterSpacing: -1, lineHeight: 1.05 }}>
-            Te queda <span style={{ background: `linear-gradient(transparent 60%, ${accent.bg}aa 60%)`, padding: '0 3px' }}>una lección</span> para tu racha.
+            Hola {userName}. {hasCourses ? (
+              <>Continúa <span style={{ background: `linear-gradient(transparent 60%, ${accent.bg}aa 60%)`, padding: '0 3px' }}>aprendiendo</span>.</>
+            ) : 'Aún no tienes cursos.'}
           </h1>
 
-          {/* Main course (large) */}
+          {!hasCourses ? (
+            <div style={{ marginTop: 22, padding: 20, borderRadius: 16, border: `1px dashed ${t.line}`, color: t.muted, textAlign: 'center' }}>
+              <p style={{ margin: '0 0 12px' }}>Tras la compra te matricularán con tu email.</p>
+              <Button kind="ghost" onClick={onOpenCatalog} style={{ borderColor: t.line, color: t.ink }}>Ver catálogo</Button>
+            </div>
+          ) : (
+          <>
           <div style={{ marginTop: 22 }}>
             {enrolledList[0] ? (
               <CourseCard c={enrolledList[0]} t={t} accent={accent} large mobile onOpen={open(enrolledList[0].slug)}/>
@@ -310,37 +368,37 @@ import type { TweakOptions } from './types';
           <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
             {enrolledList.slice(1).map(c => <CourseCard key={c.slug} c={c} t={t} accent={accent} mobile onOpen={open(c.slug)}/>)}
           </div>
+          </>
+          )}
 
-          {/* Recommended */}
-          <div style={{ marginTop: 22 }}>
-            <Mono color={t.faint}>PARA TI</Mono>
-            <h2 style={{ margin: '4px 0 12px', fontSize: 16, fontWeight: 700, letterSpacing: -0.3 }}>Tres cursos que encajan ahora</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {recommended.slice(0, 2).map((c, i) => <RecCard key={i} c={c} t={t} accent={accent}/>)}
-            </div>
-          </div>
-
-          {/* Completed */}
+          {completedList.length > 0 ? (
           <div style={{ marginTop: 22 }}>
             <h2 style={{ margin: '0 0 10px', fontSize: 16, fontWeight: 700, letterSpacing: -0.3 }}>Completados</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {completed.map((c, i) => <CompletedCard key={i} c={c} t={t} accent={accent}/>)}
+              {completedList.map((c, i) => (
+                <CompletedCard
+                  key={i}
+                  c={c}
+                  t={t}
+                  accent={accent}
+                  onOpen={c.certNumber ? () => onOpenDiploma?.(c.certNumber) : undefined}
+                />
+              ))}
             </div>
           </div>
+          ) : null}
         </div>
 
         {/* Bottom nav */}
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: '10px 24px 22px', background: t.surface, borderTop: `1px solid ${t.line}`, display: 'flex', justifyContent: 'space-around' }}>
           {[
-            { ic: 'grid', label: 'Cursos', active: true },
-            { ic: 'play', label: 'Aprender' },
-            { ic: 'trophy', label: 'Logros' },
-            { ic: 'doc', label: 'Diplomas' },
+            { ic: 'grid', label: 'Cursos', active: true, action: learn?.onGoHome },
+            { ic: 'doc', label: 'Diplomas', action: completedList[0]?.certNumber ? () => onOpenDiploma?.(completedList[0].certNumber) : undefined },
           ].map((it, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, color: it.active ? t.ink : t.faint }}>
+            <button key={i} type="button" onClick={it.action} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, color: it.active ? t.ink : t.faint, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
               <Icon name={it.ic} size={20}/>
               <span style={{ fontSize: 10, fontWeight: it.active ? 700 : 500 }}>{it.label}</span>
-            </div>
+            </button>
           ))}
         </div>
       </div>
