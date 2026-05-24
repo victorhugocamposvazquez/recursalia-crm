@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -12,6 +12,24 @@ function safeRedirectTo(raw: string | null): string | null {
 }
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginPageInner />
+    </Suspense>
+  );
+}
+
+function LoginFallback() {
+  return (
+    <div className="login-page">
+      <div className="login-wrap">
+        <div className="login-card" aria-busy="true" />
+      </div>
+    </div>
+  );
+}
+
+function LoginPageInner() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
