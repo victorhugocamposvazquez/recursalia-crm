@@ -586,6 +586,21 @@ export default function CourseDetailPage() {
 
       {!editMode && (
         <>
+          <div className={styles.quizzesLinkCard}>
+            <div className={styles.quizzesLinkInfo}>
+              <h4 className={styles.quizzesLinkTitle}>Quizzes y examen final</h4>
+              <p className={styles.quizzesLinkLead}>
+                Genera con IA o crea manualmente los quizzes de cada módulo y el examen final
+                (boss fight) para que los alumnos puedan obtener el diploma.
+              </p>
+            </div>
+            <Link
+              href={`/dashboard/courses/${id}/quizzes`}
+              className={styles.quizzesLinkBtn}
+            >
+              Gestionar quizzes →
+            </Link>
+          </div>
           <PublishChecklist course={course} courseId={id} />
           <div className={styles.coverUploadCard}>
             <h4 className={styles.coverUploadTitle}>Portada</h4>

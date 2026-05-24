@@ -145,6 +145,69 @@ export async function getQuizMap(courseId: string): Promise<Record<string, strin
   return map;
 }
 
+export type CourseQuizSummary = {
+  id: string;
+  course_id: string;
+  topic_id: string | null;
+  lesson_id: string | null;
+  is_final: boolean;
+  title: string;
+  pass_threshold: number;
+  module_position: number | null;
+  question_count: number;
+};
+
+/**
+ * Devuelve un mapa de quizzes del curso por topic_id, con `final` como clave separada
+ * para el examen final. Si un mismo topic tiene quiz por módulo, gana sobre los lesson-quizzes.
+ */
+export async function getCourseQuizzesByTopic(
+  courseId: string
+): Promise<{
+  byTopic: Map<string, CourseQuizSummary>;
+  final: CourseQuizSummary | null;
+  all: CourseQuizSummary[];
+}> {
+  const admin = getSupabase();
+  const { data: quizzes } = await admin
+    .from('quizzes')
+    .select('id, course_id, topic_id, lesson_id, is_final, title, pass_threshold, module_position')
+    .eq('course_id', courseId);
+
+  const list = (quizzes ?? []) as Array<Omit<CourseQuizSummary, 'question_count'>>;
+  if (list.length === 0) {
+    return { byTopic: new Map(), final: null, all: [] };
+  }
+
+  const ids = list.map((q) => q.id);
+  const { data: counts } = await admin
+    .from('quiz_questions')
+    .select('quiz_id')
+    .in('quiz_id', ids);
+  const countMap = new Map<string, number>();
+  for (const row of counts ?? []) {
+    countMap.set(row.quiz_id as string, (countMap.get(row.quiz_id as string) ?? 0) + 1);
+  }
+
+  const summaries: CourseQuizSummary[] = list.map((q) => ({
+    ...q,
+    question_count: countMap.get(q.id) ?? 0,
+  }));
+
+  const byTopic = new Map<string, CourseQuizSummary>();
+  let final: CourseQuizSummary | null = null;
+  for (const q of summaries) {
+    if (q.is_final) {
+      final = q;
+      continue;
+    }
+    if (q.topic_id) {
+      byTopic.set(q.topic_id, q);
+    }
+  }
+  return { byTopic, final, all: summaries };
+}
+
 export async function buildEnrolledCards(
   userId: string,
   courses: CourseRecord[],

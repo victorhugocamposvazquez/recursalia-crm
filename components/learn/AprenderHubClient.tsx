@@ -42,6 +42,9 @@ export function AprenderHubClient(props: Props) {
       }
       router.push(`/aprender/cursos/${slug}/lecciones/${lessonUuid}`);
     },
+    onOpenTopicQuiz: (quizId) => {
+      router.push(`/aprender/cursos/${slug}/quiz/${quizId}`);
+    },
     onBackToHub: () => router.push('/aprender'),
     onGoHome: () => router.push('/aprender'),
     onStartExam: () => {

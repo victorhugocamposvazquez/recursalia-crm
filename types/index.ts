@@ -179,7 +179,12 @@ export interface UserStats {
 export interface QuizRecord {
   id: string;
   course_id: string;
+  /** Quiz vinculado a una lección concreta (legacy / micro-quiz). */
   lesson_id: string | null;
+  /** Quiz vinculado a un módulo (topic) completo del curso. */
+  topic_id: string | null;
+  /** Orden del quiz cuando es por módulo (0 = primero). */
+  module_position: number | null;
   title: string;
   is_final: boolean;
   time_limit_sec: number | null;

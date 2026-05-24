@@ -29,6 +29,8 @@ export interface Lesson {
 
 export interface Module {
   n: number;
+  /** UUID del topic dentro de `generated_content.topics` — usado para enlazar el quiz de módulo. */
+  topicId?: string;
   title: string;
   summary: string;
   isFinal?: boolean;

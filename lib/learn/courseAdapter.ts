@@ -113,6 +113,7 @@ export function buildLearnModules(
 
     modules.push({
       n: ti + 1,
+      topicId: topic.id,
       title: topic.title,
       summary: '',
       isFinal: ti === (gc.topics?.length ?? 1) - 1,

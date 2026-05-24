@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "promote-admin": "tsx scripts/promote-to-admin.ts",
+    "seed-quizzes": "tsx scripts/seed-course-quizzes.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.2.8",

@@ -19,3 +19,8 @@ export const FRONT_ADMIN_NAV = [
 export const APRENDER_NAV = [
   { href: '/aprender', label: 'Área alumno' },
 ] as const;
+
+/** Administración interna */
+export const ADMIN_NAV = [
+  { href: '/dashboard/usuarios', label: 'Usuarios y roles' },
+] as const;

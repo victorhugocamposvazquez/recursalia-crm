@@ -185,10 +185,13 @@ import type { TweakOptions } from './types';
     const course = learn?.course ?? mockCourse;
     const modules = learn?.modules ?? mockModules;
     const onLessonOpen = learn?.onLessonOpen;
+    const onOpenTopicQuiz = learn?.onOpenTopicQuiz;
     const onGoHome = learn?.onGoHome;
     const onStartExam = learn?.onStartExam;
     const currentLesson = learn?.currentLesson;
     const examUnlocked = learn?.examUnlocked;
+    const quizByTopic = learn?.quizByTopic ?? {};
+    const finalQuizMeta = learn?.finalQuizMeta ?? null;
     const lessonStats = modules.reduce((acc, m) => {
       acc.total += m.lessons.length;
       acc.done += m.lessons.filter(l => l.state === 'done').length;
@@ -255,17 +258,26 @@ import type { TweakOptions } from './types';
             <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
               {modules.map((m, mi) => {
                 const completed = m.lessons.filter(l => l.state === 'done').length;
+                const moduleQuiz = m.topicId ? quizByTopic[m.topicId] : null;
+                const moduleQuizUnlocked = m.lessons.every(l => l.state === 'done');
                 return (
                   <div key={m.n} style={{ paddingBottom: mi < modules.length - 1 ? 12 : 0, borderBottom: mi < modules.length - 1 ? `1px solid ${t.line}` : 'none' }}>
                     <ModuleHeader m={m} t={t} accent={accent} completedCount={completed} totalCount={m.lessons.length} isFinal={m.isFinal}/>
                     {m.isFinal ? (
-                      <BossCard t={t} accent={accent} l={m.lessons[0]} unlocked={examUnlocked} onOpen={onStartExam}/>
+                      <BossCard t={t} accent={accent} title={finalQuizMeta?.title ?? 'Examen final del curso'} questionCount={finalQuizMeta?.question_count ?? 0} unlocked={examUnlocked} onOpen={onStartExam}/>
                     ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 74 }}>
-                        {m.lessons.map(l => (
-                          <LessonRow key={l.id} l={l} t={t} accent={accent} onOpen={() => l.state !== 'locked' && onLessonOpen?.(l.id, l.kind)}/>
-                        ))}
-                      </div>
+                      <>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 74 }}>
+                          {m.lessons.map(l => (
+                            <LessonRow key={l.id} l={l} t={t} accent={accent} onOpen={() => l.state !== 'locked' && onLessonOpen?.(l.id, l.kind)}/>
+                          ))}
+                        </div>
+                        {moduleQuiz ? (
+                          <div style={{ marginLeft: 74 }}>
+                            <ModuleQuizRow t={t} accent={accent} quiz={moduleQuiz} unlocked={moduleQuizUnlocked} onOpen={() => onOpenTopicQuiz?.(moduleQuiz.id)}/>
+                          </div>
+                        ) : null}
+                      </>
                     )}
                   </div>
                 );
@@ -295,7 +307,7 @@ import type { TweakOptions } from './types';
     );
   }
 
-  function BossCard({ t, accent, l, unlocked, onOpen }) {
+  function BossCard({ t, accent, title, questionCount, unlocked, onOpen }) {
     return (
       <div style={{
         marginLeft: 74, padding: 22, borderRadius: 18,
@@ -306,8 +318,11 @@ import type { TweakOptions } from './types';
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Chip mono size="sm" bg={t.ink} color={t.bg}>EXAMEN FINAL</Chip>
+            {questionCount > 0 ? (
+              <Mono color={t.faint}>{questionCount} preguntas</Mono>
+            ) : null}
           </div>
-          <div style={{ marginTop: 8, fontSize: 18, fontWeight: 700, letterSpacing: -0.4, color: t.ink }}>{l?.title ?? 'Examen final del curso'}</div>
+          <div style={{ marginTop: 8, fontSize: 18, fontWeight: 700, letterSpacing: -0.4, color: t.ink }}>{title ?? 'Examen final del curso'}</div>
           <div style={{ marginTop: 4, fontSize: 13, color: t.muted, maxWidth: 480 }}>
             {unlocked
               ? 'Has completado todas las lecciones. Aprueba con 70% para obtener tu diploma.'
@@ -323,16 +338,65 @@ import type { TweakOptions } from './types';
     );
   }
 
+  function ModuleQuizRow({ t, accent, quiz, unlocked, onOpen }) {
+    const passed = quiz.bestScore != null && quiz.bestScore >= (quiz.pass_threshold ?? 0.7);
+    return (
+      <div style={{
+        marginTop: 12, padding: '14px 16px', borderRadius: 14,
+        background: t.dark ? 'rgba(255,255,255,0.03)' : t.surface2,
+        border: `1px solid ${t.line}`,
+        display: 'flex', alignItems: 'center', gap: 14,
+        cursor: unlocked ? 'pointer' : 'not-allowed',
+        opacity: unlocked ? 1 : 0.7,
+      }} onClick={() => unlocked && onOpen?.()}>
+        <div style={{
+          width: 36, height: 36, borderRadius: 18,
+          background: passed ? accent.bg : (unlocked ? '#1b38c4' : t.lineSoft),
+          color: passed ? accent.fg : (unlocked ? '#FFF' : t.faint),
+          display: 'grid', placeItems: 'center', flexShrink: 0,
+        }}>
+          <Icon name={passed ? 'check' : 'target'} size={16} sw={2.5}/>
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+            <Mono color={t.faint} size={10}>QUIZ DEL MÓDULO</Mono>
+            {quiz.question_count > 0 ? <Mono color={t.faint} size={10}>· {quiz.question_count} preguntas</Mono> : null}
+          </div>
+          <div style={{ fontWeight: 600, fontSize: 14.5, color: t.ink, letterSpacing: -0.2 }}>
+            {quiz.title}
+          </div>
+          {quiz.bestScore != null ? (
+            <div style={{ marginTop: 2, fontSize: 12, color: passed ? (accent.bg === '#C8F542' ? '#5A7B0E' : accent.bg) : t.muted, fontWeight: 600 }}>
+              Mejor resultado: {Math.round(quiz.bestScore * 100)}% {passed ? '· Aprobado' : '· Inténtalo de nuevo'}
+            </div>
+          ) : (
+            <div style={{ marginTop: 2, fontSize: 12, color: t.muted }}>
+              {unlocked ? 'Pon a prueba lo que has aprendido en este módulo.' : 'Completa las lecciones del módulo para desbloquear.'}
+            </div>
+          )}
+        </div>
+        {unlocked ? (
+          <Icon name="arrowR" size={16}/>
+        ) : (
+          <Icon name="lock" size={14}/>
+        )}
+      </div>
+    );
+  }
+
   // ── HUB MOBILE ─────────────────────────────────────────────────────────────
   export function HubMobile({ tweak }: { tweak?: TweakOptions }) {
     const learn = useLearnDataOptional();
     const course = learn?.course ?? mockCourse;
     const modules = learn?.modules ?? mockModules;
     const onLessonOpen = learn?.onLessonOpen;
+    const onOpenTopicQuiz = learn?.onOpenTopicQuiz;
     const onGoHome = learn?.onGoHome;
     const onStartExam = learn?.onStartExam;
     const currentLesson = learn?.currentLesson;
     const examUnlocked = learn?.examUnlocked;
+    const quizByTopic = learn?.quizByTopic ?? {};
+    const finalQuizMeta = learn?.finalQuizMeta ?? null;
     const lessonStats = modules.reduce((acc, m) => {
       acc.total += m.lessons.length;
       acc.done += m.lessons.filter(l => l.state === 'done').length;
@@ -395,6 +459,8 @@ import type { TweakOptions } from './types';
               {modules.map(m => {
                 const completed = m.lessons.filter(l => l.state === 'done').length;
                 const pct = m.lessons.length ? completed / m.lessons.length : 0;
+                const moduleQuiz = m.topicId ? quizByTopic[m.topicId] : null;
+                const moduleQuizUnlocked = m.lessons.every(l => l.state === 'done');
                 return (
                   <div key={m.n}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
@@ -408,10 +474,19 @@ import type { TweakOptions } from './types';
                     </div>
                     <div style={{ marginLeft: 38, display: 'flex', flexDirection: 'column', gap: 0 }}>
                       {m.isFinal ? (
-                        <BossCard t={t} accent={accent} l={m.lessons[0]} unlocked={examUnlocked} onOpen={onStartExam}/>
-                      ) : m.lessons.map(l => (
-                        <LessonRow key={l.id} l={l} t={t} accent={accent} compact onOpen={() => l.state !== 'locked' && onLessonOpen?.(l.id, l.kind)}/>
-                      ))}
+                        <BossCard t={t} accent={accent} title={finalQuizMeta?.title ?? 'Examen final del curso'} questionCount={finalQuizMeta?.question_count ?? 0} unlocked={examUnlocked} onOpen={onStartExam}/>
+                      ) : (
+                        <>
+                          {m.lessons.map(l => (
+                            <LessonRow key={l.id} l={l} t={t} accent={accent} compact onOpen={() => l.state !== 'locked' && onLessonOpen?.(l.id, l.kind)}/>
+                          ))}
+                          {moduleQuiz ? (
+                            <div style={{ marginTop: 8 }}>
+                              <ModuleQuizRow t={t} accent={accent} quiz={moduleQuiz} unlocked={moduleQuizUnlocked} onOpen={() => onOpenTopicQuiz?.(moduleQuiz.id)}/>
+                            </div>
+                          ) : null}
+                        </>
+                      )}
                     </div>
                   </div>
                 );

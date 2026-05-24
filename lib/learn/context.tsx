@@ -56,7 +56,26 @@ export type LearnContextValue = {
   onCourseOpen?: (slug: string) => void;
   stats?: { xp: number; streak_days: number; level: number };
   quizByLesson?: Record<string, string>;
+  /** Quiz por topic (módulo): topicId → metadata. */
+  quizByTopic?: Record<
+    string,
+    {
+      id: string;
+      title: string;
+      question_count: number;
+      pass_threshold: number;
+      bestScore: number | null;
+    }
+  >;
+  /** Abrir el quiz de un módulo concreto. */
+  onOpenTopicQuiz?: (quizId: string) => void;
   finalQuizId?: string | null;
+  /** Metadata del examen final (si existe). */
+  finalQuizMeta?: {
+    id: string;
+    title: string;
+    question_count: number;
+  } | null;
   examUnlocked?: boolean;
 };
 

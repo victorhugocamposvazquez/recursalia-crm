@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { APRENDER_NAV, CURSOS_NAV, FRONT_ADMIN_NAV } from './nav-items';
+import { ADMIN_NAV, APRENDER_NAV, CURSOS_NAV, FRONT_ADMIN_NAV } from './nav-items';
 import { isCursosNavActive, isFrontNavActive } from './nav-utils';
 import styles from './layout.module.css';
 
@@ -71,6 +71,27 @@ export function DashboardNav({ onNavigate }: DashboardNavProps) {
               </Link>
             </li>
           ))}
+        </ul>
+      </div>
+
+      <div className={styles.navGroup}>
+        <p className={styles.navGroupTitle}>Administración</p>
+        <ul className={styles.navList}>
+          {ADMIN_NAV.map((item) => {
+            const active = pathname?.startsWith(item.href);
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={`${styles.navItem} ${active ? styles.navItemActive : ''}`}
+                  onClick={onNavigate}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>
