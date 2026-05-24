@@ -25,12 +25,20 @@
   color: #1b1d1e;
   text-decoration: none;
   flex-shrink: 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
 }
 
-.brandLogo {
-  display: block;
-  height: 30px;
-  width: auto;
+.brandMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b38c4;
+}
+
+.brandText {
+  font-family: var(--font-marketing), 'Plus Jakarta Sans', sans-serif;
 }
 
 .nav {

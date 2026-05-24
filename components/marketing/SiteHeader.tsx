@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -53,15 +52,24 @@ export function SiteHeader() {
             className={`${styles.bar} ${sticky ? styles.barSticky : ''} ${courseLanding ? styles.barCourseLanding : ''} ${isInspiracion ? styles.barInverted : ''}`.trim()}
             aria-label="Principal"
           >
-            <Link href="/" className={styles.logo} aria-label="Recursalia">
-              <Image
-                src="/logos/recursalia-logo.png"
-                alt="Recursalia"
-                width={156}
-                height={32}
-                priority
-                className={styles.logoImage}
-              />
+            <Link href="/" className={styles.logo}>
+              <span className={styles.logoMark} aria-hidden>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 2L21 7V17L12 22L3 17V7L12 2Z"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M7 10L12 12.5L17 10"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              <span className={styles.logoText}>Recursalia</span>
             </Link>
 
             <div className={styles.headerSearch} role="search">

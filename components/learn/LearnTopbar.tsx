@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import styles from './LearnTopbar.module.css';
@@ -75,14 +74,29 @@ export function LearnTopbar({ email, role }: LearnTopbarProps) {
     <header className={styles.bar}>
       <div className={styles.inner}>
         <Link href="/aprender" className={styles.brand} aria-label="Recursalia Aprender">
-          <Image
-            src="/logos/recursalia-logo.png"
-            alt="Recursalia"
-            width={166}
-            height={58}
-            priority
-            className={styles.brandLogo}
-          />
+          <span className={styles.brandMark} aria-hidden>
+            <svg
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2L21 7V17L12 22L3 17V7L12 2Z"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M7 10L12 12.5L17 10"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+          <span className={styles.brandText}>Recursalia</span>
         </Link>
 
         <nav className={styles.nav} aria-label="Navegación de aprender">

@@ -87,12 +87,6 @@
   font-family: var(--font-marketing), sans-serif;
 }
 
-.logoImage {
-  height: 1.85rem;
-  width: auto;
-  display: block;
-}
-
 .navCluster {
   display: none;
   align-items: center;
@@ -168,14 +162,15 @@
   display: none;
   align-items: center;
   justify-content: center;
-  gap: 1.1rem;
+  gap: 0.6rem;
   margin-left: 6rem;
-  padding: .38rem .52rem .38rem 1.2rem;
+  height: 2.4rem;
+  padding: 0 0.36rem 0 1.05rem;
   background: #1b38c4;
   color: #ffffff !important;
   border-radius: 9999px;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: 0.88rem;
   letter-spacing: -0.01em;
   text-decoration: none;
   transition:
@@ -205,8 +200,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 1.7rem;
+  height: 1.7rem;
   border-radius: 9999px;
   background: #ffffff;
   color: #1b38c4;
