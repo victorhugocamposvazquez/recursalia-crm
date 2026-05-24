@@ -8,6 +8,12 @@
   box-sizing: border-box;
 }
 
+@media (max-width: 959px) {
+  .learn-main {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4rem);
+  }
+}
+
 @keyframes rx-pulse {
   0%,
   100% {

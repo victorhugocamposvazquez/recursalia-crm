@@ -1,5 +1,6 @@
 import { requireLearnUser } from '@/lib/learn/access';
 import { getSupabase } from '@/lib/supabase';
+import { getProfileRole } from '@/lib/learn/lmsServer';
 import { LearnCatalog, type CatalogCourse } from '@/components/learn/LearnCatalog';
 import type { CourseRecord } from '@/types';
 
@@ -9,18 +10,21 @@ export default async function LearnCatalogPage() {
   const user = await requireLearnUser();
   const admin = getSupabase();
 
-  const { data: courses } = await admin
-    .from('courses')
-    .select(
-      'id, public_slug, published_title, meta_description, featured_image_url, catalog_category, generated_content, expanded_content, status, published_at'
-    )
-    .eq('status', 'published')
-    .order('published_at', { ascending: false });
-
-  const { data: enrollments } = await admin
-    .from('user_courses')
-    .select('course_id, completed_at')
-    .eq('user_id', user.id);
+  const [{ data: courses }, { data: enrollments }, role] = await Promise.all([
+    admin
+      .from('courses')
+      .select(
+        'id, public_slug, published_title, meta_description, featured_image_url, catalog_category, generated_content, expanded_content, status, published_at'
+      )
+      .eq('status', 'published')
+      .order('published_at', { ascending: false }),
+    admin
+      .from('user_courses')
+      .select('course_id, completed_at')
+      .eq('user_id', user.id),
+    getProfileRole(user.id),
+  ]);
+  const isAdmin = role === 'admin';
 
   const enrolledMap = new Map<string, { completed: boolean }>();
   for (const row of enrollments ?? []) {
@@ -60,5 +64,5 @@ export default async function LearnCatalogPage() {
     };
   });
 
-  return <LearnCatalog courses={items} />;
+  return <LearnCatalog courses={items} isAdmin={isAdmin} />;
 }

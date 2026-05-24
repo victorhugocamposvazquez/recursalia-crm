@@ -15,11 +15,20 @@ export default async function AprenderPage() {
   const user = await requireLearnUser();
   await ensureUserStats(user.id);
 
-  const courses = await getEnrolledCourses(user.id);
-  const stats = await getUserStats(user.id);
-  const enrolled = await buildEnrolledCards(user.id, courses, stats);
-
+  const [courses, stats, diplomas] = await Promise.all([
+    getEnrolledCourses(user.id),
+    getUserStats(user.id),
+    getUserDiplomas(user.id),
+  ]);
   const primary = courses[0];
+
+  const [enrolled, primaryProgress] = await Promise.all([
+    buildEnrolledCards(user.id, courses, stats),
+    primary?.generated_content
+      ? getLessonProgressMap(user.id, primary.id)
+      : Promise.resolve(null),
+  ]);
+
   let learnCourse: Course = {
     slug: 'demo',
     title: 'Mis cursos',
@@ -35,13 +44,11 @@ export default async function AprenderPage() {
     xp: stats.xp,
   };
 
-  if (primary?.generated_content) {
-    const progress = await getLessonProgressMap(user.id, primary.id);
-    const pct = computeCompletionPct(primary.generated_content, progress);
+  if (primary?.generated_content && primaryProgress) {
+    const pct = computeCompletionPct(primary.generated_content, primaryProgress);
     learnCourse = buildLearnCourseMeta(primary, pct, stats);
   }
 
-  const diplomas = await getUserDiplomas(user.id);
   const completed = diplomas.map((d) => {
     const courseRow = d.courses as {
       published_title?: string;

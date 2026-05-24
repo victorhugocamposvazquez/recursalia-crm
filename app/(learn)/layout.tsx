@@ -38,11 +38,9 @@ export default async function LearnLayout({ children }: { children: React.ReactN
     redirect('/login?redirectTo=/aprender');
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .maybeSingle();
+  const [{ data: profile }] = await Promise.all([
+    supabase.from('profiles').select('role').eq('id', user.id).maybeSingle(),
+  ]);
 
   const role: 'admin' | 'student' = profile?.role === 'admin' ? 'admin' : 'student';
 
@@ -58,7 +56,12 @@ export default async function LearnLayout({ children }: { children: React.ReactN
       }}
     >
       <LearnTopbar email={user.email ?? ''} role={role} />
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>{children}</main>
+      <main
+        style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
+        className="learn-main"
+      >
+        {children}
+      </main>
     </div>
   );
 }

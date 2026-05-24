@@ -148,14 +148,24 @@ export async function getQuizMap(courseId: string): Promise<Record<string, strin
 export async function buildEnrolledCards(
   userId: string,
   courses: CourseRecord[],
-  stats: UserStatsRow
+  _stats: UserStatsRow
 ): Promise<EnrolledCourseCard[]> {
+  void _stats;
+  const withContent = courses.filter((c) => Boolean(c.generated_content));
+
+  const fetched = await Promise.all(
+    withContent.map(async (c) => {
+      const [progress, quizIds] = await Promise.all([
+        getLessonProgressMap(userId, c.id),
+        getQuizLessonIds(c.id),
+      ]);
+      return { course: c, progress, quizIds };
+    })
+  );
+
   const cards: EnrolledCourseCard[] = [];
-  for (const c of courses) {
-    const gc = c.generated_content;
-    if (!gc) continue;
-    const progress = await getLessonProgressMap(userId, c.id);
-    const quizIds = await getQuizLessonIds(c.id);
+  for (const { course: c, progress, quizIds } of fetched) {
+    const gc = c.generated_content!;
     const modules = buildLearnModules(gc, progress, quizIds);
     const current = findCurrentLessonFromModules(modules);
     const pct = computeCompletionPct(gc, progress);

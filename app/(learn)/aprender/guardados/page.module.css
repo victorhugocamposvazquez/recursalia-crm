@@ -1,0 +1,142 @@
+.page {
+  width: 100%;
+  min-height: 100%;
+  background: #f8fafc;
+  padding: 32px 0 64px;
+}
+
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(15 23 42 / 50%);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 42px);
+  letter-spacing: -1px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.05;
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 60ch;
+  color: rgb(15 23 42 / 65%);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 56px 32px;
+  background: #ffffff;
+  border: 1px dashed rgb(15 23 42 / 14%);
+  border-radius: 22px;
+}
+
+.emptyIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 86px;
+  height: 86px;
+  border-radius: 9999px;
+  background: rgb(27 56 196 / 8%);
+  color: #1b38c4;
+}
+
+.emptyTitle {
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: #0f172a;
+}
+
+.emptyText {
+  margin: 0;
+  max-width: 52ch;
+  color: rgb(15 23 42 / 65%);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 2.5rem;
+  padding: 0 1.05rem;
+  border-radius: 9999px;
+  background: #1b38c4;
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  border: 1px solid #1b38c4;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.btnPrimary:hover {
+  background: #142a99;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -10px rgb(27 56 196 / 50%);
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 2.5rem;
+  padding: 0 1.05rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #0f172a !important;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  border: 1px solid rgb(15 23 42 / 14%);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btnGhost:hover {
+  background: #f1f5f9;
+  border-color: rgb(15 23 42 / 22%);
+}

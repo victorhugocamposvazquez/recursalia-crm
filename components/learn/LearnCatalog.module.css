@@ -239,7 +239,7 @@
 }
 
 .badgeMine {
-  background: #1b1d1e;
+  background: #1b38c4;
   color: #ffffff;
 }
 
@@ -314,7 +314,8 @@
 
 .btnPrimary,
 .btnGhost,
-.btnDisabled {
+.btnDisabled,
+.btnAdminUnenroll {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -324,25 +325,33 @@
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  border: 1px solid transparent;
+  font-family: inherit;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btnPrimary {
-  background: #1b1d1e;
+  background: #1b38c4;
   color: #ffffff !important;
-  border: 1px solid #1b1d1e;
+  border-color: #1b38c4;
+  box-shadow: 0 6px 18px -10px rgb(27 56 196 / 50%);
 }
 
-.btnPrimary:hover {
-  background: #1b38c4;
-  border-color: #1b38c4;
+.btnPrimary:hover:not(:disabled) {
+  background: #142a99;
+  border-color: #142a99;
   transform: translateY(-1px);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.7;
+  cursor: progress;
 }
 
 .btnGhost {
   background: transparent;
   color: #0f172a !important;
-  border: 1px solid rgb(15 23 42 / 14%);
+  border-color: rgb(15 23 42 / 14%);
 }
 
 .btnGhost:hover {
@@ -354,6 +363,36 @@
   color: rgb(15 23 42 / 55%);
   border: 1px dashed rgb(15 23 42 / 18%);
   cursor: not-allowed;
+}
+
+.btnAdminUnenroll {
+  margin-top: 0.35rem;
+  background: rgb(27 56 196 / 8%);
+  color: #1b38c4 !important;
+  border: 1px dashed rgb(27 56 196 / 35%);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+  align-self: flex-start;
+}
+
+.btnAdminUnenroll:hover:not(:disabled) {
+  background: rgb(27 56 196 / 14%);
+  border-style: solid;
+}
+
+.btnAdminUnenroll:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.cardError {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  background: rgb(248 113 113 / 12%);
+  color: #b91c1c;
+  font-size: 0.78rem;
+  font-weight: 500;
 }
 
 .empty {

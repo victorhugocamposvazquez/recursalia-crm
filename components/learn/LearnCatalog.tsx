@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './LearnCatalog.module.css';
 
 export type CatalogCourse = {
@@ -29,7 +30,13 @@ function formatDuration(min: number | null) {
   return m ? `${h} h ${m} m` : `${h} h`;
 }
 
-export function LearnCatalog({ courses }: { courses: CatalogCourse[] }) {
+export function LearnCatalog({
+  courses,
+  isAdmin = false,
+}: {
+  courses: CatalogCourse[];
+  isAdmin?: boolean;
+}) {
   const [filter, setFilter] = useState<Filter>('all');
   const [query, setQuery] = useState('');
 
@@ -137,7 +144,7 @@ export function LearnCatalog({ courses }: { courses: CatalogCourse[] }) {
         ) : (
           <div className={styles.grid}>
             {filtered.map((c) => (
-              <CourseCard key={c.id} c={c} />
+              <CourseCard key={c.id} c={c} isAdmin={isAdmin} />
             ))}
           </div>
         )}
@@ -185,10 +192,61 @@ function Stat({
   );
 }
 
-function CourseCard({ c }: { c: CatalogCourse }) {
+function CourseCard({ c, isAdmin }: { c: CatalogCourse; isAdmin: boolean }) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const dur = formatDuration(c.totalDurationMinutes);
   const enrolledRoute = `/aprender/cursos/${c.slug}`;
   const previewRoute = `/cursos/${c.slug}`;
+
+  async function adminEnroll() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/learn/enrollments/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseId: c.id }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(data?.error ?? 'No se pudo matricular');
+      }
+      startTransition(() => {
+        if (c.hasLmsContent) {
+          router.push(enrolledRoute);
+        } else {
+          router.refresh();
+        }
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function adminUnenroll() {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/learn/enrollments/admin?courseId=${encodeURIComponent(c.id)}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(data?.error ?? 'No se pudo desmatricular');
+      }
+      startTransition(() => router.refresh());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Error');
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <article className={styles.card}>
@@ -245,14 +303,45 @@ function CourseCard({ c }: { c: CatalogCourse }) {
               <span className={styles.btnDisabled}>Contenido en preparación</span>
             )
           ) : (
-            <Link href={previewRoute} className={styles.btnPrimary} target="_blank" rel="noopener">
-              Ver detalle y comprar
-            </Link>
+            <>
+              {isAdmin ? (
+                <button
+                  type="button"
+                  onClick={adminEnroll}
+                  disabled={busy || isPending}
+                  className={styles.btnPrimary}
+                >
+                  {busy ? 'Matriculando…' : 'Matricularme (admin)'}
+                </button>
+              ) : (
+                <Link
+                  href={previewRoute}
+                  className={styles.btnPrimary}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  Ver detalle y comprar
+                </Link>
+              )}
+            </>
           )}
           <Link href={previewRoute} className={styles.btnGhost} target="_blank" rel="noopener">
             Ficha pública ↗
           </Link>
         </div>
+
+        {isAdmin && c.enrolled ? (
+          <button
+            type="button"
+            onClick={adminUnenroll}
+            disabled={busy || isPending}
+            className={styles.btnAdminUnenroll}
+          >
+            {busy ? 'Desmatriculando…' : 'Desmatricularme (admin)'}
+          </button>
+        ) : null}
+
+        {error ? <p className={styles.cardError}>{error}</p> : null}
       </div>
     </article>
   );
