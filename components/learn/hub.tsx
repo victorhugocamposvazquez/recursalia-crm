@@ -1,6 +1,7 @@
 // @ts-nocheck — see README for typing guidance on internal helpers
 'use client';
 import React from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme, Logo, Icon, Button, Progress, Chip, Mono, fmt } from './tokens';
 import { mockCourse, mockModules } from '@/lib/learn-mock';
@@ -25,14 +26,44 @@ import type { TweakOptions } from './types';
   };
   const kindLabel = {
     video: 'Vídeo',
-    text:  'Lectura',
+    text:  'Lección',
     audio: 'Audio',
     quiz:  'Quiz',
     boss:  'Examen',
   };
 
+  function lessonHref(slug, l, quizByLesson, examUnlocked) {
+    if (!slug) return null;
+    if (l.state === 'locked') return null;
+    if (l.kind === 'quiz') {
+      const qid = (quizByLesson && quizByLesson[l.id]) || l.id;
+      return `/aprender/cursos/${slug}/quiz/${qid}`;
+    }
+    if (l.kind === 'boss') {
+      return examUnlocked ? `/aprender/cursos/${slug}/examen` : null;
+    }
+    return `/aprender/cursos/${slug}/lecciones/${l.id}`;
+  }
+
+  function resumeHref(slug, currentLesson, modules, quizByLesson, examUnlocked) {
+    if (!slug) return null;
+    if (currentLesson) {
+      const flat = (modules ?? []).flatMap(m => m.lessons ?? []);
+      const found = flat.find(l => l.id === currentLesson.id);
+      if (found) return lessonHref(slug, found, quizByLesson, examUnlocked);
+    }
+    for (const m of modules ?? []) {
+      for (const l of m.lessons ?? []) {
+        if (l.state !== 'locked' && l.kind !== 'boss') {
+          return lessonHref(slug, l, quizByLesson, examUnlocked);
+        }
+      }
+    }
+    return null;
+  }
+
   // Tarjeta de lección dentro de un módulo
-  function LessonRow({ l, t, accent, compact, onOpen }) {
+  function LessonRow({ l, t, accent, compact, href }) {
     const isCurrent = l.state === 'current';
     const isDone = l.state === 'done';
     const isLocked = l.state === 'locked';
@@ -59,24 +90,21 @@ import type { TweakOptions } from './types';
       );
     })();
 
-    return (
-      <button
-        type="button"
-        disabled={isLocked}
-        onClick={() => { if (!isLocked) onOpen?.(); }}
-        style={{
-          display: 'flex', alignItems: 'center', gap: compact ? 10 : 14,
-          padding: compact ? '12px 14px' : '14px 16px',
-          width: '100%', textAlign: 'left',
-          background: isCurrent ? (t.dark ? 'rgba(255,255,255,0.04)' : '#FFF') : 'transparent',
-          border: isCurrent ? `1.5px solid ${BRAND}` : '1px solid transparent',
-          borderRadius: 14, cursor: isLocked ? 'not-allowed' : 'pointer',
-          color: 'inherit', fontFamily: 'inherit',
-          transition: 'background .15s ease, border-color .15s ease',
-          opacity: isLocked ? 0.55 : 1,
-          WebkitTapHighlightColor: 'transparent',
-        }}
-      >
+    const sharedStyle: React.CSSProperties = {
+      display: 'flex', alignItems: 'center', gap: compact ? 10 : 14,
+      padding: compact ? '12px 14px' : '14px 16px',
+      width: '100%', textAlign: 'left',
+      background: isCurrent ? (t.dark ? 'rgba(255,255,255,0.04)' : '#FFF') : 'transparent',
+      border: isCurrent ? `1.5px solid ${BRAND}` : '1px solid transparent',
+      borderRadius: 14, cursor: isLocked ? 'not-allowed' : 'pointer',
+      color: 'inherit', fontFamily: 'inherit', textDecoration: 'none',
+      transition: 'background .15s ease, border-color .15s ease',
+      opacity: isLocked ? 0.55 : 1,
+      WebkitTapHighlightColor: 'transparent',
+    };
+
+    const inner = (
+      <>
         {statusDot}
         <Mono color={t.faint} style={{ width: compact ? 26 : 30, flexShrink: 0, fontSize: compact ? 11 : undefined }}>{l.code ?? l.id}</Mono>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -105,7 +133,18 @@ import type { TweakOptions } from './types';
             <Icon name="arrowR" size={14}/>
           </div>
         )}
-      </button>
+      </>
+    );
+
+    if (isLocked || !href) {
+      return (
+        <div style={sharedStyle} aria-disabled={isLocked || undefined}>{inner}</div>
+      );
+    }
+    return (
+      <Link href={href} prefetch={false} style={sharedStyle}>
+        {inner}
+      </Link>
     );
   }
 
@@ -140,11 +179,23 @@ import type { TweakOptions } from './types';
   }
 
   // Tarjeta «continuar» con datos reales del contexto
-  function ContinueCard({ t, accent, course, currentLesson, onResume, mobile }) {
+  function ContinueCard({ t, accent, course, currentLesson, href, mobile }) {
+    const hasProgress = course.completion > 0;
+    const cta = !currentLesson
+      ? 'Ir al curso'
+      : hasProgress
+        ? 'Reanudar lección'
+        : 'Empezar lección';
+    const headline = !currentLesson
+      ? 'CONTINÚA DONDE LO DEJASTE'
+      : hasProgress
+        ? 'CONTINÚA DONDE LO DEJASTE'
+        : 'EMPIEZA AHORA';
     const title = currentLesson?.title ?? 'Empezar curso';
     const meta = currentLesson
       ? `${currentLesson.code ? `Lección ${currentLesson.code}` : 'Lección'} · ${currentLesson.dur}`
       : `${Math.round(course.completion * 100)}% completado`;
+    const disabled = !href;
     return (
       <div style={{
         width: mobile ? '100%' : 320,
@@ -158,7 +209,7 @@ import type { TweakOptions } from './types';
         boxShadow: '0 16px 40px -16px rgb(27 56 196 / 45%)',
       }}>
         <div style={{ position: 'absolute', top: mobile ? -30 : -40, right: mobile ? -30 : -40, width: mobile ? 120 : 160, height: mobile ? 120 : 160, borderRadius: '50%', background: 'radial-gradient(circle, rgb(255 255 255 / 18%), transparent 70%)' }}/>
-        <Mono color="rgb(255 255 255 / 75%)" size={mobile ? 9 : 10}>CONTINÚA DONDE LO DEJASTE</Mono>
+        <Mono color="rgb(255 255 255 / 75%)" size={mobile ? 9 : 10}>{headline}</Mono>
         <div style={{ marginTop: mobile ? 8 : 10, fontSize: mobile ? 18 : 20, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.2, color: '#ffffff' }}>
           {title}
         </div>
@@ -167,81 +218,35 @@ import type { TweakOptions } from './types';
           <Progress value={course.completion} color="#ffffff" track="rgba(255,255,255,0.22)" height={mobile ? 4 : 5}/>
         </div>
         <div style={{ position: 'relative', zIndex: 1, marginTop: mobile ? 14 : 18 }}>
-          <Button bg="#ffffff" fg={BRAND} icon="play" size={mobile ? 'sm' : 'md'} style={{ width: '100%', justifyContent: 'center' }} onClick={onResume}>
-            {currentLesson ? 'Reanudar lección' : 'Ir al curso'}
-          </Button>
+          {disabled ? (
+            <span style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              width: '100%', padding: mobile ? '10px 18px' : '12px 20px', borderRadius: 999,
+              background: 'rgba(255,255,255,0.4)', color: '#ffffff',
+              fontWeight: 600, fontSize: mobile ? 13 : 14, opacity: 0.7,
+            }}>
+              <Icon name="lock" size={mobile ? 14 : 16}/>
+              <span>{cta}</span>
+            </span>
+          ) : (
+            <Link
+              href={href}
+              prefetch={false}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                width: '100%', padding: mobile ? '10px 18px' : '12px 20px', borderRadius: 999,
+                background: '#ffffff', color: BRAND, textDecoration: 'none',
+                fontWeight: 700, fontSize: mobile ? 13 : 14, letterSpacing: -0.2,
+                WebkitTapHighlightColor: 'transparent',
+              }}
+            >
+              <Icon name="play" size={mobile ? 14 : 16}/>
+              <span>{cta}</span>
+            </Link>
+          )}
         </div>
       </div>
     );
-  }
-
-  function resumeCurrent(currentLesson, openLesson, startExam, modules) {
-    if (currentLesson) {
-      if (currentLesson.kind === 'boss') {
-        startExam?.();
-        return;
-      }
-      for (const m of modules ?? []) {
-        const found = m.lessons?.find(l => l.id === currentLesson.id);
-        if (found && found.state !== 'locked') {
-          openLesson(found);
-          return;
-        }
-      }
-      return;
-    }
-    for (const m of modules ?? []) {
-      for (const l of m.lessons ?? []) {
-        if (l.state !== 'locked' && l.kind !== 'boss') {
-          openLesson(l);
-          return;
-        }
-      }
-    }
-  }
-  function useHubNavigation(learn) {
-    const router = useRouter();
-    const courseSlug = learn?.courseSlug;
-    const onLessonOpen = learn?.onLessonOpen;
-    const onOpenTopicQuiz = learn?.onOpenTopicQuiz;
-    const onStartExam = learn?.onStartExam;
-    const examUnlocked = learn?.examUnlocked;
-    const quizByLesson = learn?.quizByLesson ?? {};
-
-    const openLesson = (l) => {
-      if (l.state === 'locked') return;
-      if (onLessonOpen) {
-        onLessonOpen(l.id, l.kind);
-        return;
-      }
-      if (!courseSlug) return;
-      if (l.kind === 'quiz') {
-        const qid = quizByLesson[l.id] ?? l.id;
-        router.push(`/aprender/cursos/${courseSlug}/quiz/${qid}`);
-      } else if (l.kind === 'boss') {
-        if (examUnlocked) router.push(`/aprender/cursos/${courseSlug}/examen`);
-      } else {
-        router.push(`/aprender/cursos/${courseSlug}/lecciones/${l.id}`);
-      }
-    };
-
-    const openTopicQuiz = (quizId) => {
-      if (onOpenTopicQuiz) {
-        onOpenTopicQuiz(quizId);
-        return;
-      }
-      if (courseSlug) router.push(`/aprender/cursos/${courseSlug}/quiz/${quizId}`);
-    };
-
-    const startExam = () => {
-      if (onStartExam) {
-        onStartExam();
-        return;
-      }
-      if (courseSlug && examUnlocked) router.push(`/aprender/cursos/${courseSlug}/examen`);
-    };
-
-    return { openLesson, openTopicQuiz, startExam };
   }
 
   // ── HUB DESKTOP ────────────────────────────────────────────────────────────
@@ -252,8 +257,11 @@ import type { TweakOptions } from './types';
     const currentLesson = learn?.currentLesson;
     const examUnlocked = learn?.examUnlocked;
     const quizByTopic = learn?.quizByTopic ?? {};
+    const quizByLesson = learn?.quizByLesson ?? {};
     const finalQuizMeta = learn?.finalQuizMeta ?? null;
-    const { openLesson, openTopicQuiz, startExam } = useHubNavigation(learn);
+    const slug = learn?.courseSlug ?? '';
+    const examHref = slug && examUnlocked ? `/aprender/cursos/${slug}/examen` : null;
+    const continueHref = resumeHref(slug, currentLesson, modules, quizByLesson, examUnlocked);
     const lessonStats = modules.reduce((acc, m) => {
       acc.total += m.lessons.length;
       acc.done += m.lessons.filter(l => l.state === 'done').length;
@@ -291,7 +299,7 @@ import type { TweakOptions } from './types';
                 accent={accent}
                 course={course}
                 currentLesson={currentLesson}
-                onResume={() => resumeCurrent(currentLesson, openLesson, startExam, modules)}
+                href={continueHref}
               />
             </div>
 
@@ -327,16 +335,16 @@ import type { TweakOptions } from './types';
                     <ModuleHeader m={m} t={t} accent={accent} completedCount={completed} totalCount={m.lessons.length} isFinal={m.isFinal}/>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 74 }}>
                       {m.lessons.map(l => (
-                        <LessonRow key={l.id} l={l} t={t} accent={accent} onOpen={() => openLesson(l)}/>
+                        <LessonRow key={l.id} l={l} t={t} accent={accent} href={lessonHref(slug, l, quizByLesson, examUnlocked)}/>
                       ))}
                     </div>
                     {!m.isFinal && moduleQuiz ? (
                       <div style={{ marginLeft: 74 }}>
-                        <ModuleQuizRow t={t} accent={accent} quiz={moduleQuiz} unlocked={moduleQuizUnlocked} onOpen={() => openTopicQuiz(moduleQuiz.id)}/>
+                        <ModuleQuizRow t={t} accent={accent} quiz={moduleQuiz} unlocked={moduleQuizUnlocked} href={slug && moduleQuizUnlocked ? `/aprender/cursos/${slug}/quiz/${moduleQuiz.id}` : null}/>
                       </div>
                     ) : null}
                     {m.isFinal ? (
-                      <BossCard t={t} accent={accent} title={finalQuizMeta?.title ?? 'Examen final del curso'} questionCount={finalQuizMeta?.question_count ?? 0} unlocked={examUnlocked} onOpen={startExam} mobile={false}/>
+                      <BossCard t={t} accent={accent} title={finalQuizMeta?.title ?? 'Examen final del curso'} questionCount={finalQuizMeta?.question_count ?? 0} unlocked={examUnlocked} href={examHref} mobile={false}/>
                     ) : null}
                   </div>
                 );
@@ -366,7 +374,7 @@ import type { TweakOptions } from './types';
     );
   }
 
-  function BossCard({ t, accent, title, questionCount, unlocked, onOpen, mobile }) {
+  function BossCard({ t, accent, title, questionCount, unlocked, href, mobile }) {
     return (
       <div style={{
         marginLeft: mobile ? 0 : 74,
@@ -394,38 +402,47 @@ import type { TweakOptions } from './types';
               : 'Completa todas las lecciones del curso para desbloquear el examen.'}
           </div>
         </div>
-        {unlocked ? (
-          <Button bg={BRAND} fg="#ffffff" icon="play" onClick={onOpen} style={mobile ? { width: '100%', justifyContent: 'center' } : undefined}>
-            Empezar examen
-          </Button>
+        {unlocked && href ? (
+          <Link href={href} prefetch={false} style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            padding: '12px 20px', borderRadius: 999, background: BRAND, color: '#ffffff',
+            textDecoration: 'none', fontWeight: 700, fontSize: 14, letterSpacing: -0.2,
+            ...(mobile ? { width: '100%' } : {}),
+            WebkitTapHighlightColor: 'transparent',
+          }}>
+            <Icon name="play" size={16}/>
+            <span>Empezar examen</span>
+          </Link>
         ) : (
-          <Button kind="ghost" iconRight="lock" disabled style={{ color: t.muted, borderColor: t.line, ...(mobile ? { width: '100%', justifyContent: 'center' } : {}) }}>
-            Bloqueado
-          </Button>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            padding: '12px 20px', borderRadius: 999, border: `1.5px solid ${t.line}`, color: t.muted,
+            fontWeight: 600, fontSize: 14,
+            ...(mobile ? { width: '100%' } : {}),
+          }}>
+            <span>Bloqueado</span>
+            <Icon name="lock" size={14}/>
+          </span>
         )}
       </div>
     );
   }
 
-  function ModuleQuizRow({ t, accent, quiz, unlocked, onOpen }) {
+  function ModuleQuizRow({ t, accent, quiz, unlocked, href }) {
     const passed = quiz.bestScore != null && quiz.bestScore >= (quiz.pass_threshold ?? 0.7);
-    return (
-      <button
-        type="button"
-        disabled={!unlocked}
-        onClick={() => { if (unlocked) onOpen?.(); }}
-        style={{
-          width: '100%',
-          marginTop: 12, padding: '14px 16px', borderRadius: 14,
-          background: t.dark ? 'rgba(255,255,255,0.03)' : t.surface2,
-          border: `1px solid ${t.line}`,
-          display: 'flex', alignItems: 'center', gap: 14,
-          cursor: unlocked ? 'pointer' : 'not-allowed',
-          opacity: unlocked ? 1 : 0.7,
-          textAlign: 'left', color: 'inherit', fontFamily: 'inherit',
-          WebkitTapHighlightColor: 'transparent',
-        }}
-      >
+    const sharedStyle: React.CSSProperties = {
+      width: '100%',
+      marginTop: 12, padding: '14px 16px', borderRadius: 14,
+      background: t.dark ? 'rgba(255,255,255,0.03)' : t.surface2,
+      border: `1px solid ${t.line}`,
+      display: 'flex', alignItems: 'center', gap: 14,
+      cursor: unlocked ? 'pointer' : 'not-allowed',
+      opacity: unlocked ? 1 : 0.7,
+      textAlign: 'left', color: 'inherit', fontFamily: 'inherit', textDecoration: 'none',
+      WebkitTapHighlightColor: 'transparent',
+    };
+    const inner = (
+      <>
         <div style={{
           width: 36, height: 36, borderRadius: 18,
           background: passed ? accent.bg : (unlocked ? '#1b38c4' : t.lineSoft),
@@ -457,8 +474,12 @@ import type { TweakOptions } from './types';
         ) : (
           <Icon name="lock" size={14}/>
         )}
-      </button>
+      </>
     );
+    if (unlocked && href) {
+      return <Link href={href} prefetch={false} style={sharedStyle}>{inner}</Link>;
+    }
+    return <div style={sharedStyle} aria-disabled={!unlocked || undefined}>{inner}</div>;
   }
 
   // ── HUB MOBILE ─────────────────────────────────────────────────────────────
@@ -469,8 +490,11 @@ import type { TweakOptions } from './types';
     const currentLesson = learn?.currentLesson;
     const examUnlocked = learn?.examUnlocked;
     const quizByTopic = learn?.quizByTopic ?? {};
+    const quizByLesson = learn?.quizByLesson ?? {};
     const finalQuizMeta = learn?.finalQuizMeta ?? null;
-    const { openLesson, openTopicQuiz, startExam } = useHubNavigation(learn);
+    const slug = learn?.courseSlug ?? '';
+    const examHref = slug && examUnlocked ? `/aprender/cursos/${slug}/examen` : null;
+    const continueHref = resumeHref(slug, currentLesson, modules, quizByLesson, examUnlocked);
     const lessonStats = modules.reduce((acc, m) => {
       acc.total += m.lessons.length;
       acc.done += m.lessons.filter(l => l.state === 'done').length;
@@ -508,7 +532,7 @@ import type { TweakOptions } from './types';
             accent={accent}
             course={course}
             currentLesson={currentLesson}
-            onResume={() => resumeCurrent(currentLesson, openLesson, startExam, modules)}
+            href={continueHref}
             mobile
           />
           </div>
@@ -548,15 +572,15 @@ import type { TweakOptions } from './types';
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                       {m.lessons.map(l => (
-                        <LessonRow key={l.id} l={l} t={t} accent={accent} compact onOpen={() => openLesson(l)}/>
+                        <LessonRow key={l.id} l={l} t={t} accent={accent} compact href={lessonHref(slug, l, quizByLesson, examUnlocked)}/>
                       ))}
                       {!m.isFinal && moduleQuiz ? (
                         <div style={{ marginTop: 8 }}>
-                          <ModuleQuizRow t={t} accent={accent} quiz={moduleQuiz} unlocked={moduleQuizUnlocked} onOpen={() => openTopicQuiz(moduleQuiz.id)}/>
+                          <ModuleQuizRow t={t} accent={accent} quiz={moduleQuiz} unlocked={moduleQuizUnlocked} href={slug && moduleQuizUnlocked ? `/aprender/cursos/${slug}/quiz/${moduleQuiz.id}` : null}/>
                         </div>
                       ) : null}
                       {m.isFinal ? (
-                        <BossCard t={t} accent={accent} title={finalQuizMeta?.title ?? 'Examen final del curso'} questionCount={finalQuizMeta?.question_count ?? 0} unlocked={examUnlocked} onOpen={startExam} mobile/>
+                        <BossCard t={t} accent={accent} title={finalQuizMeta?.title ?? 'Examen final del curso'} questionCount={finalQuizMeta?.question_count ?? 0} unlocked={examUnlocked} href={examHref} mobile/>
                       ) : null}
                     </div>
                   </div>
