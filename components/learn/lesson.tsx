@@ -7,6 +7,7 @@ import { useLearnDataOptional } from '@/lib/learn/context';
 import type { TweakOptions } from './types';
 
 const BRAND = '#1b38c4';
+const UNMARK_GRADIENT = 'linear-gradient(135deg, #ff6b35 0%, #ffaf68 100%)';
 
 /* components/learn/lesson.tsx — Vistas de lección
    - LessonVideoDesktop / LessonVideoMobile: vídeo + sidebar con índice
@@ -14,27 +15,55 @@ const BRAND = '#1b38c4';
    Comparten un layout: topbar con progreso/breadcrumb, contenido, footer-nav. */
 
 // ── BARRA DE PROGRESO DE LECTURA ──────────────────────────────────────────
-  function ReadingProgressBar({ scrollRef, accent }) {
+  function ReadingProgressBar({ scrollRef }) {
     const [pct, setPct] = useState(0);
     useEffect(() => {
-      const el = scrollRef.current;
-      if (!el) return;
       const update = () => {
-        const max = el.scrollHeight - el.clientHeight;
-        const value = max > 0 ? el.scrollTop / max : 0;
-        setPct(Math.max(0, Math.min(1, value)));
+        const el = scrollRef.current;
+        if (el && el.scrollHeight > el.clientHeight + 1) {
+          const max = el.scrollHeight - el.clientHeight;
+          setPct(Math.max(0, Math.min(1, el.scrollTop / max)));
+          return;
+        }
+        const doc = document.documentElement;
+        const max = doc.scrollHeight - doc.clientHeight;
+        setPct(max > 0 ? Math.max(0, Math.min(1, window.scrollY / max)) : 0);
       };
       update();
-      el.addEventListener('scroll', update, { passive: true });
+      const el = scrollRef.current;
+      el?.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('scroll', update, { passive: true });
       window.addEventListener('resize', update);
       return () => {
-        el.removeEventListener('scroll', update);
+        el?.removeEventListener('scroll', update);
+        window.removeEventListener('scroll', update);
         window.removeEventListener('resize', update);
       };
     }, [scrollRef]);
     return (
-      <div style={{ position: 'sticky', top: 0, left: 0, right: 0, height: 3, background: 'transparent', zIndex: 30, flexShrink: 0 }}>
-        <div style={{ height: '100%', width: `${pct * 100}%`, background: BRAND, transition: 'width .1s linear' }}/>
+      <div
+        role="progressbar"
+        aria-valuenow={Math.round(pct * 100)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label="Progreso de lectura"
+        style={{
+          height: 4,
+          background: 'rgba(10,10,20,0.10)',
+          flexShrink: 0,
+          position: 'relative',
+          zIndex: 30,
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${Math.max(pct * 100, pct > 0 ? 2 : 0)}%`,
+            background: `linear-gradient(90deg, ${BRAND}, #4a6cf7)`,
+            transition: 'width .12s linear',
+            borderRadius: '0 2px 2px 0',
+          }}
+        />
       </div>
     );
   }
@@ -77,6 +106,11 @@ const BRAND = '#1b38c4';
 
   // ── FOOTER NAV LECCIÓN ─────────────────────────────────────────────────────
   function LessonFooter({ t, accent, mobile, prev, next, completed = false, onPrimary, onUnmark, onPrev, loading = false }) {
+    const actionSize = mobile ? 'sm' : 'md';
+    const actionBtnStyle = mobile
+      ? { flex: 1, justifyContent: 'center', minWidth: 0 }
+      : undefined;
+
     return (
       <div style={{
         padding: mobile ? '12px 16px 18px' : '18px 28px',
@@ -84,7 +118,7 @@ const BRAND = '#1b38c4';
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         gap: 12, background: t.surface, flexShrink: 0,
       }}>
-        <Button kind="ghost" icon="arrowL" size={mobile ? 'sm' : 'md'} style={{ color: t.muted, borderColor: t.line }} onClick={onPrev} disabled={!onPrev}>
+        <Button kind="ghost" icon="arrowL" size={mobile ? 'sm' : 'md'} style={{ color: t.muted, borderColor: t.line, flexShrink: 0 }} onClick={onPrev} disabled={!onPrev}>
           {mobile ? '' : (prev || 'Anterior')}
         </Button>
         {!mobile && (
@@ -94,24 +128,27 @@ const BRAND = '#1b38c4';
           </div>
         )}
         {completed ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'stretch', gap: 8, flex: mobile ? 1 : undefined, minWidth: 0 }}>
             <Button
-              kind="ghost"
-              size="sm"
-              icon="circle"
+              bg={UNMARK_GRADIENT}
+              fg="#ffffff"
+              icon="x"
+              iconRight="arrowR"
+              size={actionSize}
               onClick={onUnmark}
               disabled={loading}
-              style={{ color: t.muted, borderColor: t.line, padding: mobile ? '8px 12px' : '8px 14px' }}
+              style={actionBtnStyle}
             >
-              Desmarcar
+              {loading ? 'Guardando…' : (mobile ? 'Desmarcar' : 'Desmarcar completado')}
             </Button>
             <Button
               bg={BRAND}
               fg="#ffffff"
               iconRight="arrowR"
-              size={mobile ? 'sm' : 'md'}
+              size={actionSize}
               onClick={onPrimary}
               disabled={loading}
+              style={actionBtnStyle}
             >
               {loading ? 'Guardando…' : (mobile ? 'Siguiente' : 'Siguiente lección')}
             </Button>
@@ -122,9 +159,10 @@ const BRAND = '#1b38c4';
             fg={accent.fg}
             icon="check"
             iconRight="arrowR"
-            size={mobile ? 'sm' : 'md'}
+            size={actionSize}
             onClick={onPrimary}
             disabled={loading}
+            style={mobile ? { flex: 1, justifyContent: 'center', minWidth: 0 } : undefined}
           >
             {loading ? 'Guardando…' : 'Marcar como completada'}
           </Button>
@@ -477,9 +515,9 @@ const BRAND = '#1b38c4';
     const completed = Boolean(learn?.lessonCompleted);
     const primaryAction = completed ? (learn?.onNextLesson) : (learn?.onMarkComplete);
     return (
-      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: '100%', height: '100%', minHeight: 0, background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <ReadingProgressBar scrollRef={scrollRef} />
         <LessonTopbar t={t} accent={accent} current={current || 1} total={total} onBack={learn?.onBackToHub} breadcrumb={crumb}/>
-        <ReadingProgressBar scrollRef={scrollRef} accent={accent}/>
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
           <main ref={scrollRef} style={{ flex: 1, padding: '40px 56px', overflowY: 'auto' }}>
             <ArticleBody t={t} accent={accent}/>
@@ -513,9 +551,9 @@ const BRAND = '#1b38c4';
     const completed = Boolean(learn?.lessonCompleted);
     const primaryAction = completed ? (learn?.onNextLesson) : (learn?.onMarkComplete);
     return (
-      <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ width: '100%', height: '100%', minHeight: 0, background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <ReadingProgressBar scrollRef={scrollRef} />
         <LessonTopbar t={t} accent={accent} mobile current={current || 1} total={total} onBack={learn?.onBackToHub} breadcrumb={crumb}/>
-        <ReadingProgressBar scrollRef={scrollRef} accent={accent}/>
         <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 20px' }}>
           <ArticleBody t={t} accent={accent} mobile/>
         </div>

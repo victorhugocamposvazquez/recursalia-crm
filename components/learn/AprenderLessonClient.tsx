@@ -121,11 +121,13 @@ export function AprenderLessonClient(props: Props) {
 
   return (
     <LearnProvider value={value}>
-      {mobile ? (
-        <LessonTextMobile tweak={props.tweak} completing={completing} />
-      ) : (
-        <LessonTextDesktop tweak={props.tweak} completing={completing} />
-      )}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, width: '100%' }}>
+        {mobile ? (
+          <LessonTextMobile tweak={props.tweak} completing={completing} />
+        ) : (
+          <LessonTextDesktop tweak={props.tweak} completing={completing} />
+        )}
+      </div>
     </LearnProvider>
   );
 }
