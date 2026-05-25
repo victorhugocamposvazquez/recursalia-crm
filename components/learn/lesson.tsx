@@ -1,15 +1,43 @@
 // @ts-nocheck — see README for typing guidance on internal helpers
 'use client';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTheme, Logo, Icon, Button, Progress, Chip, Mono, fmt } from './tokens';
 import { mockCourse as course, mockModules as modules } from '@/lib/learn-mock';
 import { useLearnDataOptional } from '@/lib/learn/context';
 import type { TweakOptions } from './types';
 
+const BRAND = '#1b38c4';
+
 /* components/learn/lesson.tsx — Vistas de lección
    - LessonVideoDesktop / LessonVideoMobile: vídeo + sidebar con índice
    - LessonTextDesktop  / LessonTextMobile : lectura larga (artículo)
    Comparten un layout: topbar con progreso/breadcrumb, contenido, footer-nav. */
+
+// ── BARRA DE PROGRESO DE LECTURA ──────────────────────────────────────────
+  function ReadingProgressBar({ scrollRef, accent }) {
+    const [pct, setPct] = useState(0);
+    useEffect(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const update = () => {
+        const max = el.scrollHeight - el.clientHeight;
+        const value = max > 0 ? el.scrollTop / max : 0;
+        setPct(Math.max(0, Math.min(1, value)));
+      };
+      update();
+      el.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      return () => {
+        el.removeEventListener('scroll', update);
+        window.removeEventListener('resize', update);
+      };
+    }, [scrollRef]);
+    return (
+      <div style={{ position: 'sticky', top: 0, left: 0, right: 0, height: 3, background: 'transparent', zIndex: 30, flexShrink: 0 }}>
+        <div style={{ height: '100%', width: `${pct * 100}%`, background: BRAND, transition: 'width .1s linear' }}/>
+      </div>
+    );
+  }
 
 // ── TOPBAR LECCIÓN ────────────────────────────────────────────────────────
   function LessonTopbar({ t, accent, mobile, current, total, onBack, breadcrumb }) {
@@ -48,7 +76,7 @@ import type { TweakOptions } from './types';
   }
 
   // ── FOOTER NAV LECCIÓN ─────────────────────────────────────────────────────
-  function LessonFooter({ t, accent, mobile, prev, next, completed = false, onPrimary, onPrev, loading = false }) {
+  function LessonFooter({ t, accent, mobile, prev, next, completed = false, onPrimary, onUnmark, onPrev, loading = false }) {
     return (
       <div style={{
         padding: mobile ? '12px 16px 18px' : '18px 28px',
@@ -60,14 +88,47 @@ import type { TweakOptions } from './types';
           {mobile ? '' : (prev || 'Anterior')}
         </Button>
         {!mobile && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: t.muted, fontSize: 13 }}>
-            <Icon name="clock" size={14}/>
-            <span>Progreso guardado al completar</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: completed ? BRAND : t.muted, fontSize: 13, fontWeight: completed ? 600 : 500 }}>
+            <Icon name={completed ? 'check' : 'clock'} size={14} sw={completed ? 2.5 : 1.8}/>
+            <span>{completed ? 'Lección completada' : 'Progreso guardado al completar'}</span>
           </div>
         )}
-        <Button bg={accent.bg} fg={accent.fg} iconRight="arrowR" size={mobile ? 'sm' : 'md'} onClick={onPrimary} disabled={loading}>
-          {loading ? 'Guardando…' : completed ? 'Siguiente lección' : 'Marcar como completada'}
-        </Button>
+        {completed ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Button
+              kind="ghost"
+              size={mobile ? 'sm' : 'md'}
+              icon="x"
+              onClick={onUnmark}
+              disabled={loading}
+              style={{ color: t.muted, borderColor: t.line }}
+            >
+              {mobile ? '' : 'Desmarcar'}
+            </Button>
+            <Button
+              bg={BRAND}
+              fg="#ffffff"
+              iconRight="arrowR"
+              size={mobile ? 'sm' : 'md'}
+              onClick={onPrimary}
+              disabled={loading}
+            >
+              {loading ? 'Guardando…' : 'Siguiente lección'}
+            </Button>
+          </div>
+        ) : (
+          <Button
+            bg={accent.bg}
+            fg={accent.fg}
+            icon="check"
+            iconRight="arrowR"
+            size={mobile ? 'sm' : 'md'}
+            onClick={onPrimary}
+            disabled={loading}
+          >
+            {loading ? 'Guardando…' : 'Marcar como completada'}
+          </Button>
+        )}
       </div>
     );
   }
@@ -393,16 +454,28 @@ import type { TweakOptions } from './types';
       ? sidebarModules.flatMap(m => m.lessons).findIndex(l => l.id === learn.lessonUuid) + 1
       : 1;
     const crumb = [learn?.course?.tag, learn?.course?.title].filter(Boolean).join(' · ').toUpperCase();
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+    const completed = Boolean(learn?.lessonCompleted);
+    const primaryAction = completed ? (learn?.onNextLesson) : (learn?.onMarkComplete);
     return (
       <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <LessonTopbar t={t} accent={accent} current={current || 1} total={total} onBack={learn?.onBackToHub} breadcrumb={crumb}/>
+        <ReadingProgressBar scrollRef={scrollRef} accent={accent}/>
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-          <main style={{ flex: 1, padding: '40px 56px', overflowY: 'auto' }}>
+          <main ref={scrollRef} style={{ flex: 1, padding: '40px 56px', overflowY: 'auto' }}>
             <ArticleBody t={t} accent={accent}/>
           </main>
           <LessonSidebar t={t} accent={accent} currentId={learn?.lessonUuid} modules={sidebarModules} courseTitle={learn?.course?.title ?? 'Curso'} onOpen={learn?.onLessonOpen}/>
         </div>
-        <LessonFooter t={t} accent={accent} onPrimary={learn?.onMarkComplete} onPrev={learn?.onPrevLesson} loading={completing}/>
+        <LessonFooter
+          t={t}
+          accent={accent}
+          completed={completed}
+          onPrimary={primaryAction}
+          onUnmark={learn?.onUnmarkComplete}
+          onPrev={learn?.onPrevLesson}
+          loading={completing}
+        />
       </div>
     );
   };
@@ -417,13 +490,26 @@ import type { TweakOptions } from './types';
       ? sidebarModules.flatMap(m => m.lessons).findIndex(l => l.id === learn.lessonUuid) + 1
       : 1;
     const crumb = [learn?.course?.tag, learn?.course?.title].filter(Boolean).join(' · ').toUpperCase();
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+    const completed = Boolean(learn?.lessonCompleted);
+    const primaryAction = completed ? (learn?.onNextLesson) : (learn?.onMarkComplete);
     return (
       <div style={{ width: '100%', height: '100%', background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <LessonTopbar t={t} accent={accent} mobile current={current || 1} total={total} onBack={learn?.onBackToHub} breadcrumb={crumb}/>
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 20px' }}>
+        <ReadingProgressBar scrollRef={scrollRef} accent={accent}/>
+        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 20px' }}>
           <ArticleBody t={t} accent={accent} mobile/>
         </div>
-        <LessonFooter t={t} accent={accent} mobile onPrimary={learn?.onMarkComplete} onPrev={learn?.onPrevLesson} loading={completing}/>
+        <LessonFooter
+          t={t}
+          accent={accent}
+          mobile
+          completed={completed}
+          onPrimary={primaryAction}
+          onUnmark={learn?.onUnmarkComplete}
+          onPrev={learn?.onPrevLesson}
+          loading={completing}
+        />
       </div>
     );
   };

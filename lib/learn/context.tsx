@@ -43,6 +43,8 @@ export type LearnContextValue = {
   lessonUuid?: string;
   lessonHtml?: string;
   lessonTitle?: string;
+  /** Si la lección está marcada como completada para el usuario actual. */
+  lessonCompleted?: boolean;
   onLessonOpen?: (lessonUuid: string, kind: string) => void;
   onBackToHub?: () => void;
   onGoHome?: () => void;
@@ -52,6 +54,8 @@ export type LearnContextValue = {
   onPrevLesson?: () => void;
   prevLessonUuid?: string | null;
   onMarkComplete?: () => void;
+  /** Quita el flag de completada (descompleta). */
+  onUnmarkComplete?: () => void;
   onNextLesson?: () => void;
   onCourseOpen?: (slug: string) => void;
   stats?: { xp: number; streak_days: number; level: number };

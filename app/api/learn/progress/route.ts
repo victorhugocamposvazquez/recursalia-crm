@@ -3,14 +3,14 @@ import { getSupabase } from '@/lib/supabase';
 import { requireStudentApiEnrolled } from '@/lib/auth-student';
 
 export async function POST(request: Request) {
-  let body: { courseId?: string; lessonId?: string };
+  let body: { courseId?: string; lessonId?: string; completed?: boolean };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const { courseId, lessonId } = body;
+  const { courseId, lessonId, completed = true } = body;
   if (!courseId || !lessonId) {
     return NextResponse.json({ error: 'courseId and lessonId required' }, { status: 400 });
   }
@@ -19,8 +19,28 @@ export async function POST(request: Request) {
   if (auth.error) return auth.error;
 
   const admin = getSupabase();
+
+  if (!completed) {
+    await admin
+      .from('user_lesson_progress')
+      .delete()
+      .eq('user_id', auth.user.id)
+      .eq('course_id', courseId)
+      .eq('lesson_id', lessonId);
+    return NextResponse.json({ ok: true, completed: false });
+  }
+
   const now = new Date().toISOString();
   const today = now.slice(0, 10);
+
+  const { data: existing } = await admin
+    .from('user_lesson_progress')
+    .select('completed_at')
+    .eq('user_id', auth.user.id)
+    .eq('course_id', courseId)
+    .eq('lesson_id', lessonId)
+    .maybeSingle();
+  const wasAlreadyCompleted = Boolean(existing?.completed_at);
 
   await admin.from('user_lesson_progress').upsert(
     {
@@ -31,6 +51,10 @@ export async function POST(request: Request) {
     },
     { onConflict: 'user_id,course_id,lesson_id' }
   );
+
+  if (wasAlreadyCompleted) {
+    return NextResponse.json({ ok: true, completed: true, xpEarned: 0 });
+  }
 
   const { data: statsRow } = await admin
     .from('user_stats')
@@ -61,5 +85,5 @@ export async function POST(request: Request) {
     completed_first_quiz: statsRow?.completed_first_quiz ?? false,
   });
 
-  return NextResponse.json({ ok: true, xpEarned: xpGain, xp: newXp, streak, level });
+  return NextResponse.json({ ok: true, completed: true, xpEarned: xpGain, xp: newXp, streak, level });
 }

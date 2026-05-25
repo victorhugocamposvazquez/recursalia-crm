@@ -8,7 +8,7 @@ import { useIsMobileLearn } from '@/lib/learn/useIsMobileLearn';
 
 type Props = Omit<
   LearnContextValue,
-  'onBackToHub' | 'onMarkComplete' | 'onNextLesson'
+  'onBackToHub' | 'onMarkComplete' | 'onUnmarkComplete' | 'onNextLesson'
 > & {
   nextLessonUuid?: string | null;
   prevLessonUuid?: string | null;
@@ -18,6 +18,7 @@ export function AprenderLessonClient(props: Props) {
   const router = useRouter();
   const mobile = useIsMobileLearn();
   const [completing, setCompleting] = useState(false);
+  const [completed, setCompleted] = useState<boolean>(Boolean(props.lessonCompleted));
 
   const goToLesson = (uuid: string) => {
     router.push(`/aprender/cursos/${props.courseSlug}/lecciones/${uuid}`);
@@ -46,20 +47,20 @@ export function AprenderLessonClient(props: Props) {
         body: JSON.stringify({
           courseId: props.courseId,
           lessonId: props.lessonUuid,
+          completed: true,
         }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error ?? 'No se pudo guardar el progreso');
       }
+      setCompleted(true);
+      router.refresh();
       if (props.nextLessonUuid) {
         router.push(
           `/aprender/cursos/${props.courseSlug}/lecciones/${props.nextLessonUuid}`
         );
-      } else {
-        router.push(`/aprender/cursos/${props.courseSlug}`);
       }
-      router.refresh();
     } catch (e) {
       console.error(e);
       alert(e instanceof Error ? e.message : 'Error al completar la lección');
@@ -75,13 +76,42 @@ export function AprenderLessonClient(props: Props) {
     router,
   ]);
 
+  const unmarkComplete = useCallback(async () => {
+    if (!props.lessonUuid || completing) return;
+    setCompleting(true);
+    try {
+      const res = await fetch('/api/learn/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseId: props.courseId,
+          lessonId: props.lessonUuid,
+          completed: false,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? 'No se pudo actualizar el progreso');
+      }
+      setCompleted(false);
+      router.refresh();
+    } catch (e) {
+      console.error(e);
+      alert(e instanceof Error ? e.message : 'Error al desmarcar la lección');
+    } finally {
+      setCompleting(false);
+    }
+  }, [completing, props.courseId, props.courseSlug, props.lessonUuid, router]);
+
   const value: LearnContextValue = {
     ...props,
+    lessonCompleted: completed,
     prevLessonUuid: props.prevLessonUuid,
     onBackToHub: () => router.push(`/aprender/cursos/${props.courseSlug}`),
     onGoHome: () => router.push('/aprender'),
     onLessonOpen: openLesson,
     onMarkComplete: markComplete,
+    onUnmarkComplete: unmarkComplete,
     onPrevLesson: props.prevLessonUuid ? () => goToLesson(props.prevLessonUuid!) : undefined,
     onNextLesson: () => {
       if (props.nextLessonUuid) goToLesson(props.nextLessonUuid);
