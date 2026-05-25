@@ -1,8 +1,10 @@
 /**
  * Crea quizzes mínimos (módulo + examen final) para un curso piloto.
  *
- * Uso: npx tsx scripts/seed-course-quizzes.ts <courseId|public_slug>
+ * Uso: npm run seed-quizzes -- <courseId|public_slug>
+ * Carga automáticamente .env.local.
  */
+import './loadEnv';
 import { getSupabase } from '../lib/supabase';
 
 async function resolveCourseId(ref: string): Promise<string | null> {

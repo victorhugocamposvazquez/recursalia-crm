@@ -3,10 +3,12 @@ import { requireCourseAccess } from '@/lib/learn/access';
 import {
   buildHubLearnData,
   getCourseQuizzesByTopic,
+  getProfileRole,
   getQuizMap,
 } from '@/lib/learn/lmsServer';
 import { getSupabase } from '@/lib/supabase';
 import { AprenderHubClient } from '@/components/learn/AprenderHubClient';
+import { CoursePendingContent } from '@/components/learn/CoursePendingContent';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -14,6 +16,20 @@ export default async function AprenderHubPage({ params }: Props) {
   const { slug } = await params;
   const { user, course } = await requireCourseAccess(slug);
   if (!course.generated_content) notFound();
+
+  // Si el contenido extendido aún no existe, salimos pronto y mostramos el
+  // estado pendiente (con CTA admin para generarlo desde aquí).
+  if (!course.expanded_content) {
+    const role = await getProfileRole(user.id);
+    return (
+      <CoursePendingContent
+        courseId={course.id}
+        courseSlug={slug}
+        courseTitle={course.generated_content.title ?? course.published_title ?? course.topic}
+        isAdmin={role === 'admin'}
+      />
+    );
+  }
 
   const [{ learnCourse, modules, stats }, quizByLesson, courseQuizzes] = await Promise.all([
     buildHubLearnData(user.id, course),
@@ -70,18 +86,6 @@ export default async function AprenderHubPage({ params }: Props) {
         question_count: finalQuiz.question_count,
       }
     : null;
-
-  if (!course.expanded_content) {
-    return (
-      <div style={{ padding: 48, maxWidth: 560, margin: '0 auto', fontFamily: 'system-ui' }}>
-        <h1 style={{ fontSize: 24, marginBottom: 12 }}>Contenido en preparación</h1>
-        <p style={{ color: '#555', lineHeight: 1.6 }}>
-          El curso aún no tiene el contenido extendido de lecciones. Un administrador debe
-          generarlo desde el panel en «Contenido del curso» antes de que puedas estudiar.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <AprenderHubClient

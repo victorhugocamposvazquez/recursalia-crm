@@ -1,11 +1,13 @@
 /**
  * Promueve un usuario a admin por email (service role).
  *
- *   npx tsx scripts/promote-to-admin.ts <email>
+ *   npm run promote-admin -- <email>
  *
+ * Carga automáticamente .env.local — no necesitas `dotenv -e` por delante.
  * Requiere: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
 
+import './loadEnv';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 async function findUserByEmail(supabase: SupabaseClient, email: string) {
