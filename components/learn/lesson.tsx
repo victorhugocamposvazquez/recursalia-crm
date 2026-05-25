@@ -97,13 +97,13 @@ const BRAND = '#1b38c4';
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Button
               kind="ghost"
-              size={mobile ? 'sm' : 'md'}
-              icon="x"
+              size="sm"
+              icon="circle"
               onClick={onUnmark}
               disabled={loading}
-              style={{ color: t.muted, borderColor: t.line }}
+              style={{ color: t.muted, borderColor: t.line, padding: mobile ? '8px 12px' : '8px 14px' }}
             >
-              {mobile ? '' : 'Desmarcar'}
+              Desmarcar
             </Button>
             <Button
               bg={BRAND}
@@ -113,7 +113,7 @@ const BRAND = '#1b38c4';
               onClick={onPrimary}
               disabled={loading}
             >
-              {loading ? 'Guardando…' : 'Siguiente lección'}
+              {loading ? 'Guardando…' : (mobile ? 'Siguiente' : 'Siguiente lección')}
             </Button>
           </div>
         ) : (
