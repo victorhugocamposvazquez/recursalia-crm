@@ -6,6 +6,7 @@
  * Requiere en el entorno: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
 
+import './loadEnv';
 import { createClient } from '@supabase/supabase-js';
 import { normalizeGeneratedContentIdentity } from '@/lib/normalizeGeneratedContentIdentity';
 import type { GeneratedCourseStructure } from '@/types';

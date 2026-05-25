@@ -34,6 +34,7 @@ import type { TweakOptions } from './types';
 
   function lessonHref(slug, l, _quizByLesson) {
     if (!slug) return null;
+    if (!l?.id) return null;
     if (l.state === 'locked') return null;
     return `/aprender/cursos/${slug}/lecciones/${l.id}`;
   }
