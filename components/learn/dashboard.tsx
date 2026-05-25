@@ -6,6 +6,8 @@ import { mockCourse, mockModules } from '@/lib/learn-mock';
 import { useLearnDataOptional } from '@/lib/learn/context';
 import type { TweakOptions } from './types';
 
+const BRAND = '#1b38c4';
+
 /* components/learn/dashboard.tsx — "Mis cursos"
    Vista general del estudiante: cursos en progreso, recomendados, racha,
    y un pequeño resumen de logros. Diseño editorial: tipografía protagonista,
@@ -62,6 +64,10 @@ import type { TweakOptions } from './types';
 
   // ── TARJETA DE CURSO EN PROGRESO ────────────────────────────────────────────
   function CourseCard({ c, t, accent, large, mobile, onOpen }) {
+    const notStarted = (c.pct ?? 0) <= 0;
+    const cta = large
+      ? (notStarted ? 'Empezar' : 'Reanudar')
+      : (notStarted ? 'Empezar' : 'Continuar');
     return (
       <div
         role="button"
@@ -70,44 +76,49 @@ import type { TweakOptions } from './types';
         onKeyDown={(e) => e.key === 'Enter' && onOpen?.()}
         style={{
         position: 'relative', overflow: 'hidden',
-        background: large ? t.ink : t.surface,
-        color: large ? t.bg : t.ink,
+        background: large ? `linear-gradient(145deg, ${BRAND} 0%, #142a99 100%)` : t.surface,
+        color: large ? '#ffffff' : t.ink,
         borderRadius: 18,
         border: large ? 'none' : `1px solid ${t.line}`,
         padding: mobile ? 18 : (large ? 28 : 22),
         display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18,
         minHeight: large ? (mobile ? 'auto' : 280) : 'auto',
         cursor: onOpen ? 'pointer' : 'default',
+        boxShadow: large ? '0 16px 40px -16px rgb(27 56 196 / 45%)' : 'none',
       }}>
         {large && (
-          <div style={{ position: 'absolute', top: -60, right: -60, width: 220, height: 220, borderRadius: 110, background: `radial-gradient(circle, ${accent.bg}33, transparent 70%)`, pointerEvents: 'none' }}/>
+          <div style={{ position: 'absolute', top: -60, right: -60, width: 220, height: 220, borderRadius: 110, background: 'radial-gradient(circle, rgb(255 255 255 / 18%), transparent 70%)', pointerEvents: 'none' }}/>
         )}
 
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Mono color={large ? accent.bg : t.faint} size={10}>{c.tag}</Mono>
-          {c.current && <Chip size="sm" bg={accent.bg} color={accent.fg} mono>EN CURSO</Chip>}
+          <Mono color={large ? 'rgb(255 255 255 / 80%)' : t.faint} size={10}>{c.tag}</Mono>
+          {c.current && (
+            large
+              ? <Chip size="sm" bg="#ffffff" color={BRAND} mono>EN CURSO</Chip>
+              : <Chip size="sm" bg={accent.bg} color={accent.fg} mono>EN CURSO</Chip>
+          )}
         </div>
 
         <div style={{ position: 'relative', flex: 1 }}>
           <div style={{ fontFamily: large ? t.serif : t.sans, fontWeight: large ? 500 : 700, fontSize: mobile ? 22 : (large ? 32 : 19), letterSpacing: large ? -1 : -0.4, lineHeight: 1.05, color: 'inherit' }}>
             {c.title}
           </div>
-          <div style={{ marginTop: 6, fontSize: 12.5, opacity: 0.7 }}>con {c.instructor}</div>
+          <div style={{ marginTop: 6, fontSize: 12.5, opacity: large ? 0.8 : 0.7 }}>con {c.instructor}</div>
         </div>
 
         <div style={{ position: 'relative' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <Mono color={large ? 'rgba(244,244,240,0.5)' : t.faint} size={10}>SIGUIENTE</Mono>
-            <Mono color={large ? 'rgba(244,244,240,0.5)' : t.faint} size={10}>{Math.round(c.pct*100)}%</Mono>
+            <Mono color={large ? 'rgb(255 255 255 / 65%)' : t.faint} size={10}>{notStarted ? 'EMPIEZA AHORA' : 'SIGUIENTE'}</Mono>
+            <Mono color={large ? 'rgb(255 255 255 / 65%)' : t.faint} size={10}>{Math.round(c.pct*100)}%</Mono>
           </div>
           <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {c.nextLesson}
           </div>
-          <Progress value={c.pct} color={accent.bg} track={large ? 'rgba(255,255,255,0.15)' : t.lineSoft} height={5}/>
+          <Progress value={c.pct} color={large ? '#ffffff' : accent.bg} track={large ? 'rgba(255,255,255,0.22)' : t.lineSoft} height={5}/>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14 }}>
-            <span style={{ fontSize: 12, opacity: 0.6 }}>{c.time}</span>
-            <Button bg={large ? accent.bg : t.ink} fg={large ? accent.fg : t.bg} icon="play" size="sm">
-              {large ? 'Reanudar' : 'Continuar'}
+            <span style={{ fontSize: 12, opacity: large ? 0.75 : 0.6 }}>{c.time}</span>
+            <Button bg={large ? '#ffffff' : t.ink} fg={large ? BRAND : t.bg} icon="play" size="sm">
+              {cta}
             </Button>
           </div>
         </div>
