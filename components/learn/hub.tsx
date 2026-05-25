@@ -21,53 +21,51 @@ import type { TweakOptions } from './types';
     video: 'play',
     text:  'doc',
     audio: 'headphones',
-    quiz:  'target',
-    boss:  'trophy',
+    quiz:  'doc',
+    boss:  'doc',
   };
   const kindLabel = {
     video: 'Vídeo',
     text:  'Lección',
     audio: 'Audio',
-    quiz:  'Quiz',
-    boss:  'Examen',
+    quiz:  'Lección',
+    boss:  'Lección',
   };
 
-  function lessonHref(slug, l, quizByLesson, examUnlocked) {
+  function lessonHref(slug, l, _quizByLesson) {
     if (!slug) return null;
     if (l.state === 'locked') return null;
-    if (l.kind === 'quiz') {
-      const qid = (quizByLesson && quizByLesson[l.id]) || l.id;
-      return `/aprender/cursos/${slug}/quiz/${qid}`;
-    }
-    if (l.kind === 'boss') {
-      return examUnlocked ? `/aprender/cursos/${slug}/examen` : null;
-    }
     return `/aprender/cursos/${slug}/lecciones/${l.id}`;
   }
 
-  function resumeHref(slug, currentLesson, modules, quizByLesson, examUnlocked) {
+  function resumeHref(slug, currentLesson, modules, quizByLesson) {
     if (!slug) return null;
     if (currentLesson) {
       const flat = (modules ?? []).flatMap(m => m.lessons ?? []);
       const found = flat.find(l => l.id === currentLesson.id);
-      if (found) return lessonHref(slug, found, quizByLesson, examUnlocked);
+      if (found && found.state !== 'locked') {
+        const href = lessonHref(slug, found, quizByLesson);
+        if (href) return href;
+      }
     }
     for (const m of modules ?? []) {
       for (const l of m.lessons ?? []) {
-        if (l.state !== 'locked' && l.kind !== 'boss') {
-          return lessonHref(slug, l, quizByLesson, examUnlocked);
+        if (l.state !== 'locked') {
+          const href = lessonHref(slug, l, quizByLesson);
+          if (href) return href;
         }
       }
     }
-    return null;
+    return `/aprender/cursos/${slug}`;
   }
 
   // Tarjeta de lección dentro de un módulo
-  function LessonRow({ l, t, accent, compact, href }) {
+  function LessonRow({ l, t, accent, compact, href, courseStarted }) {
     const isCurrent = l.state === 'current';
     const isDone = l.state === 'done';
     const isLocked = l.state === 'locked';
     const isQuiz = l.kind === 'quiz' || l.kind === 'boss';
+    const ctaLabel = courseStarted === false ? 'Empezar' : 'Continuar';
 
     const statusDot = (() => {
       if (isDone) return (
@@ -129,7 +127,7 @@ import type { TweakOptions } from './types';
         </div>
         {isCurrent && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: BRAND, fontWeight: 600, fontSize: 12, flexShrink: 0 }}>
-            <span>Continuar</span>
+            <span>{ctaLabel}</span>
             <Icon name="arrowR" size={14}/>
           </div>
         )}
@@ -261,7 +259,7 @@ import type { TweakOptions } from './types';
     const finalQuizMeta = learn?.finalQuizMeta ?? null;
     const slug = learn?.courseSlug ?? '';
     const examHref = slug && examUnlocked ? `/aprender/cursos/${slug}/examen` : null;
-    const continueHref = resumeHref(slug, currentLesson, modules, quizByLesson, examUnlocked);
+    const continueHref = resumeHref(slug, currentLesson, modules, quizByLesson);
     const lessonStats = modules.reduce((acc, m) => {
       acc.total += m.lessons.length;
       acc.done += m.lessons.filter(l => l.state === 'done').length;
@@ -335,7 +333,7 @@ import type { TweakOptions } from './types';
                     <ModuleHeader m={m} t={t} accent={accent} completedCount={completed} totalCount={m.lessons.length} isFinal={m.isFinal}/>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, marginLeft: 74 }}>
                       {m.lessons.map(l => (
-                        <LessonRow key={l.id} l={l} t={t} accent={accent} href={lessonHref(slug, l, quizByLesson, examUnlocked)}/>
+                        <LessonRow key={l.id} l={l} t={t} accent={accent} href={lessonHref(slug, l, quizByLesson)} courseStarted={course.completion > 0}/>
                       ))}
                     </div>
                     {!m.isFinal && moduleQuiz ? (
@@ -494,7 +492,7 @@ import type { TweakOptions } from './types';
     const finalQuizMeta = learn?.finalQuizMeta ?? null;
     const slug = learn?.courseSlug ?? '';
     const examHref = slug && examUnlocked ? `/aprender/cursos/${slug}/examen` : null;
-    const continueHref = resumeHref(slug, currentLesson, modules, quizByLesson, examUnlocked);
+    const continueHref = resumeHref(slug, currentLesson, modules, quizByLesson);
     const lessonStats = modules.reduce((acc, m) => {
       acc.total += m.lessons.length;
       acc.done += m.lessons.filter(l => l.state === 'done').length;
@@ -572,7 +570,7 @@ import type { TweakOptions } from './types';
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                       {m.lessons.map(l => (
-                        <LessonRow key={l.id} l={l} t={t} accent={accent} compact href={lessonHref(slug, l, quizByLesson, examUnlocked)}/>
+                        <LessonRow key={l.id} l={l} t={t} accent={accent} compact href={lessonHref(slug, l, quizByLesson)} courseStarted={course.completion > 0}/>
                       ))}
                       {!m.isFinal && moduleQuiz ? (
                         <div style={{ marginTop: 8 }}>
