@@ -55,7 +55,7 @@ import type { TweakOptions } from './types';
           </div>
           <div style={{
             marginTop: px(18),
-            fontFamily: "'Fraunces', 'Times New Roman', serif",
+            fontFamily: "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
             fontWeight: 500,
             fontSize: px(60),
             letterSpacing: px(-2),
@@ -69,7 +69,7 @@ import type { TweakOptions } from './types';
           </div>
           <div style={{
             marginTop: px(10),
-            fontFamily: "'Fraunces', serif",
+            fontFamily: "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
             fontStyle: 'italic',
             fontWeight: 400,
             fontSize: px(28),
@@ -103,7 +103,7 @@ import type { TweakOptions } from './types';
             <div style={{ position: 'absolute', inset: px(6), borderRadius: '50%', border: `1px dashed ${accent.fg}55` }}/>
             <div style={{ textAlign: 'center', position: 'relative' }}>
               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: px(8), letterSpacing: 1.5, textTransform: 'uppercase', opacity: 0.7 }}>Verificado</div>
-              <div style={{ fontFamily: "'Fraunces', serif", fontSize: px(22), fontWeight: 600, fontStyle: 'italic', lineHeight: 1, marginTop: px(2) }}>★</div>
+              <div style={{ fontFamily: "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif", fontSize: px(22), fontWeight: 600, fontStyle: 'italic', lineHeight: 1, marginTop: px(2) }}>★</div>
               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: px(8), letterSpacing: 1.5, textTransform: 'uppercase', opacity: 0.7, marginTop: px(2) }}>Recursalia</div>
             </div>
           </div>
@@ -289,7 +289,7 @@ import type { TweakOptions } from './types';
               <Mono color="#1b38c4" size={10} style={{ fontWeight: 600 }}>HUGO MARÍN HA COMPLETADO</Mono>
               <div style={{
                 marginTop: 10,
-                fontFamily: t.serif, fontWeight: 500,
+                fontFamily: t.sans, fontWeight: 700,
                 fontSize: 44, letterSpacing: -1.2, lineHeight: 1,
                 maxWidth: '85%',
               }}>
@@ -303,7 +303,7 @@ import type { TweakOptions } from './types';
             {/* Sello */}
             <div style={{ position: 'absolute', right: 36, bottom: 36, width: 84, height: 84, borderRadius: '50%', background: accent.bg, display: 'grid', placeItems: 'center', color: accent.fg }}>
               <div style={{ position: 'absolute', inset: 5, borderRadius: '50%', border: `1px dashed ${accent.fg}66` }}/>
-              <div style={{ fontFamily: t.serif, fontWeight: 600, fontStyle: 'italic', fontSize: 24 }}>★</div>
+              <div style={{ fontFamily: t.sans, fontWeight: 700, fontStyle: 'italic', fontSize: 24 }}>★</div>
             </div>
           </div>
 
@@ -319,7 +319,7 @@ import type { TweakOptions } from './types';
               <Mono color={accent.fg} size={9} style={{ opacity: 0.6 }}>DIPLOMA</Mono>
             </div>
             <div>
-              <div style={{ fontFamily: t.serif, fontWeight: 500, fontSize: 28, letterSpacing: -0.9, lineHeight: 1, fontStyle: 'italic' }}>
+              <div style={{ fontFamily: t.sans, fontWeight: 700, fontSize: 28, letterSpacing: -0.9, lineHeight: 1, fontStyle: 'italic' }}>
                 Captura el mundo a través de tu lente.
               </div>
               <div style={{ marginTop: 18, fontSize: 11, fontFamily: t.mono, letterSpacing: 1.5, textTransform: 'uppercase', opacity: 0.7 }}>

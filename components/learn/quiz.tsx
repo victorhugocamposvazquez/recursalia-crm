@@ -258,7 +258,7 @@ import type { TweakOptions } from './types';
         {/* Pregunta */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative', zIndex: 1, marginTop: mobile ? 28 : 0, marginBottom: mobile ? 16 : 0 }}>
           <Mono color={accent.bg} size={11}>COMPOSICIÓN · DIFICULTAD 03/05</Mono>
-          <h1 style={{ margin: '14px 0 0', fontFamily: t.serif, fontWeight: 500, fontSize: mobile ? 30 : 52, letterSpacing: -1.4, lineHeight: 1.04, color: t.bg, maxWidth: 820 }}>
+          <h1 style={{ margin: '14px 0 0', fontFamily: t.sans, fontWeight: 700, fontSize: mobile ? 30 : 52, letterSpacing: -1.4, lineHeight: 1.04, color: t.bg, maxWidth: 820 }}>
             ¿Qué hace que un patrón sea memorable en una fotografía?
           </h1>
           <p style={{ marginTop: 14, fontSize: mobile ? 14 : 16, color: 'rgba(244,244,240,0.65)', lineHeight: 1.5, maxWidth: 600 }}>
@@ -334,7 +334,7 @@ import type { TweakOptions } from './types';
 
             {/* Big numbers */}
             <div style={{ marginTop: 16, position: 'relative', display: 'inline-block' }}>
-              <div style={{ fontFamily: t.serif, fontWeight: 500, fontSize: mobile ? 96 : 168, lineHeight: 0.9, letterSpacing: -6, color: t.ink }}>
+              <div style={{ fontFamily: t.sans, fontWeight: 700, fontSize: mobile ? 96 : 168, lineHeight: 0.9, letterSpacing: -6, color: t.ink }}>
                 {score}<span style={{ color: t.faint }}>/{total}</span>
               </div>
               <div style={{ position: 'absolute', top: -10, right: mobile ? -10 : -30, transform: 'rotate(12deg)' }}>

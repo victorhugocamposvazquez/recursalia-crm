@@ -170,7 +170,7 @@ export function RealDiplomaView({
             <div
               style={{
                 marginTop: 12,
-                fontFamily: "'Fraunces', 'Times New Roman', serif",
+                fontFamily: "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
                 fontWeight: 500,
                 fontSize: 'clamp(34px, 6vw, 60px)',
                 letterSpacing: -1.5,
@@ -186,7 +186,7 @@ export function RealDiplomaView({
             <div
               style={{
                 marginTop: 10,
-                fontFamily: "'Fraunces', serif",
+                fontFamily: "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
                 fontStyle: 'italic',
                 fontWeight: 400,
                 fontSize: 'clamp(20px, 3.4vw, 28px)',
@@ -252,7 +252,7 @@ export function RealDiplomaView({
                   </div>
                   <div
                     style={{
-                      fontFamily: "'Fraunces', serif",
+                      fontFamily: "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
                       fontSize: 22,
                       fontWeight: 600,
                       fontStyle: 'italic',

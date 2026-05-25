@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans, Fraunces, JetBrains_Mono } from 'next/font/google';
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { LearnTopbar } from '@/components/learn/LearnTopbar';
@@ -8,12 +8,6 @@ import './learn.css';
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-learn-sans',
-  display: 'swap',
-});
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  variable: '--font-learn-serif',
   display: 'swap',
 });
 
@@ -46,7 +40,7 @@ export default async function LearnLayout({ children }: { children: React.ReactN
 
   return (
     <div
-      className={`${plusJakarta.variable} ${fraunces.variable} ${jetbrains.variable} learn-root`}
+      className={`${plusJakarta.variable} ${jetbrains.variable} learn-root`}
       style={{
         minHeight: '100dvh',
         width: '100%',

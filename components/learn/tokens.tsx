@@ -56,7 +56,7 @@ export function useTheme(opts: TweakOptions = {}): Theme {
     lineSoft:  dark ? 'rgba(255,255,255,0.05)' : 'rgba(10,10,20,0.05)',
     sans:      "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
     mono:      "var(--font-learn-mono), 'JetBrains Mono', ui-monospace, monospace",
-    serif:     "var(--font-learn-serif), 'Fraunces', Georgia, serif",
+    serif:     "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
   };
 }
 
