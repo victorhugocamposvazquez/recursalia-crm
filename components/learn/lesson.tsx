@@ -341,8 +341,27 @@ const BRAND = '#1b38c4';
     const headFs = mobile ? 22 : 28;
 
     if (learn?.lessonHtml) {
+      const lessonUuid = learn.lessonUuid;
+      const allModules = learn.modules ?? [];
+      const moduleInfo = (() => {
+        for (const m of allModules) {
+          const idx = m.lessons.findIndex((l) => l.id === lessonUuid);
+          if (idx >= 0) {
+            return { moduleN: m.n, moduleTitle: m.title, lessonCode: m.lessons[idx].code ?? `${m.n}.${idx + 1}` };
+          }
+        }
+        return null;
+      })();
       return (
         <article style={{ maxWidth: mobile ? '100%' : 680, margin: '0 auto', padding: mobile ? '0' : '0 0 60px' }}>
+          {moduleInfo && (
+            <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <Chip mono size="sm" bg={BRAND} color="#ffffff">MÓDULO {String(moduleInfo.moduleN).padStart(2,'0')}</Chip>
+              <Mono color={t.muted}>Lección {moduleInfo.lessonCode}</Mono>
+              <span style={{ color: t.faint }}>·</span>
+              <Mono color={t.faint} style={{ textTransform: 'none', letterSpacing: 0.4, fontSize: 11 }}>{moduleInfo.moduleTitle}</Mono>
+            </div>
+          )}
           <h1 style={{ margin: 0, fontFamily: t.serif, fontWeight: 500, fontSize: mobile ? 34 : 52, letterSpacing: -1.6, lineHeight: 1, color: t.ink }}>
             {learn.lessonTitle ?? 'Lección'}
           </h1>
