@@ -100,7 +100,7 @@ const BRAND = '#1b38c4';
         </div>
 
         <div style={{ position: 'relative', flex: 1 }}>
-          <div style={{ fontFamily: large ? t.serif : t.sans, fontWeight: large ? 500 : 700, fontSize: mobile ? 22 : (large ? 32 : 19), letterSpacing: large ? -1 : -0.4, lineHeight: 1.05, color: 'inherit' }}>
+          <div style={{ fontFamily: t.sans, fontWeight: 700, fontSize: mobile ? 22 : (large ? 28 : 19), letterSpacing: large ? -0.8 : -0.4, lineHeight: 1.1, color: 'inherit' }}>
             {c.title}
           </div>
           <div style={{ marginTop: 6, fontSize: 12.5, opacity: large ? 0.8 : 0.7 }}>con {c.instructor}</div>

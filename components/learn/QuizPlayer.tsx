@@ -217,7 +217,7 @@ export function QuizPlayer({
         <div style={{ marginBottom: 10 }}>
           <Mono color={t.faint}>{kindLabel(q.kind)}</Mono>
         </div>
-        <h2 style={{ margin: '0 0 24px', fontSize: 24, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.25 }}>
+        <h2 style={{ margin: '0 0 24px', fontFamily: t.sans, fontSize: 24, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.25 }}>
           {q.text}
         </h2>
 

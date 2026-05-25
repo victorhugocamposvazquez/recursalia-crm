@@ -13,6 +13,10 @@ import {
 } from '@/lib/reviewsRatingPreset';
 import { buildManualCourseSkeleton } from '@/services/manualCourseSkeleton';
 import { normalizeGeneratedContentIdentity } from '@/lib/normalizeGeneratedContentIdentity';
+import {
+  seedCourseQuizzesWithAI,
+  summarizeQuizSeedingResult,
+} from '@/services/courseQuizSeedingService';
 import type {
   CourseInputPayload,
   CourseRecord,
@@ -263,6 +267,28 @@ export async function publishCourse(
   const status: CourseStatus = ready ? 'published' : 'error';
 
   if (status === 'published') {
+    await setProgress('Generando quizzes con IA (módulos + examen final)...');
+    try {
+      const seedResult = await seedCourseQuizzesWithAI({
+        courseId,
+        content,
+        expanded:
+          (course as { expanded_content?: unknown }).expanded_content as
+            | Parameters<typeof seedCourseQuizzesWithAI>[0]['expanded']
+            | null
+            | undefined,
+      });
+      await setProgress(`Quizzes: ${summarizeQuizSeedingResult(seedResult)}`);
+      if (seedResult.notes.length > 0) {
+        for (const n of seedResult.notes.slice(0, 6)) {
+          await setProgress(`  · ${n}`);
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      errorLog = (errorLog ?? '') + ` | Quizzes IA: ${msg}`;
+      await setProgress(`Quizzes IA falló: ${msg.slice(0, 220)}`);
+    }
     await setProgress('Publicacion completada.');
   }
 

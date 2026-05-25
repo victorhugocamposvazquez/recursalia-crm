@@ -152,8 +152,8 @@ import type { TweakOptions } from './types';
           <Mono color={t.faint}>{step.tag}</Mono>
           <h1 style={{
             margin: '12px 0 0',
-            fontFamily: t.serif, fontWeight: 500,
-            fontSize: mobile ? 36 : 56, letterSpacing: -1.4, lineHeight: 1.02,
+            fontFamily: t.sans, fontWeight: 700,
+            fontSize: mobile ? 32 : 46, letterSpacing: -1, lineHeight: 1.08,
             maxWidth: 680,
           }}>
             {step.title}

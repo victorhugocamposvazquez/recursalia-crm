@@ -176,7 +176,7 @@ import type { TweakOptions } from './types';
             <div style={{ position: 'absolute', top: -14, left: 22, padding: '4px 10px', borderRadius: 6, background: accent.bg, color: accent.fg, fontFamily: t.mono, fontSize: 10, fontWeight: 700, letterSpacing: 1.4 }}>
               AFIRMACIÓN
             </div>
-            <p style={{ margin: 0, fontFamily: t.serif, fontWeight: 400, fontStyle: 'italic', fontSize: mobile ? 22 : 30, letterSpacing: -0.6, lineHeight: 1.25, color: t.ink }}>
+            <p style={{ margin: 0, fontFamily: t.sans, fontWeight: 600, fontStyle: 'italic', fontSize: mobile ? 20 : 26, letterSpacing: -0.4, lineHeight: 1.3, color: t.ink }}>
               «Una apertura f/1.8 deja entrar más luz que una f/8 — y por eso difumina más el fondo.»
             </p>
           </div>

@@ -54,9 +54,9 @@ export function useTheme(opts: TweakOptions = {}): Theme {
     faint:     dark ? '#5A5B70' : '#A8A8B5',
     line:      dark ? 'rgba(255,255,255,0.10)' : 'rgba(10,10,20,0.10)',
     lineSoft:  dark ? 'rgba(255,255,255,0.05)' : 'rgba(10,10,20,0.05)',
-    sans:      "'Plus Jakarta Sans', system-ui, sans-serif",
-    mono:      "'JetBrains Mono', ui-monospace, monospace",
-    serif:     "'Fraunces', 'Times New Roman', serif",
+    sans:      "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
+    mono:      "var(--font-learn-mono), 'JetBrains Mono', ui-monospace, monospace",
+    serif:     "var(--font-learn-serif), 'Fraunces', Georgia, serif",
   };
 }
 
@@ -85,7 +85,7 @@ export function Logo({ size = 28, color, withText = true, textColor }: LogoProps
       {withText && (
         <div
           style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            fontFamily: "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
             fontWeight: 700,
             fontSize: Math.round(size * 0.62),
             color: textColor || c,
@@ -204,7 +204,7 @@ export function Button({
         background: isPrimary ? (bg || '#0A0A14') : 'transparent',
         color: isPrimary ? (fg || '#FFF') : 'currentColor',
         padding: sizes.pad,
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontFamily: "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
         fontWeight: 600,
         fontSize: sizes.fs,
         letterSpacing: -0.2,
@@ -278,7 +278,9 @@ export function Chip({ children, color, bg, border, size = 'md', mono, icon, sty
         border: border || 'none',
         borderRadius: 999,
         lineHeight: 1,
-        fontFamily: mono ? "'JetBrains Mono', monospace" : "'Plus Jakarta Sans', sans-serif",
+        fontFamily: mono
+          ? "var(--font-learn-mono), 'JetBrains Mono', ui-monospace, monospace"
+          : "var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif",
         letterSpacing: mono ? 0.4 : -0.1,
         ...style,
       }}
@@ -296,7 +298,7 @@ export function Mono({
   return (
     <span
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "var(--font-learn-mono), 'JetBrains Mono', ui-monospace, monospace",
         fontSize: size,
         letterSpacing: 1.4,
         textTransform: 'uppercase',

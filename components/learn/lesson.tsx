@@ -362,11 +362,11 @@ const BRAND = '#1b38c4';
               <Mono color={t.faint} style={{ textTransform: 'none', letterSpacing: 0.4, fontSize: 11 }}>{moduleInfo.moduleTitle}</Mono>
             </div>
           )}
-          <h1 style={{ margin: 0, fontFamily: t.serif, fontWeight: 500, fontSize: mobile ? 34 : 52, letterSpacing: -1.6, lineHeight: 1, color: t.ink }}>
+          <h1 style={{ margin: 0, fontFamily: t.sans, fontWeight: 700, fontSize: mobile ? 30 : 44, letterSpacing: -1, lineHeight: 1.08, color: t.ink }}>
             {learn.lessonTitle ?? 'Lección'}
           </h1>
           <div
-            style={{ marginTop: 32, fontSize: bodyFs, lineHeight: 1.7, color: t.ink, fontFamily: t.serif }}
+            style={{ marginTop: 28, fontSize: bodyFs, lineHeight: 1.7, color: t.ink, fontFamily: t.sans }}
             dangerouslySetInnerHTML={{ __html: learn.lessonHtml }}
           />
         </article>
@@ -381,10 +381,10 @@ const BRAND = '#1b38c4';
           <Mono color={t.faint}>12 MIN</Mono>
         </div>
 
-        <h1 style={{ margin: 0, fontFamily: t.serif, fontWeight: 500, fontSize: mobile ? 34 : 52, letterSpacing: -1.6, lineHeight: 1, color: t.ink }}>
+        <h1 style={{ margin: 0, fontFamily: t.sans, fontWeight: 700, fontSize: mobile ? 30 : 44, letterSpacing: -1, lineHeight: 1.08, color: t.ink }}>
           Líneas, formas y patrones.
         </h1>
-        <p style={{ marginTop: 16, fontSize: bodyFs, color: t.muted, lineHeight: 1.5, fontFamily: t.serif, fontStyle: 'italic' }}>
+        <p style={{ marginTop: 14, fontSize: bodyFs, color: t.muted, lineHeight: 1.5, fontFamily: t.sans, fontStyle: 'italic' }}>
           Una imagen no es lo que tu cámara captura — es lo que tu ojo organiza dentro del encuadre. Aprende a ver antes que a disparar.
         </p>
 
@@ -396,9 +396,9 @@ const BRAND = '#1b38c4';
         </div>
 
         {/* Body */}
-        <div style={{ marginTop: 32, fontSize: bodyFs, lineHeight: 1.7, color: t.ink, fontFamily: t.serif }}>
+        <div style={{ marginTop: 28, fontSize: bodyFs, lineHeight: 1.7, color: t.ink, fontFamily: t.sans }}>
           <p style={{ margin: 0 }}>
-            <span style={{ float: 'left', fontSize: bodyFs * 3.4, lineHeight: 0.85, fontWeight: 600, marginRight: 10, marginTop: 6, color: t.ink, fontFamily: t.sans }}>L</span>
+            <span style={{ float: 'left', fontSize: bodyFs * 3.4, lineHeight: 0.85, fontWeight: 700, marginRight: 10, marginTop: 6, color: t.ink, fontFamily: t.sans }}>L</span>
             a primera vez que un fotógrafo profesional revisó mi carpeta me dijo algo que cambió todo: <em>«tus fotos están enfocadas, expuestas y son técnicamente correctas — pero no me llevan a ningún sitio»</em>. Tardé un año en entender qué quería decir.
           </p>
 
@@ -432,7 +432,7 @@ const BRAND = '#1b38c4';
           </p>
 
           {/* PULL QUOTE */}
-          <blockquote style={{ margin: '36px 0', padding: 0, borderLeft: 'none', fontFamily: t.serif, fontWeight: 500, fontStyle: 'italic', fontSize: mobile ? 22 : 28, lineHeight: 1.25, letterSpacing: -0.5, color: t.ink }}>
+          <blockquote style={{ margin: '36px 0', padding: 0, borderLeft: 'none', fontFamily: t.sans, fontWeight: 600, fontStyle: 'italic', fontSize: mobile ? 20 : 26, lineHeight: 1.3, letterSpacing: -0.4, color: t.ink }}>
             «No hagas fotos de cosas. Haz fotos de <span style={{ background: `linear-gradient(transparent 60%, ${accent.bg}90 60%)`, padding: '0 2px' }}>formas que casualmente son cosas</span>.»
           </blockquote>
 
