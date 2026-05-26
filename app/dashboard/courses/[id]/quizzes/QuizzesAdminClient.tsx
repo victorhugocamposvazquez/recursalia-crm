@@ -35,6 +35,16 @@ type GenerateBody = {
 
 type Feedback = { type: 'ok' | 'error'; text: string; id: string };
 
+type BulkResult = {
+  modulesCreated: number;
+  modulesSkipped: number;
+  modulesFailed: number;
+  finalCreated: boolean;
+  finalSkipped: boolean;
+  finalFailed: boolean;
+  notes: string[];
+};
+
 export function QuizzesAdminClient({
   courseId,
   courseTitle,
@@ -60,6 +70,17 @@ export function QuizzesAdminClient({
   const [moduleQuestions, setModuleQuestions] = useState<number>(6);
   const [finalQuestions, setFinalQuestions] = useState<number>(10);
   const [isPending, startTransition] = useTransition();
+
+  // Bulk: generar todos los quizzes del curso de golpe.
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkOverwrite, setBulkOverwrite] = useState<boolean>(true);
+  const [bulkFeedback, setBulkFeedback] = useState<
+    { type: 'ok' | 'error'; text: string; result?: BulkResult } | null
+  >(null);
+  const [bulkModuleQuestions, setBulkModuleQuestions] = useState<number>(6);
+  const [bulkFinalQuestions, setBulkFinalQuestions] = useState<number>(10);
+
+  const anyBusy = busy !== null || bulkBusy || isPending;
 
   const quizByTopic = new Map<string, QuizSummaryAdmin>();
   for (const q of quizzes) {
@@ -121,6 +142,50 @@ export function QuizzesAdminClient({
     }
   }
 
+  async function generateAll() {
+    if (bulkBusy || !hasContent) return;
+    const totalModules = Math.max(0, modules.length - 1);
+    const willReplace = bulkOverwrite;
+    const confirmMsg = willReplace
+      ? `Vas a generar con IA ${totalModules} quizzes de módulo + 1 examen final. Las preguntas existentes se reemplazarán. ¿Continuar?`
+      : `Vas a generar con IA los quizzes que aún no estén configurados (hasta ${totalModules} módulos + examen final). ¿Continuar?`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setBulkBusy(true);
+    setBulkFeedback(null);
+    setFeedback(null);
+    try {
+      const res = await fetch(`/api/admin/courses/${courseId}/quizzes/bulk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          questionsPerModule: bulkModuleQuestions,
+          questionsForFinal: bulkFinalQuestions,
+          force: bulkOverwrite,
+        }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { ok?: boolean; summary?: string; result?: BulkResult; error?: string }
+        | null;
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error ?? 'No se pudo completar la generación');
+      }
+      setBulkFeedback({
+        type: 'ok',
+        text: data.summary ?? 'Quizzes generados',
+        result: data.result,
+      });
+      startTransition(() => router.refresh());
+    } catch (e) {
+      setBulkFeedback({
+        type: 'error',
+        text: e instanceof Error ? e.message : 'Error',
+      });
+    } finally {
+      setBulkBusy(false);
+    }
+  }
+
   return (
     <div className={styles.page}>
       <header className={styles.head}>
@@ -160,6 +225,95 @@ export function QuizzesAdminClient({
         </section>
       ) : null}
 
+      {hasContent ? (
+        <section className={styles.bulkCard}>
+          <div className={styles.bulkHead}>
+            <span className={styles.bulkEyebrow}>Generación masiva con IA</span>
+            <h2 className={styles.bulkTitle}>Generar todos los quizzes del curso</h2>
+            <p className={styles.bulkLead}>
+              En una sola pasada: {Math.max(0, modules.length - 1)} quiz{Math.max(0, modules.length - 1) === 1 ? '' : 'zes'} de módulo
+              + el examen final (boss fight). Cada quiz se ancla a su módulo y el examen cubre todo el curso.
+              Tarda entre 1 y 3 minutos.
+            </p>
+          </div>
+
+          <div className={styles.bulkControls}>
+            <label className={styles.bulkControlLabel}>
+              Nº preguntas por módulo
+              <input
+                type="number"
+                min={3}
+                max={15}
+                value={bulkModuleQuestions}
+                onChange={(e) =>
+                  setBulkModuleQuestions(Math.max(3, Math.min(15, Number(e.target.value) || 6)))
+                }
+                className={styles.bulkNumInput}
+                disabled={bulkBusy}
+              />
+            </label>
+            <label className={styles.bulkControlLabel}>
+              Nº preguntas del examen final
+              <input
+                type="number"
+                min={5}
+                max={25}
+                value={bulkFinalQuestions}
+                onChange={(e) =>
+                  setBulkFinalQuestions(Math.max(5, Math.min(25, Number(e.target.value) || 10)))
+                }
+                className={styles.bulkNumInput}
+                disabled={bulkBusy}
+              />
+            </label>
+            <label className={styles.bulkCheckLabel}>
+              <input
+                type="checkbox"
+                checked={bulkOverwrite}
+                onChange={(e) => setBulkOverwrite(e.target.checked)}
+                disabled={bulkBusy}
+              />
+              Sobrescribir quizzes ya configurados
+            </label>
+          </div>
+
+          <div className={styles.bulkActions}>
+            <button
+              type="button"
+              className={styles.bulkBtn}
+              onClick={generateAll}
+              disabled={bulkBusy || !hasContent}
+            >
+              {bulkBusy ? (
+                <>
+                  <span className={styles.spinner} aria-hidden />
+                  Generando con IA… 1–3 min
+                </>
+              ) : (
+                <>Generar todos los quizzes con IA</>
+              )}
+            </button>
+            {bulkBusy ? (
+              <p className={styles.bulkHint}>
+                No cierres esta pestaña hasta que termine. Los quizzes se irán guardando en el orden de los módulos.
+              </p>
+            ) : null}
+          </div>
+
+          {bulkFeedback ? (
+            <p className={bulkFeedback.type === 'ok' ? styles.bulkFbOk : styles.bulkFbError}>
+              {bulkFeedback.text}
+              {bulkFeedback.result && bulkFeedback.result.notes.length > 0 ? (
+                <>
+                  <br />
+                  <small>{bulkFeedback.result.notes.join(' · ')}</small>
+                </>
+              ) : null}
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
       <section className={styles.section}>
         <header className={styles.sectionHead}>
           <h2 className={styles.sectionTitle}>Quizzes por módulo</h2>
@@ -187,7 +341,12 @@ export function QuizzesAdminClient({
               const opIdGen = `mod-gen-${m.topicId}`;
               const opIdManual = `mod-man-${m.topicId}`;
               const opIdDel = `mod-del-${m.topicId}`;
-              const itemBusy = busy === opIdGen || busy === opIdManual || busy === opIdDel || isPending;
+              const itemBusy =
+                busy === opIdGen ||
+                busy === opIdManual ||
+                busy === opIdDel ||
+                isPending ||
+                bulkBusy;
               return (
                 <article key={m.topicId} className={styles.row}>
                   <div className={styles.rowMain}>
@@ -310,7 +469,7 @@ export function QuizzesAdminClient({
             <button
               type="button"
               className={styles.btnPrimary}
-              disabled={busy != null || isPending || !hasContent}
+              disabled={anyBusy || !hasContent}
               onClick={() =>
                 generate(
                   { scope: 'final', mode: 'ai', numQuestions: finalQuestions, replace: true },
@@ -324,7 +483,7 @@ export function QuizzesAdminClient({
               <button
                 type="button"
                 className={styles.btnGhost}
-                disabled={busy != null || isPending || !hasContent}
+                disabled={anyBusy || !hasContent}
                 onClick={() => generate({ scope: 'final', mode: 'manual' }, 'final-man')}
               >
                 {busy === 'final-man' ? 'Creando…' : 'Crear vacío (manual)'}
@@ -333,7 +492,7 @@ export function QuizzesAdminClient({
               <button
                 type="button"
                 className={styles.btnDanger}
-                disabled={busy != null || isPending}
+                disabled={anyBusy}
                 onClick={() => removeQuiz(finalQuiz.id, 'final-del')}
               >
                 {busy === 'final-del' ? 'Eliminando…' : 'Eliminar'}
