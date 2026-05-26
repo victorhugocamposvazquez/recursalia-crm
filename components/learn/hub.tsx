@@ -15,6 +15,7 @@ import type { TweakOptions } from './types';
    regla horizontal entre módulos. */
 
   const BRAND = '#1b38c4';
+  const CURRENT_GREEN = 'rgb(42, 215, 69)';
 
   // Tipografía para el id de lección (mono, color acento)
   const kindIcon = {
@@ -75,8 +76,8 @@ import type { TweakOptions } from './types';
         </div>
       );
       if (isCurrent) return (
-        <div style={{ width: 26, height: 26, borderRadius: 13, border: `2px solid ${accent.bg}`, display: 'grid', placeItems: 'center', flexShrink: 0, position: 'relative' }}>
-          <div style={{ width: 8, height: 8, borderRadius: 4, background: accent.bg, animation: 'rx-pulse 1.6s ease-in-out infinite' }}/>
+        <div style={{ width: 26, height: 26, borderRadius: 13, border: `2px solid ${CURRENT_GREEN}`, display: 'grid', placeItems: 'center', flexShrink: 0, position: 'relative' }}>
+          <div style={{ width: 8, height: 8, borderRadius: 4, background: CURRENT_GREEN, animation: 'rx-pulse 1.6s ease-in-out infinite' }}/>
         </div>
       );
       if (isLocked) return (
@@ -94,7 +95,7 @@ import type { TweakOptions } from './types';
       padding: compact ? '12px 14px' : '14px 16px',
       width: '100%', textAlign: 'left',
       background: isCurrent ? (t.dark ? 'rgba(255,255,255,0.04)' : '#FFF') : 'transparent',
-      border: isCurrent ? `1.5px solid ${accent.bg}` : '1px solid transparent',
+      border: isCurrent ? `1.5px solid ${CURRENT_GREEN}` : '1px solid transparent',
       borderRadius: 14, cursor: isLocked ? 'not-allowed' : 'pointer',
       color: 'inherit', fontFamily: 'inherit', textDecoration: 'none',
       transition: 'background .15s ease, border-color .15s ease',
@@ -127,7 +128,7 @@ import type { TweakOptions } from './types';
           </div>
         </div>
         {isCurrent && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: accent.bg, fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: CURRENT_GREEN, fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
             <span>{ctaLabel}</span>
             <Icon name="arrowR" size={14}/>
           </div>
