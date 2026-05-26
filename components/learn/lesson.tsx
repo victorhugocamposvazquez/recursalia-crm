@@ -408,7 +408,8 @@ const UNMARK_GRADIENT = 'linear-gradient(135deg, #ff6b35 0%, #ffaf68 100%)';
             {learn.lessonTitle ?? 'Lección'}
           </h1>
           <div
-            style={{ marginTop: 28, fontSize: bodyFs, lineHeight: 1.7, color: t.ink, fontFamily: t.sans }}
+            className="lesson-body"
+            style={{ marginTop: 28, fontSize: bodyFs, color: t.ink }}
             dangerouslySetInnerHTML={{ __html: learn.lessonHtml }}
           />
         </article>

@@ -32,6 +32,7 @@ export default async function AprenderExamenPage({ params }: Props) {
       quizId={finalQuiz.id}
       title={finalQuiz.title}
       questions={questions}
+      courseTitle={course.published_title ?? course.generated_content?.title ?? course.topic}
     />
   );
 }

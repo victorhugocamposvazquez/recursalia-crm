@@ -9,6 +9,7 @@ type Props = {
   quizId: string;
   title: string;
   questions: QuizQuestionRecord[];
+  courseTitle?: string;
 };
 
 export function AprenderExamClient(props: Props) {

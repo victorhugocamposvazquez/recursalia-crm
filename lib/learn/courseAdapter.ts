@@ -155,31 +155,84 @@ export function expandedLessonToHtml(
 ): string {
   if (!expanded) return fallbackHtml;
   const parts: string[] = [];
-  if (expanded.intro?.trim()) parts.push(`<p>${escapeHtml(expanded.intro)}</p>`);
+
+  // Intro = "lead" (entradilla grande, no body)
+  if (expanded.intro?.trim()) {
+    parts.push(`<p class="lesson-lead">${escapeInline(expanded.intro)}</p>`);
+  }
+
+  // Body: párrafos. Detectamos pull-quotes (frases entre «...» en su propio párrafo).
+  // El primer párrafo lleva drop-cap automático (clase `has-dropcap`).
   if (expanded.body?.trim()) {
-    parts.push(
-      expanded.body
-        .split('\n\n')
-        .map((p) => `<p>${escapeHtml(p)}</p>`)
-        .join('')
-    );
+    const paragraphs = expanded.body
+      .split(/\n{2,}/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    paragraphs.forEach((p, i) => {
+      const isQuote = /^[«"]/.test(p) && /[»"]$/.test(p) && p.length < 240;
+      if (isQuote) {
+        parts.push(
+          `<blockquote class="lesson-pullquote">${escapeInline(p)}</blockquote>`
+        );
+        return;
+      }
+      const classes = ['lesson-p'];
+      if (i === 0) classes.push('has-dropcap');
+      parts.push(`<p class="${classes.join(' ')}">${escapeInline(p)}</p>`);
+    });
   }
+
+  // Ejemplo = callout azul
   if (expanded.example?.trim()) {
-    parts.push(`<h3>Ejemplo</h3><p>${escapeHtml(expanded.example)}</p>`);
-  }
-  if (expanded.exercise?.trim()) {
-    parts.push(`<h3>Ejercicio</h3><p>${escapeHtml(expanded.exercise)}</p>`);
-  }
-  if (expanded.keyPoints?.length) {
     parts.push(
-      '<h3>Puntos clave</h3><ul>' +
-        expanded.keyPoints.map((k) => `<li>${escapeHtml(k)}</li>`).join('') +
-        '</ul>'
+      `<aside class="lesson-callout lesson-callout--example" role="note">` +
+        `<div class="lesson-callout__kicker"><span class="lesson-callout__icon" aria-hidden="true">💡</span>Ejemplo</div>` +
+        `<div class="lesson-callout__body">${escapeInline(expanded.example)}</div>` +
+        `</aside>`
     );
   }
+
+  // Ejercicio = callout dorado
+  if (expanded.exercise?.trim()) {
+    parts.push(
+      `<aside class="lesson-callout lesson-callout--exercise" role="note">` +
+        `<div class="lesson-callout__kicker"><span class="lesson-callout__icon" aria-hidden="true">🎯</span>Ejercicio rápido</div>` +
+        `<div class="lesson-callout__body">${escapeInline(expanded.exercise)}</div>` +
+        `</aside>`
+    );
+  }
+
+  // Key points = tarjeta destacada con checks
+  if (expanded.keyPoints?.length) {
+    const items = expanded.keyPoints
+      .map(
+        (k) =>
+          `<li><span class="lesson-keypoints__bullet" aria-hidden="true">✓</span><span>${escapeInline(
+            k
+          )}</span></li>`
+      )
+      .join('');
+    parts.push(
+      `<section class="lesson-keypoints" aria-label="Puntos clave">` +
+        `<div class="lesson-keypoints__title">Lo que te llevas de esta lección</div>` +
+        `<ul>${items}</ul>` +
+        `</section>`
+    );
+  }
+
   if (parts.length === 0 && expanded.content?.trim()) return expanded.content;
   if (parts.length === 0) return fallbackHtml;
   return parts.join('\n');
+}
+
+// Escapa HTML pero conserva la posibilidad de **negrita** y *cursiva* sencillas en markdown inline.
+function escapeInline(s: string): string {
+  let out = escapeHtml(s);
+  // Negrita **texto**
+  out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  // Cursiva *texto* (cuidado: no aplicar dentro de strong; orden importa)
+  out = out.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  return out;
 }
 
 export function getAdjacentLessons(
