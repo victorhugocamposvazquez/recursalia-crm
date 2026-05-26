@@ -113,10 +113,14 @@ const UNMARK_GRADIENT = 'linear-gradient(135deg, #ff6b35 0%, #ffaf68 100%)';
 
     return (
       <div style={{
-        padding: mobile ? '12px 16px 18px' : '18px 28px',
+        padding: mobile ? '12px 16px calc(18px + env(safe-area-inset-bottom, 0px))' : '18px 28px',
         borderTop: `1px solid ${t.line}`,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         gap: 12, background: t.surface, flexShrink: 0,
+        position: 'sticky', bottom: 0, zIndex: 40,
+        backdropFilter: 'saturate(160%) blur(12px)',
+        WebkitBackdropFilter: 'saturate(160%) blur(12px)',
+        boxShadow: '0 -8px 24px -16px rgba(15,23,42,0.18)',
       }}>
         <Button kind="ghost" icon="arrowL" size={mobile ? 'sm' : 'md'} style={{ color: t.muted, borderColor: t.line, flexShrink: 0 }} onClick={onPrev} disabled={!onPrev}>
           {mobile ? '' : (prev || 'Anterior')}
@@ -174,7 +178,7 @@ const UNMARK_GRADIENT = 'linear-gradient(135deg, #ff6b35 0%, #ffaf68 100%)';
   // ── SIDEBAR INDICE DESKTOP ─────────────────────────────────────────────────
   function LessonSidebar({ t, accent, currentId, modules, courseTitle, onOpen }) {
     return (
-      <aside style={{ width: 300, background: t.surface, borderLeft: `1px solid ${t.line}`, padding: '22px 18px', overflowY: 'auto', flexShrink: 0 }}>
+      <aside style={{ width: 300, background: t.surface, borderLeft: `1px solid ${t.line}`, padding: '22px 18px', flexShrink: 0, position: 'sticky', top: 64, alignSelf: 'flex-start', maxHeight: 'calc(100dvh - 64px)', overflowY: 'auto' }}>
         <Mono color={t.faint}>EN ESTE CURSO</Mono>
         <h3 style={{ margin: '6px 0 18px', fontSize: 16, fontWeight: 700, letterSpacing: -0.3 }}>{courseTitle}</h3>
 
@@ -506,20 +510,12 @@ const UNMARK_GRADIENT = 'linear-gradient(135deg, #ff6b35 0%, #ffaf68 100%)';
     const t = useTheme(tweak);
     const { A: accent } = t;
     const sidebarModules = learn?.modules ?? [];
-    const total = sidebarModules.reduce((s, m) => s + m.lessons.length, 0) || 14;
-    const current = learn?.lessonUuid
-      ? sidebarModules.flatMap(m => m.lessons).findIndex(l => l.id === learn.lessonUuid) + 1
-      : 1;
-    const crumb = [learn?.course?.tag, learn?.course?.title].filter(Boolean).join(' · ').toUpperCase();
-    const scrollRef = useRef<HTMLDivElement | null>(null);
     const completed = Boolean(learn?.lessonCompleted);
     const primaryAction = completed ? (learn?.onNextLesson) : (learn?.onMarkComplete);
     return (
-      <div style={{ width: '100%', height: '100%', minHeight: 0, background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <ReadingProgressBar scrollRef={scrollRef} />
-        <LessonTopbar t={t} accent={accent} current={current || 1} total={total} onBack={learn?.onBackToHub} breadcrumb={crumb}/>
+      <div style={{ width: '100%', minHeight: 0, background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', flex: 1 }}>
         <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-          <main ref={scrollRef} style={{ flex: 1, padding: '40px 56px', overflowY: 'auto' }}>
+          <main style={{ flex: 1, padding: '40px 56px' }}>
             <ArticleBody t={t} accent={accent}/>
           </main>
           <LessonSidebar t={t} accent={accent} currentId={learn?.lessonUuid} modules={sidebarModules} courseTitle={learn?.course?.title ?? 'Curso'} onOpen={learn?.onLessonOpen}/>
@@ -541,20 +537,11 @@ const UNMARK_GRADIENT = 'linear-gradient(135deg, #ff6b35 0%, #ffaf68 100%)';
     const learn = useLearnDataOptional();
     const t = useTheme(tweak);
     const { A: accent } = t;
-    const sidebarModules = learn?.modules ?? [];
-    const total = sidebarModules.reduce((s, m) => s + m.lessons.length, 0) || 14;
-    const current = learn?.lessonUuid
-      ? sidebarModules.flatMap(m => m.lessons).findIndex(l => l.id === learn.lessonUuid) + 1
-      : 1;
-    const crumb = [learn?.course?.tag, learn?.course?.title].filter(Boolean).join(' · ').toUpperCase();
-    const scrollRef = useRef<HTMLDivElement | null>(null);
     const completed = Boolean(learn?.lessonCompleted);
     const primaryAction = completed ? (learn?.onNextLesson) : (learn?.onMarkComplete);
     return (
-      <div style={{ width: '100%', height: '100%', minHeight: 0, background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <ReadingProgressBar scrollRef={scrollRef} />
-        <LessonTopbar t={t} accent={accent} mobile current={current || 1} total={total} onBack={learn?.onBackToHub} breadcrumb={crumb}/>
-        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '24px 20px 20px' }}>
+      <div style={{ width: '100%', minHeight: 0, background: t.bg, color: t.ink, fontFamily: t.sans, display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ flex: 1, padding: '24px 20px 20px' }}>
           <ArticleBody t={t} accent={accent} mobile/>
         </div>
         <LessonFooter

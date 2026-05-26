@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTheme, Icon, Button, Mono } from '@/components/learn/tokens';
+import { useTheme, Button, Mono } from '@/components/learn/tokens';
 import type { QuizQuestionRecord } from '@/types';
 
 type Props = {
@@ -167,50 +167,29 @@ export function QuizPlayer({
         flexDirection: 'column',
       }}
     >
-      <header
+      <div
         style={{
-          padding: '16px 24px',
-          borderBottom: `1px solid ${t.line}`,
+          padding: '12px 24px 0',
           display: 'flex',
           alignItems: 'center',
-          gap: 16,
-          background: t.surface,
+          gap: 12,
+          background: 'transparent',
         }}
       >
-        <button
-          type="button"
-          onClick={() => router.push(backHref)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: t.muted,
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          <Icon name="chevL" size={16} />
-          Volver
-        </button>
-        <div style={{ flex: 1 }}>
-          <Mono color={t.faint}>{isFinal ? 'EXAMEN FINAL' : 'QUIZ'}</Mono>
-          <div style={{ fontWeight: 700, fontSize: 16 }}>{title}</div>
+        <Mono color={t.faint}>{isFinal ? 'EXAMEN FINAL' : 'QUIZ'}</Mono>
+        <div style={{ flex: 1, height: 4, background: t.lineSoft, borderRadius: 2, overflow: 'hidden' }}>
+          <div
+            style={{
+              height: '100%',
+              width: `${progress * 100}%`,
+              background: accent.bg,
+              transition: 'width .2s ease',
+            }}
+          />
         </div>
         <Mono color={t.muted}>
           {index + 1}/{questions.length}
         </Mono>
-      </header>
-
-      <div style={{ height: 4, background: t.lineSoft }}>
-        <div
-          style={{
-            height: '100%',
-            width: `${progress * 100}%`,
-            background: accent.bg,
-            transition: 'width .2s ease',
-          }}
-        />
       </div>
 
       <main style={{ flex: 1, padding: '32px 24px', maxWidth: 720, margin: '0 auto', width: '100%' }}>

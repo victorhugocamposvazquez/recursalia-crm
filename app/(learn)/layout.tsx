@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { LearnTopbar } from '@/components/learn/LearnTopbar';
+import { LearnLayoutClient } from '@/components/learn/LearnLayoutClient';
 import './learn.css';
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -39,23 +39,12 @@ export default async function LearnLayout({ children }: { children: React.ReactN
   const role: 'admin' | 'student' = profile?.role === 'admin' ? 'admin' : 'student';
 
   return (
-    <div
-      className={`${plusJakarta.variable} ${jetbrains.variable} learn-root`}
-      style={{
-        minHeight: '100dvh',
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#f8fafc',
-      }}
+    <LearnLayoutClient
+      email={user.email ?? ''}
+      role={role}
+      fontClassName={`${plusJakarta.variable} ${jetbrains.variable}`}
     >
-      <LearnTopbar email={user.email ?? ''} role={role} />
-      <main
-        style={{ flex: 1, display: 'flex', flexDirection: 'column' }}
-        className="learn-main"
-      >
-        {children}
-      </main>
-    </div>
+      {children}
+    </LearnLayoutClient>
   );
 }
