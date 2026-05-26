@@ -114,18 +114,30 @@ function buildCourseContext(
   };
 }
 
-const SYSTEM_PROMPT = `Eres un diseñador instruccional experto. Generas quizzes para una plataforma LMS en español (España y LATAM).
+const SYSTEM_PROMPT = `Eres un diseñador instruccional senior creando quizzes para Recursalia, una plataforma LMS gamificada en español (España y LATAM). Tu trabajo es que el alumno DISFRUTE comprobando lo que ha aprendido, no que sufra.
 
-Reglas estrictas:
-- Devuelve ÚNICAMENTE JSON válido, sin Markdown ni explicaciones.
-- Cada pregunta debe ser autocontenida, sin referencias a "esta lección" ni "el módulo anterior".
-- Las opciones incorrectas deben ser plausibles pero claramente incorrectas para alguien que ha estudiado el material.
-- Mezcla tipos: \`single\` (la mayoría), \`tf\` (verdadero/falso), \`multi\` (varias opciones correctas) y \`order\` (ordenar pasos cuando haya secuencias).
-- Mantén opciones cortas (máx. 90 caracteres). Evita "todas las anteriores" / "ninguna".
-- En \`tf\`, la afirmación debe ser inequívocamente verdadera o falsa.
-- Los \`id\` de opciones son strings cortos: "a", "b", "c", "d".
-- En \`order\`, mínimo 3 ítems y máximo 5; el array \`correct_order\` lista los ids en orden cronológico/lógico real.
-- Incluye una breve \`explanation\` (1 frase) que el alumno verá al finalizar.`;
+CALIDAD (lo más importante):
+- Cada pregunta evalúa UN concepto concreto, mencionado o desarrollado en el material aportado. Nada genérico.
+- Pregunta como si conversaras con un alumno motivado: directa, en segunda persona ("¿Qué elegirías cuando…?", "Tu cliente te pide…"), con micro-escenarios cuando ayude.
+- Cada pregunta es autocontenida: no digas "como vimos antes" ni "según la lección 3". El alumno la lee fuera de contexto.
+- Las distractoras (opciones incorrectas) deben ser plausibles para alguien que NO estudió, pero claramente descartables tras estudiar. Nada de absurdas, nada de "todas las anteriores" ni "ninguna".
+- En \`single\`: 4 opciones de longitud parecida (máx. 90 chars). Solo UNA es indiscutiblemente correcta.
+- En \`tf\`: la afirmación debe poder responderse sin matices ("depende" → no usar tf).
+- En \`multi\`: 4 opciones, mínimo 2 correctas, máximo 3. Avísale en el enunciado: "Elige todas las que apliquen".
+- En \`order\`: 3–5 pasos de una secuencia real (proceso, workflow, recorrido del alumno). \`correct_order\` debe ser la secuencia natural.
+- \`explanation\` (obligatoria, 1 frase de 12–25 palabras): el "aha moment". Explica POR QUÉ es la correcta o el matiz que distingue. Aparece como feedback inmediato.
+- \`hint\` (opcional, solo si la pregunta es difícil): pista útil sin regalar la respuesta. 1 frase.
+
+VARIEDAD Y TONO:
+- Mezcla bien los tipos pedidos (proporciones orientativas en cada prompt).
+- Tono motivador y cercano, sin coloquialismos. Usa "tú" / "vosotros" (España) de forma neutra.
+- A veces empieza con un escenario corto ("Estás editando el primer plano de…") para hacerla más memorable.
+- Evita repetir conceptos entre preguntas del mismo quiz; cubre la mayor superficie posible del módulo.
+
+FORMATO ESTRICTO:
+- Devuelve ÚNICAMENTE JSON válido, sin Markdown, comentarios ni texto fuera del JSON.
+- Los \`id\` de opciones son strings cortos: "a", "b", "c", "d". Los de \`order\`: "1","2","3"...
+- No añadas claves no definidas en el esquema del prompt usuario.`;
 
 function buildModulePrompt({
   courseTitle,
@@ -184,7 +196,13 @@ Genera exactamente ${numQuestions} preguntas en JSON:
   ]
 }
 
-Distribuye los tipos así (orientativo): 60% single, 20% tf, 10% multi, 10% order.
+Distribuye los tipos así (orientativo, pero al menos uno de cada cuando \`numQuestions\` lo permita):
+- ~55% single
+- ~20% tf
+- ~15% multi
+- ~10% order (idealmente 1 pregunta de ordenar cuando hay un proceso real)
+
+Asegúrate de cubrir las DISTINTAS lecciones del módulo (no concentres todas en la primera). Empieza por una pregunta accesible (calienta motores) y termina con una más exigente.
 SOLO JSON, sin comentarios.`;
 }
 
@@ -213,10 +231,12 @@ Curso: "${courseTitle}"
 Estructura del curso:
 ${moduleBlocks}
 
-Genera exactamente ${numQuestions} preguntas en JSON con la misma forma que un quiz de módulo. El examen final debe:
-- Mezclar todos los módulos (no concentrarse en uno solo).
-- Tener un peso mayor en single (≈70%) y muy poco order (1 max), porque suele ser más extenso.
-- Cubrir tanto conceptos teóricos como casos prácticos.
+Genera exactamente ${numQuestions} preguntas en JSON con la misma forma que un quiz de módulo. Este es el "boss fight" del curso: el alumno se la juega aquí para conseguir el diploma. Por eso debe:
+- Mezclar TODOS los módulos de forma equilibrada (mínimo 1 pregunta por módulo cuando \`numQuestions ≥ ${topics.length}\`).
+- Tener una distribución: ~65% single, ~20% tf, ~10% multi, ~5% order (máx. 1 pregunta de ordenar).
+- Combinar conceptos teóricos con casos prácticos / micro-escenarios.
+- Subir la dificultad: las preguntas deben ser más exigentes que las de los quizzes de módulo. Distractoras más finas, matices más sutiles.
+- Empezar con una pregunta accesible para enganchar y cerrar con la más exigente (broche de oro).
 
 Mantén el formato JSON estricto explicado antes. SOLO JSON.`;
 }
@@ -295,7 +315,7 @@ async function callOpenAI({
   const completion = await client.chat.completions.create({
     model,
     response_format: { type: 'json_object' },
-    temperature: 0.4,
+    temperature: 0.7,
     messages: [
       { role: 'system', content: SYSTEM_PROMPT },
       { role: 'user', content: prompt },

@@ -139,9 +139,12 @@ export async function seedCourseQuizzesWithAI(params: {
 
   const admin = getSupabase();
 
-  // Quizzes por módulo (todos menos el último, que sería el examen final).
+  // Un quiz por cada módulo del curso. El examen final es independiente
+  // (registro con `is_final: true`) y cubre TODO el curso. Antes saltábamos
+  // el último topic asumiendo que era "el final" — error: el último módulo
+  // (p. ej. "Proyecto final") es un módulo regular y también necesita su
+  // quiz de comprobación.
   for (let i = 0; i < topics.length; i++) {
-    if (i === topics.length - 1) continue;
     const topic = topics[i];
 
     const moduleNumber = i + 1;
