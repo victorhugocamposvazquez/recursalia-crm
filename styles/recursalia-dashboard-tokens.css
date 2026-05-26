@@ -1,0 +1,28 @@
+/**
+ * Tokens visuales compartidos: panel admin + coherencia con Learn (/aprender).
+ * Importar en app/dashboard/layout.tsx junto a las fuentes.
+ */
+.recursalia-dashboard-root {
+  --db-brand: #1b38c4;
+  --db-brand-hover: #142a99;
+  --db-brand-soft: rgb(27 56 196 / 10%);
+  --db-lime: rgb(42 215 69);
+  --db-lime-soft: rgb(42 215 69 / 14%);
+  --db-ink: #0a0a14;
+  --db-muted: #6b6b7a;
+  --db-faint: #a8a8b5;
+  --db-line: rgb(15 23 42 / 8%);
+  --db-line-strong: rgb(15 23 42 / 14%);
+  --db-surface: #ffffff;
+  --db-panel: #ffffff;
+  --db-bg: #f8fafc;
+  --db-accent: var(--db-brand);
+  --db-accent-hover: var(--db-brand-hover);
+  --db-ring: rgb(27 56 196 / 22%);
+  --db-success: #065f46;
+  --db-success-bg: rgb(42 215 69 / 12%);
+  --db-error: #b91c1c;
+  --db-error-bg: rgb(248 113 113 / 10%);
+  --font-sans: var(--font-learn-sans), 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: var(--font-learn-mono), 'JetBrains Mono', ui-monospace, monospace;
+}

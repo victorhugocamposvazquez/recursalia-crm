@@ -5,7 +5,7 @@
 .title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #1c1b19;
+  color: var(--db-ink);
   margin: 0 0 0.35rem;
   letter-spacing: -0.02em;
 }
@@ -18,7 +18,7 @@
 }
 
 .section {
-  background: #fbfaf7;
+  background: var(--db-surface);
   border: 1px solid rgb(28 27 25 / 10%);
   border-radius: 8px;
   padding: 1rem 1.1rem;
@@ -30,7 +30,7 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #6b6760;
+  color: var(--db-muted);
   margin: 0 0 0.85rem;
 }
 
@@ -48,32 +48,32 @@
 .field label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: #2f2e2b;
+  color: var(--db-ink);
 }
 
 .field input {
   padding: 0.45rem 0.65rem;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid rgb(28 27 25 / 14%);
   background: #fff;
   font-size: 0.8125rem;
-  color: #1c1b19;
+  color: var(--db-ink);
 }
 
 .field input:focus {
   outline: none;
-  border-color: #3d3a36;
+  border-color: var(--db-brand);
   box-shadow: 0 0 0 2px rgb(61 58 54 / 18%);
 }
 
 .field textarea,
 .textarea {
   padding: 0.5rem 0.65rem;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid rgb(28 27 25 / 14%);
   background: #fff;
   font-size: 0.8125rem;
-  color: #1c1b19;
+  color: var(--db-ink);
   font-family: inherit;
   line-height: 1.45;
   resize: vertical;
@@ -83,7 +83,7 @@
 .field textarea:focus,
 .textarea:focus {
   outline: none;
-  border-color: #3d3a36;
+  border-color: var(--db-brand);
   box-shadow: 0 0 0 2px rgb(61 58 54 / 18%);
 }
 
@@ -117,7 +117,7 @@
 
 .tableWrap {
   overflow-x: auto;
-  border-radius: 6px;
+  border-radius: 12px;
   border: 1px solid rgb(28 27 25 / 8%);
 }
 
@@ -148,7 +148,7 @@
   width: 100%;
   min-width: 0;
   padding: 0.35rem 0.45rem;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid rgb(28 27 25 / 12%);
   font-size: 0.78rem;
 }
@@ -156,7 +156,7 @@
 .table input[type='checkbox'] {
   width: 16px;
   height: 16px;
-  accent-color: #3d3a36;
+  accent-color: var(--db-brand);
   cursor: pointer;
 }
 
@@ -169,12 +169,12 @@
 .iconBtn {
   border: 1px solid rgb(28 27 25 / 12%);
   background: #fff;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 0.2rem 0.4rem;
   cursor: pointer;
   font-size: 0.72rem;
   line-height: 1;
-  color: #3d3a36;
+  color: var(--db-brand);
 }
 
 .iconBtn:hover:not(:disabled) {
@@ -197,12 +197,12 @@
 
 .addBtn {
   padding: 0.45rem 0.75rem;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px dashed rgb(28 27 25 / 22%);
   background: transparent;
   font-size: 0.75rem;
   cursor: pointer;
-  color: #3d3a36;
+  color: var(--db-brand);
   font-weight: 500;
 }
 
@@ -219,10 +219,10 @@
 
 .saveBtn {
   padding: 0.5rem 1rem;
-  border-radius: 4px;
-  border: 1px solid #3d3a36;
-  background: #3d3a36;
-  color: #f7f6f2;
+  border-radius: 8px;
+  border: 1px solid var(--db-brand);
+  background: var(--db-brand);
+  color: var(--db-surface);
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;

@@ -10,13 +10,13 @@
 }
 
 .back {
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
   text-decoration: none;
   font-size: 0.95rem;
 }
 
 .back:hover {
-  color: #1b1d1e;
+  color: var(--db-ink);
 }
 
 .actions {
@@ -27,7 +27,7 @@
 .btnPrimary,
 .btnSecondary {
   padding: 0.55rem 1.1rem;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -35,14 +35,15 @@
 }
 
 .btnPrimary {
-  background: #1b1d1e;
+  background: var(--db-brand);
   color: #ffffff;
-  border: 1px solid #1b1d1e;
+  border: 1px solid var(--db-brand);
+  border-radius: 999px;
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #46433e;
-  border-color: #46433e;
+  background: var(--db-brand-hover);
+  border-color: var(--db-brand-hover);
 }
 
 .btnPrimary:disabled {
@@ -52,18 +53,18 @@
 
 .btnSecondary {
   background: #ffffff;
-  color: #1b1d1e;
-  border: 1px solid rgb(27 29 30 / 18%);
+  color: var(--db-ink);
+  border: 1px solid var(--db-line-strong);
 }
 
 .btnSecondary:hover {
-  background: rgb(27 29 30 / 4%);
-  border-color: rgb(27 29 30 / 28%);
+  background: var(--db-brand-soft);
+  border-color: var(--db-line-strong);
 }
 
 .btnDanger {
   padding: 0.55rem 1.1rem;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -83,7 +84,7 @@
 
 .loading,
 .error {
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
   padding: 2rem 0;
 }
 
@@ -100,20 +101,20 @@
 }
 
 .progressLog {
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-size: 0.9rem;
   margin-bottom: 1rem;
   padding: 0.8rem 1rem;
-  background: rgb(70 67 62 / 8%);
-  border: 1px solid rgb(70 67 62 / 20%);
+  background: var(--db-brand-soft);
+  border: 1px solid rgb(27 56 196 / 20%);
   border-radius: 10px;
   white-space: pre-wrap;
 }
 
 .reviewsConfig {
   padding: 1.25rem;
-  background: rgb(70 67 62 / 5%);
-  border: 1px solid rgb(70 67 62 / 18%);
+  background: var(--db-brand-soft);
+  border: 1px solid rgb(27 56 196 / 18%);
   border-radius: 14px;
   margin-bottom: 1.25rem;
 }
@@ -121,7 +122,7 @@
 .reviewsConfigTitle {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #46433e;
+  color: var(--db-brand);
   margin: 0 0 1rem;
 }
 
@@ -144,7 +145,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   margin: 0 0 0.75rem;
-  color: #1b1d1e;
+  color: var(--db-ink);
 }
 
 .checklistWarn {
@@ -182,14 +183,14 @@
 .checklistHint {
   display: block;
   font-size: 0.78rem;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
   margin-top: 0.15rem;
 }
 
 .seoPriorityCard {
   padding: 1rem 1.2rem;
   background: #fffefb;
-  border: 1px solid rgb(70 67 62 / 20%);
+  border: 1px solid rgb(27 56 196 / 20%);
   border-radius: 14px;
   margin-bottom: 1.25rem;
 }
@@ -198,7 +199,7 @@
   font-size: 0.93rem;
   font-weight: 600;
   margin: 0 0 0.45rem;
-  color: #46433e;
+  color: var(--db-brand);
 }
 
 .seoPriorityLead {
@@ -219,7 +220,7 @@
   font-family: ui-monospace, monospace;
   font-size: 0.88em;
   padding: 0.12em 0.38em;
-  border-radius: 4px;
+  border-radius: 8px;
   background: rgb(27 29 30 / 8%);
 }
 
@@ -241,7 +242,7 @@
 .republishTitle {
   font-size: 0.98rem;
   font-weight: 600;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin: 0 0 0.45rem;
 }
 
@@ -284,7 +285,7 @@
   border-radius: 10px;
   border: 1px solid rgb(27 29 30 / 14%);
   background: #ffffff;
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-size: 0.95rem;
   width: 100%;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -292,8 +293,8 @@
 
 .selectInput:focus {
   outline: none;
-  border-color: #46433e;
-  box-shadow: 0 0 0 3px rgb(70 67 62 / 22%);
+  border-color: var(--db-brand);
+  box-shadow: 0 0 0 3px var(--db-ring);
 }
 
 .meta {
@@ -313,7 +314,7 @@
 }
 
 .topic {
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
   font-size: 0.95rem;
 }
 
@@ -344,14 +345,14 @@
 
 .hotmartCardTitle {
   font-size: 1rem;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin: 0 0 0.5rem;
   font-weight: 500;
 }
 
 .hotmartNote {
   font-size: 0.85rem;
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
   margin: 0 0 1rem;
 }
 
@@ -367,14 +368,14 @@
   border-radius: 10px;
   border: 1px solid rgb(27 29 30 / 14%);
   background: #ffffff;
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-size: 0.95rem;
 }
 
 .hotmartInput:focus {
   outline: none;
-  border-color: #46433e;
-  box-shadow: 0 0 0 3px rgb(70 67 62 / 22%);
+  border-color: var(--db-brand);
+  box-shadow: 0 0 0 3px var(--db-ring);
 }
 
 .copyRow {
@@ -387,13 +388,13 @@
 .copyLabel {
   flex: 0 0 120px;
   font-size: 0.85rem;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
 }
 
 .copyValue {
   flex: 1;
   font-size: 0.9rem;
-  color: #1b1d1e;
+  color: var(--db-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -403,16 +404,16 @@
   flex-shrink: 0;
   padding: 0.35rem 0.75rem;
   font-size: 0.8rem;
-  border-radius: 4px;
-  background: rgb(70 67 62 / 10%);
-  color: #46433e;
-  border: 1px solid rgb(70 67 62 / 28%);
+  border-radius: 8px;
+  background: var(--db-brand-soft);
+  color: var(--db-brand);
+  border: 1px solid rgb(27 56 196 / 22%);
   cursor: pointer;
   font-weight: 500;
 }
 
 .copyBtn:hover {
-  background: rgb(70 67 62 / 18%);
+  background: rgb(27 56 196 / 18%);
 }
 
 .copyAllPreview {
@@ -435,9 +436,9 @@
   font-size: 0.9rem;
   font-weight: 500;
   color: #ffffff;
-  background: #1b1d1e;
-  border: 1px solid #1b1d1e;
-  border-radius: 4px;
+  background: var(--db-ink);
+  border: 1px solid var(--db-ink);
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s;
   text-decoration: none;
@@ -446,8 +447,8 @@
 
 .copyAllBtn:hover,
 .pdfDownloadBtn:hover {
-  background: #46433e;
-  border-color: #46433e;
+  background: var(--db-brand);
+  border-color: var(--db-brand);
 }
 
 .pdfDownloadBtn {
@@ -463,14 +464,14 @@
 .pdfProgressBar {
   height: 10px;
   background: rgb(27 29 30 / 8%);
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
 .pdfProgressFill {
   height: 100%;
   background: #6a665e;
-  border-radius: 4px;
+  border-radius: 8px;
   transition: width 0.4s ease;
   min-width: 2%;
 }
@@ -485,13 +486,13 @@
 .pdfProgressLabel {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #46433e;
+  color: var(--db-brand);
   flex-shrink: 0;
 }
 
 .pdfProgressLesson {
   font-size: 0.8rem;
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -519,14 +520,14 @@
 
 .expandStatusMuted {
   font-size: 0.85rem;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
   margin: 0 0 1rem;
   font-weight: 500;
 }
 
 .expandWaitNote {
   font-size: 0.8rem;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
   margin: 0.65rem 0 0;
 }
 
@@ -534,7 +535,7 @@
   display: inline-block;
   margin-top: 0.75rem;
   font-size: 0.9rem;
-  color: #46433e;
+  color: var(--db-brand);
   text-decoration: none;
   font-weight: 500;
 }
@@ -549,7 +550,7 @@
   border-radius: 10px;
   border: 1px solid rgb(27 29 30 / 14%);
   background: #ffffff;
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-size: 0.92rem;
   font-family: inherit;
   resize: vertical;
@@ -557,8 +558,8 @@
 
 .socialTextarea:focus {
   outline: none;
-  border-color: #46433e;
-  box-shadow: 0 0 0 3px rgb(70 67 62 / 22%);
+  border-color: var(--db-brand);
+  box-shadow: 0 0 0 3px var(--db-ring);
 }
 
 .socialBtnPublish {
@@ -568,7 +569,7 @@
   font-weight: 500;
   color: #ffffff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   background: linear-gradient(135deg, #1877f2, #833ab4, #e4405f);
   transition: opacity 0.2s;
@@ -594,7 +595,7 @@
 }
 
 .noContent {
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
   padding: 2rem 0;
 }
 
@@ -612,7 +613,7 @@
 
 .field label {
   font-size: 0.9rem;
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-weight: 500;
 }
 
@@ -622,7 +623,7 @@
   border-radius: 10px;
   border: 1px solid rgb(27 29 30 / 14%);
   background: #ffffff;
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-size: 0.98rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -630,8 +631,8 @@
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #46433e;
-  box-shadow: 0 0 0 3px rgb(70 67 62 / 22%);
+  border-color: var(--db-brand);
+  box-shadow: 0 0 0 3px var(--db-ring);
 }
 
 .field textarea {
@@ -654,7 +655,7 @@
 
 .topicsSection h3 {
   font-size: 0.95rem;
-  color: #242320;
+  color: var(--db-ink);
   margin: 0 0 0.25rem;
   font-weight: 600;
 }
@@ -662,13 +663,13 @@
 .topicsDurationHint {
   margin: 0;
   font-size: 0.78rem;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
 }
 
 .topicsEmpty {
   margin: 0 0 1rem;
   padding: 0.85rem 1rem;
-  background: rgb(70 67 62 / 6%);
+  background: var(--db-brand-soft);
   border-radius: 10px;
   font-size: 0.85rem;
   color: rgb(27 29 30 / 65%);
@@ -676,21 +677,21 @@
 
 .btnTopicAdd {
   padding: 0.5rem 0.95rem;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
   background: #ffffff;
-  color: #1b1d1e;
-  border: 1px solid rgb(27 29 30 / 18%);
+  color: var(--db-ink);
+  border: 1px solid var(--db-line-strong);
   flex-shrink: 0;
   white-space: nowrap;
   transition: background 0.2s, border-color 0.2s;
 }
 
 .btnTopicAdd:hover {
-  background: rgb(27 29 30 / 4%);
-  border-color: rgb(27 29 30 / 28%);
+  background: var(--db-brand-soft);
+  border-color: var(--db-line-strong);
 }
 
 .topicHeaderRow {
@@ -717,23 +718,23 @@
 .btnTopicSecondary {
   padding: 0.4rem 0.75rem;
   font-size: 0.78rem;
-  border-radius: 6px;
-  border: 1px solid rgb(27 29 30 / 18%);
+  border-radius: 12px;
+  border: 1px solid var(--db-line-strong);
   background: #fff;
-  color: #1b1d1e;
+  color: var(--db-ink);
   cursor: pointer;
   font-weight: 500;
 }
 
 .btnTopicSecondary:hover {
   border-color: rgb(27 29 30 / 32%);
-  background: rgb(27 29 30 / 4%);
+  background: var(--db-brand-soft);
 }
 
 .btnTopicDanger {
   padding: 0.4rem 0.75rem;
   font-size: 0.78rem;
-  border-radius: 6px;
+  border-radius: 12px;
   border: 1px solid rgb(185 28 28 / 35%);
   background: rgb(254 226 226 / 25%);
   color: #b91c1c;
@@ -759,7 +760,7 @@
   border-radius: 8px;
   border: 1px solid rgb(27 29 30 / 14%);
   background: #ffffff;
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-size: 1rem;
   font-weight: 500;
   margin-bottom: 1rem;
@@ -790,24 +791,24 @@
   gap: 0.2rem;
   font-size: 0.72rem;
   font-weight: 500;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
 }
 
 .lessonDurationInput {
   width: 4.2rem;
   padding: 0.4rem 0.45rem;
-  border-radius: 6px;
+  border-radius: 12px;
   border: 1px solid rgb(27 29 30 / 14%);
   font-size: 0.85rem;
-  color: #1b1d1e;
+  color: var(--db-ink);
 }
 
 .btnLessonRemove {
   padding: 0.4rem 0.6rem;
   font-size: 0.75rem;
-  border-radius: 6px;
+  border-radius: 12px;
   border: 1px solid rgb(27 29 30 / 16%);
-  background: rgb(27 29 30 / 4%);
+  background: var(--db-brand-soft);
   color: rgb(27 29 30 / 75%);
   cursor: pointer;
   flex-shrink: 0;
@@ -825,7 +826,7 @@
   border-radius: 8px;
   border: 1px solid rgb(27 29 30 / 14%);
   background: #ffffff;
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-size: 0.95rem;
   margin-bottom: 0.5rem;
 }
@@ -836,7 +837,7 @@
   border-radius: 8px;
   border: 1px solid rgb(27 29 30 / 14%);
   background: #ffffff;
-  color: #1b1d1e;
+  color: var(--db-ink);
   font-size: 0.9rem;
   font-family: monospace;
   resize: vertical;
@@ -844,10 +845,10 @@
 
 .view h1 {
   font-size: 1.25rem;
-  color: #242320;
+  color: var(--db-brand);
   margin: 0 0 0.6rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
 .shortDesc {
@@ -871,12 +872,12 @@
 }
 
 .highlight {
-  background: rgb(70 67 62 / 8%);
+  background: var(--db-brand-soft);
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  color: #46433e;
+  color: var(--db-brand);
   margin-bottom: 1.5rem;
-  border: 1px solid rgb(70 67 62 / 18%);
+  border: 1px solid rgb(27 56 196 / 18%);
 }
 
 .benefits {
@@ -885,7 +886,7 @@
 
 .benefits h3 {
   font-size: 1rem;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
@@ -928,7 +929,7 @@
 
 .topicView h2 {
   font-size: 1.05rem;
-  color: #242320;
+  color: var(--db-ink);
   margin: 0 0 0.75rem;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid rgb(36 35 32 / 9%);
@@ -943,7 +944,7 @@
 
 .lessonView h3 {
   font-size: 0.95rem;
-  color: #242320;
+  color: var(--db-ink);
   margin: 0 0 0.45rem;
   font-weight: 600;
 }
@@ -967,7 +968,7 @@
   font-size: 0.93rem;
   font-weight: 600;
   margin: 0 0 0.45rem;
-  color: #46433e;
+  color: var(--db-brand);
 }
 
 .coverUploadLead {
@@ -1017,13 +1018,13 @@
 }
 
 .coverChooseBtn:focus-within {
-  outline: 2px solid rgb(70 67 62 / 40%);
+  outline: 2px solid var(--db-ring);
   outline-offset: 2px;
 }
 
 .coverUploadMuted {
   font-size: 0.8rem;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
 }
 
 .quizzesLinkCard {
@@ -1054,23 +1055,23 @@
 .quizzesLinkLead {
   margin: 0;
   font-size: 12.5px;
-  color: rgb(27 29 30 / 70%);
+  color: var(--db-muted);
   line-height: 1.5;
 }
 
 .quizzesLinkBtn {
   flex-shrink: 0;
   padding: 9px 16px;
-  background: #1b38c4;
+  background: var(--db-brand);
   color: #ffffff;
-  border-radius: 8px;
+  border-radius: 999px;
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
-  border: 1px solid #1b38c4;
+  border: 1px solid var(--db-brand);
   transition: background 0.15s ease;
 }
 
 .quizzesLinkBtn:hover {
-  background: #142a99;
+  background: var(--db-brand-hover);
 }

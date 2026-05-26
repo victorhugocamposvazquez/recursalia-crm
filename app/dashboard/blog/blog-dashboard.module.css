@@ -58,7 +58,7 @@
 .bulkNum {
   width: 4rem;
   padding: 0.35rem 0.45rem;
-  border-radius: 6px;
+  border-radius: 12px;
   border: 1px solid color-mix(in srgb, var(--color-text) 20%, transparent);
 }
 
@@ -308,9 +308,9 @@
 /* Listado índice blog: misma línea visual que «Mis cursos» (tabla, no rejilla). */
 .tableWrap {
   overflow-x: auto;
-  background: #fbfaf7;
-  border: 1px solid rgb(36 35 32 / 10%);
-  border-radius: 6px;
+  background: var(--db-surface);
+  border: 1px solid var(--db-line);
+  border-radius: 12px;
 }
 
 .table {
@@ -322,26 +322,26 @@
 .table td {
   padding: 0.55rem 0.65rem;
   text-align: left;
-  border-bottom: 1px solid rgb(36 35 32 / 7%);
+  border-bottom: 1px solid var(--db-line);
   vertical-align: top;
 }
 
 .table th {
   font-size: 0.65rem;
   font-weight: 600;
-  color: rgb(36 35 32 / 55%);
+  color: var(--db-muted);
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  background: rgb(36 35 32 / 3%);
+  background: var(--db-brand-soft);
 }
 
 .table td {
   font-size: 0.8125rem;
-  color: #242320;
+  color: var(--db-ink);
 }
 
 .table tbody tr:hover {
-  background: rgb(36 35 32 / 3%);
+  background: var(--db-brand-soft);
 }
 
 .tableTitleCell {
@@ -349,7 +349,7 @@
 }
 
 .tableTitleCell a {
-  color: #242320;
+  color: var(--db-ink);
   text-decoration: none;
 }
 
@@ -377,7 +377,7 @@
 }
 
 .tableAction {
-  color: #46433e;
+  color: var(--db-brand);
   text-decoration: none;
   font-size: 0.8125rem;
   font-weight: 500;
@@ -394,5 +394,5 @@
 .totalFooter {
   margin: 0.85rem 0 0;
   font-size: 0.88rem;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
 }

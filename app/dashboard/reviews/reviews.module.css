@@ -5,13 +5,13 @@
 .title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #242320;
+  color: var(--db-ink);
   margin: 0 0 0.35rem;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: rgb(36 35 32 / 58%);
+  color: var(--db-muted);
   font-size: 0.8125rem;
   margin-bottom: 1.25rem;
 }
@@ -25,17 +25,17 @@
 
 .coursePicker label {
   font-size: 0.75rem;
-  color: #2f2e2b;
+  color: var(--db-ink);
   font-weight: 500;
 }
 
 .coursePicker select {
   max-width: min(100%, 32rem);
   padding: 0.45rem 0.65rem;
-  border-radius: 4px;
-  border: 1px solid rgb(36 35 32 / 16%);
+  border-radius: 8px;
+  border: 1px solid var(--db-line-strong);
   background: #fff;
-  color: #242320;
+  color: var(--db-ink);
   font-size: 0.8125rem;
 }
 
@@ -54,7 +54,7 @@
 .sectionTitle {
   font-size: 1rem;
   font-weight: 600;
-  color: #242320;
+  color: var(--db-ink);
   margin: 0 0 0.5rem;
   letter-spacing: -0.01em;
 }
@@ -78,7 +78,7 @@
   color: rgb(120 45 15 / 92%);
   background: rgb(254 243 199 / 65%);
   padding: 0.65rem 0.75rem;
-  border-radius: 6px;
+  border-radius: 12px;
   border: 1px solid rgb(251 191 36 / 35%);
 }
 
@@ -108,17 +108,17 @@
   font-size: 0.875rem;
   font-weight: 600;
   margin: 0 0 0.65rem;
-  color: #242320;
+  color: var(--db-ink);
 }
 
 .storedMuted {
   font-weight: 400;
-  color: rgb(36 35 32 / 52%);
+  color: var(--db-muted);
 }
 
 .storedEmpty {
   font-size: 0.8125rem;
-  color: rgb(36 35 32 / 55%);
+  color: var(--db-muted);
   margin: 0;
 }
 
@@ -133,9 +133,9 @@
 
 .storedCard {
   background: #faf9f6;
-  border-radius: 6px;
+  border-radius: 12px;
   padding: 0.75rem 0.85rem;
-  border: 1px solid rgb(36 35 32 / 10%);
+  border: 1px solid var(--db-line);
 }
 
 .storedCardHead {
@@ -166,7 +166,7 @@
   font-size: 0.72rem;
   font-weight: 500;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 8px;
   border: 1px solid rgb(180 55 55 / 45%);
   background: #fff;
   color: #991b1b;
@@ -188,7 +188,7 @@
 .storedCardTitle {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin: 0 0 0.3rem;
 }
 
@@ -215,7 +215,7 @@
 
 .field label {
   font-size: 0.75rem;
-  color: #2f2e2b;
+  color: var(--db-ink);
   font-weight: 500;
 }
 
@@ -223,10 +223,10 @@
 .field input,
 .field textarea {
   padding: 0.45rem 0.65rem;
-  border-radius: 4px;
-  border: 1px solid rgb(36 35 32 / 16%);
+  border-radius: 8px;
+  border: 1px solid var(--db-line-strong);
   background: #fff;
-  color: #242320;
+  color: var(--db-ink);
   font-size: 0.8125rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -235,8 +235,8 @@
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-color: #46433e;
-  box-shadow: 0 0 0 2px rgb(70 67 62 / 22%);
+  border-color: var(--db-brand);
+  box-shadow: 0 0 0 2px var(--db-ring);
 }
 
 .field textarea {
@@ -257,10 +257,10 @@
 
 .btnPrimary {
   padding: 0.55rem 1rem;
-  border-radius: 4px;
-  border: 1px solid #46433e;
-  background: #46433e;
-  color: #f7f6f2;
+  border-radius: 8px;
+  border: 1px solid var(--db-brand);
+  background: var(--db-brand);
+  color: var(--db-surface);
   font-weight: 500;
   font-size: 0.78rem;
   cursor: pointer;
@@ -268,8 +268,8 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #46433e;
-  border-color: #46433e;
+  background: var(--db-brand);
+  border-color: var(--db-brand);
 }
 
 .btnPrimary:disabled {
@@ -286,7 +286,7 @@
 .preview h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: #242320;
+  color: var(--db-ink);
   margin: 0 0 0.75rem;
   letter-spacing: -0.01em;
 }
@@ -299,10 +299,10 @@
 }
 
 .reviewCard {
-  background: #fbfaf7;
-  border-radius: 6px;
+  background: var(--db-surface);
+  border-radius: 12px;
   padding: 0.85rem 0.95rem;
-  border: 1px solid rgb(36 35 32 / 10%);
+  border: 1px solid var(--db-line);
 }
 
 .reviewHeader {
@@ -318,7 +318,7 @@
 }
 
 .author {
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
 }
 
 .date {
@@ -328,7 +328,7 @@
 
 .reviewCard h4 {
   font-size: 0.95rem;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin: 0 0 0.35rem;
   font-weight: 500;
 }
@@ -341,7 +341,7 @@
 }
 
 .more {
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
   font-size: 0.9rem;
   margin-bottom: 1rem;
 }
@@ -365,6 +365,6 @@
   opacity: 0.55;
   cursor: not-allowed;
   border-color: rgb(27 29 30 / 12%);
-  color: rgb(27 29 30 / 55%);
-  background: rgb(27 29 30 / 4%);
+  color: var(--db-muted);
+  background: var(--db-brand-soft);
 }

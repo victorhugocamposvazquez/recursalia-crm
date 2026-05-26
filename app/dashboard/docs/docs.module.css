@@ -9,14 +9,14 @@
 .title {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #242320;
+  color: var(--db-ink);
   margin: 0 0 0.35rem;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
   font-size: 0.8125rem;
-  color: rgb(36 35 32 / 58%);
+  color: var(--db-muted);
   margin: 0;
   line-height: 1.5;
 }
@@ -29,15 +29,15 @@
 }
 
 .featureCard {
-  background: #fbfaf7;
-  border: 1px solid rgb(36 35 32 / 10%);
-  border-radius: 6px;
+  background: var(--db-surface);
+  border: 1px solid var(--db-line);
+  border-radius: 12px;
   overflow: hidden;
   transition: border-color 0.15s ease;
 }
 
 .featureCard:hover {
-  border-color: rgb(70 67 62 / 28%);
+  border-color: rgb(27 56 196 / 22%);
 }
 
 .featureHeader {
@@ -61,8 +61,8 @@
 }
 
 .iconPurple {
-  background: rgb(70 67 62 / 12%);
-  color: #46433e;
+  background: var(--db-brand-soft);
+  color: var(--db-brand);
 }
 
 .iconGreen {
@@ -97,7 +97,7 @@
 
 .iconIndigo {
   background: rgb(129 140 248 / 15%);
-  color: #46433e;
+  color: var(--db-brand);
 }
 
 .featureInfo {
@@ -108,19 +108,19 @@
 .featureName {
   font-size: 1.02rem;
   font-weight: 500;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin: 0 0 0.15rem;
   letter-spacing: -0.01em;
 }
 
 .featureShort {
   font-size: 0.85rem;
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
   margin: 0;
 }
 
 .chevron {
-  color: rgb(27 29 30 / 45%);
+  color: var(--db-faint);
   font-size: 1.1rem;
   transition: transform 0.2s;
   flex-shrink: 0;
@@ -145,7 +145,7 @@
 }
 
 .featureDesc strong {
-  color: #1b1d1e;
+  color: var(--db-ink);
 }
 
 .detailList {
@@ -167,7 +167,7 @@
 }
 
 .detailBullet {
-  color: #46433e;
+  color: var(--db-brand);
   font-weight: 700;
   flex-shrink: 0;
   margin-top: 1px;
@@ -185,8 +185,8 @@
   border-radius: 999px;
   font-size: 0.72rem;
   font-weight: 500;
-  background: rgb(70 67 62 / 10%);
-  color: #46433e;
+  background: var(--db-brand-soft);
+  color: var(--db-brand);
   white-space: nowrap;
 }
 
@@ -202,7 +202,7 @@
 .archTitle {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin: 0 0 1rem;
   letter-spacing: -0.01em;
 }
@@ -223,7 +223,7 @@
 
 .archLabel {
   font-size: 0.72rem;
-  color: rgb(27 29 30 / 55%);
+  color: var(--db-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin: 0 0 0.3rem;
@@ -232,7 +232,7 @@
 .archValue {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin: 0;
 }
 
@@ -240,15 +240,15 @@
 .credits {
   margin-top: 2.25rem;
   padding: 1.5rem;
-  background: rgb(70 67 62 / 4%);
-  border: 1px solid rgb(70 67 62 / 14%);
+  background: var(--db-brand-soft);
+  border: 1px solid rgb(27 56 196 / 14%);
   border-radius: 16px;
   text-align: center;
 }
 
 .creditsText {
   font-size: 0.9rem;
-  color: rgb(27 29 30 / 60%);
+  color: var(--db-muted);
   margin: 0 0 0.25rem;
   line-height: 1.6;
 }
@@ -256,12 +256,12 @@
 .creditsAuthor {
   font-size: 1rem;
   font-weight: 500;
-  color: #1b1d1e;
+  color: var(--db-ink);
   margin: 0;
 }
 
 .creditsAuthor span {
-  color: #46433e;
+  color: var(--db-brand);
   font-weight: 600;
 }
 
