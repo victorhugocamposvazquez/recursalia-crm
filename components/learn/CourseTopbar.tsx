@@ -193,6 +193,13 @@ export function CourseTopbar({
     [pathname, courseTitle, modules, quizzes]
   );
 
+  // En quizzes y examen el QuizPlayer ya monta su propio HUD contextual
+  // (vidas, combo, XP, progreso, botón salir). Si pintáramos también el
+  // CourseTopbar encima, el HUD del juego quedaría tapado al hacer scroll.
+  // Ocultamos el topbar global para esas rutas.
+  const isQuizRoute =
+    /\/aprender\/cursos\/[^/]+\/(quiz|examen)(\/|$)/.test(pathname);
+
   // Si la ruta es el hub, "Volver" sale del curso (a /aprender).
   // Si es lección/quiz/examen/resultados, "Volver" lleva al hub del curso.
   const isHub =
@@ -203,6 +210,9 @@ export function CourseTopbar({
   const backLabel = isHub ? 'Mis cursos' : 'Curso';
 
   const readingPct = useDocumentScrollPct(Boolean(crumb.isLesson));
+
+  // Después de todos los hooks: si estamos en quiz/examen, no renderizar nada.
+  if (isQuizRoute) return null;
 
   return (
     <header className={styles.bar} role="banner">
