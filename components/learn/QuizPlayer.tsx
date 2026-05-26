@@ -79,7 +79,17 @@ export function QuizPlayer({
 
   const payload = useMemo(() => {
     if (!q) return {} as Record<string, unknown>;
-    return (q.payload ?? {}) as Record<string, unknown>;
+    const raw = (q.payload ?? {}) as Record<string, unknown>;
+    // Shuffle determinista de opciones para evitar el sesgo "la correcta es la primera"
+    // (clásico tic del LLM). Usamos el id de la pregunta como semilla → orden estable
+    // entre recargas, mismo orden para el mismo alumno.
+    if (q.kind === 'single' || q.kind === 'multi' || q.kind === 'image') {
+      const opts = raw.options;
+      if (Array.isArray(opts) && opts.length > 1) {
+        return { ...raw, options: shuffleDeterministic(opts, q.id) };
+      }
+    }
+    return raw;
   }, [q]);
 
   const orderItems = useMemo<TextOption[]>(() => {
@@ -1592,6 +1602,38 @@ function Stat({
       </div>
     </div>
   );
+}
+
+// ── Shuffle determinista por questionId ───────────────────────────────────
+// Hash FNV-1a 32-bit del string → semilla. Mulberry32 como PRNG.
+function hashStringToSeed(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function shuffleDeterministic<T>(arr: T[], seedKey: string): T[] {
+  const rng = mulberry32(hashStringToSeed(seedKey));
+  const out = arr.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
 function iconBtn(t: ThemeArg, disabled: boolean): React.CSSProperties {

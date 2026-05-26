@@ -12,6 +12,12 @@ type Props = Omit<
 > & {
   nextLessonUuid?: string | null;
   prevLessonUuid?: string | null;
+  /**
+   * URL del siguiente paso real del curso (puede ser una lección O el quiz del
+   * módulo si la actual es la última del topic). Calculado server-side y
+   * prioritario sobre `nextLessonUuid`.
+   */
+  nextHref?: string | null;
 };
 
 export function AprenderLessonClient(props: Props) {
@@ -56,11 +62,14 @@ export function AprenderLessonClient(props: Props) {
       }
       setCompleted(true);
       router.refresh();
-      if (props.nextLessonUuid) {
-        router.push(
-          `/aprender/cursos/${props.courseSlug}/lecciones/${props.nextLessonUuid}`
-        );
-      }
+      // Saltar al siguiente paso lógico: quiz del módulo si toca, si no la
+      // siguiente lección. `nextHref` ya tiene la URL correcta (server-side).
+      const target =
+        props.nextHref ??
+        (props.nextLessonUuid
+          ? `/aprender/cursos/${props.courseSlug}/lecciones/${props.nextLessonUuid}`
+          : null);
+      if (target) router.push(target);
     } catch (e) {
       console.error(e);
       alert(e instanceof Error ? e.message : 'Error al completar la lección');
@@ -73,6 +82,7 @@ export function AprenderLessonClient(props: Props) {
     props.courseSlug,
     props.lessonUuid,
     props.nextLessonUuid,
+    props.nextHref,
     router,
   ]);
 
@@ -114,6 +124,10 @@ export function AprenderLessonClient(props: Props) {
     onUnmarkComplete: unmarkComplete,
     onPrevLesson: props.prevLessonUuid ? () => goToLesson(props.prevLessonUuid!) : undefined,
     onNextLesson: () => {
+      if (props.nextHref) {
+        router.push(props.nextHref);
+        return;
+      }
       if (props.nextLessonUuid) goToLesson(props.nextLessonUuid);
       else router.push(`/aprender/cursos/${props.courseSlug}`);
     },

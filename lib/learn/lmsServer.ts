@@ -208,6 +208,26 @@ export async function getCourseQuizzesByTopic(
   return { byTopic, final, all: summaries };
 }
 
+/**
+ * `true` si el usuario tiene al menos un intento aprobado para el quiz dado.
+ * Util para decidir si saltarse un quiz de módulo al avanzar tras completar
+ * la última lección del topic.
+ */
+export async function userPassedQuiz(
+  userId: string,
+  quizId: string
+): Promise<boolean> {
+  const admin = getSupabase();
+  const { data } = await admin
+    .from('quiz_attempts')
+    .select('id')
+    .eq('quiz_id', quizId)
+    .eq('user_id', userId)
+    .eq('passed', true)
+    .limit(1);
+  return !!(data && data.length);
+}
+
 export async function buildEnrolledCards(
   userId: string,
   courses: CourseRecord[],

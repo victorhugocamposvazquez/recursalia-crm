@@ -122,6 +122,7 @@ CALIDAD (lo más importante):
 - Cada pregunta es autocontenida: no digas "como vimos antes" ni "según la lección 3". El alumno la lee fuera de contexto.
 - Las distractoras (opciones incorrectas) deben ser plausibles para alguien que NO estudió, pero claramente descartables tras estudiar. Nada de absurdas, nada de "todas las anteriores" ni "ninguna".
 - En \`single\`: 4 opciones de longitud parecida (máx. 90 chars). Solo UNA es indiscutiblemente correcta.
+- **DISTRIBUCIÓN DE LA CORRECTA**: la respuesta correcta NO debe estar siempre en "a". Distribúyela uniformemente entre "a", "b", "c" y "d" a lo largo del quiz (≈25% en cada posición). Si generas 4 preguntas \`single\`, una debe tener "a" como correcta, otra "b", otra "c" y otra "d". Esto es CRÍTICO: el sistema rechaza quizzes con la correcta sesgada hacia una sola letra.
 - En \`tf\`: la afirmación debe poder responderse sin matices ("depende" → no usar tf).
 - En \`multi\`: 4 opciones, mínimo 2 correctas, máximo 3. Avísale en el enunciado: "Elige todas las que apliquen".
 - En \`order\`: 3–5 pasos de una secuencia real (proceso, workflow, recorrido del alumno). \`correct_order\` debe ser la secuencia natural.
@@ -254,6 +255,19 @@ function ensureUniqueIds<T extends { id: string }>(items: T[]): T[] {
   });
 }
 
+/**
+ * Mezcla en sitio el array (Fisher-Yates). Útil para evitar el sesgo
+ * "la opción correcta es siempre la primera" tan típico en LLMs:
+ * los modelos tienden a generar la correcta como `id: "a"`.
+ */
+function shuffleInPlace<T>(arr: T[]): T[] {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function validateGeneratedQuiz(quiz: GeneratedQuiz): GeneratedQuiz {
   if (!quiz?.title?.trim()) throw new Error('Quiz sin título');
   if (!Array.isArray(quiz.questions) || quiz.questions.length === 0) {
@@ -273,7 +287,9 @@ function validateGeneratedQuiz(quiz: GeneratedQuiz): GeneratedQuiz {
       if (opts.length < 2) continue;
       if (typeof raw.correct !== 'string') continue;
       if (!opts.some((o) => o.id === raw.correct)) continue;
-      cleaned.push({ ...raw, options: opts });
+      // Mezclamos las opciones para anular el sesgo de "la correcta es la primera".
+      // `correct` referencia por id, así que sigue siendo válida tras el shuffle.
+      cleaned.push({ ...raw, options: shuffleInPlace(opts.slice()) });
       continue;
     }
     if (raw.kind === 'multi') {
@@ -282,7 +298,11 @@ function validateGeneratedQuiz(quiz: GeneratedQuiz): GeneratedQuiz {
       if (!Array.isArray(raw.correct) || raw.correct.length === 0) continue;
       const validCorrect = raw.correct.filter((id) => opts.some((o) => o.id === id));
       if (validCorrect.length === 0) continue;
-      cleaned.push({ ...raw, options: opts, correct: validCorrect });
+      cleaned.push({
+        ...raw,
+        options: shuffleInPlace(opts.slice()),
+        correct: validCorrect,
+      });
       continue;
     }
     if (raw.kind === 'order') {
