@@ -207,39 +207,44 @@ Asegúrate de cubrir las DISTINTAS lecciones del módulo (no concentres todas en
 SOLO JSON, sin comentarios.`;
 }
 
-function buildFinalPrompt({
+function buildFinalSlicePrompt({
   courseTitle,
-  topics,
+  topic,
+  moduleNumber,
+  totalModules,
   numQuestions,
 }: {
   courseTitle: string;
-  topics: { topicTitle: string; lessons: LessonSummary[] }[];
+  topic: { topicTitle: string; lessons: LessonSummary[] };
+  moduleNumber: number;
+  totalModules: number;
   numQuestions: number;
 }): string {
-  const moduleBlocks = topics
-    .map(
-      (t, i) =>
-        `  Módulo ${i + 1}: ${t.topicTitle}\n${t.lessons
-          .map((l) => `   - ${l.title}`)
-          .join('\n')}`
-    )
+  const lessonBlocks = topic.lessons
+    .map((l, i) => `  Lección ${i + 1}: ${l.title}\n${l.bullets.map((b) => `   - ${b}`).join('\n')}`)
     .join('\n\n');
 
-  return `Genera un EXAMEN FINAL para el curso completo, cubriendo todos los módulos de forma equilibrada.
+  return `Genera la PORCIÓN del EXAMEN FINAL correspondiente al módulo ${moduleNumber} de ${totalModules}.
 
 Curso: "${courseTitle}"
+Módulo ${moduleNumber}: "${topic.topicTitle}"
 
-Estructura del curso:
-${moduleBlocks}
+Contenido del módulo:
+${lessonBlocks}
 
-Genera exactamente ${numQuestions} preguntas en JSON con la misma forma que un quiz de módulo. Este es el "boss fight" del curso: el alumno se la juega aquí para conseguir el diploma. Por eso debe:
-- Mezclar TODOS los módulos de forma equilibrada (mínimo 1 pregunta por módulo cuando \`numQuestions ≥ ${topics.length}\`).
-- Tener una distribución: ~65% single, ~20% tf, ~10% multi, ~5% order (máx. 1 pregunta de ordenar).
-- Combinar conceptos teóricos con casos prácticos / micro-escenarios.
-- Subir la dificultad: las preguntas deben ser más exigentes que las de los quizzes de módulo. Distractoras más finas, matices más sutiles.
-- Empezar con una pregunta accesible para enganchar y cerrar con la más exigente (broche de oro).
+Genera exactamente ${numQuestions} preguntas en JSON que evalúen el dominio de ESTE módulo en el contexto de un examen final integrador. Estas preguntas:
+- Son más exigentes que un quiz de módulo: distractoras más finas, matices más sutiles, sin preguntas triviales.
+- Combinan conceptos teóricos con micro-escenarios prácticos.
+- Distribución de tipos: ~60% single, ~20% tf, ~15% multi, ~5% order (incluye \`order\` solo si encaja con el contenido del módulo).
+- NO menciones explícitamente "examen final" ni "módulo X" en el texto; cada pregunta es autocontenida.
 
-Mantén el formato JSON estricto explicado antes. SOLO JSON.`;
+Formato JSON estricto:
+{
+  "title": "Examen final · ${topic.topicTitle}",
+  "questions": [ ...mismo esquema que los quizzes de módulo... ]
+}
+
+SOLO JSON, sin comentarios.`;
 }
 
 function ensureUniqueIds<T extends { id: string }>(items: T[]): T[] {
@@ -384,28 +389,94 @@ export async function generateModuleQuiz({
   });
 }
 
+/**
+ * Genera el EXAMEN FINAL como combinación de "slices" por módulo.
+ *
+ * En lugar de pedirle al modelo N preguntas para todo el curso (donde tiende
+ * a concentrarse en 1-2 módulos), pedimos una porción equilibrada por
+ * cada módulo y las combinamos. Garantizamos así:
+ *  - Cobertura matemática de TODOS los módulos.
+ *  - Robustez ante fallos parciales: si un módulo falla, seguimos con los
+ *    demás y devolvemos lo que tengamos (siempre que haya al menos 1 pregunta
+ *    por al menos la mitad de los módulos).
+ *
+ * El número de preguntas final puede diferir ligeramente del solicitado por
+ * efectos de redondeo o de validación. Garantizamos como mínimo `topics.length`
+ * preguntas (1 por módulo) si el reparto resulta menor.
+ */
 export async function generateFinalQuiz({
   courseId,
   course,
   expanded,
-  numQuestions = 10,
+  numQuestions = 12,
 }: {
   courseId: string;
   course: GeneratedCourseStructure;
   expanded: ExpandedCourseContent | null;
   numQuestions?: number;
 }): Promise<GeneratedQuiz> {
-  const ctx = buildCourseContext(course, expanded);
-  const prompt = buildFinalPrompt({
-    courseTitle: ctx.courseTitle,
-    topics: ctx.topics,
-    numQuestions,
-  });
-  return callOpenAI({
-    courseId,
-    operation: 'quiz.final.generate',
-    prompt,
-  });
+  const topics = (course.topics ?? []).filter(
+    (t) => Array.isArray(t.lessons) && t.lessons.length > 0
+  );
+  if (topics.length === 0) {
+    throw new Error('Curso sin módulos válidos para examen final');
+  }
+
+  // Asegurar al menos 1 pregunta por módulo, aunque el alumno pida pocas.
+  const effectiveTotal = Math.max(numQuestions, topics.length);
+
+  // Reparto equilibrado: los primeros `remainder` módulos llevan una pregunta extra.
+  const baseQ = Math.floor(effectiveTotal / topics.length);
+  const remainder = effectiveTotal - baseQ * topics.length;
+  const perModule = topics.map((_, i) => baseQ + (i < remainder ? 1 : 0));
+
+  const courseTitle = course.title;
+  const allQuestions: GeneratedQuizQuestion[] = [];
+  const errors: string[] = [];
+
+  // Secuencial para no abusar de OpenAI ni saturar nuestros límites.
+  for (let i = 0; i < topics.length; i++) {
+    const topic = topics[i];
+    const numQ = perModule[i];
+    if (numQ <= 0) continue;
+    try {
+      const ctxTopic = buildTopicContext(topic, expanded?.topics?.[i]);
+      const prompt = buildFinalSlicePrompt({
+        courseTitle,
+        topic: ctxTopic,
+        moduleNumber: i + 1,
+        totalModules: topics.length,
+        numQuestions: numQ,
+      });
+      const slice = await callOpenAI({
+        courseId,
+        operation: `quiz.final.slice.${i + 1}`,
+        prompt,
+      });
+      allQuestions.push(...slice.questions);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      errors.push(`Módulo ${i + 1}: ${msg.slice(0, 160)}`);
+      // Continuamos con el resto: queremos un examen incluso si algún módulo falla.
+    }
+  }
+
+  if (allQuestions.length === 0) {
+    throw new Error(
+      `Examen final: ningún módulo generó preguntas. ${errors.join(' | ').slice(0, 400)}`
+    );
+  }
+
+  // Mezclamos para que las preguntas no aparezcan agrupadas por módulo.
+  shuffleInPlace(allQuestions);
+
+  // Si el reparto produjo más preguntas que las solicitadas (por mínimo de
+  // 1/módulo), las conservamos: un examen ligeramente más largo es preferible
+  // a sacrificar cobertura.
+  return {
+    title: `Examen final · ${courseTitle}`,
+    questions: allQuestions,
+  };
 }
 
 /**

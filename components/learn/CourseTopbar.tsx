@@ -193,13 +193,6 @@ export function CourseTopbar({
     [pathname, courseTitle, modules, quizzes]
   );
 
-  // En quizzes y examen el QuizPlayer ya monta su propio HUD contextual
-  // (vidas, combo, XP, progreso, botón salir). Si pintáramos también el
-  // CourseTopbar encima, el HUD del juego quedaría tapado al hacer scroll.
-  // Ocultamos el topbar global para esas rutas.
-  const isQuizRoute =
-    /\/aprender\/cursos\/[^/]+\/(quiz|examen)(\/|$)/.test(pathname);
-
   // Si la ruta es el hub, "Volver" sale del curso (a /aprender).
   // Si es lección/quiz/examen/resultados, "Volver" lleva al hub del curso.
   const isHub =
@@ -211,8 +204,9 @@ export function CourseTopbar({
 
   const readingPct = useDocumentScrollPct(Boolean(crumb.isLesson));
 
-  // Después de todos los hooks: si estamos en quiz/examen, no renderizar nada.
-  if (isQuizRoute) return null;
+  // En quizzes y examen renderizamos una versión slim (sin row2 ni progress
+  // de lectura) para no competir verticalmente con el HUD del juego que se
+  // pega justo debajo.
 
   return (
     <header className={styles.bar} role="banner">
@@ -294,10 +288,22 @@ export function CourseTopbar({
             <span className={styles.completionTrack}>
               <span
                 className={styles.completionFill}
-                style={{ width: `${Math.round(courseCompletion * 100)}%` }}
+                style={{
+                  width: `${Math.round(courseCompletion * 100)}%`,
+                  background:
+                    courseCompletion >= 1 ? 'rgb(42, 215, 69)' : undefined,
+                }}
               />
             </span>
-            <span>{Math.round(courseCompletion * 100)}% completado</span>
+            <span
+              style={
+                courseCompletion >= 1
+                  ? { color: 'rgb(22, 163, 74)', fontWeight: 800 }
+                  : undefined
+              }
+            >
+              {Math.round(courseCompletion * 100)}% completado
+            </span>
           </span>
         </div>
       ) : null}

@@ -38,7 +38,10 @@ export async function POST(
   }
 
   const questionsPerModule = clampInt(body.questionsPerModule, 3, 15, 6);
-  const questionsForFinal = clampInt(body.questionsForFinal, 5, 25, 10);
+  // Mínimo 8 preguntas en el examen final: con menos no es un boss-fight serio.
+  // Máximo 30 para no disparar costes. Default 12 (≈2 por módulo en cursos
+  // típicos de 6 módulos).
+  const questionsForFinal = clampInt(body.questionsForFinal, 8, 30, 12);
   const force = body.force !== false;
 
   // Pre-check: sin OPENAI_API_KEY el servicio acumularía todos los módulos

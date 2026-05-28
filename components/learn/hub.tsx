@@ -181,39 +181,60 @@ import type { TweakOptions } from './types';
   // Tarjeta «continuar» con datos reales del contexto
   function ContinueCard({ t, accent, course, currentLesson, href, mobile }) {
     const hasProgress = course.completion > 0;
-    const cta = !currentLesson
-      ? 'Ir al curso'
-      : hasProgress
-        ? 'Reanudar lección'
-        : 'Empezar lección';
-    const headline = !currentLesson
-      ? 'CONTINÚA DONDE LO DEJASTE'
-      : hasProgress
+    const isCompleted = course.completion >= 1;
+
+    const cta = isCompleted
+      ? 'Revisar curso'
+      : !currentLesson
+        ? 'Ir al curso'
+        : hasProgress
+          ? 'Reanudar lección'
+          : 'Empezar lección';
+    const headline = isCompleted
+      ? '¡CURSO COMPLETADO!'
+      : !currentLesson
         ? 'CONTINÚA DONDE LO DEJASTE'
-        : 'EMPIEZA AHORA';
-    const title = currentLesson?.title ?? 'Empezar curso';
-    const meta = currentLesson
-      ? `${currentLesson.code ? `Lección ${currentLesson.code}` : 'Lección'} · ${currentLesson.dur}`
-      : `${Math.round(course.completion * 100)}% completado`;
+        : hasProgress
+          ? 'CONTINÚA DONDE LO DEJASTE'
+          : 'EMPIEZA AHORA';
+    const title = isCompleted
+      ? '¡Enhorabuena!'
+      : (currentLesson?.title ?? 'Empezar curso');
+    const meta = isCompleted
+      ? 'Todas las lecciones superadas'
+      : currentLesson
+        ? `${currentLesson.code ? `Lección ${currentLesson.code}` : 'Lección'} · ${currentLesson.dur}`
+        : `${Math.round(course.completion * 100)}% completado`;
     const disabled = !href;
+
+    // Verde de Recursalia cuando el curso está al 100%.
+    const cardBg = isCompleted
+      ? 'linear-gradient(145deg, rgb(42,215,69) 0%, #16a34a 100%)'
+      : `linear-gradient(145deg, ${BRAND} 0%, #142a99 100%)`;
+    const cardShadow = isCompleted
+      ? '0 16px 40px -16px rgb(42 215 69 / 45%)'
+      : '0 16px 40px -16px rgb(27 56 196 / 45%)';
+    const ctaInk = isCompleted ? 'rgb(15, 23, 42)' : BRAND;
+
     return (
       <div style={{
         width: mobile ? '100%' : 320,
         padding: mobile ? 18 : 22,
         borderRadius: 18,
-        background: `linear-gradient(145deg, ${BRAND} 0%, #142a99 100%)`,
+        background: cardBg,
         color: '#ffffff',
         flexShrink: 0,
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: '0 16px 40px -16px rgb(27 56 196 / 45%)',
+        boxShadow: cardShadow,
       }}>
         <div style={{ position: 'absolute', top: mobile ? -30 : -40, right: mobile ? -30 : -40, width: mobile ? 120 : 160, height: mobile ? 120 : 160, borderRadius: '50%', background: 'radial-gradient(circle, rgb(255 255 255 / 18%), transparent 70%)' }}/>
-        <Mono color="rgb(255 255 255 / 75%)" size={mobile ? 9 : 10}>{headline}</Mono>
-        <div style={{ marginTop: mobile ? 8 : 10, fontSize: mobile ? 18 : 20, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.2, color: '#ffffff' }}>
-          {title}
+        <Mono color="rgb(255 255 255 / 80%)" size={mobile ? 9 : 10}>{headline}</Mono>
+        <div style={{ marginTop: mobile ? 8 : 10, fontSize: mobile ? 18 : 20, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.2, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
+          {isCompleted ? <Icon name="trophy" size={mobile ? 20 : 22}/> : null}
+          <span>{title}</span>
         </div>
-        <div style={{ marginTop: 6, fontSize: mobile ? 12 : 13, color: 'rgb(255 255 255 / 72%)' }}>{meta}</div>
+        <div style={{ marginTop: 6, fontSize: mobile ? 12 : 13, color: 'rgb(255 255 255 / 80%)' }}>{meta}</div>
         <div style={{ marginTop: mobile ? 14 : 16 }}>
           <Progress value={course.completion} color="#ffffff" track="rgba(255,255,255,0.22)" height={mobile ? 4 : 5}/>
         </div>
@@ -235,12 +256,12 @@ import type { TweakOptions } from './types';
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 width: '100%', padding: mobile ? '10px 18px' : '12px 20px', borderRadius: 999,
-                background: '#ffffff', color: BRAND, textDecoration: 'none',
+                background: '#ffffff', color: ctaInk, textDecoration: 'none',
                 fontWeight: 700, fontSize: mobile ? 13 : 14, letterSpacing: -0.2,
                 WebkitTapHighlightColor: 'transparent',
               }}
             >
-              <Icon name="play" size={mobile ? 14 : 16}/>
+              <Icon name={isCompleted ? 'checkCircle' : 'play'} size={mobile ? 14 : 16}/>
               <span>{cta}</span>
             </Link>
           )}

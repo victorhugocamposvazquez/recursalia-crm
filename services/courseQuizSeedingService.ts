@@ -113,7 +113,7 @@ export async function seedCourseQuizzesWithAI(params: {
   const { courseId, content, expanded = null, options = {} } = params;
   const {
     questionsPerModule = 6,
-    questionsForFinal = 10,
+    questionsForFinal = 12,
     force = false,
   } = options;
 

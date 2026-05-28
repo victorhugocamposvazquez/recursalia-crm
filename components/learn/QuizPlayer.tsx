@@ -372,27 +372,29 @@ export function QuizPlayer({
         flexDirection: 'column',
       }}
     >
-      {/* HUD superior: hearts + combo + xp + boss-tag */}
+      {/* HUD superior: hearts + combo + xp + boss-tag, apilado bajo el CourseTopbar.
+          `top: var(--course-topbar-h)` permite que el CourseTopbar (~56px) quede
+          por encima y el HUD se pegue justo debajo, sin solapamientos. */}
       <header
         style={{
-          padding: '14px 20px 8px',
+          padding: '12px 18px 8px',
           display: 'flex',
           alignItems: 'center',
-          gap: 14,
+          gap: 12,
           flexWrap: 'wrap',
           borderBottom: `1px solid ${t.line}`,
-          background: 'rgba(255,255,255,0.6)',
+          background: 'rgba(255,255,255,0.92)',
           backdropFilter: 'saturate(160%) blur(10px)',
           WebkitBackdropFilter: 'saturate(160%) blur(10px)',
           position: 'sticky',
-          top: 0,
-          zIndex: 30,
+          top: 'var(--course-topbar-h, 56px)',
+          zIndex: 40,
         }}
       >
         <Hearts t={t} count={hearts} />
         <Combo t={t} combo={combo} />
         <XpDisplay t={t} xp={xp} />
-        <div style={{ flex: 1, minWidth: 120 }}>
+        <div style={{ flex: 1, minWidth: 100 }}>
           <div style={{ height: 6, background: t.lineSoft, borderRadius: 3, overflow: 'hidden' }}>
             <div
               style={{
@@ -425,22 +427,28 @@ export function QuizPlayer({
           >
             Boss Fight
           </span>
-        ) : (
-          <Mono color={t.faint}>QUIZ</Mono>
-        )}
-      </header>
-
-      {/* Timer bar fina bajo el HUD */}
-      <div style={{ height: 3, background: t.lineSoft, position: 'sticky', top: 0, zIndex: 25 }}>
+        ) : null}
+        {/* Timer bar fina como hijo del header: viaja con él al hacer scroll. */}
         <div
           style={{
-            height: '100%',
-            width: `${timerPct * 100}%`,
-            background: timerColor,
-            transition: 'width 1s linear, background-color .3s',
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: -1,
+            height: 3,
+            background: t.lineSoft,
           }}
-        />
-      </div>
+        >
+          <div
+            style={{
+              height: '100%',
+              width: `${timerPct * 100}%`,
+              background: timerColor,
+              transition: 'width 1s linear, background-color .3s',
+            }}
+          />
+        </div>
+      </header>
 
       <main
         style={{

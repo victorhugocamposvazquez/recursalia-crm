@@ -68,7 +68,7 @@ export function QuizzesAdminClient({
   const [busy, setBusy] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [moduleQuestions, setModuleQuestions] = useState<number>(6);
-  const [finalQuestions, setFinalQuestions] = useState<number>(10);
+  const [finalQuestions, setFinalQuestions] = useState<number>(12);
   const [isPending, startTransition] = useTransition();
 
   // Bulk: generar todos los quizzes del curso de golpe.
@@ -78,7 +78,7 @@ export function QuizzesAdminClient({
     { type: 'ok' | 'error'; text: string; result?: BulkResult } | null
   >(null);
   const [bulkModuleQuestions, setBulkModuleQuestions] = useState<number>(6);
-  const [bulkFinalQuestions, setBulkFinalQuestions] = useState<number>(10);
+  const [bulkFinalQuestions, setBulkFinalQuestions] = useState<number>(12);
 
   const anyBusy = busy !== null || bulkBusy || isPending;
 
@@ -256,11 +256,11 @@ export function QuizzesAdminClient({
               Nº preguntas del examen final
               <input
                 type="number"
-                min={5}
-                max={25}
+                min={8}
+                max={30}
                 value={bulkFinalQuestions}
                 onChange={(e) =>
-                  setBulkFinalQuestions(Math.max(5, Math.min(25, Number(e.target.value) || 10)))
+                  setBulkFinalQuestions(Math.max(8, Math.min(30, Number(e.target.value) || 12)))
                 }
                 className={styles.bulkNumInput}
                 disabled={bulkBusy}
@@ -433,10 +433,10 @@ export function QuizzesAdminClient({
               Nº preguntas
               <input
                 type="number"
-                min={5}
-                max={25}
+                min={8}
+                max={30}
                 value={finalQuestions}
-                onChange={(e) => setFinalQuestions(Math.max(5, Math.min(25, Number(e.target.value) || 10)))}
+                onChange={(e) => setFinalQuestions(Math.max(8, Math.min(30, Number(e.target.value) || 12)))}
                 className={styles.numInput}
               />
             </label>

@@ -2,6 +2,9 @@
   --font-sans: var(--font-learn-sans), system-ui, sans-serif;
   --font-serif: var(--font-learn-sans), system-ui, sans-serif;
   --font-mono: var(--font-learn-mono), ui-monospace, monospace;
+  /* Alto del CourseTopbar en quiz/examen (versión slim sin row2 ni progress bar).
+     Se usa como offset sticky del HUD del QuizPlayer para que se apile justo debajo. */
+  --course-topbar-h: 56px;
   font-family: var(--font-sans);
 }
 
