@@ -6,6 +6,7 @@ import {
   getUserStats,
   getUserDiplomas,
 } from '@/lib/learn/lmsServer';
+import { LogrosXpHero } from '@/components/learn/LogrosXpHero';
 import styles from './page.module.css';
 
 export const dynamic = 'force-dynamic';
@@ -75,6 +76,14 @@ export default async function LogrosPage() {
           </p>
         </header>
 
+        <LogrosXpHero
+          xp={stats.xp}
+          level={stats.level}
+          streakDays={stats.streak_days}
+          badgesUnlocked={unlockedCount}
+          badgesTotal={badges.length}
+        />
+
         <section className={styles.statsGrid} aria-label="Resumen de progreso">
           <StatCard
             label="XP total"
@@ -125,9 +134,14 @@ export default async function LogrosPage() {
               <article
                 key={b.id}
                 className={`${styles.badge} ${b.unlocked ? styles.badgeUnlocked : styles.badgeLocked}`.trim()}
+                data-theme={b.theme}
                 aria-label={b.unlocked ? `Insignia obtenida: ${b.title}` : `Insignia bloqueada: ${b.title}`}
               >
-                <div className={styles.badgeIcon} aria-hidden>
+                <div
+                  className={styles.badgeIcon}
+                  data-theme={b.theme}
+                  aria-hidden
+                >
                   {b.icon}
                 </div>
                 <h3 className={styles.badgeTitle}>{b.title}</h3>
@@ -137,6 +151,7 @@ export default async function LogrosPage() {
                     <div className={styles.badgeBar}>
                       <div
                         className={styles.badgeBarFill}
+                        data-theme={b.theme}
                         style={{
                           width: `${Math.min(100, Math.round((b.progress.current / b.progress.target) * 100))}%`,
                         }}
@@ -193,11 +208,24 @@ function StatCard({
   );
 }
 
+type BadgeTheme =
+  | 'violet'
+  | 'green'
+  | 'blue'
+  | 'cyan'
+  | 'lime'
+  | 'orange'
+  | 'gold'
+  | 'purple'
+  | 'rose'
+  | 'teal';
+
 type Badge = {
   id: string;
   title: string;
   desc: string;
   icon: React.ReactNode;
+  theme: BadgeTheme;
   unlocked: boolean;
   progress?: { current: number; target: number };
 };
@@ -217,6 +245,7 @@ function buildBadges(input: {
       title: 'Primer paso',
       desc: 'Matricúlate en tu primer curso.',
       icon: <Sparkle />,
+      theme: 'violet',
       unlocked: input.enrollments >= 1,
       progress: { current: Math.min(1, input.enrollments), target: 1 },
     },
@@ -225,6 +254,7 @@ function buildBadges(input: {
       title: 'Primera lección',
       desc: 'Completa tu primera lección.',
       icon: <Bolt />,
+      theme: 'green',
       unlocked: input.lessonsCompleted >= 1,
       progress: { current: input.lessonsCompleted, target: 1 },
     },
@@ -233,6 +263,7 @@ function buildBadges(input: {
       title: 'En marcha',
       desc: 'Completa 10 lecciones.',
       icon: <Stair />,
+      theme: 'blue',
       unlocked: input.lessonsCompleted >= 10,
       progress: { current: input.lessonsCompleted, target: 10 },
     },
@@ -241,6 +272,7 @@ function buildBadges(input: {
       title: 'Estudiante constante',
       desc: 'Completa 50 lecciones.',
       icon: <Book />,
+      theme: 'cyan',
       unlocked: input.lessonsCompleted >= 50,
       progress: { current: input.lessonsCompleted, target: 50 },
     },
@@ -249,6 +281,7 @@ function buildBadges(input: {
       title: 'Quiz aprobado',
       desc: 'Aprueba tu primer quiz.',
       icon: <Check />,
+      theme: 'lime',
       unlocked: input.quizzesPassed >= 1,
       progress: { current: input.quizzesPassed, target: 1 },
     },
@@ -257,6 +290,7 @@ function buildBadges(input: {
       title: 'Racha 3 días',
       desc: 'Estudia 3 días seguidos.',
       icon: <Fire />,
+      theme: 'orange',
       unlocked: input.streakDays >= 3,
       progress: { current: input.streakDays, target: 3 },
     },
@@ -265,6 +299,7 @@ function buildBadges(input: {
       title: 'Racha de oro',
       desc: 'Estudia 7 días seguidos.',
       icon: <Fire />,
+      theme: 'gold',
       unlocked: input.streakDays >= 7,
       progress: { current: input.streakDays, target: 7 },
     },
@@ -273,6 +308,7 @@ function buildBadges(input: {
       title: 'Fenómeno',
       desc: 'Estudia 30 días seguidos.',
       icon: <Crown />,
+      theme: 'purple',
       unlocked: input.streakDays >= 30,
       progress: { current: input.streakDays, target: 30 },
     },
@@ -281,6 +317,7 @@ function buildBadges(input: {
       title: 'Diploma obtenido',
       desc: 'Aprueba un examen final.',
       icon: <Trophy />,
+      theme: 'gold',
       unlocked: input.diplomas >= 1,
       progress: { current: input.diplomas, target: 1 },
     },
@@ -289,6 +326,7 @@ function buildBadges(input: {
       title: 'Tres en raya',
       desc: 'Consigue 3 diplomas.',
       icon: <Trophy />,
+      theme: 'rose',
       unlocked: input.diplomas >= 3,
       progress: { current: input.diplomas, target: 3 },
     },
@@ -297,6 +335,7 @@ function buildBadges(input: {
       title: '1.000 XP',
       desc: 'Acumula 1.000 puntos de experiencia.',
       icon: <Bolt />,
+      theme: 'teal',
       unlocked: input.xp >= 1000,
       progress: { current: input.xp, target: 1000 },
     },
@@ -305,6 +344,7 @@ function buildBadges(input: {
       title: 'Nivel 5',
       desc: 'Sube a nivel 5.',
       icon: <Star />,
+      theme: 'purple',
       unlocked: input.level >= 5,
       progress: { current: input.level, target: 5 },
     },

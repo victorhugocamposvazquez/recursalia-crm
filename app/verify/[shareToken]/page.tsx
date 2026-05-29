@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getDiplomaByShareToken } from '@/lib/learn/lmsServer';
+import styles from './verify.module.css';
 
 type Props = { params: Promise<{ shareToken: string }> };
 
@@ -23,42 +24,32 @@ export default async function VerifyDiplomaPage({ params }: Props) {
   });
 
   return (
-    <main
-      style={{
-        minHeight: '100dvh',
-        display: 'grid',
-        placeItems: 'center',
-        padding: 32,
-        fontFamily: 'system-ui, sans-serif',
-        background: '#f4f4f0',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 480,
-          width: '100%',
-          background: '#fff',
-          borderRadius: 16,
-          border: '1px solid #e5e5e0',
-          padding: 32,
-        }}
-      >
-        <p style={{ fontSize: 12, letterSpacing: 1, color: '#888', margin: 0 }}>RECURSALIA · VERIFICACIÓN</p>
-        <h1 style={{ fontSize: 28, margin: '12px 0 8px', letterSpacing: -0.5 }}>Diploma válido</h1>
-        <p style={{ color: '#555', lineHeight: 1.6, margin: '0 0 24px' }}>
+    <div className={styles.page}>
+      <article className={styles.card} aria-labelledby="verify-title">
+        <p className={styles.kicker}>Recursalia · Verificación</p>
+        <h1 id="verify-title" className={styles.title}>
+          Diploma válido
+        </h1>
+        <p className={styles.lead}>
           Certificado <strong>{diploma.cert_number}</strong> emitido el {issued}.
         </p>
-        <dl style={{ margin: 0, display: 'grid', gap: 12 }}>
+
+        <dl className={styles.meta}>
           <div>
-            <dt style={{ fontSize: 12, color: '#888' }}>Curso</dt>
-            <dd style={{ margin: '4px 0 0', fontWeight: 600 }}>{title}</dd>
+            <dt>Curso</dt>
+            <dd>{title}</dd>
           </div>
           <div>
-            <dt style={{ fontSize: 12, color: '#888' }}>Calificación</dt>
-            <dd style={{ margin: '4px 0 0', fontWeight: 600 }}>{scorePct}%</dd>
+            <dt>Calificación</dt>
+            <dd>{scorePct}%</dd>
           </div>
         </dl>
-      </div>
-    </main>
+
+        <div className={styles.badge} role="status">
+          <span className={styles.badgeDot} aria-hidden />
+          Autenticidad verificada
+        </div>
+      </article>
+    </div>
   );
 }
