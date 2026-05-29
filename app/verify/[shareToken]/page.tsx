@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getDiplomaByShareToken } from '@/lib/learn/lmsServer';
-import styles from './verify.module.css';
+import styles from '../verify.module.css';
 
 type Props = { params: Promise<{ shareToken: string }> };
 
